@@ -8,6 +8,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableIntegerValue;
 import javafx.beans.value.ObservableValue;
@@ -17,6 +18,7 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
 @Getter
@@ -101,18 +103,44 @@ public class StoreSection {
                 enabled,
                 category,
                 updateObservable);
-        var cached = topLevel.mapped(storeEntryWrapper -> create(
-                List.of(),
-                storeEntryWrapper,
-                1,
-                allEnabled,
-                selected,
-                entryFilter,
-                filterString,
-                category,
-                visibilityObservable,
-                updateObservable,
-                enabled));
+        Predicate<StoreSection> showTopLevel = section -> {
+            // matches filter
+            return (filterString == null || section.matchesFilter(filterString.getValue()))
+                    &&
+                    // matches selector
+                    (section.anyMatches(entryFilter))
+                    &&
+                    // same category
+                    (showInCategory(category.getValue(), section.getWrapper()));
+        };
+        var cached = topLevel.mapped(storeEntryWrapper -> {
+            var section = new SimpleObjectProperty<StoreSection>();
+            var sectionEnabled = Bindings.createBooleanBinding(() -> {
+                        if (!enabled.getValue()) {
+                            return false;
+                        }
+
+                        return section.get() != null && showTopLevel.test(section.get());
+                    },
+                    section,
+                    enabled,
+                    category,
+                    filterString,
+                    updateObservable);
+            section.set(create(
+                    List.of(),
+                    storeEntryWrapper,
+                    1,
+                    allEnabled,
+                    selected,
+                    entryFilter,
+                    filterString,
+                    category,
+                    visibilityObservable,
+                    updateObservable,
+                    sectionEnabled));
+            return section.get();
+        });
         var ordered = sorted(null, cached, updateObservable);
         var shown = ordered.filtered(
                 section -> {
@@ -120,14 +148,7 @@ public class StoreSection {
                         return false;
                     }
 
-                    // matches filter
-                    return (filterString == null || section.matchesFilter(filterString.getValue()))
-                            &&
-                            // matches selector
-                            (section.anyMatches(entryFilter))
-                            &&
-                            // same category
-                            (showInCategory(category.getValue(), section.getWrapper()));
+                    return showTopLevel.test(section);
                 },
                 enabled,
                 category,
@@ -175,75 +196,95 @@ public class StoreSection {
                 updateObservable);
         var l = new ArrayList<>(parents);
         l.add(e);
-        var cached = allChildren.mapped(c -> create(
-                l,
-                c,
-                depth + 1,
-                all,
-                selected,
-                entryFilter,
-                filterString,
-                category,
-                visibilityObservable,
-                updateObservable,
-                enabled));
-        var ordered = sorted(e, cached, updateObservable);
-        var filtered = ordered.filtered(
-                section -> {
-                    if (!enabled.getValue()) {
+        Predicate<StoreSection> showSection = section -> {
+                if (!enabled.getValue()) {
+                    return false;
+                }
+
+                var isBatchSelected = selected.contains(section.getWrapper());
+
+                var matchesFilter = filterString == null
+                        || section.matchesFilter(filterString.getValue())
+                        || l.stream().anyMatch(p -> p.matchesFilter(filterString.getValue()));
+                if (!isBatchSelected && !matchesFilter) {
+                    return false;
+                }
+
+                var hasFilter = filterString != null
+                        && filterString.getValue() != null
+                        && filterString.getValue().length() > 0;
+                if (!isBatchSelected && !hasFilter) {
+                    var showProvider = true;
+                    try {
+                        showProvider = section.getWrapper()
+                                .getEntry()
+                                .getProvider()
+                                .shouldShow(section.getWrapper());
+                    } catch (Exception ignored) {
+                    }
+                    if (!showProvider) {
                         return false;
                     }
+                }
 
-                    var isBatchSelected = selected.contains(section.getWrapper());
+                var matchesSelector = section.anyMatches(entryFilter);
+                if (!isBatchSelected && !matchesSelector) {
+                    return false;
+                }
 
-                    var matchesFilter = filterString == null
-                            || section.matchesFilter(filterString.getValue())
-                            || l.stream().anyMatch(p -> p.matchesFilter(filterString.getValue()));
-                    if (!isBatchSelected && !matchesFilter) {
-                        return false;
-                    }
+                // Prevent updates for children on category switching by checking depth
+                var showCategory = showInCategory(category.getValue(), section.getWrapper()) || depth > 0;
+                if (!showCategory) {
+                    return false;
+                }
 
-                    var hasFilter = filterString != null
-                            && filterString.getValue() != null
-                            && filterString.getValue().length() > 0;
-                    if (!isBatchSelected && !hasFilter) {
-                        var showProvider = true;
-                        try {
-                            showProvider = section.getWrapper()
-                                    .getEntry()
-                                    .getProvider()
-                                    .shouldShow(section.getWrapper());
-                        } catch (Exception ignored) {
-                        }
-                        if (!showProvider) {
+                // If this entry is already shown as root due to a different category than parent, don't
+                // show it
+                // again here
+                var notRoot = !DataStorage.get()
+                        .isRootEntry(
+                                section.getWrapper().getEntry(),
+                                category.getValue().getCategory());
+                if (!notRoot) {
+                    return false;
+                }
+
+                return true;
+        };
+
+        var cached = allChildren.mapped(c -> {
+            var section = new SimpleObjectProperty<StoreSection>();
+            var sectionEnabled = Bindings.createBooleanBinding(() -> {
+                        if (!enabled.getValue()) {
                             return false;
                         }
-                    }
 
-                    var matchesSelector = section.anyMatches(entryFilter);
-                    if (!isBatchSelected && !matchesSelector) {
-                        return false;
-                    }
-
-                    // Prevent updates for children on category switching by checking depth
-                    var showCategory = showInCategory(category.getValue(), section.getWrapper()) || depth > 0;
-                    if (!showCategory) {
-                        return false;
-                    }
-
-                    // If this entry is already shown as root due to a different category than parent, don't
-                    // show it
-                    // again here
-                    var notRoot = !DataStorage.get()
-                            .isRootEntry(
-                                    section.getWrapper().getEntry(),
-                                    category.getValue().getCategory());
-                    if (!notRoot) {
-                        return false;
-                    }
-
-                    return true;
-                },
+                        return section.get() != null && showSection.test(section.get());
+                    },
+                    section,
+                    enabled,
+                    category,
+                    filterString,
+                    e.getPersistentState(),
+                    e.getCache(),
+                    visibilityObservable,
+                    updateObservable);
+            section.set(create(
+                    l,
+                    c,
+                    depth + 1,
+                    all,
+                    selected,
+                    entryFilter,
+                    filterString,
+                    category,
+                    visibilityObservable,
+                    updateObservable,
+                    sectionEnabled));
+            return section.get();
+        });
+        var ordered = sorted(e, cached, updateObservable);
+        var filtered = ordered.filtered(showSection,
                 enabled,
                 category,
                 filterString,

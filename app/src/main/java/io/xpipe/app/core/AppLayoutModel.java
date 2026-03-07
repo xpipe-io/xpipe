@@ -7,6 +7,7 @@ import io.xpipe.app.hub.comp.StoreLayoutComp;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefsComp;
+import io.xpipe.app.terminal.TerminalDockHubManager;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 
@@ -117,7 +118,9 @@ public class AppLayoutModel {
                         AppI18n.observable("connections"),
                         new LabelGraphic.IconGraphic("mdi2c-connection"),
                         new StoreLayoutComp(),
-                        null,
+                        () -> {
+                            TerminalDockHubManager.get().hideDock();
+                        },
                         new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN)),
                 new Entry(
                         AppI18n.observable("browser"),

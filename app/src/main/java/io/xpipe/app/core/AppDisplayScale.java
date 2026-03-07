@@ -8,6 +8,7 @@ import javafx.stage.Screen;
 public class AppDisplayScale {
 
     private static Double screenOutputScale;
+    private static Boolean defaultDisplayScale;
 
     public static void init() {
         try {
@@ -15,13 +16,23 @@ public class AppDisplayScale {
             if (primary != null) {
                 screenOutputScale = primary.getOutputScaleX();
             }
+
+            var s = AppPrefs.get().uiScale().getValue();
+            if (s != null && s == 100) {
+                defaultDisplayScale = true;
+            }
+
+            var allScreensDefault = Screen.getScreens().stream().allMatch(screen -> screen.getOutputScaleX() == 1.0);
+            if (allScreensDefault) {
+                defaultDisplayScale = true;
+            }
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).omit().expected().handle();
         }
     }
 
-    public static boolean hasDefaultDisplayScale() {
-        return getEffectiveDisplayScale() == 1.0;
+    public static boolean hasOnlyDefaultDisplayScale() {
+        return defaultDisplayScale != null ? defaultDisplayScale : false;
     }
 
     public static double getEffectiveDisplayScale() {

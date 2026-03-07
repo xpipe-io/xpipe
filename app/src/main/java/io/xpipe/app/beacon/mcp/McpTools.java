@@ -3,10 +3,8 @@ package io.xpipe.app.beacon.mcp;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppNames;
-import io.xpipe.app.ext.ConnectionFileSystem;
-import io.xpipe.app.ext.FileEntry;
-import io.xpipe.app.ext.FileInfo;
-import io.xpipe.app.ext.SingletonSessionStore;
+import io.xpipe.app.ext.*;
+import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.TerminalInitScriptConfig;
@@ -85,6 +83,10 @@ public final class McpTools {
 
         @NonNull
         String path;
+
+        String information;
+
+        String notes;
     }
 
     public static McpServerFeatures.SyncToolSpecification listSystems() throws IOException {
@@ -107,9 +109,14 @@ public final class McpTools {
                             continue;
                         }
 
+                        var section = StoreViewState.get().getSectionForWrapper(StoreViewState.get().getEntryWrapper(e));
+                        var info = section.isPresent() ? e.getProvider().informationString(section.get()).getValue() : null;
+
                         var r = ConnectionResource.builder()
                                 .name(e.getName())
                                 .path(DataStorage.get().getStorePath(e).toString())
+                                .information(info)
+                                .notes(e.getNotes())
                                 .build();
                         list.add(r);
                     }
@@ -138,7 +145,7 @@ public final class McpTools {
                 .callHandler(McpToolHandler.of((req) -> {
                     var path = req.getFilePath("path");
                     var system = req.getStringArgument("system");
-                    var shellStore = req.getShellStoreRef(system);
+                    var shellStore = req.getShellStoreRef(system, false);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
                     var fs = new ConnectionFileSystem(shellSession.getControl());
 
@@ -165,7 +172,7 @@ public final class McpTools {
                     var path = req.getFilePath("path");
                     var system = req.getStringArgument("system");
                     var recursive = req.getOptionalBooleanArgument("recursive").orElse(false);
-                    var shellStore = req.getShellStoreRef(system);
+                    var shellStore = req.getShellStoreRef(system, false);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
                     var fs = new ConnectionFileSystem(shellSession.getControl());
 
@@ -194,7 +201,7 @@ public final class McpTools {
                     var system = req.getStringArgument("system");
                     var recursive = req.getOptionalBooleanArgument("recursive").orElse(false);
                     var pattern = req.getStringArgument("name");
-                    var shellStore = req.getShellStoreRef(system);
+                    var shellStore = req.getShellStoreRef(system, false);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
                     var fs = new ConnectionFileSystem(shellSession.getControl());
 
@@ -226,7 +233,7 @@ public final class McpTools {
                 .callHandler(McpToolHandler.of((req) -> {
                     var path = req.getFilePath("path");
                     var system = req.getStringArgument("system");
-                    var shellStore = req.getShellStoreRef(system);
+                    var shellStore = req.getShellStoreRef(system, false);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
                     var fs = new ConnectionFileSystem(shellSession.getControl());
 
@@ -267,7 +274,7 @@ public final class McpTools {
                 .callHandler(McpToolHandler.of((req) -> {
                     var path = req.getFilePath("path");
                     var system = req.getStringArgument("system");
-                    var shellStore = req.getShellStoreRef(system);
+                    var shellStore = req.getShellStoreRef(system, true);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
                     var fs = new ConnectionFileSystem(shellSession.getControl());
 
@@ -300,7 +307,7 @@ public final class McpTools {
                     var path = req.getFilePath("path");
                     var system = req.getStringArgument("system");
                     var content = req.getStringArgument("content");
-                    var shellStore = req.getShellStoreRef(system);
+                    var shellStore = req.getShellStoreRef(system, true);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
                     var fs = new ConnectionFileSystem(shellSession.getControl());
 
@@ -323,7 +330,7 @@ public final class McpTools {
                 .callHandler(McpToolHandler.of((req) -> {
                     var path = req.getFilePath("path");
                     var system = req.getStringArgument("system");
-                    var shellStore = req.getShellStoreRef(system);
+                    var shellStore = req.getShellStoreRef(system, true);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
                     var fs = new ConnectionFileSystem(shellSession.getControl());
 
@@ -347,10 +354,10 @@ public final class McpTools {
                 .callHandler(McpToolHandler.of((req) -> {
                     var command = req.getStringArgument("command");
                     var system = req.getStringArgument("system");
-                    var shellStore = req.getShellStoreRef(system);
+                    var shellStore = req.getShellStoreRef(system, true);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
 
-                    var out = shellSession.getControl().command(command).readStdoutOrThrow();
+                    var out = ProcessControlProvider.get().executeMcpCommand(shellSession.getControl(), command);
                     var formatted = CommandDialog.formatOutput(out);
 
                     return McpSchema.CallToolResult.builder()
@@ -370,7 +377,7 @@ public final class McpTools {
                     var directory = req.getFilePath("directory");
                     var arguments = req.getStringArgument("arguments");
 
-                    var shellStore = req.getShellStoreRef(system);
+                    var shellStore = req.getShellStoreRef(system, true);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
 
                     var clazz = Class.forName(
@@ -407,7 +414,7 @@ public final class McpTools {
                 .callHandler(McpToolHandler.of((req) -> {
                     var system = req.getStringArgument("system");
                     var directory = req.getOptionalStringArgument("directory");
-                    var shellStore = req.getShellStoreRef(system);
+                    var shellStore = req.getShellStoreRef(system, true);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
 
                     TerminalLaunch.builder()
@@ -430,7 +437,7 @@ public final class McpTools {
                 .callHandler(McpToolHandler.of((req) -> {
                     var system = req.getStringArgument("system");
                     var directory = req.getOptionalStringArgument("directory");
-                    var shellStore = req.getShellStoreRef(system);
+                    var shellStore = req.getShellStoreRef(system, true);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
 
                     var script = shellSession

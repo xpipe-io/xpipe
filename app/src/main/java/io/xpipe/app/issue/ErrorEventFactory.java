@@ -6,6 +6,7 @@ import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.OsType;
 
 import java.nio.file.AccessDeniedException;
+import java.nio.file.NoSuchFileException;
 import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.Locale;
@@ -84,7 +85,18 @@ public class ErrorEventFactory {
             b.expected();
         }
 
-        if (t instanceof AccessDeniedException) {
+        if (OsType.ofLocal() == OsType.WINDOWS && t.getMessage() != null && t.getMessage().contains("The cloud file provider is not running")) {
+            b.description("The OneDrive cloud file provider is not running. Verify that your cloud storage is working and you are logged in.");
+            b.expected();
+        }
+
+        if (t instanceof AccessDeniedException ade) {
+            b.description("Access is denied: " + ade.getMessage());
+            b.expected();
+        }
+
+        if (t instanceof NoSuchFileException nsfe) {
+            b.description("No such file: " + nsfe.getMessage());
             b.expected();
         }
 

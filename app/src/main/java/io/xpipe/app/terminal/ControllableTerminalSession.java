@@ -10,15 +10,21 @@ public abstract class ControllableTerminalSession extends TerminalView.TerminalS
     protected Rect lastBounds;
     protected boolean customBounds;
 
-    protected ControllableTerminalSession(ProcessHandle terminalProcess) {
-        super(terminalProcess);
+    protected ControllableTerminalSession(ProcessHandle terminalProcess, ExternalTerminalType terminalType) {
+        super(terminalProcess, terminalType);
     }
 
     public abstract void own();
 
     public abstract void disown();
 
-    public abstract void removeBorders();
+    public abstract void removeIcon();
+
+    public abstract void restoreIcon();
+
+    public abstract void removeStyle();
+
+    public abstract void restoreStyle();
 
     public abstract void show();
 

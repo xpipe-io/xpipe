@@ -1,7 +1,9 @@
 package io.xpipe.app.vnc;
 
+import io.xpipe.app.ext.PrefsValue;
 import io.xpipe.app.platform.ClipboardHelper;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.rdp.*;
 import io.xpipe.core.OsType;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -10,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-public interface ExternalVncClient {
+public interface ExternalVncClient extends PrefsValue {
 
     static void launchClient(VncLaunchConfig configuration) throws Exception {
         var client = AppPrefs.get().vncClient.getValue();
@@ -54,6 +56,34 @@ public interface ExternalVncClient {
         l.add(CustomVncClient.class);
         return l;
     }
+
+
+    static ExternalVncClient determineDefault(ExternalVncClient existing) {
+        // Verify that our selection is still valid
+        if (existing != null && existing.isAvailable()) {
+            return existing;
+        }
+
+        var l = new ArrayList<ExternalVncClient>();
+        switch (OsType.ofLocal()) {
+            case OsType.Linux ignored -> {
+                l.add(new TigerVncClient.Linux());
+                l.add(new RealVncClient.Linux());
+            }
+            case OsType.MacOs ignored -> {}
+            case OsType.Windows ignored -> {
+                l.add(new TightVncClient());
+            }
+        }
+
+        var found = l.stream().filter(externalVncClient -> externalVncClient.isAvailable()).findFirst();
+        if (found.isPresent()) {
+            return found.get();
+        }
+
+        return new InternalVncClient();
+    }
+
 
     void launch(VncLaunchConfig configuration) throws Exception;
 

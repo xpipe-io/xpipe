@@ -3,6 +3,7 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.platform.LabelGraphic;
@@ -67,6 +68,14 @@ public class TerminalDockHubManager {
             return false;
         }
 
+        if (AppOperationMode.get() != AppOperationMode.GUI) {
+            return false;
+        }
+
+        if (AppMainWindow.get() == null || !AppMainWindow.get().getStage().isShowing() || AppMainWindow.get().getStage().isIconified()) {
+            return false;
+        }
+
         return true;
     }
 
@@ -110,9 +119,9 @@ public class TerminalDockHubManager {
     private final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(
             AppI18n.observable("toggleTerminalDock"), new LabelGraphic.NodeGraphic(() -> {
                 var inner = new FontIcon();
-                inner.iconCodeProperty().bind(Bindings.createObjectBinding(() -> {
-                    return detached.get() || minimized.get() ? MaterialDesignC.CONSOLE_LINE : MaterialDesignC.CONSOLE;
-                }, detached, minimized));
+                inner.iconCodeProperty().bind(PlatformThread.sync(Bindings.createObjectBinding(() -> {
+                    return detached.get() || minimized.get() || !showing.get() ? MaterialDesignC.CONSOLE_LINE : MaterialDesignC.CONSOLE;
+                }, detached, minimized, showing)));
                 inner.getStyleClass().add("graphic");
                 inner.getStyleClass().add("terminal-dock-button");
                 return inner;
@@ -186,14 +195,10 @@ public class TerminalDockHubManager {
                     return;
                 }
 
-                var term = AppPrefs.get().terminalType().getValue();
+                var term = controllable.get().getTerminalType();
                 if (term instanceof TrackableTerminalType t) {
                     if (t.getDockMode() == TerminalDockMode.UNSUPPORTED) {
                         return;
-                    }
-
-                    if (t.getDockMode() == TerminalDockMode.BORDERLESS) {
-                        controllable.get().removeBorders();
                     }
                 }
 

@@ -1,21 +1,49 @@
 package io.xpipe.app.pwman;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.OptionsChoiceBuilder;
+import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLaunch;
-import io.xpipe.core.InPlaceSecretValue;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import javafx.application.Platform;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Insets;
+import javafx.scene.layout.Region;
+import lombok.Builder;
+import lombok.extern.jackson.Jacksonized;
+import org.kordamp.ikonli.javafx.FontIcon;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 @JsonTypeName("dashlane")
+@Builder
+@Jacksonized
 public class DashlanePasswordManager implements PasswordManager {
 
     private static ShellControl SHELL;
+
+
+    @SuppressWarnings("unused")
+    public static OptionsBuilder createOptions(Property<DashlanePasswordManager> p) {
+        return new OptionsBuilder()
+                .nameAndDescription("passwordManagerTest")
+                .addComp(new PasswordManagerTestComp(true));
+    }
 
     private static synchronized ShellControl getOrStartShell() throws Exception {
         if (SHELL == null) {
@@ -26,7 +54,7 @@ public class DashlanePasswordManager implements PasswordManager {
     }
 
     @Override
-    public synchronized CredentialResult retrieveCredentials(String key) {
+    public synchronized Result query(String key) {
         try {
             CommandSupport.isInLocalPathOrThrow("Dashlane CLI", "dcli");
         } catch (Exception e) {
@@ -58,11 +86,9 @@ public class DashlanePasswordManager implements PasswordManager {
                     .addLiteral(key));
             var out = cmd.sensitive().readStdoutOrThrow();
             var tree = JacksonMapper.getDefault().readTree(out);
-            var login = tree.get("login");
-            var password = tree.get("password");
-            return new CredentialResult(
-                    login != null ? login.asText() : null,
-                    password != null ? InPlaceSecretValue.of(password.asText()) : null);
+            var login = Optional.ofNullable(tree.get("login")).map(JsonNode::textValue).orElse(null);
+            var password = Optional.ofNullable(tree.get("password")).map(JsonNode::textValue).orElse(null);
+            return Result.of(Credentials.of(login, password), null);
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();
             return null;
@@ -77,5 +103,10 @@ public class DashlanePasswordManager implements PasswordManager {
     @Override
     public String getWebsite() {
         return "https://www.dashlane.com/";
+    }
+
+    @Override
+    public PasswordManagerKeyConfiguration getKeyConfiguration() {
+        return PasswordManagerKeyConfiguration.none();
     }
 }

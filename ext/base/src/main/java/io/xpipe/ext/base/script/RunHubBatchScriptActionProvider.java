@@ -30,6 +30,10 @@ public class RunHubBatchScriptActionProvider implements ActionProvider {
             for (DataStoreEntryRef<ShellStore> ref : refs) {
                 var sc = ref.getStore().getOrStartSession();
                 var script = scriptStore.getStore().assembleScriptChain(sc, false);
+                if (script == null) {
+                    continue;
+                }
+
                 var cmd = sc.command(script);
                 list.add(new CommandDialog.CommandEntry(ref.get().getName(), cmd));
             }

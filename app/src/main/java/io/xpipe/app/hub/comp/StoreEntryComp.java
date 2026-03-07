@@ -459,10 +459,10 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
 
                 var notes = new MenuItem(AppI18n.get("addNotes"), new FontIcon("mdi2c-comment-text-outline"));
                 notes.setOnAction(event -> {
-                    getWrapper().getNotes().setValue(new StoreNotes(null, getDefaultNotes()));
+                    StoreNotesComp.showDialog(getWrapper(), getDefaultNotes());
                     event.consume();
                 });
-                notes.visibleProperty().bind(BindingsHelper.map(getWrapper().getNotes(), s -> s.getCommited() == null));
+                notes.visibleProperty().bind(BindingsHelper.map(getWrapper().getNotes(), s -> s == null));
                 items.add(items.size(), notes);
 
                 var freeze = new MenuItem();

@@ -58,6 +58,8 @@ public abstract class ProcessControlProvider {
 
     public abstract ShellDialect getEffectiveLocalDialect();
 
+    public abstract String executeMcpCommand(ShellControl sc, String command) throws Exception;
+
     public ShellDialect getNextFallbackDialect() {
         var av = getAvailableLocalDialects();
         var index = av.indexOf(getEffectiveLocalDialect());
@@ -76,4 +78,7 @@ public abstract class ProcessControlProvider {
     public abstract void cloneRepository(String url, Path target) throws Exception;
 
     public abstract void pullRepository(Path target) throws Exception;
+
+    public abstract DataStore quickConnectStore(String user, String host, Integer port, DataStore existing);
+
 }

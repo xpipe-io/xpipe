@@ -125,6 +125,10 @@ public class ShellView {
         return userHome;
     }
 
+    public void moveFile(FilePath source, FilePath dest) throws Exception {
+        getDialect().getFileMoveCommand(shellControl, source.toString(), dest.toString()).execute();
+    }
+
     public boolean fileExists(FilePath path) throws Exception {
         return getDialect()
                 .createFileExistsCommand(shellControl, path.toString())
@@ -271,8 +275,8 @@ public class ShellView {
         } else if (ShellDialects.isPowershell(shellControl)) {
             administrator = shellControl
                     .command(String.format(
-                            "$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent());"
-                                    + "try {if (-not $($currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))) {$host.ui"
+                            "try {$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent());"
+                                    + "if (-not $($currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))) {$host.ui"
                                     + ".WriteErrorLine(\"%s\"); throw \"error\"}} catch {}",
                             "Not Administrator"))
                     .executeAndCheck();

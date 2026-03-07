@@ -19,7 +19,7 @@ public class BrowserIconManager {
     }
 
     public static void loadIfNecessary(String s) {
-        var res = AppDisplayScale.hasDefaultDisplayScale() ? "24" : "40";
+        var res = AppDisplayScale.hasOnlyDefaultDisplayScale() ? "24" : "40";
         var key = "browser/" + FilenameUtils.getBaseName(s) + "-" + res + ".png";
         if (AppImages.hasImage(key)) {
             return;

@@ -7,6 +7,11 @@ public interface ParentSystemAccess {
     static ParentSystemAccess none() {
         return new ParentSystemAccess() {
             @Override
+            public boolean samePermissions() {
+                return false;
+            }
+
+            @Override
             public boolean supportsSameUsers() {
                 return false;
             }
@@ -45,6 +50,11 @@ public interface ParentSystemAccess {
 
     static ParentSystemAccess identity() {
         return new ParentSystemAccess() {
+            @Override
+            public boolean samePermissions() {
+                return true;
+            }
+
             @Override
             public boolean supportsSameUsers() {
                 return true;
@@ -85,6 +95,11 @@ public interface ParentSystemAccess {
     static ParentSystemAccess combine(ParentSystemAccess a1, ParentSystemAccess a2) {
         return new ParentSystemAccess() {
             @Override
+            public boolean samePermissions() {
+                return a1.samePermissions() && a2.samePermissions();
+            }
+
+            @Override
             public boolean supportsSameUsers() {
                 return a1.supportsSameUsers() && a2.supportsSameUsers();
             }
@@ -121,9 +136,55 @@ public interface ParentSystemAccess {
         };
     }
 
+    static ParentSystemAccess userChange() {
+        return new ParentSystemAccess() {
+            @Override
+            public boolean samePermissions() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsSameUsers() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsFileSystemAccess() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsExecutables() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsExecutableEnvironment() {
+                return true;
+            }
+
+            @Override
+            public FilePath translateFromLocalSystemPath(FilePath path) {
+                return path;
+            }
+
+            @Override
+            public FilePath translateToLocalSystemPath(FilePath path) {
+                return path;
+            }
+
+            @Override
+            public boolean isIdentity() {
+                return true;
+            }
+        };
+    }
+
     default boolean supportsAnyAccess() {
         return supportsFileSystemAccess();
     }
+
+    boolean samePermissions();
 
     boolean supportsSameUsers();
 

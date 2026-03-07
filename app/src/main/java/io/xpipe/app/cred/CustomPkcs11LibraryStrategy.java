@@ -1,4 +1,4 @@
-package io.xpipe.ext.base.identity.ssh;
+package io.xpipe.app.cred;
 
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.ext.ValidationException;
@@ -116,8 +116,7 @@ public class CustomPkcs11LibraryStrategy implements SshIdentityStrategy {
                 new KeyValue("IdentityAgent", "none"));
     }
 
-    @Override
-    public String getPublicKey() {
+    public PublicKeyStrategy getPublicKeyStrategy() {
         return null;
     }
 }

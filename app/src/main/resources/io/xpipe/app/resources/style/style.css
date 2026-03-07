@@ -26,10 +26,6 @@
     -fx-border-color: -color-neutral-emphasis;
 }
 
-.edit-button.icon-button-comp:hover, .root:key-navigation .edit-button.icon-button-comp:focused {
-    -fx-background-color: -color-accent-muted;
-}
-
 .scan-list {
     -fx-background-radius: 4px;
     -fx-border-width: 1;
@@ -174,6 +170,10 @@
     -fx-fill: rgb(30, 180, 30, 0.7);
 }
 
+.store-active-comp:hover {
+    -fx-opacity: 0.8;
+}
+
 .toggle-group-comp .toggle-button {
     -fx-padding: 3 10;
 }
@@ -237,4 +237,12 @@
 
 .ikonli-font-icon.graphic.terminal-dock-button {
     -fx-icon-color: -color-accent-fg;
+}
+
+.text-field:focused {
+    -fx-prompt-text-fill: -color-fg-subtle;
+}
+
+.agent-socket-choice:disabled .text-field {
+    -fx-opacity: 1.0;
 }

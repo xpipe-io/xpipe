@@ -260,6 +260,7 @@ public abstract class AppSystemInfo {
 
         private Path downloads;
         private Path desktop;
+        private Path config;
         private Boolean vm;
 
         public boolean isDebianBased() {
@@ -354,6 +355,20 @@ public abstract class AppSystemInfo {
 
             var fallback = getUserHome().resolve("Desktop");
             return (desktop = fallback);
+        }
+
+        public Path getConfigDir() {
+            if (config != null) {
+                return config;
+            }
+
+            if (System.getenv("XDG_CONFIG_HOME") != null) {
+                return (config = Path.of(System.getenv("XDG_CONFIG_HOME")));
+            } else {
+                return (config = AppSystemInfo.ofLinux()
+                        .getUserHome()
+                        .resolve(".config"));
+            }
         }
 
         @Override

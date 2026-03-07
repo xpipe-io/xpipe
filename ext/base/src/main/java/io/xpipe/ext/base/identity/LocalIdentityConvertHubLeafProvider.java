@@ -74,7 +74,7 @@ public class LocalIdentityConvertHubLeafProvider implements HubLeafProvider<Loca
                     .sshIdentity(EncryptedValue.VaultKey.of(st.getSshIdentity()))
                     .perUser(false)
                     .build();
-            StoreCreationDialog.showEdit(ref.get(), synced, ignored -> {});
+            StoreCreationDialog.showEdit(ref.get(), synced, true, ignored -> {});
 
             // Ugly solution to sync key file if needed
             Platform.runLater(() -> {

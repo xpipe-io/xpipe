@@ -8,6 +8,7 @@ import io.xpipe.app.icon.SystemIcon;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -22,8 +23,11 @@ import javafx.scene.text.TextAlignment;
 
 import atlantafx.base.theme.Styles;
 import atlantafx.base.theme.Tweaks;
+import lombok.Getter;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static atlantafx.base.theme.Styles.TEXT_SMALL;
 
@@ -35,6 +39,9 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
     private final int columns;
     private final SimpleStringProperty filter;
     private final Runnable doubleClick;
+    private final DataStoreEntry entry;
+
+    @Getter
     private final BooleanProperty busy = new SimpleBooleanProperty();
 
     public StoreIconChoiceComp(
@@ -43,13 +50,15 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
             Set<SystemIcon> icons,
             int columns,
             SimpleStringProperty filter,
-            Runnable doubleClick) {
+            Runnable doubleClick, DataStoreEntry entry
+    ) {
         this.reshow = reshow;
         this.selected = selected;
         this.icons = icons;
         this.columns = columns;
         this.filter = filter;
         this.doubleClick = doubleClick;
+        this.entry = entry;
     }
 
     @Override
@@ -58,7 +67,6 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
         if (modalOverlay != null) {
             ThreadHelper.runFailableAsync(() -> {
                 BooleanScope.executeExclusive(busy, () -> {
-                    SystemIconManager.reloadSourceHashes();
                     SystemIconManager.loadAllAvailableIconImages();
                 });
             });
@@ -68,7 +76,7 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
     @Override
     protected Region createSimple() {
         var table = new TableView<List<SystemIcon>>();
-        table.disableProperty().bind(PlatformThread.sync(busy));
+        table.visibleProperty().bind(PlatformThread.sync(busy.not()));
         initTable(table);
         filter.addListener((observable, oldValue, newValue) -> updateData(table, newValue));
         busy.addListener((observable, oldValue, newValue) -> {
@@ -77,15 +85,20 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
             }
         });
 
-        var loading = new LoadingIconComp(busy, AppFontSizes::title)
-                .prefWidth(60)
-                .hide(busy.not())
-                .build();
-        var refresh = createRefreshPane();
+        var loading = createLoadingPane();
         var stack = new StackPane();
-        stack.getChildren().addAll(table, refresh, loading);
+        stack.getChildren().addAll(table, loading);
 
         return stack;
+    }
+
+    public void refresh() {
+        ThreadHelper.runFailableAsync(() -> {
+            BooleanScope.executeExclusive(busy, () -> {
+                SystemIconManager.rebuild();
+                reshow.run();
+            });
+        });
     }
 
     private void initTable(TableView<List<SystemIcon>> table) {
@@ -108,22 +121,28 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         table.getSelectionModel().setCellSelectionEnabled(true);
         table.getStyleClass().add("icon-browser");
+        table.disableProperty().bind(PlatformThread.sync(busy));
     }
 
-    private Region createRefreshPane() {
-        var refreshing = new SimpleBooleanProperty(false);
+    private Region createLoadingPane() {
         var refreshButton = new ButtonComp(
                 AppI18n.observable("refreshIcons"),
                 new SimpleObjectProperty<>(new LabelGraphic.IconGraphic("mdi2r-refresh")),
                 () -> {
                     ThreadHelper.runFailableAsync(() -> {
-                        try (var ignored = new BooleanScope(refreshing).start()) {
+                        BooleanScope.executeExclusive(busy, () -> {
                             SystemIconManager.rebuild();
-                        }
+                        });
                         reshow.run();
                     });
                 });
-        refreshButton.disable(refreshing);
+        refreshButton.hide(Bindings.createBooleanBinding(
+                () -> {
+                    return SystemIconManager.hasLoadedAnyImages();
+                },
+                busy));
+        refreshButton.disable(busy);
+
         var text = new LabelComp(AppI18n.observable("refreshIconsDescription"));
         text.apply(struc -> {
             struc.setWrapText(true);
@@ -131,28 +150,17 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
             struc.setPrefWidth(300);
         });
         text.style(Styles.TEXT_SUBTLE);
-        text.visible(refreshing);
-        var vbox = new VerticalComp(List.of(refreshButton, text)).spacing(25);
-        vbox.hide(Bindings.createBooleanBinding(
-                () -> {
-                    if (busy.get()) {
-                        return true;
-                    }
+        text.visible(busy);
 
-                    var available = icons.stream()
-                            .filter(systemIcon -> AppImages.hasImage(
-                                    "icons/" + systemIcon.getSource().getId() + "/" + systemIcon.getId() + "-40.png"))
-                            .sorted(Comparator.comparing(systemIcon -> systemIcon.getId()))
-                            .toList();
-                    if (available.isEmpty()) {
-                        return false;
-                    }
+        var loading = new LoadingIconComp(busy, AppFontSizes::title);
+        loading.prefWidth(50);
+        loading.prefHeight(50);
 
-                    return true;
-                },
-                busy,
-                refreshing));
-        vbox.apply(struc -> struc.setAlignment(Pos.CENTER));
+        var vbox = new VerticalComp(List.of(text, loading, refreshButton)).spacing(25);
+        vbox.apply(struc -> {
+            struc.setAlignment(Pos.CENTER);
+            struc.setPickOnBounds(false);
+        });
         return vbox.build();
     }
 
@@ -166,24 +174,27 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
                 .filter(systemIcon -> AppImages.hasImage(
                         "icons/" + systemIcon.getSource().getId() + "/" + systemIcon.getId() + "-40.png"))
                 .sorted(Comparator.comparing(systemIcon -> systemIcon.getId()))
-                .toList();
-        var filtered = available;
-        if (filterString != null && !filterString.isBlank() && filterString.length() >= 2) {
-            filtered = available.stream()
-                    .filter(icon -> containsString(icon.getId(), filterString))
-                    .toList();
+                .collect(Collectors.toCollection(ArrayList::new));
+        available.addFirst(new SystemIcon(null, "default"));
+
+        List<SystemIcon> shown;
+        if (filterString != null && !filterString.isBlank() && filterString.strip().length() >= 2) {
+            shown = available.stream()
+                    .filter(icon -> containsString(icon.getId(), filterString.strip()))
+                    .collect(Collectors.toCollection(ArrayList::new));
+        } else {
+            shown = new ArrayList<>(available);
         }
-        var data = partitionList(filtered, columns);
+
+        var data = partitionList(shown, columns);
         table.getItems().setAll(data);
 
-        var selectMatch = filtered.size() == 1
-                || filtered.stream().anyMatch(systemIcon -> systemIcon.getId().equals(filterString));
+        var selectMatch = shown.size() == 1
+                || shown.stream().anyMatch(systemIcon -> systemIcon.getId().equals(filterString));
         // Table updates seem to not always be instant, sometimes the column is not there yet
         if (selectMatch && table.getColumns().size() > 0) {
             table.getSelectionModel().select(0, table.getColumns().getFirst());
-            selected.setValue(filtered.getFirst());
-        } else {
-            selected.setValue(null);
+            selected.setValue(shown.getFirst());
         }
     }
 
@@ -239,6 +250,13 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
 
             if (icon == null) {
                 setGraphic(null);
+                return;
+            }
+
+            if (icon.getSource() == null) {
+                root.setText(AppI18n.get("default"));
+                image.setValue(entry.getProvider().getDisplayIconFileName(entry.getStore()));
+                setGraphic(root);
                 return;
             }
 

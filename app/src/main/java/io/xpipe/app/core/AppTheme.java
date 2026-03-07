@@ -251,41 +251,8 @@ public class AppTheme {
 
             TrackEvent.debug("Setting theme " + newTheme.getId() + " for scene");
 
-            // Don't animate transition in performance mode
-            if (AppPrefs.get() == null || AppPrefs.get().performanceMode().get()) {
-                newTheme.apply();
-                return;
-            }
-
-            var stage = window.getStage();
-            var scene = stage.getScene();
-            Pane root = (Pane) scene.getRoot();
-            Image snapshot = null;
-            try {
-                scene.snapshot(null);
-            } catch (Exception ex) {
-                // This can fail if there is no window / screen I guess?
-                ErrorEventFactory.fromThrowable(ex).expected().omit().handle();
-                return;
-            }
-            ImageView imageView = new ImageView(snapshot);
-            root.getChildren().add(imageView);
+            // Don't animate anything for performance reasons
             newTheme.apply();
-
-            Platform.runLater(() -> {
-                // Animate!
-                var transition = new Timeline(
-                        new KeyFrame(
-                                Duration.millis(0),
-                                new KeyValue(imageView.opacityProperty(), 1, Interpolator.EASE_OUT)),
-                        new KeyFrame(
-                                Duration.millis(600),
-                                new KeyValue(imageView.opacityProperty(), 0, Interpolator.EASE_OUT)));
-                transition.setOnFinished(e -> {
-                    root.getChildren().remove(imageView);
-                });
-                transition.play();
-            });
         });
     }
 

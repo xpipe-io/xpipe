@@ -72,12 +72,6 @@ public class TerminalPaneConfiguration {
             return config;
         }
 
-        var feature = LicenseProvider.get().getFeature("logging");
-        var supported = feature.isSupported();
-        if (!supported) {
-            throw new LicenseRequiredException(feature);
-        }
-
         var log = getLogFile(paneIndex, entry);
         var sc = TerminalProxyManager.getProxy().orElse(LocalShell.getShell()).start();
         var logFile = sc.getLocalSystemAccess().translateFromLocalSystemPath(FilePath.of(log));

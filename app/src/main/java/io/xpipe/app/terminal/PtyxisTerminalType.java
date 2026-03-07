@@ -31,6 +31,8 @@ public class PtyxisTerminalType implements ExternalApplicationType.LinuxApplicat
         var toExecute = CommandBuilder.of()
                 .addIf(configuration.isPreferTabs(), "--tab")
                 .addIf(!configuration.isPreferTabs(), "--new-window")
+                .add("--title")
+                .addQuoted(configuration.getColoredTitle())
                 .add("--")
                 .add(configuration.single().getDialectLaunchCommand());
         launch(toExecute);

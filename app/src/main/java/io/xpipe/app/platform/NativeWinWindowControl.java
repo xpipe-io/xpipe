@@ -73,28 +73,48 @@ public class NativeWinWindowControl {
     }
 
     public void removeBorders() {
+        var rect = getBounds();
+
         var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_STYLE);
         var mod = style & ~(User32.WS_CAPTION | User32.WS_THICKFRAME | User32.WS_MAXIMIZEBOX);
         User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_STYLE, mod);
+
+        User32.INSTANCE.SetWindowPos(windowHandle, null, rect.getX(), rect.getY(), rect.getW() + 1, rect.getH(),
+                User32.SWP_NOACTIVATE | User32.SWP_NOMOVE | User32.SWP_NOZORDER);
+        User32.INSTANCE.SetWindowPos(windowHandle, null, rect.getX(), rect.getY(), rect.getW(), rect.getH(),
+                User32.SWP_NOACTIVATE | User32.SWP_NOMOVE | User32.SWP_NOZORDER);
     }
 
-    public void takeOwnership(WinDef.HWND owner) {
+    public void restoreBorders() {
+        var rect = getBounds();
+
+        var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_STYLE);
+        var mod = style | User32.WS_CAPTION | User32.WS_THICKFRAME | User32.WS_MAXIMIZEBOX;
+        User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_STYLE, mod);
+
+        User32.INSTANCE.SetWindowPos(windowHandle, null, rect.getX(), rect.getY(), rect.getW() + 1, rect.getH(),
+                User32.SWP_NOACTIVATE | User32.SWP_NOMOVE | User32.SWP_NOZORDER);
+        User32.INSTANCE.SetWindowPos(windowHandle, null, rect.getX(), rect.getY(), rect.getW(), rect.getH(),
+                User32.SWP_NOACTIVATE | User32.SWP_NOMOVE | User32.SWP_NOZORDER);
+    }
+
+    public void removeIcon() {
         var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_EXSTYLE);
         var mod = style & ~(WS_EX_APPWINDOW);
         User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_EXSTYLE, mod);
+    }
 
-        setWindowsTransitionsEnabled(false);
+    public void restoreIcon() {
+        var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_EXSTYLE);
+        var mod = style | WS_EX_APPWINDOW;
+        User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_EXSTYLE, mod);
+    }
 
+    public void takeOwnership(WinDef.HWND owner) {
         User32Ex.INSTANCE.SetWindowLongPtr(getWindowHandle(), User32.GWL_HWNDPARENT, owner);
     }
 
     public void releaseOwnership() {
-        var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_EXSTYLE);
-        var mod = style | WS_EX_APPWINDOW;
-        User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_EXSTYLE, mod);
-
-        setWindowsTransitionsEnabled(true);
-
         User32Ex.INSTANCE.SetWindowLongPtr(getWindowHandle(), User32.GWL_HWNDPARENT, (WinDef.HWND) null);
     }
 

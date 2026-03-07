@@ -1,9 +1,9 @@
-package io.xpipe.ext.base.identity.ssh;
+package io.xpipe.app.cred;
 
-import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
 
 import javafx.beans.property.Property;
@@ -21,7 +21,7 @@ import java.util.List;
 @Value
 @Jacksonized
 @Builder
-public class OtherExternalAgentStrategy implements SshIdentityStrategy {
+public class OtherExternalAgentStrategy implements SshIdentityAgentStrategy {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(
@@ -31,16 +31,13 @@ public class OtherExternalAgentStrategy implements SshIdentityStrategy {
         var publicKey =
                 new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
         return new OptionsBuilder()
+                .nameAndDescription("publicKey")
+                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false), publicKey)
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()
                 .hide(!config.isAllowAgentForward())
                 .nameAndDescription("publicKey")
-                .addComp(
-                        new TextFieldComp(publicKey)
-                                .apply(struc -> struc.setPromptText(
-                                        "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")),
-                        publicKey)
                 .bind(
                         () -> {
                             return new OtherExternalAgentStrategy(forward.get(), publicKey.get());
@@ -54,8 +51,13 @@ public class OtherExternalAgentStrategy implements SshIdentityStrategy {
     @Override
     public void prepareParent(ShellControl parent) throws Exception {
         if (parent.isLocal()) {
-            SshIdentityStateManager.prepareLocalExternalAgent();
+            SshIdentityStateManager.prepareLocalExternalAgent(null);
         }
+    }
+
+    @Override
+    public FilePath determinetAgentSocketLocation(ShellControl parent) throws Exception {
+        return null;
     }
 
     @Override
@@ -69,5 +71,9 @@ public class OtherExternalAgentStrategy implements SshIdentityStrategy {
                 new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
                 new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
                 new KeyValue("PKCS11Provider", "none"));
+    }
+
+    public PublicKeyStrategy getPublicKeyStrategy() {
+        return PublicKeyStrategy.Fixed.of(publicKey);
     }
 }

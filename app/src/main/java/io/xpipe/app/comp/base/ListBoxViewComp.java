@@ -62,13 +62,13 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
         vbox.setFocusTraversable(false);
         var scroll = new ScrollPane(vbox);
 
-        refresh(scroll, vbox, shown, all, cache, false);
+        refresh(vbox, shown, all, cache);
 
         var hadScene = new AtomicBoolean(false);
         scroll.sceneProperty().subscribe(scene -> {
             if (scene != null) {
                 hadScene.set(true);
-                refresh(scroll, vbox, shown, all, cache, true);
+                refresh(vbox, shown, all, cache);
             }
         });
 
@@ -78,7 +78,7 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
                     return;
                 }
 
-                refresh(scroll, vbox, c.getList(), all, cache, true);
+                refresh(vbox, c.getList(), all, cache);
             });
         });
 
@@ -118,11 +118,20 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
 
         var dirty = new SimpleBooleanProperty();
         var animationTimer = new AnimationTimer() {
+
+            private long delayThresholdCrossed;
+
             @Override
             public void handle(long now) {
                 if (!dirty.get()) {
                     return;
                 }
+
+                var ms = now / 1_000_000;
+                if (ms < delayThresholdCrossed + (super.hashCode() % 100)) {
+                    return;
+                }
+                delayThresholdCrossed = ms;
 
                 updateVisibilities(scroll, vbox);
                 dirty.set(false);
@@ -144,6 +153,9 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
             dirty.set(true);
         });
         vbox.heightProperty().addListener((observable, oldValue, newValue) -> {
+            dirty.set(true);
+        });
+        vbox.getChildren().addListener((ListChangeListener<? super Node>) (change) -> {
             dirty.set(true);
         });
 
@@ -297,12 +309,10 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
     }
 
     private void refresh(
-            ScrollPane scroll,
             VBox listView,
             List<? extends T> shown,
             List<? extends T> all,
-            Map<T, Region> cache,
-            boolean refreshVisibilities) {
+            Map<T, Region> cache) {
         Runnable update = () -> {
             if (!Platform.isFxApplicationThread()) {
                 throw new IllegalStateException("Not in FxApplication thread");
@@ -358,9 +368,6 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
 
             var d = DerivedObservableList.wrap(listView.getChildren(), true);
             d.setContent(newShown);
-            if (refreshVisibilities) {
-                updateVisibilities(scroll, listView);
-            }
         };
         update.run();
     }

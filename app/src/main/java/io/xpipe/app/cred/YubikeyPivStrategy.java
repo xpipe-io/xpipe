@@ -1,4 +1,4 @@
-package io.xpipe.ext.base.identity.ssh;
+package io.xpipe.app.cred;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
@@ -81,7 +81,7 @@ public class YubikeyPivStrategy implements SshIdentityStrategy {
     }
 
     @Override
-    public String getPublicKey() {
+    public PublicKeyStrategy getPublicKeyStrategy() {
         return null;
     }
 }

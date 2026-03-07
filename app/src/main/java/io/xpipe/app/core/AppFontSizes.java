@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
+import java.lang.ref.WeakReference;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
@@ -75,16 +76,21 @@ public class AppFontSizes {
             return;
         }
 
+        var ref = new WeakReference<>(node);
         AppPrefs.get().theme().subscribe((newValue) -> {
-            var effective = newValue != null ? newValue.getFontSizes().get() : getDefault();
-            setFont(node, function.apply(effective));
+            var refNode = ref.get();
+            if (refNode != null) {
+                var effective = newValue != null ? newValue.getFontSizes().get() : getDefault();
+                setFont(refNode, function.apply(effective));
+            }
         });
 
         AppPrefs.get().useSystemFont().addListener((ignored, ignored2, newValue) -> {
-            var effective = AppPrefs.get().theme().getValue() != null
-                    ? AppPrefs.get().theme().getValue().getFontSizes().get()
-                    : getDefault();
-            setFont(node, function.apply(effective));
+            var refNode = ref.get();
+            if (refNode != null) {
+                var effective = AppPrefs.get().theme().getValue() != null ? AppPrefs.get().theme().getValue().getFontSizes().get() : getDefault();
+                setFont(refNode, function.apply(effective));
+            }
         });
     }
 

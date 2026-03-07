@@ -20,20 +20,8 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 public class PasswordManagerCategory extends AppPrefsCategory {
 
-    @Override
-    protected String getId() {
-        return "passwordManager";
-    }
-
-    @Override
-    protected LabelGraphic getIcon() {
-        return new LabelGraphic.IconGraphic("mdomz-vpn_key");
-    }
-
-    @Override
-    protected BaseRegionBuilder<?, ?> create() {
+    public static OptionsBuilder passwordManagerChoice() {
         var prefs = AppPrefs.get();
-        var testPasswordManagerValue = new SimpleStringProperty();
 
         var choiceBuilder = OptionsChoiceBuilder.builder()
                 .property(prefs.passwordManager)
@@ -63,18 +51,26 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                 .build();
         var choice = choiceBuilder.build().buildComp().maxWidth(600);
 
-        var testInput = new PasswordManagerTestComp(testPasswordManagerValue, true);
-        testInput.maxWidth(getCompWidth());
-        testInput.hgrow();
+        return new OptionsBuilder()
+                        .pref(prefs.passwordManager)
+                        .addComp(choice);
+    }
 
+    @Override
+    protected String getId() {
+        return "passwordManager";
+    }
+
+    @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdomz-vpn_key");
+    }
+
+    @Override
+    protected BaseRegionBuilder<?, ?> create() {
         return new OptionsBuilder()
                 .addTitle("passwordManager")
-                .sub(new OptionsBuilder()
-                        .pref(prefs.passwordManager)
-                        .addComp(choice)
-                        .nameAndDescription("passwordManagerCommandTest")
-                        .addComp(testInput)
-                        .hide(BindingsHelper.map(prefs.passwordManager, p -> p == null)))
+                .sub(passwordManagerChoice())
                 .buildComp();
     }
 }

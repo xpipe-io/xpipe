@@ -70,6 +70,7 @@ public class ToggleSwitchComp extends RegionBuilder<ToggleSwitch> {
                     s.setGraphic(value.createGraphicNode());
                 });
             });
+            s.setAlignment(Pos.CENTER);
             s.pseudoClassStateChanged(PseudoClass.getPseudoClass("has-graphic"), true);
         }
 

@@ -1,18 +1,19 @@
-package io.xpipe.ext.base.identity.ssh;
+package io.xpipe.app.cred;
 
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.Validator;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -31,7 +32,7 @@ import java.util.List;
 @Value
 @Jacksonized
 @Builder
-public class CustomAgentStrategy implements SshIdentityStrategy {
+public class CustomAgentStrategy implements SshIdentityAgentStrategy {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(
@@ -41,10 +42,13 @@ public class CustomAgentStrategy implements SshIdentityStrategy {
         var publicKey =
                 new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
 
-        var socket = AppPrefs.get().sshAgentSocket();
-        var socketBinding = BindingsHelper.map(socket, s -> {
-            return s != null ? s.toString() : AppI18n.get("agentSocketNotConfigured");
-        });
+        var socketBinding = Bindings.createObjectBinding(() -> {
+            var agent = AppPrefs.get().sshAgentSocket().getValue();
+            if (agent == null) {
+                agent = AppPrefs.get().defaultSshAgentSocket().getValue();
+            }
+            return agent != null ? agent.toString() : AppI18n.get("agentSocketNotConfigured");
+        }, AppPrefs.get().defaultSshAgentSocket(), AppPrefs.get().sshAgentSocket());
         var socketProp = new SimpleStringProperty();
         socketProp.bind(socketBinding);
         var socketDisplay = new HorizontalComp(List.of(
@@ -62,21 +66,22 @@ public class CustomAgentStrategy implements SshIdentityStrategy {
                 .addComp(socketDisplay)
                 .check(val -> Validator.create(
                         val,
-                        AppI18n.observable("agentSocketNotConfigured"),
-                        AppPrefs.get().sshAgentSocket(),
+                        AppI18n.observable("agentSocketNotConfigured"), Bindings.createObjectBinding(() -> {
+                            var agent = AppPrefs.get().sshAgentSocket().getValue();
+                            if (agent == null) {
+                                agent = AppPrefs.get().defaultSshAgentSocket().getValue();
+                            }
+                            return agent;
+                        }, AppPrefs.get().sshAgentSocket(), AppPrefs.get().defaultSshAgentSocket()),
                         i -> {
                             return i != null;
                         }))
+                .nameAndDescription("publicKey")
+                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false), publicKey)
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()
                 .hide(!config.isAllowAgentForward())
-                .nameAndDescription("publicKey")
-                .addComp(
-                        new TextFieldComp(publicKey)
-                                .apply(struc -> struc.setPromptText(
-                                        "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")),
-                        publicKey)
                 .bind(
                         () -> {
                             return new CustomAgentStrategy(forward.get(), publicKey.get());
@@ -90,28 +95,36 @@ public class CustomAgentStrategy implements SshIdentityStrategy {
     @Override
     public void prepareParent(ShellControl parent) throws Exception {
         if (parent.isLocal()) {
+            var agent = AppPrefs.get().sshAgentSocket().getValue();
+            if (agent == null) {
+                agent = AppPrefs.get().defaultSshAgentSocket().getValue();
+            }
             SshIdentityStateManager.prepareLocalCustomAgent(
-                    parent, AppPrefs.get().sshAgentSocket().getValue());
+                    parent, agent);
         }
     }
 
     @Override
-    public void buildCommand(CommandBuilder builder) {}
-
-    private String getIdentityAgent(ShellControl sc) throws Exception {
+    public FilePath determinetAgentSocketLocation(ShellControl sc) throws Exception {
         if (!sc.isLocal() || sc.getOsType() == OsType.WINDOWS) {
             return null;
         }
 
         if (AppPrefs.get() != null) {
-            var socket = AppPrefs.get().sshAgentSocket().getValue();
-            if (socket != null) {
-                return socket.resolveTildeHome(sc.view().userHome()).toString();
+            var agent = AppPrefs.get().sshAgentSocket().getValue();
+            if (agent == null) {
+                agent = AppPrefs.get().defaultSshAgentSocket().getValue();
+            }
+            if (agent != null) {
+                return agent.resolveTildeHome(sc.view().userHome());
             }
         }
 
         return null;
     }
+
+    @Override
+    public void buildCommand(CommandBuilder builder) {}
 
     @Override
     public List<KeyValue> configOptions(ShellControl sc) throws Exception {
@@ -122,11 +135,15 @@ public class CustomAgentStrategy implements SshIdentityStrategy {
                 new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
                 new KeyValue("PKCS11Provider", "none")));
 
-        var agent = getIdentityAgent(sc);
+        var agent = determinetAgentSocketLocation(sc);
         if (agent != null) {
             l.add(new KeyValue("IdentityAgent", "\"" + agent + "\""));
         }
 
         return l;
+    }
+
+    public PublicKeyStrategy getPublicKeyStrategy() {
+        return PublicKeyStrategy.Fixed.of(publicKey);
     }
 }

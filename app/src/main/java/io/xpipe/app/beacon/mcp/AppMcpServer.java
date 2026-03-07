@@ -49,11 +49,11 @@ public class AppMcpServer {
         McpSyncServer syncServer = io.modelcontextprotocol.server.McpServer.sync(transportProvider)
                 .serverInfo(AppNames.ofCurrent().getName(), AppProperties.get().getVersion())
                 .capabilities(McpSchema.ServerCapabilities.builder()
-                        .resources(true, true)
+                        .resources(false, false)
                         .tools(true)
                         .prompts(false)
-                        .completions()
                         .build())
+                .instructions(AppPrefs.get().mcpAdditionalContext().getValue())
                 .build();
 
         var readOnlyTools = new ArrayList<McpServerFeatures.SyncToolSpecification>();
@@ -65,13 +65,13 @@ public class AppMcpServer {
         readOnlyTools.add(McpTools.getFileInfo());
 
         var mutationTools = new ArrayList<McpServerFeatures.SyncToolSpecification>();
+        mutationTools.add(McpTools.openTerminal());
+        mutationTools.add(McpTools.openTerminalInline());
         mutationTools.add(McpTools.createFile());
         mutationTools.add(McpTools.writeFile());
         mutationTools.add(McpTools.createDirectory());
         mutationTools.add(McpTools.runCommand());
         mutationTools.add(McpTools.runScript());
-        mutationTools.add(McpTools.openTerminal());
-        mutationTools.add(McpTools.openTerminalInline());
         mutationTools.add(McpTools.toggleState());
 
         for (McpServerFeatures.SyncToolSpecification readOnlyTool : readOnlyTools) {

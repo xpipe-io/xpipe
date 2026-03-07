@@ -27,6 +27,10 @@ import java.util.UUID;
 
 public interface DataStoreProvider {
 
+    default boolean allowCreation() {
+        return true;
+    }
+
     default boolean showIncompleteInfo() {
         return false;
     }

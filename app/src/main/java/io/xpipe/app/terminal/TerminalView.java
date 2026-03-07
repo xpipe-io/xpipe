@@ -144,9 +144,10 @@ public class TerminalView {
     }
 
     private Optional<TerminalSession> createTerminalSession(ProcessHandle terminalProcess) {
+        var type = AppPrefs.get().terminalType().getValue();
         return switch (OsType.ofLocal()) {
-            case OsType.Linux ignored -> Optional.of(new TerminalSession(terminalProcess));
-            case OsType.MacOs ignored -> Optional.of(new TerminalSession(terminalProcess));
+            case OsType.Linux ignored -> Optional.of(new TerminalSession(terminalProcess, type));
+            case OsType.MacOs ignored -> Optional.of(new TerminalSession(terminalProcess, type));
             case OsType.Windows ignored -> {
                 var controls = NativeWinWindowControl.byPid(terminalProcess.pid());
                 if (controls.isEmpty()) {
@@ -158,7 +159,7 @@ public class TerminalView {
                     }
                 }
 
-                yield Optional.of(new WindowsTerminalSession(terminalProcess, controls.getFirst()));
+                yield Optional.of(new WindowsTerminalSession(terminalProcess, type, controls.getFirst()));
             }
         };
     }
@@ -239,9 +240,11 @@ public class TerminalView {
     public static class TerminalSession {
 
         protected final ProcessHandle terminalProcess;
+        protected final ExternalTerminalType terminalType;
 
-        protected TerminalSession(ProcessHandle terminalProcess) {
+        protected TerminalSession(ProcessHandle terminalProcess, ExternalTerminalType terminalType) {
             this.terminalProcess = terminalProcess;
+            this.terminalType = terminalType;
         }
 
         public boolean isRunning() {

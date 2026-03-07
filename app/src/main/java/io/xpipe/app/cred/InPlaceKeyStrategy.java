@@ -1,4 +1,4 @@
-package io.xpipe.ext.base.identity.ssh;
+package io.xpipe.app.cred;
 
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.InputGroupComp;
@@ -183,5 +183,9 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                 .join("xpipe-"
                         + Math.abs(Objects.hash(this, AppSystemInfo.ofCurrent().getUser())) + ".key");
         return temp;
+    }
+
+    public PublicKeyStrategy getPublicKeyStrategy() {
+        return PublicKeyStrategy.Fixed.of(publicKey);
     }
 }

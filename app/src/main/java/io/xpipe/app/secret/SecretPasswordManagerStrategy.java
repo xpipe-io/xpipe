@@ -80,12 +80,12 @@ public class SecretPasswordManagerStrategy implements SecretRetrievalStrategy {
                     return new SecretQueryResult(null, SecretQueryState.RETRIEVAL_FAILURE);
                 }
 
-                var r = pm.retrieveCredentials(key);
-                if (r == null || r.getPassword() == null) {
+                var r = pm.query(key);
+                if (r == null || r.getCredentials() == null || r.getCredentials().getPassword() == null) {
                     return new SecretQueryResult(null, SecretQueryState.RETRIEVAL_FAILURE);
                 }
 
-                r.getPassword().withSecretValue(chars -> {
+                r.getCredentials().getPassword().withSecretValue(chars -> {
                     var seq = CharBuffer.wrap(chars);
                     var newline = seq.chars().anyMatch(value -> value == 10);
                     if (seq.length() == 0 || newline) {
@@ -98,7 +98,7 @@ public class SecretPasswordManagerStrategy implements SecretRetrievalStrategy {
                                         + " you will have to change the command and/or password key."));
                     }
                 });
-                return new SecretQueryResult(r.getPassword(), SecretQueryState.NORMAL);
+                return new SecretQueryResult(r.getCredentials().getPassword(), SecretQueryState.NORMAL);
             }
 
             @Override

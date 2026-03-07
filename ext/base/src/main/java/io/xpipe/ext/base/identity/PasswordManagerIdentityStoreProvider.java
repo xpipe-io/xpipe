@@ -1,26 +1,45 @@
 package io.xpipe.ext.base.identity;
 
+import io.xpipe.app.cred.PasswordManagerAgentStrategy;
+import io.xpipe.app.cred.SshIdentityStrategyChoiceConfig;
 import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
 
 import java.util.List;
+import java.util.UUID;
 
 public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider {
 
+
+
     @Override
-    public DataStoreCreationCategory getCreationCategory() {
-        return AppPrefs.get().passwordManager().getValue() != null ? DataStoreCreationCategory.IDENTITY : null;
+    public UUID getTargetCategory(DataStore store, UUID target) {
+        PasswordManagerIdentityStore st = (PasswordManagerIdentityStore) store;
+        if (st == null || !st.isPerUser()) {
+            return target;
+        }
+
+        var cat = DataStorage.get().getStoreCategoryIfPresent(target).orElseThrow();
+        var inSynced = DataStorage.get().getCategoryParentHierarchy(cat).stream()
+                .anyMatch(dataStoreCategory ->
+                        dataStoreCategory.getUuid().equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID));
+        return inSynced ? target : DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID;
+    }
+
+    @Override
+    public boolean allowCreation() {
+        return AppPrefs.get().passwordManager().getValue() != null;
     }
 
     @Override
@@ -28,13 +47,32 @@ public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider 
         PasswordManagerIdentityStore st = (PasswordManagerIdentityStore) store.getValue();
 
         var key = new SimpleStringProperty(st.getKey());
+        var sshKey = new SimpleObjectProperty<>(st.getSshKey());
         var perUser = new SimpleBooleanProperty(st.isPerUser());
 
-        var comp = new PasswordManagerTestComp(key, false);
+        var sshIdentityChoiceConfig = SshIdentityStrategyChoiceConfig.builder()
+                .allowAgentForward(true)
+                .allowKeyFileSync(true)
+                .perUserKeyFileCheck(() -> false)
+                .fileSystem(new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()))
+                .build();
+        var sshKeyChoice = OptionsChoiceBuilder.builder().allowNull(true)
+                .customConfiguration(sshIdentityChoiceConfig)
+                .available(List.of(PasswordManagerAgentStrategy.class)).property(sshKey).build();
+        var hideSshKeyChoice = Bindings.createBooleanBinding(() -> {
+            var pwman = AppPrefs.get().passwordManager().getValue();
+            var strat = pwman.getKeyConfiguration();
+            return strat.useInline();
+        }, AppPrefs.get().passwordManager());
+
+        var testComp = new PasswordManagerTestComp(key, false);
         return new OptionsBuilder()
                 .nameAndDescription("passwordManagerKey")
-                .addComp(comp.hgrow(), key)
+                .addComp(testComp.hgrow(), key)
                 .nonNull()
+                .nameAndDescription("passwordManagerIdentityAgentKey")
+                .sub(sshKeyChoice.build(), sshKey)
+                .hide(hideSshKeyChoice)
                 .nameAndDescription(
                         DataStorageUserHandler.getInstance().getActiveUser() != null
                                 ? "identityPerUser"
@@ -45,6 +83,7 @@ public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider 
                         () -> {
                             return PasswordManagerIdentityStore.builder()
                                     .key(key.get())
+                                    .sshKey(sshKey.get())
                                     .build();
                         },
                         store)

@@ -9,8 +9,8 @@ import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
-import io.xpipe.ext.base.identity.ssh.NoIdentityStrategy;
-import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
+import io.xpipe.app.cred.NoIdentityStrategy;
+import io.xpipe.app.cred.SshIdentityStrategy;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

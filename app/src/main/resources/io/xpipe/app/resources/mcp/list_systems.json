@@ -27,6 +27,14 @@
             "path": {
               "type": "string",
               "description": "The full path of the system"
+            },
+            "information": {
+              "type": "string",
+              "description": "Summary of the known system information"
+            },
+            "notes": {
+              "type": "string",
+              "description": "User-supplied notes for the individual system"
             }
           },
           "required": [

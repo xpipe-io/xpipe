@@ -1,4 +1,4 @@
-package io.xpipe.ext.base.identity;
+package io.xpipe.app.cred;
 
 import io.xpipe.core.FailableSupplier;
 

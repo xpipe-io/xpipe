@@ -26,17 +26,23 @@ import java.util.function.Predicate;
 
 public class StoreCreationDialog {
 
-    public static void showEdit(DataStoreEntry e) {
-        showEdit(e, dataStoreEntry -> {});
+    public static StoreCreationModel showEdit(DataStoreEntry e) {
+        return showEdit(e, dataStoreEntry -> {});
     }
 
-    public static void showEdit(DataStoreEntry e, Consumer<DataStoreEntry> c) {
-        showEdit(e, e.getStore(), c);
+    public static StoreCreationModel showEdit(DataStoreEntry e, Consumer<DataStoreEntry> c) {
+        return showEdit(e, e.getStore(), true, c);
     }
 
-    public static void showEdit(DataStoreEntry e, DataStore base, Consumer<DataStoreEntry> c) {
+    public static StoreCreationModel showEdit(DataStoreEntry e, DataStore base, boolean addToStorage, Consumer<DataStoreEntry> c) {
         StoreCreationConsumer consumer = (newE, validated) -> {
             ThreadHelper.runAsync(() -> {
+                if (!addToStorage) {
+                    DataStorage.get().updateEntry(e, newE);
+                    c.accept(e);
+                    return;
+                }
+
                 if (!DataStorage.get().getStoreEntries().contains(e)
                         || DataStorage.get().getEffectiveReadOnlyState(e)) {
                     DataStorage.get().addStoreEntryIfNotPresent(newE);
@@ -48,14 +54,12 @@ public class StoreCreationDialog {
                         var madeValid = !e.getValidity().isUsable()
                                 && newE.getValidity().isUsable();
                         DataStorage.get().updateEntry(e, newE);
-                        if (madeValid) {
-                            if (validated
-                                    && e.getProvider().shouldShowScan()
-                                    && AppPrefs.get()
-                                            .openConnectionSearchWindowOnConnectionCreation()
-                                            .get()) {
-                                ScanDialog.showSingleAsync(e);
-                            }
+                        if (madeValid && validated
+                                && e.getProvider().shouldShowScan()
+                                && AppPrefs.get()
+                                        .openConnectionSearchWindowOnConnectionCreation()
+                                        .get()) {
+                            ScanDialog.showSingleAsync(e);
                         }
                     }
                 }
@@ -72,11 +76,11 @@ public class StoreCreationDialog {
                 c.accept(e);
             });
         };
-        show(e.getName(), DataStoreProviders.byStore(base), base, v -> true, consumer, true, e);
+        return show(e.getName(), DataStoreProviders.byStore(base), base, v -> true, consumer, true, e);
     }
 
-    public static void showCreation(DataStoreProvider selected, DataStoreCreationCategory category) {
-        showCreation(
+    public static StoreCreationModel showCreation(DataStoreProvider selected, DataStoreCreationCategory category) {
+        return showCreation(
                 null,
                 selected != null ? selected.defaultStore(DataStorage.get().getSelectedCategory()) : null,
                 category,
@@ -84,7 +88,7 @@ public class StoreCreationDialog {
                 true);
     }
 
-    public static void showCreation(
+    public static StoreCreationModel showCreation(
             String name,
             DataStore base,
             DataStoreCreationCategory category,
@@ -118,18 +122,19 @@ public class StoreCreationDialog {
                 ErrorEventFactory.fromThrowable(ex).handle();
             }
         };
-        show(
+        return show(
                 name,
                 prov,
                 base,
-                dataStoreProvider -> (category != null && category.equals(dataStoreProvider.getCreationCategory()))
+                dataStoreProvider -> (category != null && dataStoreProvider.allowCreation() &&
+                        category.equals(dataStoreProvider.getCreationCategory()))
                         || dataStoreProvider.equals(prov),
                 consumer,
                 false,
                 null);
     }
 
-    private static void show(
+    private static StoreCreationModel show(
             String initialName,
             DataStoreProvider provider,
             DataStore s,
@@ -140,7 +145,7 @@ public class StoreCreationDialog {
         var ex = StoreCreationQueueEntry.findExisting(existingEntry);
         if (ex.isPresent()) {
             ex.get().execute();
-            return;
+            return null;
         }
 
         var prop = new SimpleObjectProperty<>(provider);
@@ -148,12 +153,13 @@ public class StoreCreationDialog {
         var model = new StoreCreationModel(prop, store, filter, initialName, existingEntry, staticDisplay, con);
         var modal = createModalOverlay(model);
         modal.show();
+        return model;
     }
 
     private static ModalOverlay createModalOverlay(StoreCreationModel model) {
         var comp = new StoreCreationComp(model);
         comp.prefWidth(650);
-        var nameKey = model.storeTypeNameKey() + "Add";
+        var nameKey = model.isQuickConnect() ? "quickConnect" : model.storeTypeNameKey() + "Add";
         var modal = ModalOverlay.of(nameKey, comp);
         var queueEntry = StoreCreationQueueEntry.of(model, modal);
         comp.apply(struc -> {
@@ -205,21 +211,18 @@ public class StoreCreationDialog {
                 .augment(button -> {
                     button.visibleProperty().bind(Bindings.not(model.canConnect()));
                 }));
-        modal.addButton(new ModalButton(
-                        "skip",
-                        () -> {
-                            model.commit(false);
-                            modal.close();
-                        },
-                        false,
-                        false))
-                .augment(button -> {
-                    button.visibleProperty().bind(model.getSkippable());
-                    button.disableProperty().bind(model.getBusy());
-                });
+        if (!model.isQuickConnect()) {
+            modal.addButton(new ModalButton("skip", () -> {
+                model.commit(false);
+                modal.close();
+            }, false, false)).augment(button -> {
+                button.visibleProperty().bind(model.getSkippable());
+                button.disableProperty().bind(model.getBusy());
+            });
+        }
 
         modal.addButton(new ModalButton(
-                        "finish",
+                        model.isQuickConnect() ? "connect" : "finish",
                         () -> {
                             model.finish();
                         },
@@ -239,7 +242,7 @@ public class StoreCreationDialog {
                     button.textProperty()
                             .bind(Bindings.createStringBinding(
                                     () -> {
-                                        return !model.getBusy().get() ? AppI18n.get("finish") : null;
+                                        return !model.getBusy().get() ? AppI18n.get(model.isQuickConnect() ? "connect" : "finish") : null;
                                     },
                                     PlatformThread.sync(model.getBusy()),
                                     AppI18n.activeLanguage()));

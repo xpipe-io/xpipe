@@ -175,6 +175,7 @@ public interface ScriptTextSource {
                 throw ErrorEventFactory.expected(new IOException(r.body()));
             }
 
+            Files.createDirectories(path.getParent());
             Files.writeString(path, r.body());
         }
 

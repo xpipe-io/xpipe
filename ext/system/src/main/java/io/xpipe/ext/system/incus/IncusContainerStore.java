@@ -5,6 +5,7 @@ import io.xpipe.app.process.BaseElevationHandler;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
+import io.xpipe.ext.base.host.HostAddressGatewayStore;
 import io.xpipe.ext.base.identity.IdentityValue;
 import io.xpipe.ext.base.store.PauseableStore;
 import io.xpipe.ext.base.store.StartableStore;
@@ -17,6 +18,8 @@ import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.OptionalInt;
 
@@ -29,19 +32,21 @@ import java.util.OptionalInt;
 public class IncusContainerStore
         implements ShellStore,
                 FixedChildStore,
-                StatefulDataStore<ContainerStoreState>,
+                StatefulDataStore<NetworkContainerStoreState>,
                 StartableStore,
                 StoppableStore,
                 PauseableStore,
-                NameableStore {
+                NameableStore,
+                   HostAddressGatewayStore {
 
     DataStoreEntryRef<IncusInstallStore> install;
+    String projectName;
     String containerName;
     IdentityValue identity;
 
     @Override
-    public Class<ContainerStoreState> getStateClass() {
-        return ContainerStoreState.class;
+    public Class<NetworkContainerStoreState> getStateClass() {
+        return NetworkContainerStoreState.class;
     }
 
     @Override
@@ -57,13 +62,17 @@ public class IncusContainerStore
 
     @Override
     public OptionalInt getFixedId() {
-        return OptionalInt.of(Objects.hash(containerName));
+        if (projectName != null) {
+            return OptionalInt.of(Objects.hash(projectName, containerName));
+        } else {
+            return OptionalInt.of(Objects.hash(containerName));
+        }
     }
 
     @Override
     public FixedChildStore merge(FixedChildStore other) {
         var o = (IncusContainerStore) other;
-        return toBuilder().identity(identity != null ? identity : o.identity).build();
+        return toBuilder().identity(identity != null ? identity : o.identity).projectName(o.projectName).build();
     }
 
     @Override
@@ -76,7 +85,7 @@ public class IncusContainerStore
                         getInstall().getStore().getHost().getStore().getOrStartSession());
 
                 var user = identity != null ? identity.unwrap().getUsername().retrieveUsername() : null;
-                var sc = new IncusCommandView(parent).exec(containerName, user, () -> {
+                var sc = new IncusCommandView(parent).exec(projectName, containerName, user, () -> {
                     var state = getState();
                     var alpine = state.getOsName() != null
                             && state.getOsName().toLowerCase().contains("alpine");
@@ -114,10 +123,15 @@ public class IncusContainerStore
     private void refreshContainerState(ShellControl sc) throws Exception {
         var state = getState();
         var view = new IncusCommandView(sc);
-        var displayState = view.queryContainerState(containerName);
-        var running = "RUNNING".equals(displayState);
+        var displayState = view.queryContainerState(projectName, containerName);
+        if (displayState.isEmpty()) {
+            return;
+        }
+
+        var running = "RUNNING".equals(displayState.get().getState());
         var newState =
-                state.toBuilder().containerState(displayState).running(running).build();
+                state.toBuilder().containerState(displayState.get().getState()).running(running)
+                        .ipv4(displayState.get().getIpv4Address()).ipv6(displayState.get().getIpv6Address()).build();
         setState(newState);
     }
 
@@ -125,7 +139,7 @@ public class IncusContainerStore
     public void start() throws Exception {
         var sc = getInstall().getStore().getHost().getStore().getOrStartSession();
         var view = new IncusCommandView(sc);
-        view.start(containerName);
+        view.start(projectName, containerName);
         refreshContainerState(sc);
     }
 
@@ -133,7 +147,7 @@ public class IncusContainerStore
     public void stop() throws Exception {
         var sc = getInstall().getStore().getHost().getStore().getOrStartSession();
         var view = new IncusCommandView(sc);
-        view.stop(containerName);
+        view.stop(projectName, containerName);
         refreshContainerState(sc);
     }
 
@@ -141,12 +155,36 @@ public class IncusContainerStore
     public void pause() throws Exception {
         var sc = getInstall().getStore().getHost().getStore().getOrStartSession();
         var view = new IncusCommandView(sc);
-        view.pause(containerName);
+        view.pause(projectName, containerName);
         refreshContainerState(sc);
     }
 
     @Override
     public String getName() {
         return containerName;
+    }
+
+    @Override
+    public DataStoreEntryRef<NetworkTunnelStore> getTunnelGateway() {
+        var host = getInstall().getStore().getHost();
+        return host.getStore() instanceof NetworkTunnelStore ? host.asNeeded() : null;
+    }
+
+    @Override
+    public void refreshHostAddressOrThrow() throws Exception {
+        refreshContainerState(getInstall().getStore().getHost().getStore().getOrStartSession());
+    }
+
+    @Override
+    public HostAddress getHostAddress() {
+        var l = new ArrayList<String >();
+        var state = getState();
+        if (state.getIpv4() != null) {
+            l.add(state.getIpv4());
+        }
+        if (state.getIpv6() != null) {
+            l.add(state.getIpv6());
+        }
+        return !l.isEmpty() ? HostAddress.of(l) : HostAddress.empty();
     }
 }

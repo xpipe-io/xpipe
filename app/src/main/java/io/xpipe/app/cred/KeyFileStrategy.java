@@ -1,4 +1,4 @@
-package io.xpipe.ext.base.identity.ssh;
+package io.xpipe.app.cred;
 
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
@@ -267,5 +267,9 @@ public class KeyFileStrategy implements SshIdentityStrategy {
             s = s.resolveTildeHome(FilePath.of(AppSystemInfo.ofCurrent().getUserHome()));
         }
         return s;
+    }
+
+    public PublicKeyStrategy getPublicKeyStrategy() {
+        return PublicKeyStrategy.Fixed.of(publicKey);
     }
 }

@@ -1,4 +1,4 @@
-package io.xpipe.ext.base.identity.ssh;
+package io.xpipe.app.cred;
 
 import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
@@ -136,7 +136,7 @@ public class SshIdentityStateManager {
         }
     }
 
-    public static synchronized void prepareLocalExternalAgent() throws Exception {
+    public static synchronized void prepareLocalExternalAgent(FilePath socket) throws Exception {
         if (runningAgent == RunningAgent.EXTERNAL_AGENT) {
             return;
         }
@@ -149,12 +149,12 @@ public class SshIdentityStateManager {
             if (!pipeExists) {
                 // No agent is running
                 throw ErrorEventFactory.expected(new IllegalStateException(
-                        "An external password manager agent is set for this connection, but no external SSH agent is running. Make sure that the "
-                                + "agent is started in your password manager"));
+                        "An external agent is configured, but no external SSH agent is running. Make sure that the external "
+                                + "agent is started"));
             }
         }
 
-        checkLocalAgentIdentities(null);
+        checkLocalAgentIdentities(socket != null ? socket.toString() : null);
 
         runningAgent = RunningAgent.EXTERNAL_AGENT;
     }

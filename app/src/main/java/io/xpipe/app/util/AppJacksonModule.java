@@ -1,12 +1,11 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.cred.SshIdentityStrategy;
 import io.xpipe.app.ext.HostAddress;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellScript;
-import io.xpipe.app.pwman.KeePassXcAssociationKey;
-import io.xpipe.app.pwman.KeePassXcPasswordManager;
-import io.xpipe.app.pwman.PasswordManager;
+import io.xpipe.app.pwman.*;
 import io.xpipe.app.rdp.ExternalRdpClient;
 import io.xpipe.app.secret.*;
 import io.xpipe.app.spice.ExternalSpiceClient;
@@ -79,6 +78,8 @@ public class AppJacksonModule extends SimpleModule {
             context.registerSubtypes(new NamedType(t.getClass()));
         }
 
+        context.registerSubtypes(SshIdentityStrategy.getClasses());
+        context.registerSubtypes(PasswordManagerKeyStrategy.getClasses());
         context.registerSubtypes(PasswordManager.getClasses());
         context.registerSubtypes(TerminalMultiplexer.getClasses());
         context.registerSubtypes(TerminalPrompt.getClasses());
@@ -87,6 +88,8 @@ public class AppJacksonModule extends SimpleModule {
         context.registerSubtypes(ExternalSpiceClient.getClasses());
         context.registerSubtypes(SecretRetrievalStrategy.getClasses());
         context.registerSubtypes(DataStorageGroupStrategy.getClasses());
+        context.registerSubtypes(KeeperPasswordManager.KeeperAuth.getClasses());
+        context.registerSubtypes(HashicorpVaultPasswordManager.VaultAuth.getClasses());
 
         super.setupModule(context);
     }
@@ -105,6 +108,7 @@ public class AppJacksonModule extends SimpleModule {
             var object = JsonNodeFactory.instance.objectNode();
             object.put("type", "keePassXc");
             object.set("associationKeys", tree);
+            object.set("keyStrategy", JacksonMapper.getDefault().valueToTree(value.getKeyStrategy()));
             jgen.writeTree(object);
         }
 
@@ -129,10 +133,14 @@ public class AppJacksonModule extends SimpleModule {
                 return null;
             }
 
+            var keyStrategyNode = tree.get("keyStrategy");
+            var keyStrategy = keyStrategyNode != null ? JacksonMapper.getDefault().treeToValue(keyStrategyNode, PasswordManagerKeyStrategy.class) : null;
+
             if (tree.has("associationKey")) {
                 var parsed = JacksonMapper.getDefault()
                         .treeToValue(tree.required("associationKey"), KeePassXcAssociationKey.class);
                 return KeePassXcPasswordManager.builder()
+                        .keyStrategy(keyStrategy)
                         .associationKeys(parsed != null ? List.of(parsed) : List.of())
                         .build();
             } else {
@@ -142,6 +150,7 @@ public class AppJacksonModule extends SimpleModule {
                 var parsed = (List<KeePassXcAssociationKey>)
                         JacksonMapper.getDefault().treeToValue(tree.required("associationKeys"), javaType);
                 return KeePassXcPasswordManager.builder()
+                        .keyStrategy(keyStrategy)
                         .associationKeys(parsed)
                         .build();
             }

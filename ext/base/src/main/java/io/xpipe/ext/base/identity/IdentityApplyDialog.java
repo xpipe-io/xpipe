@@ -60,7 +60,7 @@ public class IdentityApplyDialog {
             var hasPassword =
                     identity.getPassword() != null && identity.getPassword().expectsQuery();
             var hasIdentity = identity.getSshIdentity() != null
-                    && identity.getSshIdentity().getPublicKey() != null;
+                    && identity.getSshIdentity().getPublicKeyStrategy() != null;
 
             configFile = getSystemConfigPath(sc);
             authorizedKeysFile = getAuthorizedKeysFile(sc);
@@ -81,9 +81,9 @@ public class IdentityApplyDialog {
             if (hasIdentity) {
                 var authorizedKeysContent = getAuthorizedKeysContent(sc);
 
-                var publicKey = identity.getSshIdentity().getPublicKey();
+                var publicKey = identity.getSshIdentity().getPublicKeyStrategy().retrievePublicKey();
                 var split = publicKey.split("\\s+");
-                var basePublicKey = split[0] + " " + split[1];
+                var basePublicKey = split.length > 1 ? split[0] + " " + split[1] : split[0];
 
                 inAuthorizedKeys = authorizedKeysContent.toLowerCase().contains(basePublicKey.toLowerCase());
             } else {
@@ -237,7 +237,7 @@ public class IdentityApplyDialog {
                             addPublicKey(
                                     systemState.get(),
                                     sc,
-                                    identity.getSshIdentity().getPublicKey());
+                                    identity.getSshIdentity().getPublicKeyStrategy().retrievePublicKey());
                             systemState.setValue(SystemState.of(sc, identity));
                         });
                     });

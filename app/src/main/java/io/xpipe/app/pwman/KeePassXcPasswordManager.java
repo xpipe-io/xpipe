@@ -6,7 +6,9 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.*;
 import io.xpipe.core.OsType;
@@ -14,6 +16,7 @@ import io.xpipe.core.OsType;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -38,9 +41,29 @@ public class KeePassXcPasswordManager implements PasswordManager {
     private static KeePassXcProxyClient client;
 
     private final List<KeePassXcAssociationKey> associationKeys;
+    private final PasswordManagerKeyStrategy keyStrategy;
+
+    @Override
+    public PasswordManagerKeyConfiguration getKeyConfiguration() {
+        return PasswordManagerKeyConfiguration.of(false, false, false, keyStrategy, null);
+    }
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<KeePassXcPasswordManager> p) {
+        List<Class<?>> strategyList = OsType.ofLocal() == OsType.WINDOWS ?
+                List.of(PasswordManagerKeyStrategy.KeePassXcOpenSshAgent.class, PasswordManagerKeyStrategy.KeePassXcPageant.class) :
+                List.of(PasswordManagerKeyStrategy.KeePassXcOpenSshAgent.class);
+        var keyStrategy = new SimpleObjectProperty<>(p.getValue().getKeyStrategy());
+        var keyStrategyChoice = OptionsChoiceBuilder.builder()
+                .allowNull(true)
+                .available(strategyList)
+                .property(keyStrategy)
+                .customConfiguration(PasswordManagerKeyStrategy.OptionsConfig.builder()
+                        .defaultSocketLocation(null)
+                        .allowSocketChoice(false)
+                        .build())
+                .build();
+
         var prop = FXCollections.<KeePassXcAssociationKey>observableArrayList();
         p.subscribe(keePassXcManager -> {
             DerivedObservableList.wrap(prop, true)
@@ -78,9 +101,13 @@ public class KeePassXcPasswordManager implements PasswordManager {
                 }))
                 .hide(Bindings.isEmpty(prop))
                 .addProperty(prop)
+                .nameAndDescription("passwordManagerTest")
+                .addComp(new PasswordManagerTestComp(true))
+                .nameAndDescription("passwordManagerKeyStrategy")
+                .sub(keyStrategyChoice.build(), keyStrategy)
                 .bind(
                         () -> {
-                            return new KeePassXcPasswordManager(prop);
+                            return new KeePassXcPasswordManager(prop, keyStrategy.getValue());
                         },
                         p);
     }
@@ -228,7 +255,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
     }
 
     @Override
-    public CredentialResult retrieveCredentials(String key) {
+    public Result query(String key) {
         try {
             var hasScheme = Pattern.compile("^\\w+://").matcher(key).find();
             var fixedKey = hasScheme ? key : "https://" + key;
@@ -241,7 +268,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
                             .getAssociationKeys()
                     : associationKeys;
             var credentials = client.getCredentials(effectiveKeys, fixedKey);
-            return credentials;
+            return Result.of(credentials, null);
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
             return null;

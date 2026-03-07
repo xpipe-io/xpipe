@@ -1,20 +1,38 @@
 package io.xpipe.app.pwman;
 
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.LocalShell;
-import io.xpipe.core.InPlaceSecretValue;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import javafx.beans.property.Property;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
 @JsonTypeName("windowsCredentialManager")
-@Value
+@Builder
+@Jacksonized
 public class WindowsCredentialManager implements PasswordManager {
 
     private static boolean loaded = false;
 
     @Override
-    public synchronized CredentialResult retrieveCredentials(String key) {
+    public PasswordManagerKeyConfiguration getKeyConfiguration() {
+        return PasswordManagerKeyConfiguration.none();
+    }
+
+    @SuppressWarnings("unused")
+    public static OptionsBuilder createOptions(Property<WindowsCredentialManager> p) {
+        return new OptionsBuilder()
+                .nameAndDescription("passwordManagerTest")
+                .addComp(new PasswordManagerTestComp(true));
+    }
+
+    @Override
+    public synchronized Result query(String key) {
         try {
             if (!loaded) {
                 loaded = true;
@@ -106,7 +124,7 @@ public class WindowsCredentialManager implements PasswordManager {
                     .command("[CredManager.Credential]::GetUserPassword(\"" + key.replaceAll("\"", "`\"") + "\")")
                     .sensitive()
                     .readStdoutOrThrow();
-            return new CredentialResult(username, password.isEmpty() ? null : InPlaceSecretValue.of(password));
+            return Result.of(Credentials.of(username, password), null);
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).expected().handle();
             return null;

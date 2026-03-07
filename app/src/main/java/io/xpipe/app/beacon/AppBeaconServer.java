@@ -32,9 +32,6 @@ public class AppBeaconServer {
     private final int port;
 
     @Getter
-    private final boolean propertyPort;
-
-    @Getter
     private final Set<BeaconSession> sessions = new HashSet<>();
 
     @Getter
@@ -47,22 +44,13 @@ public class AppBeaconServer {
     @Getter
     private String localAuthSecret;
 
-    private AppBeaconServer(int port, boolean propertyPort) {
+    private AppBeaconServer(int port) {
         this.port = port;
-        this.propertyPort = propertyPort;
     }
 
     public static void setupPort() {
-        int port;
-        boolean propertyPort;
-        if (System.getProperty(BeaconConfig.BEACON_PORT_PROP) != null) {
-            port = BeaconConfig.getUsedPort();
-            propertyPort = true;
-        } else {
-            port = BeaconConfig.getDefaultBeaconPort();
-            propertyPort = false;
-        }
-        INSTANCE = new AppBeaconServer(port, propertyPort);
+        int port = BeaconConfig.getUsedPort();
+        INSTANCE = new AppBeaconServer(port);
     }
 
     public static void init() {

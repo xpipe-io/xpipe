@@ -58,7 +58,7 @@ public class StoreEntryWrapper {
     private final Property<DataStoreColor> color = new SimpleObjectProperty<>();
     private final Property<StoreCategoryWrapper> category = new SimpleObjectProperty<>();
     private final Property<String> summary = new SimpleObjectProperty<>();
-    private final Property<StoreNotes> notes;
+    private final ObjectProperty<String> notes;
     private final Property<String> customIcon = new SimpleObjectProperty<>();
     private final Property<String> iconFile = new SimpleObjectProperty<>();
     private final BooleanProperty sessionActive = new SimpleBooleanProperty();
@@ -69,7 +69,6 @@ public class StoreEntryWrapper {
     private final ObservableValue<String> shownSummary;
     private final ObservableValue<String> shownDescription;
     private final Property<String> shownInformation;
-    private final BooleanProperty largeCategoryOptimizations = new SimpleBooleanProperty();
     private final BooleanProperty readOnly = new SimpleBooleanProperty();
     private final BooleanProperty renaming = new SimpleBooleanProperty();
     private final BooleanProperty pinToTop = new SimpleBooleanProperty();
@@ -117,7 +116,7 @@ public class StoreEntryWrapper {
                 shownSummary,
                 AppI18n.activeLanguage());
         this.shownInformation = new SimpleObjectProperty<>();
-        this.notes = new SimpleObjectProperty<>(new StoreNotes(entry.getNotes(), entry.getNotes()));
+        this.notes = new SimpleObjectProperty<>(entry.getNotes());
 
         setupListeners();
     }
@@ -158,12 +157,6 @@ public class StoreEntryWrapper {
         entry.addListener(() -> PlatformThread.runLaterIfNeeded(() -> {
             update();
         }));
-
-        notes.addListener((observable, oldValue, newValue) -> {
-            if (newValue.isCommited()) {
-                entry.setNotes(newValue.getCurrent());
-            }
-        });
     }
 
     public void stopSession() {
@@ -211,7 +204,7 @@ public class StoreEntryWrapper {
         }
         orderIndex.setValue(entry.getOrderIndex());
         color.setValue(entry.getColor());
-        notes.setValue(new StoreNotes(entry.getNotes(), entry.getNotes()));
+        notes.setValue(entry.getNotes());
         customIcon.setValue(entry.getIcon());
         readOnly.setValue(entry.isFreeze());
         iconFile.setValue(entry.getEffectiveIconFile());
@@ -226,8 +219,6 @@ public class StoreEntryWrapper {
                         storeCategoryWrapper.getCategory().getUuid().equals(entry.getCategoryUuid()))
                 .findFirst()
                 .orElse(StoreViewState.get().getAllConnectionsCategory()));
-        largeCategoryOptimizations.setValue(
-                category.getValue().getLargeCategoryOptimizations().getValue());
         perUser.setValue(
                 !category.getValue().getRoot().equals(StoreViewState.get().getAllIdentitiesCategory())
                         && entry.isPerUserStore());

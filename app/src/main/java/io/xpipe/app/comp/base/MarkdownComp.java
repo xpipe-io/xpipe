@@ -100,7 +100,7 @@ public class MarkdownComp extends RegionBuilder<StackPane> {
         var url = AppResources.getResourceURL(AppResources.MAIN_MODULE, theme).orElseThrow();
         wv.getEngine().setUserStyleSheetLocation(url.toString());
 
-        PlatformThread.sync(markdown).subscribe(val -> {
+        markdown.subscribe(val -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 var file = getHtmlFile(val);
                 if (file != null) {

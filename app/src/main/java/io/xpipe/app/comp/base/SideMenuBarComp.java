@@ -49,10 +49,11 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
 
                 if (e.action() != null) {
                     e.action().run();
-                    return;
                 }
 
-                value.setValue(e);
+                if (e.comp() != null) {
+                    value.setValue(e);
+                }
             });
             b.describe(d -> d.name(e.name()));
 

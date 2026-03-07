@@ -1,6 +1,5 @@
-package io.xpipe.ext.base.identity.ssh;
+package io.xpipe.app.cred;
 
-import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -8,6 +7,8 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.util.LocalExec;
+import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 
@@ -30,7 +31,7 @@ import java.util.List;
 @Value
 @Jacksonized
 @Builder
-public class PageantStrategy implements SshIdentityStrategy {
+public class PageantStrategy implements SshIdentityAgentStrategy {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<PageantStrategy> p, SshIdentityStrategyChoiceConfig config) {
@@ -39,16 +40,12 @@ public class PageantStrategy implements SshIdentityStrategy {
         var publicKey =
                 new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
         return new OptionsBuilder()
+                .nameAndDescription("publicKey")
+                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false), publicKey)
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()
                 .hide(!config.isAllowAgentForward())
-                .nameAndDescription("publicKey")
-                .addComp(
-                        new TextFieldComp(publicKey)
-                                .apply(struc -> struc.setPromptText(
-                                        "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")),
-                        publicKey)
                 .bind(
                         () -> {
                             return new PageantStrategy(forward.get(), publicKey.get());
@@ -67,7 +64,7 @@ public class PageantStrategy implements SshIdentityStrategy {
             return true;
         } else {
             try {
-                var found = LocalShell.getShell().view().findProgram("pageant").isPresent();
+                var found = LocalExec.readStdoutIfPossible("which", "pageant").isPresent();
                 return (supported = found);
             } catch (Exception ex) {
                 return (supported = false);
@@ -92,19 +89,23 @@ public class PageantStrategy implements SshIdentityStrategy {
                 throw ErrorEventFactory.expected(new IllegalStateException(
                         "Pageant is not running as the primary agent via the $SSH_AUTH_SOCK variable."));
             }
+        } else if (parent.isLocal()) {
+            // Check if it exists
+            getPageantWindowsPipe();
         }
     }
 
     @Override
-    public void buildCommand(CommandBuilder builder) {}
-
-    private String getIdentityAgent(ShellControl sc) {
+    public FilePath determinetAgentSocketLocation(ShellControl sc) throws Exception {
         if (sc.isLocal() && sc.getOsType() == OsType.WINDOWS) {
-            return getPageantWindowsPipe();
+            return FilePath.of(getPageantWindowsPipe());
         }
 
         return null;
     }
+
+    @Override
+    public void buildCommand(CommandBuilder builder) {}
 
     @Override
     public List<KeyValue> configOptions(ShellControl sc) throws Exception {
@@ -115,7 +116,7 @@ public class PageantStrategy implements SshIdentityStrategy {
                 new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
                 new KeyValue("PKCS11Provider", "none")));
 
-        var agent = getIdentityAgent(sc);
+        var agent = determinetAgentSocketLocation(sc);
         if (agent != null) {
             l.add(new KeyValue("IdentityAgent", "\"" + agent + "\""));
         }
@@ -135,5 +136,9 @@ public class PageantStrategy implements SshIdentityStrategy {
 
         var file = "\\\\.\\pipe\\" + fd.getFileName();
         return file;
+    }
+
+    public PublicKeyStrategy getPublicKeyStrategy() {
+        return PublicKeyStrategy.Fixed.of(publicKey);
     }
 }

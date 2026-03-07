@@ -1,11 +1,13 @@
-package io.xpipe.ext.base.identity.ssh;
+package io.xpipe.app.cred;
 
 import io.xpipe.app.comp.base.TextFieldComp;
-import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.util.LicenseProvider;
+import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 
@@ -18,32 +20,28 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-@JsonTypeName("sshAgent")
 @Value
 @Jacksonized
 @Builder
-public class OpenSshAgentStrategy implements SshIdentityStrategy {
+@JsonTypeName("gpgAgent")
+public class GpgAgentStrategy implements SshIdentityAgentStrategy {
 
     @SuppressWarnings("unused")
-    public static OptionsBuilder createOptions(
-            Property<OpenSshAgentStrategy> p, SshIdentityStrategyChoiceConfig config) {
-        var socket = AppPrefs.get().defaultSshAgentSocket().getValue();
+    public static OptionsBuilder createOptions(Property<GpgAgentStrategy> p, SshIdentityStrategyChoiceConfig config) {
         var forward =
                 new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
         var publicKey =
                 new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
         return new OptionsBuilder()
-                .nameAndDescription("agentSocket")
-                .addStaticString(socket != null ? socket : AppI18n.get("agentSocketNotFound"))
-                .hide(OsType.ofLocal() == OsType.WINDOWS)
+                .nameAndDescription("publicKey")
+                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false), publicKey)
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()
-                .hide(!config.isAllowAgentForward())
-                .nameAndDescription("publicKey")
                 .addComp(
                         new TextFieldComp(publicKey)
                                 .apply(struc -> struc.setPromptText(
@@ -51,9 +49,25 @@ public class OpenSshAgentStrategy implements SshIdentityStrategy {
                         publicKey)
                 .bind(
                         () -> {
-                            return new OpenSshAgentStrategy(forward.get(), publicKey.get());
+                            return new GpgAgentStrategy(forward.get(), publicKey.get());
                         },
                         p);
+    }
+
+    private static Boolean supported;
+
+    public static boolean isSupported() {
+        if (supported != null) {
+            return supported;
+        }
+
+        if (OsType.ofLocal() == OsType.WINDOWS) {
+            var file = AppSystemInfo.ofWindows().getRoamingAppData().resolve("gnupg", "gpg-agent.conf");
+            return (supported = Files.exists(file));
+        } else {
+            var file = AppSystemInfo.ofCurrent().getUserHome().resolve(".gnupg", "gpg-agent.conf");
+            return (supported = Files.exists(file));
+        }
     }
 
     boolean forwardAgent;
@@ -61,29 +75,28 @@ public class OpenSshAgentStrategy implements SshIdentityStrategy {
 
     @Override
     public void prepareParent(ShellControl parent) throws Exception {
+        parent.requireLicensedFeature(LicenseProvider.get().getFeature("gpgAgent"));
         if (parent.isLocal()) {
-            SshIdentityStateManager.prepareLocalOpenSshAgent(
-                    parent, AppPrefs.get().defaultSshAgentSocket().getValue());
+            SshIdentityStateManager.prepareLocalGpgAgent();
         }
     }
 
     @Override
-    public void buildCommand(CommandBuilder builder) {}
-
-    private String getIdentityAgent(ShellControl sc) throws Exception {
+    public FilePath determinetAgentSocketLocation(ShellControl sc) throws Exception {
         if (sc.getOsType() == OsType.WINDOWS) {
             return null;
         }
 
-        if (AppPrefs.get() != null) {
-            var socket = AppPrefs.get().defaultSshAgentSocket().getValue();
-            if (socket != null) {
-                return socket.resolveTildeHome(sc.view().userHome()).toString();
-            }
+        var r = sc.command("gpgconf --list-dirs agent-ssh-socket").readStdoutOrThrow();
+        if (r.isEmpty()) {
+            return null;
         }
 
-        return null;
+        return FilePath.of(r);
     }
+
+    @Override
+    public void buildCommand(CommandBuilder builder) {}
 
     @Override
     public List<KeyValue> configOptions(ShellControl sc) throws Exception {
@@ -94,11 +107,15 @@ public class OpenSshAgentStrategy implements SshIdentityStrategy {
                 new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
                 new KeyValue("PKCS11Provider", "none")));
 
-        var agent = getIdentityAgent(sc);
+        var agent = determinetAgentSocketLocation(sc);
         if (agent != null) {
             l.add(new KeyValue("IdentityAgent", "\"" + agent + "\""));
         }
 
         return l;
+    }
+
+    public PublicKeyStrategy getPublicKeyStrategy() {
+        return PublicKeyStrategy.Fixed.of(publicKey);
     }
 }

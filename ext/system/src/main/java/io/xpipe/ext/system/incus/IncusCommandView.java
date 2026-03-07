@@ -1,13 +1,18 @@
 package io.xpipe.ext.system.incus;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.xpipe.app.ext.ContainerStoreState;
+import io.xpipe.app.ext.NetworkContainerStoreState;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.core.JacksonMapper;
 import io.xpipe.ext.base.identity.IdentityValue;
 
 import lombok.NonNull;
+import lombok.Value;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -84,18 +89,18 @@ public class IncusCommandView extends CommandViewBase {
         return build(commandBuilder -> commandBuilder.add("version")).readStdoutOrThrow();
     }
 
-    public void start(String containerName) throws Exception {
-        build(commandBuilder -> commandBuilder.add("start").addQuoted(containerName))
+    public void start(String projectName, String containerName) throws Exception {
+        build(commandBuilder -> commandBuilder.add("start").addQuoted(containerName).add("--project").addQuoted(projectName))
                 .execute();
     }
 
-    public void stop(String containerName) throws Exception {
-        build(commandBuilder -> commandBuilder.add("stop").addQuoted(containerName))
+    public void stop(String projectName, String containerName) throws Exception {
+        build(commandBuilder -> commandBuilder.add("stop").addQuoted(containerName).add("--project").addQuoted(projectName))
                 .execute();
     }
 
-    public void pause(String containerName) throws Exception {
-        build(commandBuilder -> commandBuilder.add("pause").addQuoted(containerName))
+    public void pause(String projectName, String containerName) throws Exception {
+        build(commandBuilder -> commandBuilder.add("pause").addQuoted(containerName).add("--project").addQuoted(projectName))
                 .execute();
     }
 
@@ -109,14 +114,16 @@ public class IncusCommandView extends CommandViewBase {
 
     public List<DataStoreEntryRef<IncusContainerStore>> listContainers(DataStoreEntryRef<IncusInstallStore> store)
             throws Exception {
-        return listContainersAndStates().entrySet().stream()
+        return listContainers().stream()
                 .map(s -> {
-                    boolean running = s.getValue().toLowerCase(Locale.ROOT).equals("running");
-                    var c = new IncusContainerStore(store, s.getKey(), IdentityValue.ofBreakout(store.get()));
+                    boolean running = s.getState().toLowerCase(Locale.ROOT).equals("running");
+                    var c = new IncusContainerStore(store, s.getProject(), s.getName(), IdentityValue.ofBreakout(store.get()));
                     var entry = DataStoreEntry.createNew(c.getContainerName(), c);
-                    entry.setStorePersistentState(ContainerStoreState.builder()
-                            .containerState(s.getValue())
+                    entry.setStorePersistentState(NetworkContainerStoreState.builder()
+                            .containerState(s.getState())
                             .running(running)
+                            .ipv4(s.getIpv4Address())
+                            .ipv6(s.getIpv6Address())
                             .build());
                     return Optional.of(entry.<IncusContainerStore>ref());
                 })
@@ -124,37 +131,84 @@ public class IncusCommandView extends CommandViewBase {
                 .toList();
     }
 
-    public String queryContainerState(String containerName) throws Exception {
-        var states = listContainersAndStates();
-        return states.getOrDefault(containerName, "?");
+    public Optional<ContainerEntry> queryContainerState(String projectName, String containerName) throws Exception {
+        var l = listContainers();
+        var found = l.stream().filter(containerEntry -> (containerEntry.getProject().equals(projectName) ||
+                projectName == null && containerEntry.getProject().equals("default")) &&
+                containerEntry.getName().equals(containerName)).findFirst();
+        return found;
     }
 
-    private Map<String, String> listContainersAndStates() throws Exception {
-        try (var c = build(commandBuilder -> commandBuilder.add("list", "-f", "csv", "-c", "ns"))
+    @Value
+    public static class ContainerEntry {
+        String project;
+        String name;
+        String state;
+        String ipv4Address;
+        String ipv6Address;
+    }
+
+    private List<ContainerEntry> listContainers() throws Exception {
+        try (var c = build(commandBuilder -> commandBuilder.add("list", "--all-projects", "-f", "json"))
                 .start()) {
             var output = c.readStdoutOrThrow();
-            return output.lines()
-                    .collect(Collectors.toMap(
-                            s -> s.strip().split(",")[0],
-                            s -> s.strip().split(",")[1],
-                            (x, y) -> y,
-                            LinkedHashMap::new));
+            var json = JacksonMapper.getDefault().readTree(output);
+            var l = new ArrayList<ContainerEntry>();
+            for (JsonNode jsonNode : json) {
+                var status = jsonNode.required("status").textValue();
+                var project = jsonNode.required("project").textValue();
+                var name = jsonNode.required("name").textValue();
+                var state = jsonNode.required("state");
+                var network = state.get("network");
+                String ipv4 = null;
+                String ipv6 = null;
+                if (network != null) {
+                    var eth0 = network.get("eth0");
+                    if (eth0 == null && network.size() > 0) {
+                        for (var it = network.fieldNames();it.hasNext();) {
+                            var field = it.next();
+                            if (!field.equals("lo")) {
+                                eth0 = network.required(field);
+                                break;
+                            }
+                        }
+                    }
+
+                    if (eth0 != null) {
+                        var addresses = eth0.required("addresses");
+                        for (JsonNode address : addresses) {
+                            if (!address.required("scope").textValue().equals("global")) {
+                                continue;
+                            }
+
+                            var family = address.required("family").textValue();
+                            if (family.equals("inet")) {
+                                ipv4 = address.required("address").textValue();
+                            } else if (family.equals("inet6")) {
+                                ipv6 = address.required("address").textValue();
+                            }
+                        }
+                    }
+                }
+                l.add(new ContainerEntry(project, name, status, ipv4, ipv6));
+            }
+            return l;
         }
     }
 
-    public ShellControl exec(String container, String user, Supplier<Boolean> busybox) {
+    public ShellControl exec(String projectName, String container, String user, Supplier<Boolean> busybox) {
         var sub = shellControl.subShell();
-        sub.setDumbOpen(createOpenFunction(container, user, false, busybox));
-        sub.setTerminalOpen(createOpenFunction(container, user, true, busybox));
+        sub.setDumbOpen(createOpenFunction(projectName, container, user, false, busybox));
+        sub.setTerminalOpen(createOpenFunction(projectName, container, user, true, busybox));
         return sub.withExceptionConverter(IncusCommandView::convertException).elevated(requiresElevation());
     }
 
     private ShellOpenFunction createOpenFunction(
-            String containerName, String user, boolean terminal, Supplier<Boolean> busybox) {
+            String projectName, String containerName, String user, boolean terminal, Supplier<Boolean> busybox) {
         return new ShellOpenFunction() {
             @Override
             public CommandBuilder prepareWithoutInitCommand() {
-                var b = execCommand(containerName, terminal).add("su", "-l");
+                var b = execCommand(projectName, containerName, terminal).add("su", "-l");
                 if (user != null) {
                     b.addQuoted(user);
                 }
@@ -163,7 +217,7 @@ public class IncusCommandView extends CommandViewBase {
 
             @Override
             public CommandBuilder prepareWithInitCommand(@NonNull String command) {
-                var b = execCommand(containerName, terminal).add("su", "-l");
+                var b = execCommand(projectName, containerName, terminal).add("su", "-l");
                 if (user != null) {
                     b.addQuoted(user);
                 }
@@ -180,8 +234,8 @@ public class IncusCommandView extends CommandViewBase {
         };
     }
 
-    public CommandBuilder execCommand(String containerName, boolean terminal) {
+    public CommandBuilder execCommand(String projectName, String containerName, boolean terminal) {
         var c = CommandBuilder.of().add("incus", "exec", terminal ? "-t" : "-T");
-        return c.addQuoted(containerName).add("--");
+        return c.addQuoted(containerName).add("--project").addQuoted(projectName).add("--");
     }
 }
