@@ -50,7 +50,7 @@ public class SshAgentKeyListComp extends SimpleRegionBuilder {
         var button = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2m-magnify-scan"), null);
         button.apply(struc -> {
             struc.setOnAction(event -> {
-                DataStoreEntryRef<ShellStore> refToUse = ref.getValue() != null ? ref.getValue() : DataStorage.get().local().ref();
+                DataStoreEntryRef<ShellStore> refToUse = ref != null && ref.getValue() != null ? ref.getValue() : DataStorage.get().local().ref();
                 ThreadHelper.runFailableAsync(() -> {
                     var list = SshAgentKeyList.listAgentIdentities(refToUse, sshIdentityStrategy.getValue());
                     Platform.runLater(() -> {

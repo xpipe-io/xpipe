@@ -24,13 +24,10 @@ public class StoreCategoryIconComp extends SimpleRegionBuilder {
         var storeIcon = imageComp.build();
         storeIcon.setPadding(new Insets(0, 0, 1.5, 0));
 
-        var background = new Region();
-        background.getStyleClass().add("background");
-
         var dots = new FontIcon("mdi2d-dots-horizontal");
         dots.setIconSize((int) (size * 1.1));
 
-        var stack = new StackPane(background, storeIcon, dots);
+        var stack = new StackPane(storeIcon, dots);
         stack.setMinHeight(size);
         stack.setMinWidth(size);
         stack.setMaxHeight(size);
