@@ -330,17 +330,6 @@ public class OptionsBuilder {
         return this;
     }
 
-    public OptionsBuilder addYesNoToggle(Property<Boolean> prop) {
-        var map = new LinkedHashMap<Boolean, ObservableValue<String>>();
-        map.put(Boolean.FALSE, AppI18n.observable("no"));
-        map.put(null, AppI18n.observable("inherit"));
-        map.put(Boolean.TRUE, AppI18n.observable("yes"));
-        var comp = new ToggleGroupComp<>(prop, new SimpleObjectProperty<>(map));
-        pushComp(comp);
-        props.add(prop);
-        return this;
-    }
-
     public OptionsBuilder addStaticString(Object o) {
         return addStaticString(new SimpleStringProperty(o != null ? o.toString() : null));
     }

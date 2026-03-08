@@ -11,6 +11,7 @@ import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreCategoryConfig;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.core.OsType;
@@ -41,6 +42,7 @@ import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -253,6 +255,27 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
             event.consume();
         });
         contextMenu.getItems().add(rename);
+
+        var color = new Menu(AppI18n.get("color"), new FontIcon("mdi2f-format-color-fill"));
+        var none = new MenuItem();
+        none.textProperty().bind(AppI18n.observable("none"));
+        none.setOnAction(event -> {
+            category.getCategory().setConfig(category.getCategory().getConfig().withColor(null));
+            event.consume();
+        });
+        none.setGraphic(DataStoreColor.createDisplayGraphic(null));
+        color.getItems().add(none);
+        Arrays.stream(DataStoreColor.values()).forEach(dataStoreColor -> {
+            MenuItem m = new MenuItem();
+            m.textProperty().bind(AppI18n.observable(dataStoreColor.getId()));
+            m.setOnAction(event -> {
+                category.getCategory().setConfig(category.getCategory().getConfig().withColor(dataStoreColor));
+                event.consume();
+            });
+            m.setGraphic(DataStoreColor.createDisplayGraphic(dataStoreColor));
+            color.getItems().add(m);
+        });
+        contextMenu.getItems().add(color);
 
         contextMenu.getItems().add(new SeparatorMenuItem());
 

@@ -1,9 +1,11 @@
 package io.xpipe.app.hub.comp;
 
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ChoiceComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
+import io.xpipe.app.comp.base.ToggleGroupComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -43,16 +45,22 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
         modal.show();
     }
 
+    private RegionBuilder<?> createToggle(Property<Boolean> prop, Boolean inherited) {
+        var map = new LinkedHashMap<Boolean, ObservableValue<String>>();
+        map.put(Boolean.FALSE, AppI18n.observable("no"));
+        map.put(null, AppI18n.observable("inherit", inherited != null && inherited ? AppI18n.get("yes") : AppI18n.get("no")));
+        map.put(Boolean.TRUE, AppI18n.observable("yes"));
+        var comp = new ToggleGroupComp<>(prop, new SimpleObjectProperty<>(map));
+        return comp;
+    }
+
     @Override
     protected Region createSimple() {
-        var colors = new LinkedHashMap<DataStoreColor, ObservableValue<String>>();
-        colors.put(null, AppI18n.observable("none"));
-        for (DataStoreColor value : DataStoreColor.values()) {
-            colors.put(value, AppI18n.observable(value.getId()));
-        }
+        var parents = DataStorage.get().getCategoryParentHierarchy(wrapper.getCategory());
+        var parentConfig = parents.size() > 1 ? DataStorage.get().getEffectiveCategoryConfig(parents.get(parents.size() - 2)) :
+                DataStoreCategoryConfig.empty();
 
         var c = config.getValue();
-        var color = new SimpleObjectProperty<>(c.getColor());
         var scripts = new SimpleObjectProperty<>(c.getDontAllowScripts());
         var confirm = new SimpleObjectProperty<>(c.getConfirmAllModifications());
         var sync = new SimpleObjectProperty<>(c.getSync());
@@ -65,28 +73,6 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
                                 .orElse(null)
                         : null);
         var connectionsCategory = wrapper.getRoot().equals(StoreViewState.get().getAllConnectionsCategory());
-
-        var colorChoice = new ChoiceComp<>(color, colors, false);
-        colorChoice.apply(struc -> {
-            Supplier<ListCell<DataStoreColor>> cell = () -> new ListCell<>() {
-                @Override
-                protected void updateItem(DataStoreColor color, boolean empty) {
-                    super.updateItem(color, empty);
-                    if (color == null) {
-                        setText(AppI18n.get("none"));
-                        setGraphic(DataStoreColor.createDisplayGraphic(null));
-                        return;
-                    }
-
-                    setText(AppI18n.get(color.getId()));
-                    setGraphic(DataStoreColor.createDisplayGraphic(color));
-                }
-            };
-            struc.setButtonCell(cell.get());
-            struc.setCellFactory(ignored -> {
-                return cell.get();
-            });
-        });
 
         var options = new OptionsBuilder();
 
@@ -101,17 +87,17 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
                                         "categorySyncSpecial", wrapper.getName().getValue())
                                 : AppI18n.observable("categorySync"))
                 .description("categorySyncDescription")
-                .addYesNoToggle(sync)
+                .addComp(createToggle(sync, parentConfig.getSync()))
                 .disable(syncDisable)
                 .hide(syncHide)
                 .nameAndDescription("categoryDontAllowScripts")
-                .addYesNoToggle(scripts)
+                .addComp(createToggle(scripts, parentConfig.getDontAllowScripts()))
                 .hide(!connectionsCategory)
                 .nameAndDescription("categoryConfirmAllModifications")
-                .addYesNoToggle(confirm)
+                .addComp(createToggle(confirm, parentConfig.getConfirmAllModifications()))
                 .hide(!connectionsCategory)
                 .nameAndDescription("categoryFreeze")
-                .addYesNoToggle(freeze)
+                .addComp(createToggle(freeze, parentConfig.getFreezeConfigurations()))
                 .hide(!connectionsCategory)
                 .nameAndDescription("categoryDefaultIdentity")
                 .addComp(
@@ -123,12 +109,10 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
                                 StoreViewState.get().getAllIdentitiesCategory()),
                         ref)
                 .hide(!connectionsCategory)
-                .nameAndDescription("categoryColor")
-                .addComp(colorChoice, color)
                 .bind(
                         () -> {
                             return new DataStoreCategoryConfig(
-                                    color.get(),
+                                    c.getColor(),
                                     scripts.get(),
                                     confirm.get(),
                                     sync.get(),
