@@ -7,6 +7,7 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.CountComp;
 import io.xpipe.app.comp.base.IconButtonComp;
+import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.BindingsHelper;
@@ -28,6 +29,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.List;
 import java.util.function.Function;
 
 public class StoreEntryFilterCompBar extends SimpleRegionBuilder {
@@ -38,23 +40,34 @@ public class StoreEntryFilterCompBar extends SimpleRegionBuilder {
         this.filterTrigger = filterTrigger;
     }
 
-    private Region createFilterBar() {
-        var filter = new StoreFilterComp().build();
-        filterTrigger.subscribe(() -> {
-            filter.requestFocus();
+    private BaseRegionBuilder<?, ?> createQuickConnectButton() {
+        var b = new IconButtonComp("mdi2a-animation-play", () -> {
+            // quickConnectTrigger.trigger();
         });
-        filter.setMinHeight(Region.USE_PREF_SIZE);
-        return filter;
+        b.describe(d -> d.nameKey("quickConnect"));
+        b.style("quick-connect-button");
+        b.apply(struc -> {
+            struc.getStyleClass().remove(Styles.FLAT);
+        });
+        return b;
     }
 
     @Override
     public Region createSimple() {
-        var filter = createFilterBar();
-        HBox.setHgrow(filter, Priority.ALWAYS);
-        var bar = new HBox(filter);
-        bar.setFillHeight(true);
-        bar.getStyleClass().add("bar");
-        bar.getStyleClass().add("store-filter-bar");
-        return bar;
+        var filter = new StoreFilterComp();
+        filter.minHeight(Region.USE_PREF_SIZE);
+        filter.apply(customTextField -> {
+            filterTrigger.subscribe(() -> {
+                customTextField.requestFocus();
+            });
+        });
+
+        var button = createQuickConnectButton();
+
+        var inputGroup = new InputGroupComp(List.of(filter, button));
+        inputGroup.setMainReference(filter);
+        inputGroup.style("bar");
+        inputGroup.style("store-filter-bar");
+        return inputGroup.build();
     }
 }

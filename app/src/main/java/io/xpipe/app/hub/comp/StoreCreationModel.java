@@ -311,7 +311,7 @@ public class StoreCreationModel {
                         || p.getCreationCategory().getCategory().equals(DataStorage.ALL_CONNECTIONS_CATEGORY_UUID)
                 ? "connection"
                 : p.getCreationCategory().getCategory().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID)
-                        ? (p.getId().equals("scriptGroup") ? "scriptGroup" : "script")
+                        ? "script"
                         : p.getCreationCategory().getCategory().equals(DataStorage.ALL_IDENTITIES_CATEGORY_UUID)
                                 ? "identity"
                                 : "macro";

@@ -47,7 +47,7 @@ public class StoreIconChoiceDialog {
     }
 
     public static void show(DataStoreCategory entry) {
-        var dialog = new StoreIconChoiceDialog(entry.getEffectiveIconFile(), s -> {
+        var dialog = new StoreIconChoiceDialog(entry.getDefaultIconFile(), s -> {
             entry.setIcon(
                     s != null && s.getSource() != null
                             ? s.getSource().getId() + "/"

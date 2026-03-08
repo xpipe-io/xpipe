@@ -166,9 +166,49 @@ public class DataStoreCategory extends StorageElement {
         }
     }
 
+    public String getDefaultIconFile() {
+        if (uuid.equals(DataStorage.ALL_CONNECTIONS_CATEGORY_UUID)) {
+            return "connectionsCategory_icon.svg";
+        }
+
+        if (uuid.equals(DataStorage.DEFAULT_CATEGORY_UUID)) {
+            return "connectionsCategory_icon.svg";
+        }
+
+        if (uuid.equals(DataStorage.ALL_IDENTITIES_CATEGORY_UUID)) {
+            return "identityCategory_icon.svg";
+        }
+
+        if (uuid.equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID)) {
+            return "localIdentity_icon.svg";
+        }
+
+        if (uuid.equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID)) {
+            return "syncedIdentity_icon.svg";
+        }
+
+        if (uuid.equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID)) {
+            return "scriptCategory_icon.svg";
+        }
+
+        if (uuid.equals(DataStorage.CUSTOM_SCRIPTS_CATEGORY_UUID)) {
+            return "scriptCategory_icon.svg";
+        }
+
+        if (uuid.equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID)) {
+            return "scriptCollectionSource_icon.svg";
+        }
+
+        if (uuid.equals(DataStorage.PREDEFINED_SCRIPTS_CATEGORY_UUID)) {
+            return "defaultShell_icon.svg";
+        }
+
+        return "connectionsCategory_icon.svg";
+    }
+
     public String getEffectiveIconFile() {
         if (icon == null) {
-            return "base:localIdentity_icon.svg";
+            return getDefaultIconFile();
         }
 
         var found = SystemIconManager.getIcon(icon);

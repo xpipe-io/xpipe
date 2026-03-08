@@ -94,9 +94,8 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
 
     private Region createAddBar() {
         var add = createAddButton();
-        var quickConnect = createQuickConnectButton().build();
         var batchMode = createBatchModeButton().build();
-        var hbox = new HBox(add, new Spacer(Orientation.HORIZONTAL), quickConnect, batchMode);
+        var hbox = new HBox(add, new Spacer(Orientation.HORIZONTAL), batchMode);
 
         batchMode.minHeightProperty().bind(add.heightProperty());
         batchMode.prefHeightProperty().bind(add.heightProperty());
@@ -125,18 +124,6 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
         menu.setMinWidth(Region.USE_PREF_SIZE);
         menu.getStyleClass().add("creation-menu");
         return menu;
-    }
-
-    private BaseRegionBuilder<?, ?> createQuickConnectButton() {
-        var b = new IconButtonComp("mdi2a-animation-play", () -> {
-            quickConnectTrigger.trigger();
-        });
-        b.describe(d -> d.nameKey("quickConnect"));
-        b.style("quick-connect-button");
-        b.apply(struc -> {
-            struc.getStyleClass().remove(Styles.FLAT);
-        });
-        return b;
     }
 
     private BaseRegionBuilder<?, ?> createBatchModeButton() {

@@ -102,26 +102,24 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
     }
 
     private void initTable(TableView<List<SystemIcon>> table) {
-        if (!SystemIconManager.isCacheOutdated()) {
-            for (int i = 0; i < columns; i++) {
-                var col = new TableColumn<List<SystemIcon>, SystemIcon>("col" + i);
-                final int colIndex = i;
-                col.setCellValueFactory(cb -> {
-                    var row = cb.getValue();
-                    var item = row.size() > colIndex ? row.get(colIndex) : null;
-                    return new SimpleObjectProperty<>(item);
-                });
-                col.setCellFactory(cb -> new IconCell());
-                col.getStyleClass().add(Tweaks.ALIGN_CENTER);
-                table.getColumns().add(col);
-            }
-        }
-
         table.setPlaceholder(new Region());
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         table.getSelectionModel().setCellSelectionEnabled(true);
         table.getStyleClass().add("icon-browser");
         table.disableProperty().bind(PlatformThread.sync(busy));
+
+        for (int i = 0; i < columns; i++) {
+            var col = new TableColumn<List<SystemIcon>, SystemIcon>("col" + i);
+            final int colIndex = i;
+            col.setCellValueFactory(cb -> {
+                var row = cb.getValue();
+                var item = row.size() > colIndex ? row.get(colIndex) : null;
+                return new SimpleObjectProperty<>(item);
+            });
+            col.setCellFactory(cb -> new IconCell());
+            col.getStyleClass().add(Tweaks.ALIGN_CENTER);
+            table.getColumns().add(col);
+        }
     }
 
     private Region createLoadingPane() {
@@ -138,7 +136,7 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
                 });
         refreshButton.hide(Bindings.createBooleanBinding(
                 () -> {
-                    return SystemIconManager.hasLoadedAnyImages();
+                    return SystemIconManager.hasLoadedAnyImages() && !SystemIconManager.isCacheOutdated();
                 },
                 busy));
         refreshButton.disable(busy);
@@ -165,11 +163,6 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
     }
 
     private void updateData(TableView<List<SystemIcon>> table, String filterString) {
-        if (SystemIconManager.isCacheOutdated()) {
-            table.getItems().clear();
-            return;
-        }
-
         var available = icons.stream()
                 .filter(systemIcon -> AppImages.hasImage(
                         "icons/" + systemIcon.getSource().getId() + "/" + systemIcon.getId() + "-40.png"))

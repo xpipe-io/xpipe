@@ -1,14 +1,17 @@
+.quick-connect-button {
+    -fx-padding: 10;
+}
 
 .store-header-bar {
-    -fx-padding: 0.8em 1.0em 0.8em 1.0em;
+    -fx-padding: 0.8em 0.9em 0.8em 0.9em;
 }
 
 .store-filter-bar {
-    -fx-padding: 0.5em 1.0em 0.5em 1.0em;
+    -fx-padding: 0.5em 0.9em 0.5em 0.9em;
 }
 
 .store-filter-comp {
-    -fx-padding: 0.3em 0.4em 0.3em 0.4em;
+    -fx-padding: 0.3em 0.5em 0.3em 0.5em;
 }
 
 .bar {
