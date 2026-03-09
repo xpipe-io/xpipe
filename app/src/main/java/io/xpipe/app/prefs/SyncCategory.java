@@ -68,7 +68,7 @@ public class SyncCategory extends AppPrefsCategory {
         remoteRepo.disable(prefs.enableGitStorage.not());
 
         var builder = new OptionsBuilder();
-        builder.addTitle("gitSync")
+        builder.title("gitSync")
                 .sub(new OptionsBuilder()
                         .pref(prefs.enableGitStorage)
                         .addToggle(prefs.enableGitStorage)

@@ -22,7 +22,6 @@ import io.xpipe.app.terminal.*;
 import io.xpipe.app.util.*;
 import io.xpipe.core.OsType;
 
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
@@ -165,13 +164,13 @@ public class TerminalCategory extends AppPrefsCategory {
         var splitViewSupported = Bindings.isNotNull(TerminalSplitStrategy.getEffectiveSplitStrategyObservable());
 
         return new OptionsBuilder()
-                .addTitle("terminalConfiguration")
+                .title("terminalConfiguration")
                 .sub(terminalChoice(true))
                 .sub(terminalPrompt())
                 .sub(terminalProxy())
                 .sub(terminalMultiplexer())
                 // .sub(terminalInitScript())
-                .addTitle("sessionLogging")
+                .title("sessionLogging")
                 .sub(new OptionsBuilder()
                         .pref(prefs.enableTerminalLogging)
                         .addToggle(prefs.enableTerminalLogging)
@@ -187,7 +186,7 @@ public class TerminalCategory extends AppPrefsCategory {
                             }
                         })
                                 .disable(prefs.enableTerminalLogging.not())))
-                .addTitle("terminalBehaviour")
+                .title("terminalBehaviour")
                 .sub(
                         new OptionsBuilder()
                                 .pref(prefs.enableConnectionHubTerminalDocking)

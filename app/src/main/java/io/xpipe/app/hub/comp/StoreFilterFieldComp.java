@@ -95,6 +95,10 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
                     field.clear();
                     event.consume();
                 }
+            } else if (event.getCode() == KeyCode.ESCAPE) {
+                field.clear();
+                field.getScene().getRoot().requestFocus();
+                event.consume();
             }
         });
 

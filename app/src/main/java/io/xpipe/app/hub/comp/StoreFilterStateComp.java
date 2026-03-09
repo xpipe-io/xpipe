@@ -1,5 +1,7 @@
 package io.xpipe.app.hub.comp;
 
+import atlantafx.base.theme.Styles;
+import io.xpipe.app.action.LauncherUrlProvider;
 import io.xpipe.app.action.QuickConnectProvider;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
@@ -10,12 +12,25 @@ import io.xpipe.app.platform.OptionsBuilder;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.layout.Region;
 
 import java.util.List;
 
 public class StoreFilterStateComp extends SimpleRegionBuilder {
+
+    private ButtonComp createButton(String text, String value) {
+        var button = new ButtonComp(new ReadOnlyObjectWrapper<>(text), () -> {
+            if (value != null) {
+                StoreFilterState.get().set(value);
+            }
+        });
+        button.disable(value == null);
+        button.apply(r -> r.setAlignment(Pos.CENTER_LEFT));
+        button.style(Styles.FLAT);
+        button.maxWidth(10000);
+        return button;
+    }
 
     @Override
     protected Region createSimple() {
@@ -23,51 +38,59 @@ public class StoreFilterStateComp extends SimpleRegionBuilder {
 
         var searches = state.getRecentSearches().getList();
         var searchesEmpty = Bindings.isEmpty(searches);
-        var searchList = new ListBoxViewComp<String>(searches, searches, s -> {
-            return new ButtonComp(new ReadOnlyObjectWrapper<>(s), () -> {
+        var searchesList = new ListBoxViewComp<String>(searches, searches, s -> createButton(s, null), false);
 
-            });
-        }, false);
-        searchList.hide(searchesEmpty);
-        var searchesLabel = new LabelComp(AppI18n.observable("recent"));
-        searchesLabel.hide(searchesEmpty);
+        var searchesPlaceholders = FXCollections.observableList(List.of(AppI18n.get("recentSearchesDescriptionNames"),
+                AppI18n.get("recentSearchesDescriptionTags"), AppI18n.get("recentSearchesDescriptionTypes")));
+        var searchesEmptyList = new ListBoxViewComp<String>(searchesPlaceholders, searchesPlaceholders, s -> createButton(s, null), false);
 
         var quickConnections = state.getRecentQuickConnections().getList();
-        var quickConnectionsEmpty = Bindings.isEmpty(searches);
-        var quickConnectionsList = new ListBoxViewComp<String>(quickConnections, quickConnections, s -> {
-            return new ButtonComp(new ReadOnlyObjectWrapper<>(s), () -> {
-
-            });
-        }, false);
+        var quickConnectionsEmpty = Bindings.isEmpty(quickConnections);
+        var quickConnectionsList = new ListBoxViewComp<String>(quickConnections, quickConnections, s -> createButton(s, null), false);
 
         var quickConnectionsPlaceholders = FXCollections.observableArrayList(QuickConnectProvider.getAll().stream()
-                .map(quickConnectProvider -> quickConnectProvider.getPlaceholder())
+                .map(p -> p.getPlaceholder())
                 .toList());
-        var quickConnectionsEmptyList = new ListBoxViewComp<String>(quickConnectionsPlaceholders, quickConnectionsPlaceholders, s -> {
-            return new ButtonComp(new ReadOnlyObjectWrapper<>(s), () -> {
+        var quickConnectionsEmptyList = new ListBoxViewComp<String>(quickConnectionsPlaceholders, quickConnectionsPlaceholders, s -> createButton(s, null), false);
 
-            });
-        }, false);
+        var urls = state.getRecentUrls().getList();
+        var urlsEmpty = Bindings.isEmpty(urls);
+        var urlList = new ListBoxViewComp<String>(urls, urls, s -> createButton(s, null), false);
 
-
-        var quickConnectionsLabel = new LabelComp(AppI18n.observable("recent"));
-        quickConnectionsLabel.hide(quickConnectionsEmpty);
-
-        var otherLabel = new LabelComp(AppI18n.observable("recent"));
-        var otherList = List.of("ssh://user@host", "sftp://user@host", "s3://host/path", "xpipe://action?...");
+        var urlPlaceholders = FXCollections.observableArrayList(LauncherUrlProvider.getAll().stream()
+                .map(p -> p.getPlaceholder())
+                .toList());
+        var urlEmptyList = new ListBoxViewComp<String>(urlPlaceholders, urlPlaceholders, s -> createButton(s, null), false);
 
         var options = new OptionsBuilder()
-                .name("recent")
-                .addComp(searchList)
+                .addComp(new LabelComp(AppI18n.observable("recentSearches")))
                 .hide(searchesEmpty)
-                .addComp(searchesLabel)
+                .addComp(searchesList)
+                .hide(searchesEmpty)
+                .addComp(new LabelComp(AppI18n.observable("recentSearchesDescription")))
                 .hide(searchesEmpty.not())
-                .name("recent")
+                .addComp(searchesEmptyList)
+                .hide(searchesEmpty.not())
+
+                .addComp(new LabelComp(AppI18n.observable("recentQuickConnections")))
+                .hide(quickConnectionsEmpty)
                 .addComp(quickConnectionsList)
                 .hide(quickConnectionsEmpty)
+                .addComp(new LabelComp(AppI18n.observable("recentQuickConnectionsDescription")))
+                .hide(quickConnectionsEmpty.not())
                 .addComp(quickConnectionsEmptyList)
                 .hide(quickConnectionsEmpty.not())
+
+                .addComp(new LabelComp(AppI18n.observable("recentUrls")))
+                .hide(urlsEmpty)
+                .addComp(urlList)
+                .hide(urlsEmpty)
+                .addComp(new LabelComp(AppI18n.observable("recentUrlsDescription")))
+                .hide(urlsEmpty.not())
+                .addComp(urlEmptyList)
+                .hide(urlsEmpty.not())
                 .build();
+        options.getStyleClass().add("store-filter-state-comp");
         return options;
     }
 }

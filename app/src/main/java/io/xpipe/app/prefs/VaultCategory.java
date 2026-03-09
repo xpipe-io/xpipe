@@ -78,7 +78,7 @@ public class VaultCategory extends AppPrefsCategory {
             uh.setCurrentGroupStrategy(nv);
         });
 
-        builder.addTitle("vault")
+        builder.title("vault")
                 .sub(new OptionsBuilder()
                         .name("vaultTypeName" + vaultTypeKey)
                         .description("vaultTypeContent" + vaultTypeKey)

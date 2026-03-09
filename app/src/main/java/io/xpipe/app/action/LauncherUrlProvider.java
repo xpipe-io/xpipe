@@ -19,5 +19,7 @@ public interface LauncherUrlProvider extends ActionProvider {
 
     String getScheme();
 
+    String getPlaceholder();
+
     AbstractAction createAction(URI uri) throws Exception;
 }

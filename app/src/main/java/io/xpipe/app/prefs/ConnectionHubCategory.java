@@ -52,7 +52,7 @@ public class ConnectionHubCategory extends AppPrefsCategory {
                 .addToggle(prefs.openConnectionSearchWindowOnConnectionCreation)
                 .pref(prefs.requireDoubleClickForConnections)
                 .addToggle(prefs.requireDoubleClickForConnections);
-        var options = new OptionsBuilder().addTitle("connectionHub").sub(connectionsBuilder);
+        var options = new OptionsBuilder().title("connectionHub").sub(connectionsBuilder);
         return options.buildComp();
     }
 

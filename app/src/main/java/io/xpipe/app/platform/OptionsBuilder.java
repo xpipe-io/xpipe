@@ -211,14 +211,14 @@ public class OptionsBuilder {
         return this;
     }
 
-    public OptionsBuilder addTitle(String titleKey) {
+    public OptionsBuilder title(String titleKey) {
         finishCurrent();
         entries.add(new OptionsComp.Entry(
                 null, null, null, new LabelComp(AppI18n.observable(titleKey)).style("title-header")));
         return this;
     }
 
-    public OptionsBuilder addTitle(ObservableValue<String> title) {
+    public OptionsBuilder title(ObservableValue<String> title) {
         finishCurrent();
         entries.add(new OptionsComp.Entry(null, null, null, new LabelComp(title).style("title-header")));
         return this;

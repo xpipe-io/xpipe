@@ -22,7 +22,7 @@ public class WorkspacesCategory extends AppPrefsCategory {
     @Override
     protected BaseRegionBuilder<?, ?> create() {
         return new OptionsBuilder()
-                .addTitle("manageWorkspaces")
+                .title("manageWorkspaces")
                 .sub(new OptionsBuilder()
                         .nameAndDescription("workspaceAdd")
                         .licenseRequirement("workspaces")

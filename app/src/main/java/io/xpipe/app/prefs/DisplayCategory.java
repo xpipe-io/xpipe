@@ -29,7 +29,7 @@ public class DisplayCategory extends AppPrefsCategory {
     protected BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
         return new OptionsBuilder()
-                .addTitle("displayOptions")
+                .title("displayOptions")
                 .sub(new OptionsBuilder()
                         .pref(prefs.uiScale)
                         .addComp(
@@ -47,7 +47,7 @@ public class DisplayCategory extends AppPrefsCategory {
                         .pref(prefs.limitedTouchscreenMode)
                         .addToggle(prefs.limitedTouchscreenMode)
                         .hide(OsType.ofLocal() != OsType.LINUX))
-                .addTitle("windowOptions")
+                .title("windowOptions")
                 .sub(new OptionsBuilder()
                         .pref(prefs.windowOpacity)
                         .addComp(

@@ -246,3 +246,19 @@
 .agent-socket-choice:disabled .text-field {
     -fx-opacity: 1.0;
 }
+
+.store-filter-state-comp {
+    -fx-padding: 5 15 5 15;
+}
+
+.store-filter-state-comp .button {
+    -fx-padding: 5 10 5 10;
+}
+
+.store-filter-state-comp .button:disabled {
+    -fx-opacity: 1.0;
+}
+
+.store-filter-state-comp .label {
+    -fx-padding: 10 0 0 0;
+}

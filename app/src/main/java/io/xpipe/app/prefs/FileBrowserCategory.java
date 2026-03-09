@@ -27,7 +27,7 @@ public class FileBrowserCategory extends AppPrefsCategory {
     protected BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
         return new OptionsBuilder()
-                .addTitle("fileBrowser")
+                .title("fileBrowser")
                 .sub(new OptionsBuilder()
                         .pref(prefs.editFilesWithDoubleClick)
                         .addToggle(prefs.editFilesWithDoubleClick)

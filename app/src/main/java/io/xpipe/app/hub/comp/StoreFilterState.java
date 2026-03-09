@@ -90,6 +90,9 @@ public class StoreFilterState {
         INSTANCE.recentQuickConnections.setContent(recentQuickConnections);
     }
 
+    public void set(String s) {
+        rawText.setValue(s);
+    }
 
     public void putFilter(String s) {
         synchronized (recentSearches) {

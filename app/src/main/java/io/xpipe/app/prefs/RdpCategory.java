@@ -55,7 +55,7 @@ public class RdpCategory extends AppPrefsCategory {
                 .build();
 
         return new OptionsBuilder()
-                .addTitle("rdpConfiguration")
+                .title("rdpConfiguration")
                 .sub(new OptionsBuilder()
                         .nameAndDescription("rdpClient")
                         .documentationLink(DocumentationLink.RDP)
