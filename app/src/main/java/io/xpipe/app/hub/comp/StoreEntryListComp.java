@@ -52,7 +52,7 @@ public class StoreEntryListComp extends SimpleRegionBuilder {
             });
 
             // Reset scroll
-            StoreViewState.get().getFilterString().addListener((observable, oldValue, newValue) -> {
+            StoreFilterState.get().getEffectiveFilter().addListener((observable, oldValue, newValue) -> {
                 struc.setVvalue(0);
             });
 

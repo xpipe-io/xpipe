@@ -82,10 +82,7 @@ public class AppOpenArguments {
             var scheme = uri.getScheme();
             if (scheme != null) {
                 var action = uri.getScheme();
-                var found = ActionProvider.ALL.stream()
-                        .filter(actionProvider -> actionProvider instanceof LauncherUrlProvider lcs
-                                && lcs.getScheme().equalsIgnoreCase(action))
-                        .findFirst();
+                var found = LauncherUrlProvider.find(action);
                 if (found.isPresent()) {
                     AbstractAction a;
                     try {

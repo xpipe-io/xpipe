@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 public class StoreViewState {
 
     private static StoreViewState INSTANCE;
-    private final StringProperty filter = new SimpleStringProperty();
 
     @Getter
     private final DerivedObservableList<StoreEntryWrapper> allEntries =
@@ -234,7 +233,7 @@ public class StoreViewState {
                     allEntries,
                     batchModeSelectionSet,
                     storeEntryWrapper -> true,
-                    filter,
+                    StoreFilterState.get().getEffectiveFilter(),
                     activeCategory,
                     entriesListVisibilityObservable,
                     entriesListUpdateObservable,
@@ -247,7 +246,7 @@ public class StoreViewState {
     }
 
     private void initFilterListener() {
-        filter.addListener((observable, oldValue, newValue) -> {
+        StoreFilterState.get().getEffectiveFilter().addListener((observable, oldValue, newValue) -> {
             onFilterUpdate(newValue);
         });
     }
@@ -687,9 +686,5 @@ public class StoreViewState {
                         storeCategoryWrapper.getCategory().equals(entry))
                 .findFirst()
                 .orElseThrow();
-    }
-
-    public Property<String> getFilterString() {
-        return filter;
     }
 }

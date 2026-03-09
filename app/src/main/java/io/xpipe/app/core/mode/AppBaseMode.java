@@ -16,6 +16,7 @@ import io.xpipe.app.core.window.AppWindowTitle;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.StartOnInitStore;
+import io.xpipe.app.hub.comp.StoreFilterState;
 import io.xpipe.app.hub.comp.StoreQuickConnect;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.icon.SystemIconManager;
@@ -130,6 +131,7 @@ public class AppBaseMode extends AppOperationMode {
                     storageLoaded.countDown();
                     AppMcpServer.init();
                     iconsInit.await();
+                    StoreFilterState.init();
                     StoreViewState.init();
                     StoreQuickConnect.init();
                     AppMainWindow.loadingText("loadingSettings");

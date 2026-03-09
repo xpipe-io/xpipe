@@ -17,3 +17,23 @@
 .root:linux .toggle-switch-comp .label-container {
     -fx-padding: -0.05em 0 0 0;
 }
+
+.root:windows .toggle-switch-comp > .thumb-area {
+    -fx-padding: 0.65em 1.5em;
+}
+
+.root:windows .toggle-switch-comp > .thumb {
+    -fx-background-insets: 0.25em;
+    -fx-background-radius: 1em;
+    -fx-padding: 0.7em;
+}
+
+.root .toggle-switch-comp > .thumb-area {
+    -fx-padding: 0.8em 1.4em;
+}
+
+.root .toggle-switch-comp > .thumb {
+    -fx-background-insets: 0.15em;
+    -fx-background-radius: 1em;
+    -fx-padding: 0.8em;
+}

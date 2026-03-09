@@ -1,5 +1,6 @@
 package io.xpipe.app.hub.comp;
 
+import io.xpipe.app.action.QuickConnectProvider;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.mode.AppOperationMode;
@@ -52,35 +53,17 @@ public class StoreQuickConnect {
     }
 
     public static boolean launchQuickConnect(String s) {
-        if (s == null || s.isBlank() || !s.contains("@")) {
+        if (s == null || s.isBlank()) {
             return false;
         }
 
-        if (s.startsWith("ssh ")) {
-            s = s.substring(4);
-        }
-
-        var split = s.split("@", 2);
-        if (split.length != 2) {
+        var provider = QuickConnectProvider.find(s);
+        if (provider.isEmpty()) {
             return false;
         }
 
-        var user = split[0];
-
-        var target = split[1];
-        String host = target;
-        Integer port = null;
-
-        if (StringUtils.countMatches(target, ":") == 1 || (target.contains("[") && target.contains("]"))) {
-            var index = target.lastIndexOf(":");
-            host = target.substring(0, index);
-            try {
-                port = Integer.parseInt(target.substring(index + 1));
-            } catch (NumberFormatException ignored) {
-            }
-        }
-
-        var newStore = ProcessControlProvider.get().quickConnectStore(user, host, port, quickConnectStore);
+        var arguments = s.replaceFirst(provider.get().getName() + " ", "");
+        var newStore = provider.get().createStore(arguments, quickConnectStore);
         DataStorage.get().updateEntryStore(quickConnectEntry, newStore);
 
         var model = StoreCreationDialog.showEdit(quickConnectEntry, newStore, false, finished -> {

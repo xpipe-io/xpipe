@@ -49,6 +49,7 @@ public class StoreEntryFilterCompBar extends SimpleRegionBuilder {
         b.apply(struc -> {
             struc.getStyleClass().remove(Styles.FLAT);
         });
+        b.prefWidth(30);
         return b;
     }
 

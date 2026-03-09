@@ -65,14 +65,6 @@ public class StoreFilterComp extends RegionBuilder<CustomTextField> {
                 if (!Objects.equals(filter.getText(), val) && !(val == null && "".equals(filter.getText()))) {
                     filter.setText(val);
                 }
-
-                Platform.runLater(() -> {
-                    if (val == null || isSearch()) {
-                        StoreViewState.get().getFilterString().setValue(val);
-                    } else {
-                        StoreViewState.get().getFilterString().setValue(null);
-                    }
-                });
             });
         });
 

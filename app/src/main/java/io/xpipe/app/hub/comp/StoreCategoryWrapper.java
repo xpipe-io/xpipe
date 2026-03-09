@@ -194,7 +194,7 @@ public class StoreCategoryWrapper {
 
         var directFiltered = directContainedEntries.getList().stream()
                 .filter(storeEntryWrapper -> {
-                    var filter = StoreViewState.get().getFilterString().getValue();
+                    var filter = StoreFilterState.get().getEffectiveFilter().getValue();
                     if (filter != null) {
                         var matches = storeEntryWrapper.matchesFilter(filter);
                         return matches;
