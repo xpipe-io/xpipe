@@ -28,6 +28,7 @@ public class StoreFilterState {
     @Getter
     private final StringProperty rawText = new SimpleStringProperty();
 
+    @Getter
     private final ObservableBooleanValue isQuickConnectString = Bindings.createBooleanBinding(() -> {
         var v = rawText.getValue();
         if (v == null) {
@@ -41,6 +42,7 @@ public class StoreFilterState {
         return QuickConnectProvider.find(v).isPresent();
     }, rawText);
 
+    @Getter
     private final ObservableBooleanValue isUrlString = Bindings.createBooleanBinding(() -> {
         var v = rawText.getValue();
         if (v == null) {
@@ -54,6 +56,7 @@ public class StoreFilterState {
         return LauncherUrlProvider.find(v).isPresent();
     }, rawText);
 
+    @Getter
     private final ObservableBooleanValue isSearchString = Bindings.createBooleanBinding(() -> {
         return rawText.getValue() != null && rawText.getValue().length() > 1 && !isUrlString.getValue() && !isQuickConnectString.getValue();
     }, rawText, isQuickConnectString, isUrlString);

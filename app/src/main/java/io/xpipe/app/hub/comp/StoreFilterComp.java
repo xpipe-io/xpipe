@@ -20,19 +20,9 @@ import java.util.Objects;
 
 public class StoreFilterComp extends RegionBuilder<CustomTextField> {
 
-    private final Property<String> rawText = new SimpleStringProperty();
-
-    private boolean isQuickConnect() {
-        var v = rawText.getValue();
-        return v != null && (v.startsWith("ssh") || "ssh".startsWith(v));
-    }
-
-    private boolean isSearch() {
-        return rawText.getValue() != null && rawText.getValue().length() > 1 && !isQuickConnect();
-    }
-
     @Override
     public CustomTextField createSimple() {
+        var state = StoreFilterState.get();
         var searchIcon = new FontIcon("mdi2m-magnify");
         var launchIcon = new FontIcon("mdi2p-play");
         var filter = new CustomTextField();
@@ -43,9 +33,9 @@ public class StoreFilterComp extends RegionBuilder<CustomTextField> {
         filter.rightProperty()
                 .bind(Bindings.createObjectBinding(
                         () -> {
-                            return filter.isFocused() ? (isQuickConnect() ? launchIcon : isSearch() ? searchIcon : null) : null;
+                            return filter.isFocused() ? (state.getIsQuickConnectString().get() ? launchIcon : state.getIsSearchString().get() ? searchIcon : null) : null;
                         },
-                        filter.focusedProperty(), rawText));
+                        filter.focusedProperty(), state.getRawText()));
         RegionDescriptor.builder().nameKey("search").build().apply(filter);
 
         filter.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
