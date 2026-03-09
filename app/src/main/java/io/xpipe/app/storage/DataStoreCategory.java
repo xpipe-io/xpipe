@@ -8,9 +8,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import lombok.EqualsAndHashCode;
-import lombok.NonNull;
-import lombok.Value;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.apache.commons.io.FileUtils;
 
@@ -22,8 +21,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-@EqualsAndHashCode(callSuper = true)
-@Value
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Getter
 public class DataStoreCategory extends StorageElement {
 
     @NonFinal
@@ -46,6 +45,21 @@ public class DataStoreCategory extends StorageElement {
         super(directory, uuid, name, lastUsed, lastModified, expanded, dirty, icon);
         this.parentCategory = parentCategory;
         this.config = config;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o == this || (o instanceof DataStoreCategory e && e.getUuid().equals(getUuid()));
+    }
+
+    @Override
+    public int hashCode() {
+        return getUuid().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 
     public static DataStoreCategory createNew(UUID parentCategory, @NonNull String name) {

@@ -309,7 +309,7 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
     }
 
     private void refresh(
-            VBox listView,
+            VBox vbox,
             List<? extends T> shown,
             List<? extends T> all,
             Map<T, Region> cache) {
@@ -354,7 +354,7 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
                     .filter(region -> region != null)
                     .toList();
 
-            if (listView.getChildren().equals(newShown)) {
+            if (vbox.getChildren().equals(newShown)) {
                 return;
             }
 
@@ -366,7 +366,7 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
                 r.pseudoClassStateChanged(LAST, i == newShown.size() - 1);
             }
 
-            var d = DerivedObservableList.wrap(listView.getChildren(), true);
+            var d = DerivedObservableList.wrap(vbox.getChildren(), true);
             d.setContent(newShown);
         };
         update.run();

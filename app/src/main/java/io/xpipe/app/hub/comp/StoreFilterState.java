@@ -2,17 +2,21 @@ package io.xpipe.app.hub.comp;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.action.LauncherUrlProvider;
 import io.xpipe.app.action.QuickConnectProvider;
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.DerivedObservableList;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableStringValue;
+import javafx.collections.ObservableList;
 import lombok.Getter;
 
+import java.net.URI;
 import java.util.List;
 
 public class StoreFilterState {
@@ -23,6 +27,10 @@ public class StoreFilterState {
 
     @Getter
     private final DerivedObservableList<String> recentQuickConnections =
+            DerivedObservableList.synchronizedArrayList(true);
+
+    @Getter
+    private final DerivedObservableList<String> recentUrls =
             DerivedObservableList.synchronizedArrayList(true);
 
     @Getter
@@ -85,23 +93,75 @@ public class StoreFilterState {
 
     public void putFilter(String s) {
         synchronized (recentSearches) {
-            if (recentSearches.getList().size() == 3) {
-                recentSearches.getList().addFirst(s);
-                recentSearches.getList().removeLast();
+            var l = recentSearches.getList();
+            l.remove(s);
+            if (l.size() == 3) {
+                l.addFirst(s);
+                l.removeLast();
             } else {
-                recentSearches.getList().addFirst(s);
+                l.addFirst(s);
             }
         }
     }
 
     public void putQuickConnect(String s) {
         synchronized (recentQuickConnections) {
-            if (recentQuickConnections.getList().size() == 3) {
-                recentQuickConnections.getList().addFirst(s);
-                recentQuickConnections.getList().removeLast();
+            var l = recentQuickConnections.getList();
+            l.remove(s);
+            if (l.size() == 3) {
+                l.addFirst(s);
+                l.removeLast();
             } else {
-                recentQuickConnections.getList().addFirst(s);
+                l.addFirst(s);
             }
         }
+    }
+
+    public void putUrl(String s) {
+        synchronized (recentUrls) {
+            var l = recentUrls.getList();
+            l.remove(s);
+            if (l.size() == 3) {
+                l.addFirst(s);
+                l.removeLast();
+            } else {
+                l.addFirst(s);
+            }
+        }
+    }
+
+    public boolean open() {
+        if (isSearchString.getValue()) {
+            putFilter(rawText.getValue());
+            return false;
+        }
+
+        if (isUrlString.getValue()) {
+            var provider = LauncherUrlProvider.find(rawText.getValue());
+            if (provider.isEmpty()) {
+                return false;
+            }
+
+            try {
+                var action = provider.get().createAction(URI.create(rawText.get()));
+                action.executeAsync();
+                putUrl(rawText.getValue());
+                return true;
+            } catch (Exception e) {
+                ErrorEventFactory.fromThrowable(e).handle();
+                return false;
+            }
+        }
+
+        if (isQuickConnectString.getValue()) {
+            var provider = QuickConnectProvider.find(rawText.getValue());
+            if (provider.isEmpty()) {
+                return false;
+            }
+
+            return StoreQuickConnect.launchQuickConnect(rawText.getValue());
+        }
+
+        return false;
     }
 }

@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.apache.commons.io.FileUtils;
 
@@ -25,7 +26,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
-@Value
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Getter
 public class DataStoreEntry extends StorageElement {
 
     Map<String, Object> storeCache = Collections.synchronizedMap(new HashMap<>());
@@ -123,6 +125,21 @@ public class DataStoreEntry extends StorageElement {
         this.orderIndex = orderIndex;
         this.breakOutCategory = breakOutCategory;
         this.tags = tags;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o == this || (o instanceof DataStoreEntry e && e.getUuid().equals(getUuid()));
+    }
+
+    @Override
+    public int hashCode() {
+        return getUuid().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 
     public static DataStoreEntry createTempWrapper(@NonNull DataStore store) {
@@ -363,21 +380,6 @@ public class DataStoreEntry extends StorageElement {
         if (changed) {
             notifyUpdate(false, true);
         }
-    }
-
-    @Override
-    public int hashCode() {
-        return getUuid().hashCode();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return o == this || (o instanceof DataStoreEntry e && e.getUuid().equals(getUuid()));
-    }
-
-    @Override
-    public String toString() {
-        return getName();
     }
 
     public boolean isChangedForReload(DataStoreEntry other) {

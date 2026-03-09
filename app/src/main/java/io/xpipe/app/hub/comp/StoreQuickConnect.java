@@ -62,8 +62,12 @@ public class StoreQuickConnect {
             return false;
         }
 
-        var arguments = s.replaceFirst(provider.get().getName() + " ", "");
+        var arguments = s.replaceFirst(provider.get().getName() + "\\s+", "").strip();
         var newStore = provider.get().createStore(arguments, quickConnectStore);
+        if (newStore == null) {
+            return false;
+        }
+
         DataStorage.get().updateEntryStore(quickConnectEntry, newStore);
 
         var model = StoreCreationDialog.showEdit(quickConnectEntry, newStore, false, finished -> {

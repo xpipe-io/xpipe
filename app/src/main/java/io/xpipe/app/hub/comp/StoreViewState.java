@@ -168,7 +168,7 @@ public class StoreViewState {
                 tieSortMode);
     }
 
-    public ObservableIntegerValue entriesCount(Predicate<StoreEntryWrapper> filter, Observable... observables) {
+    public ObservableIntegerValue entriesCount(Predicate<StoreEntryWrapper> filter, ObservableValue<?>... observables) {
         return Bindings.size(allEntries
                 .filtered(
                         storeEntryWrapper -> {
