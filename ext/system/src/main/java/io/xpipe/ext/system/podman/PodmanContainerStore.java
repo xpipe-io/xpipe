@@ -42,6 +42,11 @@ public class PodmanContainerStore
     String containerName;
 
     @Override
+    public List<DataStoreEntryRef<?>> getDependencies() {
+        return DataStoreDependencies.of(cmd);
+    }
+
+    @Override
     public String getName() {
         return containerName;
     }

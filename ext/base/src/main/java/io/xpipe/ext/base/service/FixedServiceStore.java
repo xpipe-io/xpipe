@@ -1,6 +1,7 @@
 package io.xpipe.ext.base.service;
 
 import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.DataStoreDependencies;
 import io.xpipe.app.ext.FixedChildStore;
 import io.xpipe.app.ext.NetworkTunnelStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -14,6 +15,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.List;
 import java.util.OptionalInt;
 
 @SuperBuilder(toBuilder = true)
@@ -27,6 +29,11 @@ public class FixedServiceStore extends AbstractServiceStore implements FixedChil
     private final DataStoreEntryRef<HostAddressStore> host;
     private final DataStoreEntryRef<? extends DataStore> displayParent;
     private final Boolean tunnelToLocalhost;
+
+    @Override
+    public List<DataStoreEntryRef<?>> getDependencies() {
+        return DataStoreDependencies.of(host);
+    }
 
     @Override
     public String getAddress() {

@@ -9,11 +9,14 @@ import io.xpipe.app.cred.KeyFileStrategy;
 import io.xpipe.app.cred.SshIdentityStrategy;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+
+import java.util.List;
 
 @SuperBuilder
 @JsonTypeName("syncedIdentity")
@@ -42,6 +45,11 @@ public class SyncedIdentityStore extends IdentityStore implements UserScopeStore
     @Override
     public SshIdentityStrategy getSshIdentity() {
         return sshIdentity != null ? sshIdentity.getValue() : null;
+    }
+
+    @Override
+    public List<DataStoreEntryRef<?>> getDependencies() {
+        return List.of();
     }
 
     @Override

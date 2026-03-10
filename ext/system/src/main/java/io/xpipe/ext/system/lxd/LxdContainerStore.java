@@ -16,6 +16,7 @@ import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.OptionalInt;
 
@@ -36,6 +37,11 @@ public class LxdContainerStore
     DataStoreEntryRef<LxdCmdStore> cmd;
     String containerName;
     IdentityValue identity;
+
+    @Override
+    public List<DataStoreEntryRef<?>> getDependencies() {
+        return DataStoreDependencies.of(cmd);
+    }
 
     @Override
     public String getName() {

@@ -115,6 +115,15 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
     }
 
     @Override
+    public List<DataStoreEntryRef<?>> getDependencies() {
+        var l = DataStoreDependencies.of(scripts);
+        if (textSource != null) {
+            l.addAll(textSource.getDependencies());
+        }
+        return l;
+    }
+
+    @Override
     public void checkComplete() throws Throwable {
         if (textSource != null) {
             textSource.checkComplete();

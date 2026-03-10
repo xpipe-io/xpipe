@@ -45,6 +45,11 @@ public class IncusContainerStore
     IdentityValue identity;
 
     @Override
+    public List<DataStoreEntryRef<?>> getDependencies() {
+        return DataStoreDependencies.of(install, identity != null ? identity.getDependencies() : null);
+    }
+
+    @Override
     public Class<NetworkContainerStoreState> getStateClass() {
         return NetworkContainerStoreState.class;
     }

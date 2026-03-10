@@ -1,5 +1,6 @@
 package io.xpipe.ext.base.service;
 
+import io.xpipe.app.ext.DataStoreDependencies;
 import io.xpipe.app.ext.NetworkTunnelStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.ext.base.host.AbstractHostStore;
@@ -13,6 +14,8 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.List;
+
 @SuperBuilder(toBuilder = true)
 @Getter
 @Jacksonized
@@ -25,6 +28,11 @@ public final class CustomServiceStore extends AbstractServiceStore implements Ab
     private final String address;
     private final DataStoreEntryRef<NetworkTunnelStore> gateway;
     private final Boolean tunnelToLocalhost;
+
+    @Override
+    public List<DataStoreEntryRef<?>> getDependencies() {
+        return DataStoreDependencies.of(host, gateway);
+    }
 
     @Override
     public void checkComplete() throws Throwable {

@@ -10,6 +10,8 @@ import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.List;
+
 @Value
 @ToString(callSuper = true)
 @SuperBuilder
@@ -20,6 +22,10 @@ public class AbstractHostStore implements DataStore, HostAddressStore, HostAddre
     String host;
     DataStoreEntryRef<NetworkTunnelStore> gateway;
 
+    @Override
+    public List<DataStoreEntryRef<?>> getDependencies() {
+        return DataStoreDependencies.of(gateway);
+    }
     @Override
     public void checkComplete() throws Throwable {
         Validators.nonNull(host);

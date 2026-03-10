@@ -8,6 +8,7 @@ import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ObservableValue;
 
@@ -68,7 +69,9 @@ public class MultiIdentitySwitchBranchProvider implements HubBranchProvider<Mult
 
         @Override
         public void execute(DataStoreEntryRef<MultiIdentityStore> ref) {
-            ref.getStore().select(identity);
+            ThreadHelper.runAsync(() -> {
+                ref.getStore().select(identity);
+            });
         }
 
         @Override

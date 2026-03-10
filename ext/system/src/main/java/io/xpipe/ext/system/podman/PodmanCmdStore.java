@@ -31,6 +31,11 @@ public class PodmanCmdStore
     }
 
     @Override
+    public List<DataStoreEntryRef<?>> getDependencies() {
+        return DataStoreDependencies.of(host);
+    }
+
+    @Override
     public void checkComplete() throws Throwable {
         Validators.nonNull(host);
         Validators.isType(host, ShellStore.class);

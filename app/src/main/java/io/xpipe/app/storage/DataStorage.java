@@ -55,6 +55,7 @@ public abstract class DataStorage {
     private final Map<DataStore, DataStoreEntry> identityStoreEntryMapCache = new IdentityHashMap<>();
     private final Map<DataStore, DataStoreEntry> storeEntryMapCache = new HashMap<>();
     private final Map<DataStore, DataStore> storeMoveCache = new IdentityHashMap<>();
+    private final Map<DataStoreEntry, Collection<DataStoreEntryRef<?>>> storeDependencyCache = new HashMap<>();
 
     @Getter
     protected boolean entriesAvailable;
@@ -362,7 +363,7 @@ public abstract class DataStorage {
         var newParent = DataStorage.get().getDefaultDisplayParent(newEntry);
         var sameParent = Objects.equals(oldParent, newParent);
 
-        finalizeWithChildren(entry);
+        finalizeWithDependencies(entry);
 
         var children = getDeepStoreChildren(entry);
         if (!sameParent) {
@@ -376,6 +377,9 @@ public abstract class DataStorage {
             }
             synchronized (storeEntryMapCache) {
                 storeEntryMapCache.remove(entry.getStore());
+            }
+            synchronized (storeDependencyCache) {
+                storeDependencyCache.remove(entry);
             }
         }
 
@@ -412,13 +416,27 @@ public abstract class DataStorage {
         saveAsync();
     }
 
-    private void finalizeWithChildren(DataStoreEntry entry) {
-        var c = getDeepStoreChildren(entry);
-        var l = new ArrayList<>(c);
-        l.addFirst(entry);
-        for (int i = l.size() - 1; i >= 0; i--) {
-            l.get(i).finalizeEntry();
+    public void finalizeWithDependencies(DataStoreEntry entry) {
+        var cached = storeDependencyCache.computeIfAbsent(entry, this::getDependencies);
+        for (DataStoreEntryRef<?> dataStoreEntryRef : cached) {
+            dataStoreEntryRef.get().finalizeEntry();
         }
+    }
+
+    private Collection<DataStoreEntryRef<?>> getDependencies(DataStoreEntry entry) {
+        var l = new HashSet<DataStoreEntryRef<?>>();
+
+        var store = entry.getStore();
+        if (store == null) {
+            return l;
+        }
+
+        var deps = store.getDependencies();
+        l.addAll(deps);
+        for (DataStoreEntryRef<?> dep : deps) {
+            l.addAll(getDependencies(dep.get()));
+        }
+        return l;
     }
 
     public void updateEntryStore(DataStoreEntry entry, DataStore store) {
@@ -426,10 +444,13 @@ public abstract class DataStorage {
             return;
         }
 
-        finalizeWithChildren(entry);
+        finalizeWithDependencies(entry);
         if (entry.getStore() != null && store != null && !entry.getStore().equals(store)) {
             synchronized (storeMoveCache) {
                 storeMoveCache.put(entry.getStore(), store);
+            }
+            synchronized (storeDependencyCache) {
+                storeDependencyCache.put(entry, getDependencies(entry));
             }
         }
         entry.setStoreInternal(store, false);
@@ -852,6 +873,9 @@ public abstract class DataStorage {
             synchronized (storeEntryMapCache) {
                 storeEntryMapCache.remove(td.getStore());
             }
+            synchronized (storeDependencyCache) {
+                storeDependencyCache.remove(td);
+            }
             var parent = getDefaultDisplayParent(td);
             parent.ifPresent(p -> p.setChildrenCache(null));
         }
@@ -986,7 +1010,7 @@ public abstract class DataStorage {
     }
 
     public void deleteStoreEntry(@NonNull DataStoreEntry entry) {
-        finalizeWithChildren(entry);
+        finalizeWithDependencies(entry);
         this.storeEntries.remove(entry);
         synchronized (identityStoreEntryMapCache) {
             identityStoreEntryMapCache.remove(entry.getStore());

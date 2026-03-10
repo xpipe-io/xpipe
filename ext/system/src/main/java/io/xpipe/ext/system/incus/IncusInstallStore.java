@@ -1,11 +1,6 @@
 package io.xpipe.ext.system.incus;
 
-import io.xpipe.app.ext.DataStoreState;
-import io.xpipe.app.ext.FixedChildStore;
-import io.xpipe.app.ext.FixedHierarchyStore;
-import io.xpipe.app.ext.SelfReferentialStore;
-import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.ext.StatefulDataStore;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
@@ -32,6 +27,11 @@ public class IncusInstallStore
 
     public IncusInstallStore(DataStoreEntryRef<ShellStore> host) {
         this.host = host;
+    }
+
+    @Override
+    public List<DataStoreEntryRef<?>> getDependencies() {
+        return DataStoreDependencies.of(host);
     }
 
     @Override

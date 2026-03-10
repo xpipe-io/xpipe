@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.cred.SshIdentityStrategy;
 import io.xpipe.app.cred.UsernameStrategy;
+import io.xpipe.app.ext.DataStoreDependencies;
 import io.xpipe.app.ext.InternalCacheDataStore;
 import io.xpipe.app.ext.StatefulDataStore;
 import io.xpipe.app.ext.ValidationException;
@@ -63,6 +64,7 @@ public class MultiIdentityStore extends IdentityStore implements StatefulDataSto
         }
 
         setState(MultiIdentityStoreState.builder().selected(entry.get().getUuid()).build());
+        DataStorage.get().finalizeWithDependencies(getSelfEntry());
     }
 
     private DataStoreEntryRef<IdentityStore> getSelectedOrThrow() {
@@ -71,6 +73,11 @@ public class MultiIdentityStore extends IdentityStore implements StatefulDataSto
             return found.get();
         }
         throw ErrorEventFactory.expected(new IllegalStateException("No available identity for multi identity " + getSelfEntry().getName()));
+    }
+
+    @Override
+    public List<DataStoreEntryRef<?>> getDependencies() {
+        return DataStoreDependencies.of(getAvailableIdentities());
     }
 
     @Override

@@ -11,6 +11,7 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.secret.*;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -210,6 +211,11 @@ public class PasswordManagerIdentityStore extends IdentityStore
         }
 
         return new NoIdentityStrategy();
+    }
+
+    @Override
+    public List<DataStoreEntryRef<?>> getDependencies() {
+        return List.of();
     }
 
     @Override
