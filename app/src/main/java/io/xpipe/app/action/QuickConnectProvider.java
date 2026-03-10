@@ -1,6 +1,8 @@
 package io.xpipe.app.action;
 
 import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntry;
 
 import java.net.URI;
 import java.util.List;
@@ -20,6 +22,8 @@ public interface QuickConnectProvider extends ActionProvider {
     }
 
     String getName();
+
+    Optional<DataStoreEntry> findExisting(DataStore store);
 
     DataStore createStore(String arguments, DataStore existing);
 

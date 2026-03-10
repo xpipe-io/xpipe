@@ -68,8 +68,20 @@ public class StoreQuickConnect {
             return false;
         }
 
-        DataStorage.get().updateEntryStore(quickConnectEntry, newStore);
+        if (newStore.isComplete()) {
+            var existing = provider.get().findExisting(newStore);
+            if (existing.isPresent()) {
+                try {
+                    existing.get().getProvider().launch(existing.get()).run();
+                    return true;
+                } catch (Exception e) {
+                    ErrorEventFactory.fromThrowable(e).handle();
+                    return false;
+                }
+            }
+        }
 
+        DataStorage.get().updateEntryStore(quickConnectEntry, newStore);
         var model = StoreCreationDialog.showEdit(quickConnectEntry, newStore, false, finished -> {
             update(finished.getStore());
             ThreadHelper.runAsync(() -> {
@@ -85,7 +97,7 @@ public class StoreQuickConnect {
         });
 
         var wasCached = AppCache.getNonNull("quickConnect", DataStore.class, () -> null) != null;
-        if (wasCached) {
+        if (newStore.isComplete() && wasCached) {
             GlobalTimer.delay(() -> {
                 Platform.runLater(() -> {
                     model.finish();

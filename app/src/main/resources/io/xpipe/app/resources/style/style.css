@@ -256,7 +256,7 @@
 }
 
 .store-filter-state-comp .button:disabled {
-    -fx-opacity: 1.0;
+    -fx-opacity: 0.9;
 }
 
 .store-filter-state-comp .label {

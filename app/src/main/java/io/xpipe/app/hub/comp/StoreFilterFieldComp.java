@@ -127,6 +127,8 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
         var fieldComp = RegionBuilder.of(() -> field);
         var inputGroup = new InputGroupComp(List.of(fieldComp, menuButton));
         inputGroup.setMainReference(fieldComp);
+        inputGroup.prefHeight(47);
+        inputGroup.minHeight(47);
         return inputGroup.build();
     }
 }

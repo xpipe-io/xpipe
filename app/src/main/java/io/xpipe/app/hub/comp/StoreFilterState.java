@@ -43,10 +43,6 @@ public class StoreFilterState {
             return false;
         }
 
-        if (!v.contains(" ")) {
-            return false;
-        }
-
         return QuickConnectProvider.find(v).isPresent();
     }, rawText);
 
@@ -54,10 +50,6 @@ public class StoreFilterState {
     private final ObservableBooleanValue isUrlString = Bindings.createBooleanBinding(() -> {
         var v = rawText.getValue();
         if (v == null) {
-            return false;
-        }
-
-        if (!v.contains(" ")) {
             return false;
         }
 
@@ -84,10 +76,19 @@ public class StoreFilterState {
         var type = TypeFactory.defaultInstance().constructType(new TypeReference<List<String>>() {});
         List<String> recentSearches = AppCache.getNonNull("recentSearches", type, () -> List.of());
         List<String> recentQuickConnections = AppCache.getNonNull("recentQuickConnections", type, () -> List.of());
+        List<String> recentUrls = AppCache.getNonNull("recentUrls", type, () -> List.of());
 
         INSTANCE = new StoreFilterState();
         INSTANCE.recentSearches.setContent(recentSearches);
         INSTANCE.recentQuickConnections.setContent(recentQuickConnections);
+        INSTANCE.recentUrls.setContent(recentUrls);
+    }
+
+    public void reset() {
+        AppCache.update("recentSearches",  recentSearches);
+        AppCache.update("recentQuickConnections",  recentQuickConnections);
+        AppCache.update("recentUrls",  recentUrls);
+        INSTANCE = null;
     }
 
     public void set(String s) {
@@ -162,7 +163,11 @@ public class StoreFilterState {
                 return false;
             }
 
-            return StoreQuickConnect.launchQuickConnect(rawText.getValue());
+            var r = StoreQuickConnect.launchQuickConnect(rawText.getValue());
+            if (r) {
+                putQuickConnect(rawText.getValue());
+            }
+            return r;
         }
 
         return false;
