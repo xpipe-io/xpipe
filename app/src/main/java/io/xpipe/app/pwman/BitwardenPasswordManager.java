@@ -277,4 +277,9 @@ public class BitwardenPasswordManager implements PasswordManager {
     public PasswordManagerKeyConfiguration getKeyConfiguration() {
         return PasswordManagerKeyConfiguration.of(true, false, true, keyStrategy, getSocketLocation());
     }
+
+    @Override
+    public boolean selectInitial() throws Exception {
+        return LocalShell.getShell().view().findProgram("bw").isPresent();
+    }
 }

@@ -1,5 +1,7 @@
 package io.xpipe.app.pwman;
 
+import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.OsType;
 import io.xpipe.core.SecretValue;
@@ -14,6 +16,35 @@ import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface PasswordManager {
+
+    @SneakyThrows
+    static PasswordManager determineDefault(PasswordManager existing) {
+        if (existing != null) {
+            return existing;
+        }
+
+        if (!AppProperties.get().isInitialLaunch()) {
+            return null;
+        }
+
+        try {
+            for (Class<?> c : PasswordManager.getClasses()) {
+                var bm = c.getDeclaredMethod("builder");
+                bm.setAccessible(true);
+                var b = bm.invoke(null);
+
+                var m = b.getClass().getDeclaredMethod("build");
+                m.setAccessible(true);
+                var defValue = (PasswordManager) c.cast(m.invoke(b));
+                if (defValue.selectInitial()) {
+                    return defValue;
+                }
+            }
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable(e).handle();
+        }
+        return null;
+    }
 
     @SneakyThrows
     static boolean isPasswordManagerSshAgent(String s) {
@@ -62,6 +93,8 @@ public interface PasswordManager {
     String getWebsite();
 
     PasswordManagerKeyConfiguration getKeyConfiguration();
+
+    boolean selectInitial() throws Exception;
 
     default Duration getCacheDuration() {
         return Duration.ofSeconds(30);

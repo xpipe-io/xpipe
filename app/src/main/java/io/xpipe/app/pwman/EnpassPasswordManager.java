@@ -9,6 +9,7 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.secret.SecretManager;
 import io.xpipe.app.secret.SecretPromptStrategy;
@@ -45,6 +46,11 @@ public class EnpassPasswordManager implements PasswordManager {
     private static final UUID MASTER_PASSWORD_UUID = UUID.randomUUID();
     private static ShellControl SHELL;
     private final FilePath vaultPath;
+
+    @Override
+    public boolean selectInitial() throws Exception {
+        return LocalShell.getShell().view().findProgram("enpass-cli").isPresent();
+    }
 
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {

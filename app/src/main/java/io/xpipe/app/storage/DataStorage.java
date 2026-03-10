@@ -417,9 +417,11 @@ public abstract class DataStorage {
     }
 
     public void finalizeWithDependencies(DataStoreEntry entry) {
-        var cached = storeDependencyCache.computeIfAbsent(entry, this::getDependencies);
-        for (DataStoreEntryRef<?> dataStoreEntryRef : cached) {
-            dataStoreEntryRef.get().finalizeEntry();
+        for (DataStoreEntry other : getStoreEntries()) {
+            var cached = storeDependencyCache.computeIfAbsent(other, this::getDependencies);
+            if (cached.contains(entry.ref())) {
+                other.finalizeEntry();
+            }
         }
     }
 

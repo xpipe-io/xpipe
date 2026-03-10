@@ -5,10 +5,7 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
-import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.CommandSupport;
-import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.process.*;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.*;
 import io.xpipe.core.JacksonMapper;
@@ -31,6 +28,11 @@ public class LastpassPasswordManager implements PasswordManager {
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {
         return PasswordManagerKeyConfiguration.none();
+    }
+
+    @Override
+    public boolean selectInitial() throws Exception {
+        return LocalShell.getShell().view().findProgram("lpass").isPresent();
     }
 
     private static ShellControl SHELL;

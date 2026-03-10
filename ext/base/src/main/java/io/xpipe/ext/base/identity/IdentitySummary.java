@@ -9,7 +9,7 @@ public class IdentitySummary {
         if (st instanceof MultiIdentityStore mis) {
             var selected = mis.getSelected();
             if (selected.isPresent()) {
-                return createSummary(selected.get().getStore());
+                return createSummary(selected.get().getStore()) + " [" + selected.get().get().getName() + "]";
             }
         }
 

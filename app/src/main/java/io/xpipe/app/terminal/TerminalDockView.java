@@ -17,7 +17,6 @@ import java.util.function.UnaryOperator;
 
 public class TerminalDockView {
 
-    @Getter
     private final Set<ControllableTerminalSession> terminalInstances = new HashSet<>();
 
     private final UnaryOperator<Rect> windowBoundsFunction;

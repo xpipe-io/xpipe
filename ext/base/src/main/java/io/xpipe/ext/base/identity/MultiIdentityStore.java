@@ -77,7 +77,7 @@ public class MultiIdentityStore extends IdentityStore implements StatefulDataSto
 
     @Override
     public List<DataStoreEntryRef<?>> getDependencies() {
-        return DataStoreDependencies.of(getAvailableIdentities());
+        return List.of();
     }
 
     @Override

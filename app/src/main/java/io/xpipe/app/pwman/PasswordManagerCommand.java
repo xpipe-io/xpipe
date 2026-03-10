@@ -10,6 +10,7 @@ import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
@@ -31,6 +32,11 @@ public class PasswordManagerCommand implements PasswordManager {
 
     private static ShellControl SHELL;
     ShellScript script;
+
+    @Override
+    public boolean selectInitial() throws Exception {
+        return false;
+    }
 
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {

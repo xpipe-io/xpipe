@@ -201,6 +201,11 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
         return PasswordManagerKeyConfiguration.none();
     }
 
+    @Override
+    public boolean selectInitial() throws Exception {
+        return LocalShell.getShell().view().findProgram("vault").isPresent();
+    }
+
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<HashicorpVaultPasswordManager> p) {
         var vaultAddress = new SimpleStringProperty(p.getValue().getVaultAddress());

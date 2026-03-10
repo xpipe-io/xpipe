@@ -10,6 +10,7 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
@@ -37,6 +38,11 @@ public class PsonoPasswordManager implements PasswordManager {
     private final InPlaceSecretValue apiKey;
     private final InPlaceSecretValue apiSecretKey;
     private final String serverUrl;
+
+    @Override
+    public boolean selectInitial() throws Exception {
+        return LocalShell.getShell().view().findProgram("psonoci").isPresent();
+    }
 
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {

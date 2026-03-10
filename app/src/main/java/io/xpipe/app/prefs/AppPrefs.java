@@ -830,6 +830,7 @@ public final class AppPrefs {
         rdpClientType.setValue(ExternalRdpClient.determineDefault(rdpClientType.get()));
         spiceClient.setValue(ExternalSpiceClient.determineDefault(spiceClient.getValue()));
         vncClient.setValue(ExternalVncClient.determineDefault(vncClient.getValue()));
+        passwordManager.setValue(PasswordManager.determineDefault(passwordManager.getValue()));
 
         PrefsProvider.getAll().forEach(prov -> prov.initDefaultValues());
     }

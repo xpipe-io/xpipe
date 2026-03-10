@@ -39,6 +39,11 @@ public class ProtonPasswordManager implements PasswordManager {
         return PasswordManagerKeyConfiguration.of(false, false, true, keyStrategy, getSocketLocation());
     }
 
+    @Override
+    public boolean selectInitial() throws Exception {
+        return LocalShell.getShell().view().findProgram("pass-cli").isPresent();
+    }
+
     private static ShellControl SHELL;
 
     private final PasswordManagerKeyStrategy keyStrategy;

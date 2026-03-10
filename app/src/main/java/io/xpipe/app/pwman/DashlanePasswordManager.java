@@ -8,10 +8,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
-import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.CommandSupport;
-import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.process.*;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.JacksonMapper;
@@ -37,6 +34,11 @@ public class DashlanePasswordManager implements PasswordManager {
 
     private static ShellControl SHELL;
 
+
+    @Override
+    public boolean selectInitial() throws Exception {
+        return LocalShell.getShell().view().findProgram("dcli").isPresent();
+    }
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<DashlanePasswordManager> p) {

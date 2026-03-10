@@ -8,10 +8,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
-import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.CommandSupport;
-import io.xpipe.app.process.ProcessOutputException;
-import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.process.*;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.JacksonMapper;
@@ -37,6 +34,11 @@ public class OnePasswordManager implements PasswordManager {
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {
         return PasswordManagerKeyConfiguration.of(true, false, true, keyStrategy, getSocketLocation());
+    }
+
+    @Override
+    public boolean selectInitial() throws Exception {
+        return LocalShell.getShell().view().findProgram("op").isPresent();
     }
 
     private static ShellControl SHELL;

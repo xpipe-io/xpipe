@@ -12,6 +12,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.FilePath;
@@ -45,6 +46,11 @@ public class PassboltPasswordManager implements PasswordManager {
     private final String serverUrl;
     private final InPlaceSecretValue passphrase;
     private final Path privateKey;
+
+    @Override
+    public boolean selectInitial() throws Exception {
+        return LocalShell.getShell().view().findProgram("passbolt").isPresent();
+    }
 
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {

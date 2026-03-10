@@ -24,6 +24,11 @@ public class WindowsCredentialManager implements PasswordManager {
         return PasswordManagerKeyConfiguration.none();
     }
 
+    @Override
+    public boolean selectInitial() throws Exception {
+        return false;
+    }
+
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<WindowsCredentialManager> p) {
         return new OptionsBuilder()
