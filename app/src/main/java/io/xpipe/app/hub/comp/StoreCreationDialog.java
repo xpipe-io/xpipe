@@ -161,7 +161,6 @@ public class StoreCreationDialog {
         comp.prefWidth(650);
         var nameKey = model.isQuickConnect() ? "quickConnect" : model.storeTypeNameKey() + "Add";
         var modal = ModalOverlay.of(nameKey, comp);
-        var queueEntry = StoreCreationQueueEntry.of(model, modal);
         comp.apply(struc -> {
             struc.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
                 if (e.getCode() == KeyCode.ESCAPE) {
@@ -173,16 +172,21 @@ public class StoreCreationDialog {
                 }
             });
         });
-        modal.hideable(queueEntry);
-        AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
-            if (model.getFinished().get() || !modal.isShowing()) {
-                return;
-            }
 
-            modal.hide();
-            AppLayoutModel.get().getQueueEntries().add(queueEntry);
-        });
-        modal.setRequireCloseButtonForClose(true);
+        if (!model.isQuickConnect()) {
+            var queueEntry = StoreCreationQueueEntry.of(model, modal);
+            modal.hideable(queueEntry);
+            AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
+                if (model.getFinished().get() || !modal.isShowing()) {
+                    return;
+                }
+
+                modal.hide();
+                AppLayoutModel.get().getQueueEntries().add(queueEntry);
+            });
+            modal.setRequireCloseButtonForClose(true);
+        }
+
         var loadingLabel = new LabelComp(Bindings.createStringBinding(
                 () -> {
                     return model.getBusy().get() ? AppI18n.get("testingConnection") : null;

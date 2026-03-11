@@ -36,12 +36,17 @@
     -fx-border-width: 1;
     -fx-border-radius: 4px;
     -fx-padding: 1px;
-    -fx-background-color: -color-bg-default-transparent;
-    -fx-border-color: -color-neutral-emphasis;
+    -fx-background-color: -color-bg-muted;
+    -fx-border-color: -color-border-default;
 }
 
 .scan-list .list-content {
     -fx-padding: 0.7em 1px 1em 1em;
+}
+
+.root:nord .scan-list {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
 }
 
 .root:windows .text {
