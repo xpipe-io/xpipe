@@ -90,27 +90,20 @@ public abstract class StoreSectionBaseComp extends RegionBuilder<VBox> {
     }
 
     protected void addVisibilityListeners(VBox root, Pane pane, Supplier<HBox> hbox) {
-        var hadScene = new AtomicBoolean(false);
-        root.sceneProperty().subscribe(scene -> {
-            if (scene != null) {
-                hadScene.set(true);
-            }
-        });
-
         AtomicReference<HBox> built = new AtomicReference<>();
         Consumer<Boolean> update = (visible) -> {
+            // Ignore any changes before this was added to the scene
+            if (root.getScene() == null) {
+                return;
+            }
+
             if (visible) {
-                // Ignore any changes before this was added to the scene
-                if (root.getScene() == null && built.get() == null) {
+                if (!root.isVisible()) {
                     return;
                 }
 
                 if (built.get() == null) {
                     built.set(hbox.get());
-                }
-
-                if (!root.isVisible()) {
-                    return;
                 }
 
                 pane.getChildren().setAll(built.get());
@@ -125,12 +118,22 @@ public abstract class StoreSectionBaseComp extends RegionBuilder<VBox> {
 
         root.visibleProperty().subscribe((newValue) -> {
             if (root.getScene() == null) {
-                update.accept(newValue);
-            } else {
-                Platform.runLater(() -> {
-                    update.accept(newValue);
-                });
+                return;
             }
+
+            Platform.runLater(() -> {
+                update.accept(root.isVisible());
+            });
+        });
+
+        root.sceneProperty().subscribe(newValue -> {
+            if (newValue == null) {
+                return;
+            }
+
+            Platform.runLater(() -> {
+                update.accept(root.isVisible());
+            });
         });
     }
 
