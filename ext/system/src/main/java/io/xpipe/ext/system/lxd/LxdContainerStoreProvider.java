@@ -67,7 +67,7 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
     @Override
     public DataStoreEntry getDisplayParent(DataStoreEntry store) {
         LxdContainerStore s = store.getStore().asNeeded();
-        return s.getCmd().get();
+        return s.getCmd() != null ? s.getCmd().get() : null;
     }
 
     @Override
@@ -76,18 +76,9 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
         var identity = new SimpleObjectProperty<>(st.getIdentity());
 
         var q = new OptionsBuilder()
-                .name("host")
-                .description("lxdHostDescription")
-                .addComp(new StoreChoiceComp<>(
-                        entry,
-                        new ReadOnlyObjectWrapper<>(st.getCmd().getStore().getHost()),
-                        ShellStore.class,
-                        null,
-                        StoreViewState.get().getAllConnectionsCategory()))
-                .disable()
                 .name("container")
-                .description("lxdContainerDescription")
-                .addStaticString(st.getContainerName())
+                .description("containerDescription")
+                .addStaticString((st.getProjectName() != null ? st.getProjectName() + "/" : "") + st.getContainerName())
                 .sub(IdentityChoiceBuilder.container(identity), identity)
                 .bind(
                         () -> {

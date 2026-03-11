@@ -70,6 +70,7 @@ public class PodmanContainerStore
 
     @Override
     public void stop() throws Exception {
+        stopSessionIfNeeded();
         var sc = getCmd().getStore().getHost().getStore().getOrStartSession();
         var view = commandView(sc);
         view.stop(containerName);

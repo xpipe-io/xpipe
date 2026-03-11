@@ -133,7 +133,7 @@ public class IncusContainerStore
             return;
         }
 
-        var running = "RUNNING".equals(displayState.get().getState());
+        var running = "Running".equals(displayState.get().getState());
         var newState =
                 state.toBuilder().containerState(displayState.get().getState()).running(running)
                         .ipv4(displayState.get().getIpv4Address()).ipv6(displayState.get().getIpv6Address()).build();
@@ -150,6 +150,7 @@ public class IncusContainerStore
 
     @Override
     public void stop() throws Exception {
+        stopSessionIfNeeded();
         var sc = getInstall().getStore().getHost().getStore().getOrStartSession();
         var view = new IncusCommandView(sc);
         view.stop(projectName, containerName);

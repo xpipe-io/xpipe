@@ -37,3 +37,20 @@
     -fx-background-radius: 1em;
     -fx-padding: 0.8em;
 }
+
+.root:light .toggle-switch-comp > .thumb {
+    -fx-background-color: -color-neutral-emphasis;
+}
+
+.root:light .toggle-switch-comp > .thumb-area {
+    -fx-background-color: -color-border-default, -color-bg-subtle;
+}
+
+.root:light .toggle-switch:selected > .thumb {
+    -fx-background-color: -color-accent-emphasis, -color-fg-emphasis;
+    -fx-opacity: 1;
+}
+
+.root:light .toggle-switch:selected > .thumb-area {
+    -fx-background-color: -color-accent-emphasis, -color-accent-emphasis;
+}
