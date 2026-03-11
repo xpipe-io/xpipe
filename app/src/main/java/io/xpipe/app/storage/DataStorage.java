@@ -1089,8 +1089,8 @@ public abstract class DataStorage {
     }
 
     private DataStoreCategory getFallbackCategory(DataStoreCategory cat) {
-        var parent = getStoreCategoryIfPresent(cat.getParentCategory()).orElseThrow();
-        if (parent.getParentCategory() != null) {
+        var parent = getStoreCategoryIfPresent(cat.getParentCategory()).orElse(null);
+        if (parent != null && parent.getParentCategory() != null) {
             return parent;
         }
 

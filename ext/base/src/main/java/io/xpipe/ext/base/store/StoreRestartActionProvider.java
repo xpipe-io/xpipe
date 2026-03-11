@@ -28,7 +28,7 @@ public class StoreRestartActionProvider implements HubLeafProvider<DataStore>, B
 
     @Override
     public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
-        return o.getStore() instanceof StartableStore && o.getStore() instanceof StoppableStore;
+        return o.getStore() instanceof RestartableStore || (o.getStore() instanceof StartableStore && o.getStore() instanceof StoppableStore);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class StoreRestartActionProvider implements HubLeafProvider<DataStore>, B
 
     @Override
     public String getId() {
-        return "restartStore";
+        return "restartAction";
     }
 
     @Jacksonized
@@ -72,8 +72,12 @@ public class StoreRestartActionProvider implements HubLeafProvider<DataStore>, B
 
         @Override
         public void executeImpl() throws Exception {
-            ((StoppableStore) ref.getStore()).stop();
-            ((StartableStore) ref.getStore()).start();
+            if (ref.getStore() instanceof RestartableStore r) {
+                r.restart();
+            } else {
+                ((StoppableStore) ref.getStore()).stop();
+                ((StartableStore) ref.getStore()).start();
+            }
         }
 
         @Override

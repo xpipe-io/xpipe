@@ -6,3 +6,8 @@
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;
 }
+
+.root:nord .data-store-list-choice-comp .entry {
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}

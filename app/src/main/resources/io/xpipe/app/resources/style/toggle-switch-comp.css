@@ -28,6 +28,10 @@
     -fx-padding: 0.7em;
 }
 
+.root:windows:nord .toggle-switch-comp > .thumb {
+    -fx-background-radius: 0em;
+}
+
 .root:macos .toggle-switch-comp > .thumb-area {
     -fx-padding: 0.8em 1.4em;
 }
@@ -36,6 +40,10 @@
     -fx-background-insets: 0.15em;
     -fx-background-radius: 1em;
     -fx-padding: 0.8em;
+}
+
+.root:macos:nord .toggle-switch-comp > .thumb {
+    -fx-background-radius: 0em;
 }
 
 .root:light .toggle-switch-comp > .thumb {

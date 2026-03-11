@@ -8,6 +8,7 @@ import io.xpipe.app.comp.RegionDescriptor;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.InputGroupComp;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppOpenArguments;
 import io.xpipe.app.platform.PlatformThread;
@@ -20,6 +21,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.PopupWindow;
+import lombok.val;
 
 import java.util.List;
 import java.util.Objects;
@@ -54,18 +56,25 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
             }
         });
 
+        var clearButton = new IconButtonComp("mdi2c-close", () -> {
+            field.clear();
+        }).build();
+        clearButton.setCursor(Cursor.DEFAULT);
+        AppFontSizes.sm(clearButton);
         var searchButton = new IconButtonComp("mdi2m-magnify", () -> {
             if (state.open()) {
                 field.clear();
             }
         }).build();
         searchButton.setCursor(Cursor.DEFAULT);
+        AppFontSizes.sm(searchButton);
         var launchButton =  new IconButtonComp("mdi2p-play", () -> {
             if (state.open()) {
                 field.clear();
             }
         }).build();
         launchButton.setCursor(Cursor.DEFAULT);
+        AppFontSizes.sm(launchButton);
 
         field.setMinHeight(0);
         field.setMaxHeight(20000);
@@ -75,7 +84,7 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
                 .bind(Bindings.createObjectBinding(
                         () -> {
                             if (!field.isFocused()) {
-                                return null;
+                                return state.getEffectiveFilter().get() != null ? clearButton : null;
                             }
 
                             if (state.getIsQuickConnectString().get() || state.getIsUrlString().get()) {

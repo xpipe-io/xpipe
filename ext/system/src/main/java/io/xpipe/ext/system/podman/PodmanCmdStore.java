@@ -31,6 +31,11 @@ public class PodmanCmdStore
     }
 
     @Override
+    public boolean removeLeftovers() {
+        return false;
+    }
+
+    @Override
     public List<DataStoreEntryRef<?>> getDependencies() {
         return DataStoreDependencies.of(host);
     }

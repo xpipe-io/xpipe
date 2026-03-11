@@ -3,10 +3,12 @@ package io.xpipe.ext.system.podman;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
 
+import io.xpipe.core.OsType;
 import lombok.NonNull;
 import lombok.Value;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class PodmanCommandView extends CommandViewBase {
@@ -66,6 +68,16 @@ public class PodmanCommandView extends CommandViewBase {
     }
 
     public class Container extends CommandView {
+
+        public Optional<String> queryLabel(String container, String label) throws Exception {
+            var command = build(b -> b.add("inspect")
+                    .add(sc -> {
+                        var quote = ShellDialects.isPowershell(sc) ? "'" : "\"";
+                        return "--format=" + quote + "{{index (index .Config.Labels \\\"" + label + "\\\")}}" + quote;
+                    })
+                    .addQuoted(container));
+            return command.readStdoutIfPossible().filter(s -> !s.isBlank());
+        }
 
         public String queryState(String container) throws Exception {
             return build(commandBuilder -> commandBuilder.add(
@@ -143,6 +155,18 @@ public class PodmanCommandView extends CommandViewBase {
         public void stop(String container) throws Exception {
             build(commandBuilder -> commandBuilder.add("stop").addQuoted(container))
                     .execute();
+        }
+
+        public void restart(String container) throws Exception {
+            if (shellControl.getOsType() == OsType.LINUX) {
+                var systemd = queryLabel(container, "PODMAN_SYSTEMD_UNIT");
+                if (systemd.isPresent()) {
+                    shellControl.command(CommandBuilder.of().add("systemctl", "restart", "--user").addQuoted(systemd.get())).execute();
+                    return;
+                }
+            }
+
+            build(commandBuilder -> commandBuilder.add("restart").addQuoted(container)).execute();
         }
 
         public String port(String container) throws Exception {
