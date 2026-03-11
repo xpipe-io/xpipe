@@ -56,7 +56,7 @@ dependencies {
     compileOnly project(':app')
     compileOnly 'net.synedra:validatorfx:0.4.2'
     compileOnly files("$rootDir/gradle/gradle_scripts/atlantafx-base-2.0.2.jar")
-    compileOnly 'commons-io:commons-io:2.21.1'
+    compileOnly 'commons-io:commons-io:2.21.0'
     compileOnly "org.kordamp.ikonli:ikonli-javafx:12.4.0"
 
     if (project != project(':base')) {

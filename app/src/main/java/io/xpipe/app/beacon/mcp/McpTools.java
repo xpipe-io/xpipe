@@ -1,5 +1,6 @@
 package io.xpipe.app.beacon.mcp;
 
+import io.modelcontextprotocol.json.jackson2.JacksonMcpJsonMapper;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppNames;
@@ -18,7 +19,6 @@ import io.xpipe.core.FilePath;
 import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import io.modelcontextprotocol.json.jackson.JacksonMcpJsonMapper;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
 import lombok.Builder;
