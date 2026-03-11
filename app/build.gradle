@@ -72,10 +72,10 @@ dependencies {
     api 'info.picocli:picocli:4.7.7'
     api 'org.apache.commons:commons-lang3:3.20.0'
     api 'io.sentry:sentry:8.20.0'
-    api 'commons-io:commons-io:2.21.0'
-    api "com.fasterxml.jackson.core:jackson-databind:2.21.0"
+    api 'commons-io:commons-io:2.21.1'
+    api "com.fasterxml.jackson.core:jackson-databind:2.21.1"
     api "com.fasterxml.jackson.core:jackson-annotations:2.21"
-    api "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.0"
+    api "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.1"
     api "org.kordamp.ikonli:ikonli-material2-pack:12.4.0"
     api "org.kordamp.ikonli:ikonli-materialdesign2-pack:12.4.0"
     api 'org.kordamp.ikonli:ikonli-bootstrapicons-pack:12.4.0'
