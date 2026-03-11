@@ -15,7 +15,6 @@ import io.xpipe.app.storage.StorageListener;
 import io.xpipe.app.util.GlobalTimer;
 
 import javafx.application.Platform;
-import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableIntegerValue;
@@ -96,9 +95,9 @@ public class StoreViewState {
 
         INSTANCE = new StoreViewState();
         INSTANCE.initSortMode();
-        INSTANCE.updateContent();
+        INSTANCE.updateWrappers();
         INSTANCE.initSections();
-        INSTANCE.updateContent();
+        INSTANCE.updateWrappers();
         INSTANCE.initFilterListener();
         INSTANCE.initBatchListeners();
         INSTANCE.initialized = true;
@@ -222,7 +221,7 @@ public class StoreViewState {
         tieSortMode.setValue(tieMode != null ? tieMode : StoreSectionSortMode.DATE_ASC);
     }
 
-    private void updateContent() {
+    public void updateWrappers() {
         categories.getList().forEach(c -> c.update());
         allEntries.getList().forEach(e -> e.update());
     }

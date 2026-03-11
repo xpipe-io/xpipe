@@ -52,7 +52,6 @@ public class AppMainWindow {
 
     private final BooleanProperty windowActive = new SimpleBooleanProperty(false);
     private volatile Instant lastUpdate;
-    private boolean shown = false;
 
     private AppMainWindow(Stage stage) {
         this.stage = stage;
@@ -189,8 +188,6 @@ public class AppMainWindow {
                 AppWindowsShutdown.registerHook(ctrl.getWindowHandle());
             }
         }
-
-        shown = true;
     }
 
     public void hide() {

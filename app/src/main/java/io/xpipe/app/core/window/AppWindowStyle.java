@@ -59,6 +59,12 @@ public class AppWindowStyle {
             return false;
         });
 
+        scene.focusOwnerProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null || !newValue.isFocusTraversable()) {
+                keyInput.set(false);
+            }
+        });
+
         scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             var c = event.getCode();
             var list = List.of(KeyCode.SPACE, KeyCode.ENTER, KeyCode.SHIFT, KeyCode.TAB);

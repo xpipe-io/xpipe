@@ -49,6 +49,8 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
         field.focusedProperty().subscribe(focus -> {
             if (focus) {
                 popover.hide();
+            } else {
+                state.open();
             }
         });
 
@@ -93,11 +95,12 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
             if (event.getCode() == KeyCode.ENTER) {
                 if (state.open()) {
                     field.clear();
-                    event.consume();
                 }
+                field.getParent().getParent().requestFocus();
+                event.consume();
             } else if (event.getCode() == KeyCode.ESCAPE) {
                 field.clear();
-                field.getScene().getRoot().requestFocus();
+                field.getParent().getParent().requestFocus();
                 event.consume();
             }
         });

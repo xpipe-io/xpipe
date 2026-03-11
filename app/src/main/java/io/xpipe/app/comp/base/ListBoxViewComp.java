@@ -158,6 +158,16 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
         vbox.getChildren().addListener((ListChangeListener<? super Node>) (change) -> {
             dirty.set(true);
         });
+        shown.addListener((ListChangeListener<? super T>) (change) -> {
+            Platform.runLater(() -> {
+                dirty.set(true);
+            });
+        });
+        scroll.sceneProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                dirty.set(true);
+            }
+        });
 
         // We can't directly listen to any parent element changing visibility, so this is a compromise
         if (AppLayoutModel.get() != null) {

@@ -20,6 +20,7 @@ import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -89,6 +90,13 @@ public abstract class StoreSectionBaseComp extends RegionBuilder<VBox> {
     }
 
     protected void addVisibilityListeners(VBox root, Pane pane, Supplier<HBox> hbox) {
+        var hadScene = new AtomicBoolean(false);
+        root.sceneProperty().subscribe(scene -> {
+            if (scene != null) {
+                hadScene.set(true);
+            }
+        });
+
         AtomicReference<HBox> built = new AtomicReference<>();
         Consumer<Boolean> update = (visible) -> {
             if (visible) {
@@ -97,12 +105,12 @@ public abstract class StoreSectionBaseComp extends RegionBuilder<VBox> {
                     return;
                 }
 
-                if (!root.isVisible()) {
-                    return;
-                }
-
                 if (built.get() == null) {
                     built.set(hbox.get());
+                }
+
+                if (!root.isVisible()) {
+                    return;
                 }
 
                 pane.getChildren().setAll(built.get());
