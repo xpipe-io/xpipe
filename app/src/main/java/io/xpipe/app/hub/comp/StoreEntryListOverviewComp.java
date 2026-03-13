@@ -75,11 +75,11 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
                 label,
                 c,
                 RegionBuilder.hspacer().build(),
-                createIndexSortButton().build(),
-                sep,
                 createDateSortButton().build(),
                 RegionBuilder.hspacer(2).build(),
-                createAlphabeticalSortButton().build());
+                createAlphabeticalSortButton().build(),
+                sep,
+                createIndexSortButton().build());
         if (OsType.ofLocal() == OsType.MACOS) {
             AppFontSizes.xxxl(label);
             AppFontSizes.xxxl(c);
@@ -95,7 +95,7 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
     private Region createAddBar() {
         var add = createAddButton();
         var batchMode = createBatchModeButton().build();
-        var hbox = new HBox(add, new Spacer(Orientation.HORIZONTAL), batchMode);
+        var hbox = new HBox(add, batchMode);
 
         batchMode.minHeightProperty().bind(add.heightProperty());
         batchMode.prefHeightProperty().bind(add.heightProperty());
