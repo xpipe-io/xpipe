@@ -170,6 +170,10 @@ public class AppImages {
             return;
         }
 
+        if (images.containsKey(key)) {
+            return;
+        }
+
         images.put(key, loadImage(p));
     }
 

@@ -254,7 +254,7 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
             }
 
             root.setText(icon.getId());
-            image.set(SystemIconManager.getAndLoadIconFile(icon));
+            image.set(SystemIconManager.getAndLoadIconFile(icon, false));
             setGraphic(root);
         }
     }
