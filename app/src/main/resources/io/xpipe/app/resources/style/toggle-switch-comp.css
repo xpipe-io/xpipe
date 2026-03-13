@@ -48,23 +48,28 @@
     -fx-background-color: derive(-color-neutral-muted, -8%);
 }
 
-.root:light .toggle-switch:selected > .thumb {
+.root:light .toggle-switch-comp:selected > .thumb {
     -fx-background-color: -color-accent-emphasis, -color-fg-emphasis;
     -fx-opacity: 1;
 }
 
-.root:light .toggle-switch:selected > .thumb-area {
+.root:light .toggle-switch-comp:selected > .thumb-area {
     -fx-background-color: -color-accent-emphasis, -color-accent-emphasis;
 }
 
 .root:macos .toggle-switch-comp > .thumb-area {
-    -fx-padding: 0.8em 1.4em;
+    -fx-padding: 0.65em 1.5em;
+}
+
+.root:light:macos .toggle-switch-comp > .thumb-area {
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
 }
 
 .root:macos .toggle-switch-comp > .thumb {
     -fx-background-insets: 0.15em;
     -fx-background-radius: 1em;
-    -fx-padding: 0.8em 1.2em 0.8em 1.2em;
+    -fx-padding: 0.7em 1.0em 0.7em 1.0em;
 }
 
 .root:macos:nord .toggle-switch-comp > .thumb {
