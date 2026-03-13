@@ -7,6 +7,11 @@
     -fx-background-insets: 0;
 }
 
+.root:nord .category-button {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+
 .category-button .name .text-field {
     -fx-padding: 0.25em 0.1em;
     -fx-background-color: transparent;

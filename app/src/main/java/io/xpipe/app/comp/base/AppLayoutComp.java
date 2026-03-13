@@ -74,6 +74,7 @@ public class AppLayoutComp extends RegionStructureBuilder<BorderPane, AppLayoutC
                         modal.addButton(new ModalButton("restart", () -> AppRestart.restart(), true, true));
                         modal.show();
                     }, Duration.ofSeconds(1));
+                    AppPrefs.get().getRequiresRestart().set(false);
                 }
             }
 

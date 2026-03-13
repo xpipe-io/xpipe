@@ -135,7 +135,6 @@ public class McpCategory extends AppPrefsCategory {
                         .addToggle(prefs.enableMcpServer)
                         .nameAndDescription("mcpClientConfigurationDetails")
                         .addComp(tabComp)
-                        .hide(prefs.enableMcpServer.not())
                         .pref(prefs.enableMcpMutationTools)
                         .addToggle(prefs.enableMcpMutationTools)
                         .hide(prefs.enableMcpServer.not())
