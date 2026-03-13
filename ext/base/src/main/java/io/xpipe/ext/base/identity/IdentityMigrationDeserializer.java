@@ -13,13 +13,16 @@ import java.io.IOException;
 
 public class IdentityMigrationDeserializer extends DelegatingDeserializer {
 
-    public IdentityMigrationDeserializer(JsonDeserializer<?> d) {
+    private final String type;
+
+    public IdentityMigrationDeserializer(JsonDeserializer<?> d, String type) {
         super(d);
+        this.type = type;
     }
 
     @Override
     protected JsonDeserializer<?> newDelegatingInstance(JsonDeserializer<?> newDelegatee) {
-        return new IdentityMigrationDeserializer(newDelegatee);
+        return new IdentityMigrationDeserializer(newDelegatee, this.type);
     }
 
     @Override
@@ -56,6 +59,14 @@ public class IdentityMigrationDeserializer extends DelegatingDeserializer {
     }
 
     private void migrate(ObjectNode containerNode) {
+        if (type.equals("ssh")) {
+            var proxy = containerNode.get("proxy");
+            if (proxy != null) {
+                containerNode.remove("proxy");
+                containerNode.set("gateway", proxy);
+            }
+        }
+
         var user = containerNode.get("user");
         var password = containerNode.get("password");
         var identity = containerNode.get("identityStrategy");
