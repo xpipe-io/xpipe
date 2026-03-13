@@ -84,10 +84,10 @@ public class StoreFilterState {
         INSTANCE.recentUrls.setContent(recentUrls);
     }
 
-    public void reset() {
-        AppCache.update("recentSearches",  recentSearches);
-        AppCache.update("recentQuickConnections",  recentQuickConnections);
-        AppCache.update("recentUrls",  recentUrls);
+    public static void reset() {
+        AppCache.update("recentSearches",  INSTANCE.recentSearches.getList());
+        AppCache.update("recentQuickConnections",  INSTANCE.recentQuickConnections.getList());
+        AppCache.update("recentUrls",  INSTANCE.recentUrls.getList());
         INSTANCE = null;
     }
 
@@ -135,6 +135,10 @@ public class StoreFilterState {
     }
 
     public boolean open() {
+        if (rawText.getValue() == null) {
+            return false;
+        }
+
         if (isSearchString.getValue()) {
             putFilter(rawText.getValue());
             return false;

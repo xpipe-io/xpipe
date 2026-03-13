@@ -336,7 +336,7 @@ public abstract class DataStorage {
             } catch (Exception e) {
                 return false;
             }
-        } while ((c = DataStorage.get().getDefaultDisplayParent(c).orElse(null)) != null);
+        } while ((c = getDefaultDisplayParent(c).orElse(null)) != null);
         return true;
     }
 
@@ -359,8 +359,8 @@ public abstract class DataStorage {
             newEntry.setIcon(icon, true);
         }
 
-        var oldParent = DataStorage.get().getDefaultDisplayParent(entry);
-        var newParent = DataStorage.get().getDefaultDisplayParent(newEntry);
+        var oldParent = getDefaultDisplayParent(entry);
+        var newParent = getDefaultDisplayParent(newEntry);
         var sameParent = Objects.equals(oldParent, newParent);
 
         finalizeWithDependencies(entry);
@@ -457,7 +457,9 @@ public abstract class DataStorage {
         }
         entry.setStoreInternal(store, false);
 
-        saveAsync();
+        if (storeEntries.containsKey(entry)) {
+            saveAsync();
+        }
     }
 
     public void updateCategory(DataStoreCategory category, DataStoreCategory newCategory) {
@@ -470,7 +472,7 @@ public abstract class DataStorage {
     public void updateCategoryConfig(DataStoreCategory category, DataStoreCategoryConfig config) {
         if (category.setConfig(config)) {
             // Update git remote if needed
-            DataStorage.get().saveAsync();
+            saveAsync();
         }
     }
 

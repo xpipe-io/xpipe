@@ -1,6 +1,8 @@
 package io.xpipe.app.action;
 
 import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 
@@ -28,4 +30,10 @@ public interface QuickConnectProvider extends ActionProvider {
     DataStore createStore(String arguments, DataStore existing);
 
     String getPlaceholder();
+
+    boolean skipDialogIfPossible();
+
+    default void open(DataStoreEntry e) throws Exception {
+        e.getProvider().launch(e).run();
+    }
 }

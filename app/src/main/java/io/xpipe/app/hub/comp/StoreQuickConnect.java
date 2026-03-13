@@ -71,23 +71,39 @@ public class StoreQuickConnect {
         if (newStore.isComplete()) {
             var existing = provider.get().findExisting(newStore);
             if (existing.isPresent()) {
-                try {
-                    existing.get().getProvider().launch(existing.get()).run();
-                    return true;
-                } catch (Exception e) {
-                    ErrorEventFactory.fromThrowable(e).handle();
-                    return false;
-                }
+                ThreadHelper.runAsync(() -> {
+                    try {
+                        provider.get().open(existing.get());
+                    } catch (Exception e) {
+                        ErrorEventFactory.fromThrowable(e).handle();
+                    }
+                });
+                return true;
             }
         }
 
         DataStorage.get().updateEntryStore(quickConnectEntry, newStore);
+        if (provider.get().skipDialogIfPossible() && newStore.isComplete()) {
+            update(newStore);
+            ThreadHelper.runAsync(() -> {
+                try {
+                    DataStorage.get().addStoreEntryInProgress(quickConnectEntry);
+                    provider.get().open(quickConnectEntry);
+                } catch (Exception e) {
+                    ErrorEventFactory.fromThrowable(e).handle();
+                } finally {
+                    DataStorage.get().removeStoreEntryInProgress(quickConnectEntry);
+                }
+            });
+            return true;
+        }
+
         var model = StoreCreationDialog.showEdit(quickConnectEntry, newStore, false, finished -> {
             update(finished.getStore());
             ThreadHelper.runAsync(() -> {
                 try {
                     DataStorage.get().addStoreEntryInProgress(quickConnectEntry);
-                    quickConnectEntry.getProvider().launch(quickConnectEntry).run();
+                    provider.get().open(quickConnectEntry);
                 } catch (Exception e) {
                     ErrorEventFactory.fromThrowable(e).handle();
                 } finally {

@@ -213,6 +213,7 @@ public class AppBaseMode extends AppOperationMode {
         AppBeaconServer.reset();
         KeePassXcPasswordManager.reset();
         StoreViewState.reset();
+        StoreFilterState.reset();
         AppLayoutModel.reset();
         AppTheme.reset();
         PlatformState.teardown();

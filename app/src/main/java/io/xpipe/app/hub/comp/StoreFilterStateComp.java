@@ -38,7 +38,7 @@ public class StoreFilterStateComp extends SimpleRegionBuilder {
 
         var searches = state.getRecentSearches().getList();
         var searchesEmpty = Bindings.isEmpty(searches);
-        var searchesList = new ListBoxViewComp<String>(searches, searches, s -> createButton(s, null), false);
+        var searchesList = new ListBoxViewComp<String>(searches, searches, s -> createButton(s, s), false);
 
         var searchesPlaceholders = FXCollections.observableList(List.of(AppI18n.get("recentSearchesDescriptionNames"),
                 AppI18n.get("recentSearchesDescriptionTags"), AppI18n.get("recentSearchesDescriptionTypes")));
@@ -46,16 +46,16 @@ public class StoreFilterStateComp extends SimpleRegionBuilder {
 
         var quickConnections = state.getRecentQuickConnections().getList();
         var quickConnectionsEmpty = Bindings.isEmpty(quickConnections);
-        var quickConnectionsList = new ListBoxViewComp<String>(quickConnections, quickConnections, s -> createButton(s, null), false);
+        var quickConnectionsList = new ListBoxViewComp<String>(quickConnections, quickConnections, s -> createButton(s, s), false);
 
         var quickConnectionsPlaceholders = FXCollections.observableArrayList(QuickConnectProvider.getAll().stream()
                 .map(p -> p.getPlaceholder())
                 .toList());
-        var quickConnectionsEmptyList = new ListBoxViewComp<String>(quickConnectionsPlaceholders, quickConnectionsPlaceholders, s -> createButton(s, null), false);
+        var quickConnectionsEmptyList = new ListBoxViewComp<String>(quickConnectionsPlaceholders, quickConnectionsPlaceholders, s -> createButton(s, s.split(" ")[0] + " "), false);
 
         var urls = state.getRecentUrls().getList();
         var urlsEmpty = Bindings.isEmpty(urls);
-        var urlList = new ListBoxViewComp<String>(urls, urls, s -> createButton(s, null), false);
+        var urlList = new ListBoxViewComp<String>(urls, urls, s -> createButton(s, s), false);
 
         var urlPlaceholders = FXCollections.observableArrayList(LauncherUrlProvider.getAll().stream()
                 .map(p -> p.getPlaceholder())

@@ -11,7 +11,7 @@ public class XPipeUrlProvider implements LauncherUrlProvider {
 
     @Override
     public String getPlaceholder() {
-        return "xpipe://action?<name>[&param=value]";
+        return "xpipe://action?<name>";
     }
 
     @Override

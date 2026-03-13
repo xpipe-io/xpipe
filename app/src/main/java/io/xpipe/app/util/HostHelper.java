@@ -22,6 +22,23 @@ public class HostHelper {
         }
     }
 
+    public static boolean isLocalhost(String host) {
+        host = host.strip();
+        if (host.equalsIgnoreCase("localhost")) {
+            return true;
+        }
+
+        if (host.equals("127.0.0.1")) {
+            return true;
+        }
+
+        if (host.equals("::1") || host.equals("[::1]")) {
+            return true;
+        }
+
+        return false;
+    }
+
     public static boolean isLocalNetworkAddress(String host) {
         Inet4Address inet4Address;
         try {

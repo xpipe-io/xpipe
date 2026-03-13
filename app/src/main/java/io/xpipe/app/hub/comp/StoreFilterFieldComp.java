@@ -15,6 +15,7 @@ import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ObservableSubscriber;
 import javafx.beans.binding.Bindings;
+import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -51,6 +52,10 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
         field.focusedProperty().subscribe(focus -> {
             if (focus) {
                 popover.hide();
+            } else {
+                if (state.getIsSearchString().get()) {
+                    state.open();
+                }
             }
         });
 
@@ -114,8 +119,17 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
 
         state.getRawText().subscribe(val -> {
             PlatformThread.runLaterIfNeeded(() -> {
+                var wasFocused = field.isFocused();
+                if (!wasFocused) {
+                    field.requestFocus();
+                }
+
                 if (!Objects.equals(field.getText(), val) && !(val == null && "".equals(field.getText()))) {
                     field.setText(val);
+                }
+
+                if (!wasFocused) {
+                    field.end();
                 }
             });
         });
@@ -125,7 +139,8 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
         });
 
         var menuButton = new IconButtonComp("mdi2a-animation-play", () -> {
-            popover.show(field);
+            Bounds bounds = field.localToScreen(field.getBoundsInLocal());
+            popover.show(field, bounds.getMinX() + (field.getWidth() / 1.6), bounds.getMaxY() - 4.0);
         });
         menuButton.describe(d -> d.nameKey("quickConnect"));
         menuButton.style("quick-connect-button");

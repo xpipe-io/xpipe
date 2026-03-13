@@ -34,6 +34,7 @@ public class MultiIdentityStoreProvider extends IdentityStoreProvider {
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
         MultiIdentityStore st = (MultiIdentityStore) store.getValue();
 
+        var initialIdentities = new ArrayList<>(st.getAvailableIdentities());
         var identities = new SimpleListProperty<>(FXCollections.observableArrayList(st.getAvailableIdentities()));
 
         return new OptionsBuilder()
@@ -47,7 +48,14 @@ public class MultiIdentityStoreProvider extends IdentityStoreProvider {
                             for (DataStoreEntryRef<IdentityStore> identity : identities) {
                                 uuids.add(identity.get().getUuid());
                             }
-                            uuids.addAll(st.getIdentities());
+                            for (UUID storeIdentity : st.getIdentities()) {
+                                if (initialIdentities.stream().anyMatch(ref -> ref.get().getUuid().equals(storeIdentity))) {
+                                    var wasRemoved = identities.stream().noneMatch(ref -> ref.get().getUuid().equals(storeIdentity));
+                                    if (!wasRemoved) {
+                                        uuids.add(storeIdentity);
+                                    }
+                                }
+                            }
 
                             return MultiIdentityStore.builder()
                                     .identities(new ArrayList<>(uuids))
