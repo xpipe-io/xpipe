@@ -98,7 +98,7 @@ public class StoreQuickConnect {
             return true;
         }
 
-        var model = StoreCreationDialog.showEdit(quickConnectEntry, newStore, false, finished -> {
+        StoreCreationDialog.showEdit(quickConnectEntry, newStore, false, finished -> {
             update(finished.getStore());
             ThreadHelper.runAsync(() -> {
                 try {
@@ -112,14 +112,6 @@ public class StoreQuickConnect {
             });
         });
 
-        var wasCached = AppCache.getNonNull("quickConnect", DataStore.class, () -> null) != null;
-        if (newStore.isComplete() && wasCached) {
-            GlobalTimer.delay(() -> {
-                Platform.runLater(() -> {
-                    model.finish();
-                });
-            }, Duration.ofMillis(100));
-        }
         return true;
     }
 }

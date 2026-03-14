@@ -10,11 +10,6 @@ public class XPipeUrlProvider implements LauncherUrlProvider {
     }
 
     @Override
-    public String getPlaceholder() {
-        return "xpipe://action?<name>";
-    }
-
-    @Override
     public AbstractAction createAction(URI uri) throws Exception {
         var a = uri.getHost();
         if (!"action".equals(a)) {

@@ -84,7 +84,6 @@ public class VaultCategory extends AppPrefsCategory {
                         .description("vaultTypeContent" + vaultTypeKey)
                         .documentationLink(DocumentationLink.TEAM_VAULTS)
                         .addComp(RegionBuilder.empty())
-                        .licenseRequirement("team")
                         .nameAndDescription("vaultAuthentication")
                         .addComp(authChoice, prefs.vaultAuthentication)
                         .nameAndDescription(Bindings.createStringBinding(

@@ -3,6 +3,7 @@ package io.xpipe.app.hub.comp;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.action.LauncherUrlProvider;
 import io.xpipe.app.action.QuickConnectProvider;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.LabelComp;
@@ -53,42 +54,21 @@ public class StoreFilterStateComp extends SimpleRegionBuilder {
                 .toList());
         var quickConnectionsEmptyList = new ListBoxViewComp<String>(quickConnectionsPlaceholders, quickConnectionsPlaceholders, s -> createButton(s, s.split(" ")[0] + " "), false);
 
-        var urls = state.getRecentUrls().getList();
-        var urlsEmpty = Bindings.isEmpty(urls);
-        var urlList = new ListBoxViewComp<String>(urls, urls, s -> createButton(s, s), false);
-
-        var urlPlaceholders = FXCollections.observableArrayList(LauncherUrlProvider.getAll().stream()
-                .map(p -> p.getPlaceholder())
-                .toList());
-        var urlEmptyList = new ListBoxViewComp<String>(urlPlaceholders, urlPlaceholders, s -> createButton(s, null), false);
-
         var options = new OptionsBuilder()
                 .addComp(new LabelComp(AppI18n.observable("recentSearches")))
                 .hide(searchesEmpty)
                 .addComp(searchesList)
                 .hide(searchesEmpty)
                 .addComp(new LabelComp(AppI18n.observable("recentSearchesDescription")))
-                .hide(searchesEmpty.not())
                 .addComp(searchesEmptyList)
-                .hide(searchesEmpty.not())
-
+                .addComp(RegionBuilder.hseparator())
                 .addComp(new LabelComp(AppI18n.observable("recentQuickConnections")))
                 .hide(quickConnectionsEmpty)
                 .addComp(quickConnectionsList)
                 .hide(quickConnectionsEmpty)
                 .addComp(new LabelComp(AppI18n.observable("recentQuickConnectionsDescription")))
-                .hide(quickConnectionsEmpty.not())
                 .addComp(quickConnectionsEmptyList)
-                .hide(quickConnectionsEmpty.not())
 
-                .addComp(new LabelComp(AppI18n.observable("recentUrls")))
-                .hide(urlsEmpty)
-                .addComp(urlList)
-                .hide(urlsEmpty)
-                .addComp(new LabelComp(AppI18n.observable("recentUrlsDescription")))
-                .hide(urlsEmpty.not())
-                .addComp(urlEmptyList)
-                .hide(urlsEmpty.not())
                 .build();
         options.getStyleClass().add("store-filter-state-comp");
         return options;

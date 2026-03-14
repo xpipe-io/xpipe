@@ -58,8 +58,8 @@ public class StoreCreationComp extends ModalOverlayContentComp {
         var provider = model.getProvider().getValue() != null
                 ? model.getProvider().getValue()
                 : providerChoice.getProviders().getFirst();
-        var showProviders = !model.isQuickConnect() && ((!model.isStaticDisplay() && provider.showProviderChoice())
-                || (model.isStaticDisplay() && provider.showProviderChoice()));
+        var showProviders = (!model.isStaticDisplay() && provider.showProviderChoice())
+                || (model.isStaticDisplay() && provider.showProviderChoice());
         if (model.isStaticDisplay()) {
             providerChoice.apply(struc -> struc.setDisable(true));
         }

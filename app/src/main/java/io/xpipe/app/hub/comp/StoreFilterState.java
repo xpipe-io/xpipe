@@ -30,10 +30,6 @@ public class StoreFilterState {
             DerivedObservableList.synchronizedArrayList(true);
 
     @Getter
-    private final DerivedObservableList<String> recentUrls =
-            DerivedObservableList.synchronizedArrayList(true);
-
-    @Getter
     private final StringProperty rawText = new SimpleStringProperty();
 
     @Getter
@@ -76,18 +72,15 @@ public class StoreFilterState {
         var type = TypeFactory.defaultInstance().constructType(new TypeReference<List<String>>() {});
         List<String> recentSearches = AppCache.getNonNull("recentSearches", type, () -> List.of());
         List<String> recentQuickConnections = AppCache.getNonNull("recentQuickConnections", type, () -> List.of());
-        List<String> recentUrls = AppCache.getNonNull("recentUrls", type, () -> List.of());
 
         INSTANCE = new StoreFilterState();
         INSTANCE.recentSearches.setContent(recentSearches);
         INSTANCE.recentQuickConnections.setContent(recentQuickConnections);
-        INSTANCE.recentUrls.setContent(recentUrls);
     }
 
     public static void reset() {
         AppCache.update("recentSearches",  INSTANCE.recentSearches.getList());
         AppCache.update("recentQuickConnections",  INSTANCE.recentQuickConnections.getList());
-        AppCache.update("recentUrls",  INSTANCE.recentUrls.getList());
         INSTANCE = null;
     }
 
@@ -121,19 +114,6 @@ public class StoreFilterState {
         }
     }
 
-    public void putUrl(String s) {
-        synchronized (recentUrls) {
-            var l = recentUrls.getList();
-            l.remove(s);
-            if (l.size() == 3) {
-                l.addFirst(s);
-                l.removeLast();
-            } else {
-                l.addFirst(s);
-            }
-        }
-    }
-
     public boolean open() {
         if (rawText.getValue() == null) {
             return false;
@@ -153,7 +133,6 @@ public class StoreFilterState {
             try {
                 var action = provider.get().createAction(URI.create(rawText.get()));
                 action.executeAsync();
-                putUrl(rawText.getValue());
                 return true;
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).handle();
