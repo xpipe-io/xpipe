@@ -181,6 +181,6 @@ public class StoreEntryListComp extends SimpleRegionBuilder {
         map.put(new StoreScriptSourcesIntroComp(), showScriptSourcesIntro);
         map.put(new StoreIdentitiesIntroComp(), showIdentitiesIntro);
 
-        return new MultiContentComp(false, map, false).build();
+        return new MultiContentComp(false, map).build();
     }
 }

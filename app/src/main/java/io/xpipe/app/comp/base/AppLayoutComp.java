@@ -47,7 +47,7 @@ public class AppLayoutComp extends RegionStructureBuilder<BorderPane, AppLayoutC
                                 model.getSelected()),
                         (v1, v2) -> v2,
                         LinkedHashMap::new));
-        var multi = new MultiContentComp(true, map, true);
+        var multi = new MultiContentComp(true, map);
         multi.style("background");
 
         var pane = new BorderPane();
