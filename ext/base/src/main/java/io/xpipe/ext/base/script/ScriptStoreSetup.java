@@ -81,7 +81,7 @@ public class ScriptStoreSetup {
                             FilePath dir;
 
                             @Override
-                            public Optional<String> terminalContent(ShellControl shellControl) throws Exception {
+                            public Optional<String> terminalContent(ShellControl shellControl) {
                                 if (dir == null) {
                                     dir = initScriptsDirectory(shellControl, finalBringFlattened);
                                 }

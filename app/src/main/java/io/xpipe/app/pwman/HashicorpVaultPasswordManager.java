@@ -1,6 +1,5 @@
 package io.xpipe.app.pwman;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -14,9 +13,7 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.*;
-import io.xpipe.app.secret.SecretQueryState;
 import io.xpipe.app.terminal.TerminalLaunch;
-import io.xpipe.app.util.AskpassAlert;
 import io.xpipe.app.util.HttpHelper;
 import io.xpipe.core.*;
 import javafx.beans.property.Property;
@@ -26,15 +23,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.Value;
-import lombok.experimental.NonFinal;
 import lombok.extern.jackson.Jacksonized;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.*;
 
 @Getter
@@ -114,7 +108,7 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
             InPlaceSecretValue token;
 
             @Override
-            public String retrieveToken(HashicorpVaultPasswordManager pwman) throws Exception {
+            public String retrieveToken(HashicorpVaultPasswordManager pwman) {
                 if (token == null) {
                     return null;
                 }

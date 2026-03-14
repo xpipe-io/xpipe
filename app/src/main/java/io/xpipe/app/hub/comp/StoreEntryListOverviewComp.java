@@ -1,6 +1,5 @@
 package io.xpipe.app.hub.comp;
 
-import atlantafx.base.controls.Spacer;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
@@ -14,9 +13,7 @@ import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.util.ObservableSubscriber;
 import io.xpipe.core.OsType;
 
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -24,7 +21,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;

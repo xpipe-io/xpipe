@@ -2,7 +2,6 @@ package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
-import io.xpipe.app.comp.base.ChoiceComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.ToggleGroupComp;
@@ -11,20 +10,17 @@ import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategoryConfig;
-import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Region;
 
 import lombok.AllArgsConstructor;
 
 import java.util.LinkedHashMap;
-import java.util.function.Supplier;
 
 @AllArgsConstructor
 public class StoreCategoryConfigComp extends SimpleRegionBuilder {

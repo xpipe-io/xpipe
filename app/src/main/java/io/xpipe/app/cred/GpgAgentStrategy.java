@@ -4,7 +4,6 @@ import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.core.FilePath;

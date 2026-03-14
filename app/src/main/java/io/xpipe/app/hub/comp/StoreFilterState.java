@@ -2,7 +2,6 @@ package io.xpipe.app.hub.comp;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.action.LauncherUrlProvider;
 import io.xpipe.app.action.QuickConnectProvider;
 import io.xpipe.app.core.AppCache;
@@ -13,7 +12,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableStringValue;
-import javafx.collections.ObservableList;
 import lombok.Getter;
 
 import java.net.URI;

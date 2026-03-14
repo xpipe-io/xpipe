@@ -5,7 +5,6 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.LocalExec;
 import io.xpipe.core.FilePath;
@@ -96,7 +95,7 @@ public class PageantStrategy implements SshIdentityAgentStrategy {
     }
 
     @Override
-    public FilePath determinetAgentSocketLocation(ShellControl sc) throws Exception {
+    public FilePath determinetAgentSocketLocation(ShellControl sc) {
         if (sc.isLocal() && sc.getOsType() == OsType.WINDOWS) {
             return FilePath.of(getPageantWindowsPipe());
         }

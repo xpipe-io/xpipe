@@ -11,7 +11,6 @@ import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreCategoryConfig;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.core.OsType;
@@ -31,17 +30,13 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.awt.*;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;

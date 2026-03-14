@@ -1,8 +1,6 @@
 package io.xpipe.app.pwman;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.databind.JsonNode;
-import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
@@ -12,21 +10,14 @@ import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.*;
 import io.xpipe.app.terminal.TerminalLaunch;
-import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.JacksonMapper;
 import io.xpipe.core.OsType;
 import javafx.beans.property.*;
-import javafx.collections.FXCollections;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.jackson.Jacksonized;
 
 import java.nio.file.Path;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.SequencedMap;
-import java.util.regex.Pattern;
 
 @JsonTypeName("protonPass")
 @Builder

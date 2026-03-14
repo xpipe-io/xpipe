@@ -7,7 +7,6 @@ import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.Rect;
 
 import io.xpipe.app.util.ThreadHelper;
-import lombok.Getter;
 
 import java.time.Duration;
 import java.util.HashSet;

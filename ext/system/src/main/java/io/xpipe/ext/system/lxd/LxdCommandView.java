@@ -1,8 +1,6 @@
 package io.xpipe.ext.system.lxd;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.xpipe.app.ext.ContainerStoreState;
 import io.xpipe.app.ext.NetworkContainerStoreState;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
@@ -17,7 +15,6 @@ import lombok.Value;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public class LxdCommandView extends CommandViewBase {
 

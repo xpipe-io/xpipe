@@ -1,14 +1,8 @@
 package io.xpipe.app.hub.comp;
 
-import atlantafx.base.theme.Styles;
-import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
-import io.xpipe.app.comp.base.IconButtonComp;
-import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.util.ObservableSubscriber;
 import javafx.scene.layout.Region;
-
-import java.util.List;
 
 public class StoreEntryFilterCompBar extends SimpleRegionBuilder {
 

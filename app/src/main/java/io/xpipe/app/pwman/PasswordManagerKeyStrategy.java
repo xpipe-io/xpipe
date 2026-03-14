@@ -29,7 +29,7 @@ public interface PasswordManagerKeyStrategy {
 
     @Value
     @Builder
-    public class OptionsConfig {
+    class OptionsConfig {
 
         boolean allowSocketChoice;
         Path defaultSocketLocation;

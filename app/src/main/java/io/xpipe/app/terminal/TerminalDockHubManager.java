@@ -20,10 +20,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 
-import javafx.stage.Screen;
 import lombok.Getter;
-import org.kordamp.ikonli.Ikon;
-import org.kordamp.ikonli.Ikonli;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
 

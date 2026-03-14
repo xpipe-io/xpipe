@@ -1,20 +1,13 @@
 package io.xpipe.ext.base.identity;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.core.AppCache;
 import io.xpipe.app.cred.SshIdentityStrategy;
 import io.xpipe.app.cred.UsernameStrategy;
-import io.xpipe.app.ext.DataStoreDependencies;
-import io.xpipe.app.ext.InternalCacheDataStore;
 import io.xpipe.app.ext.StatefulDataStore;
-import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.Validators;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
@@ -81,7 +74,7 @@ public class MultiIdentityStore extends IdentityStore implements StatefulDataSto
     }
 
     @Override
-    public void checkComplete() throws Throwable {
+    public void checkComplete() {
         getSelectedOrThrow();
     }
 

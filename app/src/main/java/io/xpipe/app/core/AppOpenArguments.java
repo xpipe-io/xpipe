@@ -1,7 +1,6 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.action.AbstractAction;
-import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.action.LauncherUrlProvider;
 import io.xpipe.app.browser.action.impl.OpenDirectoryActionProvider;
 import io.xpipe.app.core.mode.AppOperationMode;
@@ -86,7 +85,7 @@ public class AppOpenArguments {
                 if (found.isPresent()) {
                     AbstractAction a;
                     try {
-                        a = ((LauncherUrlProvider) found.get()).createAction(uri);
+                        a = found.get().createAction(uri);
                     } catch (Exception e) {
                         ErrorEventFactory.fromThrowable(e).omit().expected().handle();
                         return List.of();

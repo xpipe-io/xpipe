@@ -2,7 +2,6 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
-import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.application.Platform;

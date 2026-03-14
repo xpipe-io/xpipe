@@ -56,7 +56,7 @@ public class OtherExternalAgentStrategy implements SshIdentityAgentStrategy {
     }
 
     @Override
-    public FilePath determinetAgentSocketLocation(ShellControl parent) throws Exception {
+    public FilePath determinetAgentSocketLocation(ShellControl parent) {
         return null;
     }
 

@@ -1,7 +1,6 @@
 package io.xpipe.app.hub.comp;
 
 import atlantafx.base.theme.Styles;
-import io.xpipe.app.action.LauncherUrlProvider;
 import io.xpipe.app.action.QuickConnectProvider;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
@@ -39,20 +38,21 @@ public class StoreFilterStateComp extends SimpleRegionBuilder {
 
         var searches = state.getRecentSearches().getList();
         var searchesEmpty = Bindings.isEmpty(searches);
-        var searchesList = new ListBoxViewComp<String>(searches, searches, s -> createButton(s, s), false);
+        var searchesList = new ListBoxViewComp<>(searches, searches, s -> createButton(s, s), false);
 
         var searchesPlaceholders = FXCollections.observableList(List.of(AppI18n.get("recentSearchesDescriptionNames"),
                 AppI18n.get("recentSearchesDescriptionTags"), AppI18n.get("recentSearchesDescriptionTypes")));
-        var searchesEmptyList = new ListBoxViewComp<String>(searchesPlaceholders, searchesPlaceholders, s -> createButton(s, null), false);
+        var searchesEmptyList = new ListBoxViewComp<>(searchesPlaceholders, searchesPlaceholders, s -> createButton(s, null), false);
 
         var quickConnections = state.getRecentQuickConnections().getList();
         var quickConnectionsEmpty = Bindings.isEmpty(quickConnections);
-        var quickConnectionsList = new ListBoxViewComp<String>(quickConnections, quickConnections, s -> createButton(s, s), false);
+        var quickConnectionsList = new ListBoxViewComp<>(quickConnections, quickConnections, s -> createButton(s, s), false);
 
         var quickConnectionsPlaceholders = FXCollections.observableArrayList(QuickConnectProvider.getAll().stream()
                 .map(p -> p.getPlaceholder())
                 .toList());
-        var quickConnectionsEmptyList = new ListBoxViewComp<String>(quickConnectionsPlaceholders, quickConnectionsPlaceholders, s -> createButton(s, s.split(" ")[0] + " "), false);
+        var quickConnectionsEmptyList = new ListBoxViewComp<>(quickConnectionsPlaceholders, quickConnectionsPlaceholders,
+                s -> createButton(s, s.split(" ")[0] + " "), false);
 
         var options = new OptionsBuilder()
                 .addComp(new LabelComp(AppI18n.observable("recentSearches")))

@@ -12,7 +12,6 @@ import javafx.scene.text.Font;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.SystemUtils;
 
 import java.awt.*;
 import java.util.concurrent.CountDownLatch;

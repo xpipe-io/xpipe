@@ -8,7 +8,6 @@ import io.xpipe.app.hub.comp.SystemStateComp;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;

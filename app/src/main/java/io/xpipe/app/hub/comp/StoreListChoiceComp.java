@@ -4,7 +4,6 @@ import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.*;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
 

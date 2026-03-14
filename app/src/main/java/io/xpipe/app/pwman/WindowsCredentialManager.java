@@ -8,8 +8,6 @@ import io.xpipe.app.process.LocalShell;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javafx.beans.property.Property;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 @JsonTypeName("windowsCredentialManager")
@@ -25,7 +23,7 @@ public class WindowsCredentialManager implements PasswordManager {
     }
 
     @Override
-    public boolean selectInitial() throws Exception {
+    public boolean selectInitial() {
         return false;
     }
 

@@ -7,7 +7,6 @@ import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.platform.Validator;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
@@ -18,8 +17,6 @@ import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
-import javafx.beans.property.ReadOnlyBooleanWrapper;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -113,7 +110,7 @@ public class PasswordManagerAgentStrategy implements SshIdentityAgentStrategy {
     }
 
     @Override
-    public FilePath determinetAgentSocketLocation(ShellControl parent) throws Exception {
+    public FilePath determinetAgentSocketLocation(ShellControl parent) {
         var config = getConfig();
         return config != null ? FilePath.of(config.getDefaultSocketLocation()) : null;
     }

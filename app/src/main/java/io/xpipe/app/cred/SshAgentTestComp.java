@@ -4,8 +4,6 @@ import atlantafx.base.controls.Popover;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.InputGroupComp;
-import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.platform.LabelGraphic;
@@ -13,7 +11,6 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -21,9 +18,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import org.kordamp.ikonli.javafx.FontIcon;
-
-import java.util.List;
 
 public class SshAgentTestComp extends SimpleRegionBuilder {
 

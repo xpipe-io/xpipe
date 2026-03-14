@@ -1,7 +1,6 @@
 package io.xpipe.ext.base.service;
 
 import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.DataStoreDependencies;
 import io.xpipe.app.ext.GroupStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
@@ -12,8 +11,6 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
-
-import java.util.List;
 
 @Getter
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)

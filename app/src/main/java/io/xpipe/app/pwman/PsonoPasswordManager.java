@@ -120,7 +120,7 @@ public class PsonoPasswordManager implements PasswordManager {
                     .sensitive();
             var r = JacksonMapper.getDefault().readTree(cmd.readStdoutOrThrow());
             var username = Optional.of(r.required("username")).filter(n -> !n.isNull()).map(JsonNode::textValue).orElse(null);
-            var password = Optional.of(r.required("password")).filter(n -> !n.isNull()).map(JsonNode::textValue).orElse(null);;
+            var password = Optional.of(r.required("password")).filter(n -> !n.isNull()).map(JsonNode::textValue).orElse(null);
             return Result.of(Credentials.of(username, password), null);
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();

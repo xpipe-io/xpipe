@@ -75,7 +75,6 @@ public class OptionsBuilder {
     private BaseRegionBuilder<?, ?> lastCompHeadReference;
     private ObservableValue<String> lastNameReference;
     private boolean focusFirstIncomplete = true;
-    private boolean focusEnabled = true;
 
     private final BooleanProperty mappingUpdate = new SimpleBooleanProperty();
 

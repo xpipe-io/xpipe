@@ -2,13 +2,11 @@ package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.platform.Validator;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.VaultAuthentication;
 import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.SecretNoneStrategy;

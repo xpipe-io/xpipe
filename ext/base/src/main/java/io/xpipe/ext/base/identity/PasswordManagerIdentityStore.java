@@ -184,7 +184,7 @@ public class PasswordManagerIdentityStore extends IdentityStore
                 }
 
                 @Override
-                public List<KeyValue> configOptions(ShellControl sc) throws Exception {
+                public List<KeyValue> configOptions(ShellControl sc) {
                     var r = retrieve();
                     if (r == null || r.getSshKey() == null || r.getSshKey().getPrivateKey() == null) {
                         return List.of();

@@ -2,7 +2,6 @@ package io.xpipe.app.beacon;
 
 import io.xpipe.app.beacon.mcp.AppMcpServer;
 import io.xpipe.app.core.AppLocalTemp;
-import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;

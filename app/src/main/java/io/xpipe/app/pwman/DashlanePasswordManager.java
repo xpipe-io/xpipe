@@ -1,31 +1,20 @@
 package io.xpipe.app.pwman;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.*;
 import io.xpipe.app.terminal.TerminalLaunch;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javafx.application.Platform;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.geometry.Insets;
-import javafx.scene.layout.Region;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
-import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 @JsonTypeName("dashlane")
 @Builder
