@@ -48,6 +48,11 @@ public class PassboltPasswordManager implements PasswordManager {
     private final Path privateKey;
 
     @Override
+    public boolean supportsKeyConfiguration() {
+        return false;
+    }
+
+    @Override
     public boolean selectInitial() throws Exception {
         return LocalShell.getShell().view().findProgram("passbolt").isPresent();
     }

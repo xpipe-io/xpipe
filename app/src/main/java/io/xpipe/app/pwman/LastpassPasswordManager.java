@@ -37,6 +37,11 @@ public class LastpassPasswordManager implements PasswordManager {
 
     private static ShellControl SHELL;
 
+    @Override
+    public boolean supportsKeyConfiguration() {
+        return false;
+    }
+
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<LastpassPasswordManager> p) {
         return new OptionsBuilder()

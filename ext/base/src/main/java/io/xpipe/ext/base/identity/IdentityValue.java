@@ -160,6 +160,7 @@ public interface IdentityValue {
         public void checkComplete() throws ValidationException {
             Validators.nonNull(ref);
             Validators.isType(ref, IdentityStore.class);
+            ref.getStore().checkComplete();
         }
 
         @Override

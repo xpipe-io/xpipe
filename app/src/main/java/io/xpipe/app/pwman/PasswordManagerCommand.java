@@ -42,6 +42,11 @@ public class PasswordManagerCommand implements PasswordManager {
         return PasswordManagerKeyConfiguration.none();
     }
 
+    @Override
+    public boolean supportsKeyConfiguration() {
+        return false;
+    }
+
     @SuppressWarnings("unused")
     static OptionsBuilder createOptions(Property<PasswordManagerCommand> property) {
         var template = new SimpleObjectProperty<PasswordManagerCommandTemplate>();

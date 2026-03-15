@@ -53,7 +53,7 @@ public class SyncedIdentityStore extends IdentityStore implements UserScopeStore
     }
 
     @Override
-    public void checkComplete() throws Throwable {
+    public void checkComplete() throws ValidationException {
         super.checkComplete();
         if (getSshIdentity() instanceof KeyFileStrategy f) {
             if (!f.getFile().isInDataDirectory()) {

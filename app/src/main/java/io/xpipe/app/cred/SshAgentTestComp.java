@@ -52,6 +52,7 @@ public class SshAgentTestComp extends SimpleRegionBuilder {
                                 entryButton.getStyleClass().add(Styles.FLAT);
                                 entryButton.setMinWidth(400);
                                 entryButton.setAlignment(Pos.CENTER_LEFT);
+                                entryButton.setMnemonicParsing(false);
                                 content.getChildren().add(entryButton);
                             }
                             popover.setContentNode(content);

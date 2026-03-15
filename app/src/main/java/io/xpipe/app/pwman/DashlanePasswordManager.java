@@ -25,6 +25,11 @@ public class DashlanePasswordManager implements PasswordManager {
 
 
     @Override
+    public boolean supportsKeyConfiguration() {
+        return false;
+    }
+
+    @Override
     public boolean selectInitial() throws Exception {
         return LocalShell.getShell().view().findProgram("dcli").isPresent();
     }

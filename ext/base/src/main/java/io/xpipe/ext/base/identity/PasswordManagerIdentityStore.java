@@ -4,6 +4,7 @@ import io.xpipe.app.cred.*;
 import io.xpipe.app.ext.InternalCacheDataStore;
 import io.xpipe.app.ext.UserScopeStore;
 import io.xpipe.app.ext.ValidatableStore;
+import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
@@ -71,6 +72,11 @@ public class PasswordManagerIdentityStore extends IdentityStore
         if (r == null) {
             throw ErrorEventFactory.expected(
                     new UnsupportedOperationException("Credentials were requested but not supplied"));
+        }
+
+        if (r.getSshKey() != null && r.getCredentials() == null) {
+            throw ErrorEventFactory.expected(
+                    new UnsupportedOperationException("Identity " + key + " does not provide credentials, only a key. Use another credentials entry as a base and reference the key via the password manager agent option instead"));
         }
 
         if (r.getCredentials() == null) {
@@ -219,7 +225,7 @@ public class PasswordManagerIdentityStore extends IdentityStore
     }
 
     @Override
-    public void checkComplete() throws Throwable {
+    public void checkComplete() throws ValidationException {
         Validators.nonNull(key);
         if (sshKey != null) {
             sshKey.checkComplete();

@@ -44,6 +44,11 @@ public class KeePassXcPasswordManager implements PasswordManager {
     private final PasswordManagerKeyStrategy keyStrategy;
 
     @Override
+    public boolean supportsKeyConfiguration() {
+        return true;
+    }
+
+    @Override
     public boolean selectInitial() throws Exception {
         return findKeePassProxy().isPresent();
     }

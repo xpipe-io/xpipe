@@ -39,22 +39,26 @@ public class PasswordManagerAgentStrategy implements SshIdentityAgentStrategy {
         var identifier =
                 new SimpleStringProperty(p.getValue() != null ? p.getValue().getIdentifier() : null);
 
-        var pwmanBinding = Bindings.createObjectBinding(() -> {
+        var pwmanError = Bindings.createObjectBinding(() -> {
             var pwman = AppPrefs.get().passwordManager().getValue();
             if (pwman == null) {
                 return AppI18n.get("passwordManagerEmpty");
             }
 
-            if (!pwman.getKeyConfiguration().useAgent()) {
+            if (!pwman.supportsKeyConfiguration()) {
                 return AppI18n.get("passwordManagerNoAgentSupport");
+            }
+
+            if (!pwman.getKeyConfiguration().useAgent()) {
+                return AppI18n.get("passwordManagerNoAgentConfigured");
             }
 
             return null;
         }, AppPrefs.get().passwordManager(), AppI18n.activeLanguage());
-        var pwmanProp = new SimpleStringProperty();
-        pwmanProp.bind(pwmanBinding);
+        var pwmanErrorProp = new SimpleStringProperty();
+        pwmanErrorProp.bind(pwmanError);
         var pwmanDisplay = new HorizontalComp(List.of(
-                        new LabelComp(pwmanProp)
+                        new LabelComp(pwmanErrorProp)
                                 .maxWidth(10000)
                                 .apply(label -> label.setAlignment(Pos.CENTER_LEFT))
                                 .hgrow(),
@@ -67,9 +71,10 @@ public class PasswordManagerAgentStrategy implements SshIdentityAgentStrategy {
         return new OptionsBuilder()
                 .nameAndDescription("passwordManagerSshKeyConfig")
                 .addComp(pwmanDisplay)
-                .hide(pwmanProp.isNull())
+                .hide(pwmanErrorProp.isNull())
                 .nameAndDescription(useKeyName() ? "agentKeyName" : "publicKey")
                 .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, identifier, useKeyName()), identifier)
+                .disable(pwmanErrorProp.isNotNull())
                 .nonNull()
                 .hide(!config.isAllowAgentForward())
                 .bind(

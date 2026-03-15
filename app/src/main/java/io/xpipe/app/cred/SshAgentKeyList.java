@@ -61,7 +61,7 @@ public class SshAgentKeyList {
 
             var type = matcher.group(1);
             var publicKey = matcher.group(2);
-            var name = matcher.groupCount() > 3 ? matcher.group(3) : null;
+            var name = matcher.groupCount() > 2 ? matcher.group(3) : null;
             list.add(new Entry(type, publicKey, name));
         }
         return list;

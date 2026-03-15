@@ -26,6 +26,11 @@ import java.util.List;
 public class ProtonPasswordManager implements PasswordManager {
 
     @Override
+    public boolean supportsKeyConfiguration() {
+        return true;
+    }
+
+    @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {
         return PasswordManagerKeyConfiguration.of(false, false, true, keyStrategy, getSocketLocation());
     }

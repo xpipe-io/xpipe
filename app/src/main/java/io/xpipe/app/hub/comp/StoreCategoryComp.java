@@ -234,6 +234,7 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
         newCategory.setOnAction(event -> {
             StoreViewState.get().createNewCategory(category);
         });
+        newCategory.setDisable(!DataStorage.get().canCreateStoreCategoryWithin(category.getCategory()));
         contextMenu.getItems().add(newCategory);
 
         contextMenu.getItems().add(new SeparatorMenuItem());

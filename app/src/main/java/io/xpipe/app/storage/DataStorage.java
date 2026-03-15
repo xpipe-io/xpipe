@@ -423,6 +423,7 @@ public abstract class DataStorage {
                 other.finalizeEntry();
             }
         }
+        entry.finalizeEntry();
     }
 
     private Collection<DataStoreEntryRef<?>> getDependencies(DataStoreEntry entry) {
@@ -1026,6 +1027,10 @@ public abstract class DataStorage {
         this.listeners.forEach(l -> l.onStoreRemove(entry));
         refreshEntries();
         saveAsync();
+    }
+
+    public boolean canCreateStoreCategoryWithin(@NonNull DataStoreCategory cat) {
+        return !cat.getUuid().equals(ALL_IDENTITIES_CATEGORY_UUID);
     }
 
     public boolean canDeleteStoreCategory(@NonNull DataStoreCategory cat) {

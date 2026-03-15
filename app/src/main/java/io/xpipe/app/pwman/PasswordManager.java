@@ -92,6 +92,8 @@ public interface PasswordManager {
 
     String getWebsite();
 
+    boolean supportsKeyConfiguration();
+
     PasswordManagerKeyConfiguration getKeyConfiguration();
 
     boolean selectInitial() throws Exception;

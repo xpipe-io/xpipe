@@ -48,6 +48,11 @@ public class EnpassPasswordManager implements PasswordManager {
     private final FilePath vaultPath;
 
     @Override
+    public boolean supportsKeyConfiguration() {
+        return false;
+    }
+
+    @Override
     public boolean selectInitial() throws Exception {
         return LocalShell.getShell().view().findProgram("enpass-cli").isPresent();
     }

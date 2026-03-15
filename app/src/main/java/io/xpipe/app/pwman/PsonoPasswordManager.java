@@ -40,6 +40,11 @@ public class PsonoPasswordManager implements PasswordManager {
     private final String serverUrl;
 
     @Override
+    public boolean supportsKeyConfiguration() {
+        return false;
+    }
+
+    @Override
     public boolean selectInitial() throws Exception {
         return LocalShell.getShell().view().findProgram("psonoci").isPresent();
     }

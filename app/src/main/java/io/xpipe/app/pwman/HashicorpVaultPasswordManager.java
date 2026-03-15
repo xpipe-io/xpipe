@@ -38,6 +38,11 @@ import java.util.*;
 @JsonTypeName("hashicorpVault")
 public class HashicorpVaultPasswordManager implements PasswordManager {
 
+    @Override
+    public boolean supportsKeyConfiguration() {
+        return false;
+    }
+
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
     public interface VaultAuth {
 

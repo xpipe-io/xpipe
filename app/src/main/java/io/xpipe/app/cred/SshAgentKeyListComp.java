@@ -74,6 +74,7 @@ public class SshAgentKeyListComp extends SimpleRegionBuilder {
                                 });
                                 entryButton.setMinWidth(400);
                                 entryButton.setAlignment(Pos.CENTER_LEFT);
+                                entryButton.setMnemonicParsing(false);
                                 content.getChildren().add(entryButton);
                             }
                             popover.setContentNode(content);

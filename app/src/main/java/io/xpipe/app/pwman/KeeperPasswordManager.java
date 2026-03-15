@@ -52,6 +52,11 @@ public class KeeperPasswordManager implements PasswordManager {
     }
 
     @Override
+    public boolean supportsKeyConfiguration() {
+        return true;
+    }
+
+    @Override
     public boolean selectInitial() throws Exception {
         return LocalShell.getShell().view().findProgram("keeper-commander").isPresent();
     }
