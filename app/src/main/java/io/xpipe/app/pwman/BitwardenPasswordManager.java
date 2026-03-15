@@ -22,11 +22,13 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Region;
 import lombok.Builder;
+import lombok.SneakyThrows;
 import lombok.extern.jackson.Jacksonized;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
@@ -38,6 +40,91 @@ import java.util.concurrent.atomic.AtomicReference;
 @Jacksonized
 public class BitwardenPasswordManager implements PasswordManager {
 
+    private static enum LinuxDist {
+
+        NORMAL {
+            @Override
+            public Path getSocketLocation() {
+                return AppSystemInfo.ofLinux().getUserHome().resolve(".bitwarden-ssh-agent.sock");
+            }
+
+            @Override
+            public Path getConfigLocation() {
+                return AppSystemInfo.ofLinux()
+                        .getConfigDir()
+                        .resolve("Bitwarden CLI")
+                        .resolve("data.json");
+            }
+        },
+        SNAP {
+            @Override
+            public Path getSocketLocation() {
+                return AppSystemInfo.ofLinux().getUserHome().resolve("snap", "bitwarden", "current", ".bitwarden-ssh-agent.sock");
+            }
+
+            @Override
+            public Path getConfigLocation() {
+                return AppSystemInfo.ofLinux()
+                        .getUserHome()
+                        .resolve("snap", "bitwarden", "current", ".config", "Bitwarden CLI")
+                        .resolve("data.json");
+            }
+        },
+        FLATPAK {
+            @Override
+            public Path getSocketLocation() {
+                return AppSystemInfo.ofLinux().getUserHome().resolve(".var", "app", "com.bitwarden.desktop", ".bitwarden-ssh-agent.sock");
+            }
+
+            @Override
+            public CommandBuilder commandBase() {
+                return CommandBuilder.of().add("flatpak", "run", "--command=bw", "com.bitwarden.desktop");
+            }
+
+            @Override
+            public Path getConfigLocation() {
+                return AppSystemInfo.ofLinux()
+                        .getUserHome()
+                        .resolve(".var", "app", "com.bitwarden.desktop", "config", "Bitwarden CLI")
+                        .resolve("data.json");
+            }
+        };
+
+        public CommandBuilder commandBase() {
+            return CommandBuilder.of().add("bw");
+        }
+
+        public abstract Path getSocketLocation();
+
+        public abstract Path getConfigLocation();
+
+        private static LinuxDist dist;
+
+        @SneakyThrows
+        static LinuxDist get() {
+            if (dist != null) {
+                return dist;
+            }
+
+            var sc = getOrStartShell();
+            var found = sc.view().findProgram("bw");
+            if (found.isEmpty()) {
+                var flatpak = FlatpakCache.getApp("com.bitwarden.desktop");
+                if (flatpak.isPresent()) {
+                    return dist = FLATPAK;
+                } else {
+                    return dist = NORMAL;
+                }
+            }
+
+            if (found.get().toString().contains("snap")) {
+                return dist = SNAP;
+            } else {
+                return dist = NORMAL;
+            }
+        }
+    }
+
     private static ShellControl SHELL;
     private final PasswordManagerKeyStrategy keyStrategy;
 
@@ -45,14 +132,11 @@ public class BitwardenPasswordManager implements PasswordManager {
         if (SHELL == null) {
             SHELL = ProcessControlProvider.get().createLocalProcessControl(true);
             SHELL.start();
-
-            if (moveAppDir()) {
-                SHELL.view().unsetEnvironmentVariable("BW_SESSION");
-                SHELL.view()
-                        .setEnvironmentVariable(
-                                "BITWARDENCLI_APPDATA_DIR",
-                                AppCache.getBasePath().toString());
-            }
+            SHELL.view().unsetEnvironmentVariable("BW_SESSION");
+            SHELL.view()
+                    .setEnvironmentVariable(
+                            "BITWARDENCLI_APPDATA_DIR",
+                            AppCache.getBasePath().toString());
         }
         SHELL.start();
         return SHELL;
@@ -60,9 +144,15 @@ public class BitwardenPasswordManager implements PasswordManager {
 
     private static Path getSocketLocation() {
         var socket = switch (OsType.ofLocal()) {
-            case OsType.Linux ignored -> AppSystemInfo.ofLinux().getUserHome().resolve(".bitwarden-ssh-agent.sock");
-            case OsType.MacOs macOs -> AppSystemInfo.ofMacOs().getUserHome().resolve("Library", "Containers", "com.bitwarden.desktop", "Data", ".bitwarden-ssh-agent.sock");
-            case OsType.Windows windows -> null;
+            case OsType.Linux ignored -> LinuxDist.get().getSocketLocation();
+            case OsType.MacOs ignored -> {
+                var paths = List.of(
+                        AppSystemInfo.ofMacOs().getUserHome().resolve(".bitwarden-ssh-agent.sock"),
+                        AppSystemInfo.ofMacOs().getUserHome().resolve("Library", "Containers", "com.bitwarden.desktop", "Data", ".bitwarden-ssh-agent.sock")
+                );
+                yield paths.stream().filter(path -> Files.exists(path)).findFirst().orElse(paths.getFirst());
+            }
+            case OsType.Windows ignored -> null;
         };
         return socket;
     }
@@ -105,14 +195,6 @@ public class BitwardenPasswordManager implements PasswordManager {
                 }, p);
     }
 
-
-    private static boolean moveAppDir() throws Exception {
-        var path = SHELL.view().findProgram("bw");
-        return OsType.ofLocal() != OsType.LINUX
-                || path.isEmpty()
-                || !path.get().toString().contains("snap");
-    }
-
     private static void sync() throws Exception {
         // Copy existing file if possible to retain configuration. Only once per session
         copyConfigIfNeeded();
@@ -145,12 +227,10 @@ public class BitwardenPasswordManager implements PasswordManager {
         var r = command.readStdoutAndStderr();
         if (r[1].contains("You are not logged in")) {
             var script = ShellScript.lines(
-                    moveAppDir()
-                            ? LocalShell.getDialect()
+                    LocalShell.getDialect()
                             .getSetEnvironmentVariableCommand(
                                     "BITWARDENCLI_APPDATA_DIR",
-                                    AppCache.getBasePath().toString())
-                            : null,
+                                    AppCache.getBasePath().toString()),
                     sc.getShellDialect().getEchoCommand("Log in into your Bitwarden account from the CLI:", false),
                     "bw login");
             TerminalLaunch.builder()
@@ -233,18 +313,15 @@ public class BitwardenPasswordManager implements PasswordManager {
     }
 
     private static Path getDefaultConfigPath() {
+        if (System.getenv("BITWARDENCLI_APPDATA_DIR") != null) {
+            try {
+                var path = Path.of(System.getenv("BITWARDENCLI_APPDATA_DIR"));
+                return path.resolve("data.json");
+            } catch (InvalidPathException ignored) {}
+        }
+
         return switch (OsType.ofLocal()) {
-            case OsType.Linux ignored -> {
-                if (System.getenv("XDG_CONFIG_HOME") != null) {
-                    yield Path.of(System.getenv("XDG_CONFIG_HOME"), "Bitwarden CLI")
-                            .resolve("data.json");
-                } else {
-                    yield AppSystemInfo.ofLinux()
-                            .getUserHome()
-                            .resolve(".config", "Bitwarden CLI")
-                            .resolve("data.json");
-                }
-            }
+            case OsType.Linux ignored -> LinuxDist.get().getConfigLocation();
             case OsType.MacOs ignored ->
                 AppSystemInfo.ofMacOs()
                         .getUserHome()

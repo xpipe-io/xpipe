@@ -47,8 +47,8 @@ public class ProtonPasswordManager implements PasswordManager {
     private static Path getSocketLocation() {
         var socket = switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> AppSystemInfo.ofLinux().getUserHome().resolve(".1password", "agent.sock");
-            case OsType.MacOs macOs -> AppSystemInfo.ofMacOs().getUserHome().resolve("Library", "Group Containers", "2BUA8C4S2C.com.1password", "t", "agent.sock");
-            case OsType.Windows windows -> null;
+            case OsType.MacOs ignored -> AppSystemInfo.ofMacOs().getUserHome().resolve("Library", "Group Containers", "2BUA8C4S2C.com.1password", "t", "agent.sock");
+            case OsType.Windows ignored -> null;
         };
         return socket;
     }
