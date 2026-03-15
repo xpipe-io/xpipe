@@ -7,6 +7,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import lombok.Value;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -27,17 +28,33 @@ public class SshAgentKeyList {
     }
 
     public static Entry findAgentIdentity(DataStoreEntryRef<ShellStore> ref, SshIdentityAgentStrategy strategy, String identifier) throws Exception {
-        var list = listAgentIdentities(ref, strategy).stream().filter(entry -> {
-            return (entry.getName() != null && entry.getName().equalsIgnoreCase(identifier)) || entry.getPublicKey().equalsIgnoreCase(identifier);
+        var all = listAgentIdentities(ref, strategy);
+        var list = all.stream().filter(entry -> {
+            return (entry.getName() != null && entry.getName().equalsIgnoreCase(identifier)) ||
+                    entry.getPublicKey().equals(identifier) ||
+                    (entry.getType() + " " + entry.getPublicKey()).equals(identifier);
         }).toList();
 
         if (list.isEmpty()) {
+            var supportsNames = all.stream().allMatch(entry -> entry.getName() == null);
+            if (!supportsNames) {
+                var isPublicKey = identifier.contains(" ");
+                if (!isPublicKey) {
+                    try {
+                        Base64.getDecoder().decode(identifier);
+                        isPublicKey = true;
+                    } catch (IllegalArgumentException ignored) {}
+                    if (!isPublicKey) {
+                        throw ErrorEventFactory.expected(new IllegalArgumentException("Found no agent identity for name " + identifier + " as the agent does not support names. Use a public key instead"));
+                    }
+                }
+            }
             throw ErrorEventFactory.expected(new IllegalArgumentException("No such agent identity: " + identifier));
         }
 
         if (list.size() > 1) {
             throw ErrorEventFactory.expected(new IllegalArgumentException("Ambiguous agent identities: " + list.stream()
-                    .map(entry -> entry.getName() != null ? entry.getName() : entry.getPublicKey())
+                    .map(entry -> entry.getName() != null ? entry.getName() : entry.toString())
                     .collect(Collectors.joining(", "))));
         }
 
