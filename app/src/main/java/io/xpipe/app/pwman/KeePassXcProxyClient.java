@@ -262,8 +262,9 @@ public class KeePassXcProxyClient {
 
         Map<String, Object> responseMap = jsonToMap(responseJson);
         if (responseMap.containsKey("error")) {
-            throw ErrorEventFactory.expected(
-                    new IllegalStateException(responseMap.get("error").toString()));
+            var err = responseMap.get("error").toString();
+            var msg = "No logins found".equals(err) ? "No logins found for " + url : err;
+            throw ErrorEventFactory.expected(new IllegalStateException(msg));
         }
 
         if (responseMap.containsKey("message") && responseMap.containsKey("nonce")) {

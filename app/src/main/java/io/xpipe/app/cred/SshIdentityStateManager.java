@@ -45,7 +45,7 @@ public class SshIdentityStateManager {
 
             if (external && !gpgRunning && !opensshRunning) {
                 throw ErrorEventFactory.expected(new IllegalStateException(
-                        "An external password manager agent is running, but XPipe requested to use another SSH agent. You have to disable the "
+                        "An external password manager agent is running, but XPipe requested to use another SSH agent. You have to disable the other running "
                                 + "password manager agent first."));
             }
 

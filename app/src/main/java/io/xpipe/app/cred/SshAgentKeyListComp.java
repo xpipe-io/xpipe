@@ -68,7 +68,7 @@ public class SshAgentKeyListComp extends SimpleRegionBuilder {
                                 entryButton.setMaxWidth(400);
                                 entryButton.getStyleClass().add(Styles.FLAT);
                                 entryButton.setOnAction(e -> {
-                                    value.setValue(useKeyNames && entry.getName() != null ? entry.getName() : entry.toString());
+                                    value.setValue(useKeyNames && entry.getName() != null ? entry.getName() : entry.getType() + " " + entry.getPublicKey());
                                     popover.hide();
                                     e.consume();
                                 });

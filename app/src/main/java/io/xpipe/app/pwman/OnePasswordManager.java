@@ -79,7 +79,7 @@ public class OnePasswordManager implements PasswordManager {
         return new OptionsBuilder()
                 .nameAndDescription("onePasswordManagerAccount")
                 .addString(account)
-                .hide(account.isNull().and(availableAccounts.emptyProperty()))
+                .hide(account.isNull().and(availableAccounts.sizeProperty().lessThan(2)))
                 .nameAndDescription("passwordManagerTest")
                 .addComp(new PasswordManagerTestComp(true))
                 .nameAndDescription("passwordManagerKeyStrategy")
