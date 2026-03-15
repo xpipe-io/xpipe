@@ -112,27 +112,27 @@ public class OnePasswordManager implements PasswordManager {
     }
 
     private String getActiveAccount() throws Exception {
-        if (!availableAccounts.isEmpty()) {
-            if (account != null) {
-                if (availableAccounts.get(account) == null) {
-                    throw ErrorEventFactory.expected(new IllegalArgumentException("Account " + account + " is not registered to the 1password CLI"));
-                }
-                return availableAccounts.get(account);
-            }
-
-            var first = availableAccounts.entrySet().iterator().next().getValue();
-            return first;
+        if (availableAccounts.isEmpty()) {
+            var accounts = listAccounts();
+            // Running commands instantly after each other breaks 1password
+            ThreadHelper.sleep(1500);
+            availableAccounts.clear();
+            availableAccounts.putAll(accounts);
         }
 
-        var accounts = listAccounts();
-        // Running commands instantly after each other breaks 1password
-        ThreadHelper.sleep(1500);
-        availableAccounts.clear();
-        availableAccounts.putAll(accounts);
         if (availableAccounts.isEmpty()) {
             return null;
         }
-        return availableAccounts.entrySet().iterator().next().getValue();
+
+        if (account != null) {
+            if (availableAccounts.get(account) == null) {
+                throw ErrorEventFactory.expected(new IllegalArgumentException("Account " + account + " is not registered to the 1password CLI"));
+            }
+            return availableAccounts.get(account);
+        }
+
+        var first = availableAccounts.entrySet().iterator().next().getValue();
+        return first;
     }
 
     private String getValue(JsonNode node, String name) {

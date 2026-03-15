@@ -36,8 +36,8 @@ public class SshAgentKeyList {
         }).toList();
 
         if (list.isEmpty()) {
-            var supportsNames = all.stream().allMatch(entry -> entry.getName() == null);
-            if (!supportsNames) {
+            var noNames = all.stream().allMatch(entry -> entry.getName() == null);
+            if (noNames) {
                 var isPublicKey = identifier.contains(" ");
                 if (!isPublicKey) {
                     try {
