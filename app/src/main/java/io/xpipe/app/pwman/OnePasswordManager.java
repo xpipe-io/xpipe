@@ -130,7 +130,7 @@ public class OnePasswordManager implements PasswordManager {
         availableAccounts.clear();
         availableAccounts.putAll(accounts);
         if (availableAccounts.isEmpty()) {
-            throw ErrorEventFactory.expected(new IllegalStateException("No accounts are registered to the 1password CLI"));
+            return null;
         }
         return availableAccounts.entrySet().iterator().next().getValue();
     }
@@ -176,12 +176,15 @@ public class OnePasswordManager implements PasswordManager {
         }
 
         try {
-            var account = getActiveAccount();
             var b = CommandBuilder.of()
                     .add("op", "item", "get")
-                    .addLiteral(name)
-                    .add("--account").addLiteral(account)
-                    .add("--format", "json");
+                    .addLiteral(name);
+            var account = getActiveAccount();
+            if (account != null) {
+                   b .add("--account")
+                        .addLiteral(account);
+            }
+            b.add("--format", "json");
             if (vault != null) {
                 b.add("--vault").addLiteral(vault);
             }

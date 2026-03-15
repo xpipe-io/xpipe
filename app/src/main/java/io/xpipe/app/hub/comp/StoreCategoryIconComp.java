@@ -22,7 +22,7 @@ public class StoreCategoryIconComp extends SimpleRegionBuilder {
     protected Region createSimple() {
         var imageComp = PrettyImageHelper.ofFixedSize(wrapper.getIconFile(), size, size);
         var storeIcon = imageComp.build();
-        storeIcon.setPadding(new Insets(0, 0, 1, 0));
+        storeIcon.setPadding(new Insets(0, 0, 1.5, 0));
 
         var dots = new FontIcon("mdi2d-dots-horizontal");
         dots.setIconSize((int) (size * 1.1));
