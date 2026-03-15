@@ -71,7 +71,7 @@ public class PasswordManagerIdentityStore extends IdentityStore
         var r = AppPrefs.get().passwordManager().getValue().query(key);
         if (r == null) {
             throw ErrorEventFactory.expected(
-                    new UnsupportedOperationException("Credentials were requested but not supplied"));
+                    new UnsupportedOperationException("Credentials for input " + key + " were requested but could not be supplied by the password manager"));
         }
 
         if (r.getSshKey() != null && r.getCredentials() == null) {
