@@ -67,7 +67,7 @@ public class SshAgentKeyList {
 
         var socket = strategy.determinetAgentSocketLocation(session);
         var out = session.command(CommandBuilder.of().add("ssh-add", "-L").fixedEnvironment("SSH_AUTH_SOCK", socket != null ? socket.toString() : null)).readStdoutOrThrow();
-        var pattern = Pattern.compile("([^ ]+) ([^ ]+)(?: (.+))?");
+        var pattern = Pattern.compile("([^ ]+) ([^ ]+)\\s*(?: (.+))?");
         var lines = out.lines().toList();
         var list = new ArrayList<Entry>();
         for (String line : lines) {
