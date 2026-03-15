@@ -11,6 +11,7 @@ import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.geometry.Pos;
@@ -31,7 +32,6 @@ import static atlantafx.base.theme.Styles.TEXT_SMALL;
 
 public class StoreIconChoiceComp extends ModalOverlayContentComp {
 
-    private final Runnable reshow;
     private final Property<SystemIcon> selected;
     private final Set<SystemIcon> icons;
     private final int columns;
@@ -43,14 +43,12 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
     private final BooleanProperty busy = new SimpleBooleanProperty();
 
     public StoreIconChoiceComp(
-            Runnable reshow,
             Property<SystemIcon> selected,
             Set<SystemIcon> icons,
             int columns,
             SimpleStringProperty filter,
             Runnable doubleClick, String defaultIcon
     ) {
-        this.reshow = reshow;
         this.selected = selected;
         this.icons = icons;
         this.columns = columns;
@@ -94,7 +92,6 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
         ThreadHelper.runFailableAsync(() -> {
             BooleanScope.executeExclusive(busy, () -> {
                 SystemIconManager.rebuild();
-                reshow.run();
             });
         });
     }
@@ -129,7 +126,6 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
                         BooleanScope.executeExclusive(busy, () -> {
                             SystemIconManager.rebuild();
                         });
-                        reshow.run();
                     });
                 });
         refreshButton.hide(Bindings.createBooleanBinding(

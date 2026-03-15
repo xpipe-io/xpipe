@@ -236,7 +236,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
             os.write(b);
         }
 
-        TrackEvent.error("MCP server error: " + message);
+        TrackEvent.error("MCP server error " + code + ": " + message);
     }
 
     public void doPost(HttpExchange exchange) throws IOException {
@@ -482,9 +482,12 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                             writer, MESSAGE_EVENT_TYPE, jsonText, messageId != null ? messageId : this.sessionId);
                     logger.debug("Message sent to session {} with ID {}", this.sessionId, messageId);
                 } catch (Exception e) {
-                    logger.error("Failed to send message to session {}: {}", this.sessionId, e.getMessage());
-                    HttpStreamableServerTransportProvider.this.sessions.remove(this.sessionId);
-                    exchange.close();
+                    var clientDisconnected = "Client disconnected".equals(e.getMessage());
+                    if (!clientDisconnected) {
+                        logger.error("Failed to send message to session {}: {}", this.sessionId, e.getMessage());
+                        HttpStreamableServerTransportProvider.this.sessions.remove(this.sessionId);
+                        exchange.close();
+                    }
                 } finally {
                     lock.unlock();
                 }

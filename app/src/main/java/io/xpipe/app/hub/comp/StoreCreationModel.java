@@ -90,13 +90,13 @@ public class StoreCreationModel {
                         return null;
                     }
 
-                    var testE = DataStoreEntry.createNew(
+                    var initial = DataStoreEntry.createNew(
                             UUID.randomUUID(),
                             DataStorage.get().getSelectedCategory().getUuid(),
                             name.getValue(),
                             store.getValue());
-                    var p = DataStorage.get().getDefaultDisplayParent(testE).orElse(null);
-                    var targetCategory = getTargetCategory(p);
+                    var entryRef = existingEntry != null ? existingEntry : DataStorage.get().getDefaultDisplayParent(initial).orElse(initial);
+                    var targetCategory = getTargetCategory(entryRef);
                     return DataStoreEntry.createNew(
                             UUID.randomUUID(), targetCategory.getUuid(), name.getValue(), store.getValue());
                 },

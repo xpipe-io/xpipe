@@ -64,8 +64,8 @@ public class TerminalDockView {
             }
 
             if (!wasCustom && terminal.isCustomBounds()) {
-                terminal.disown();
                 terminal.restoreIcon();
+                terminal.disown();
                 terminal.restoreStyle();
             }
         });
@@ -125,8 +125,8 @@ public class TerminalDockView {
         }
 
         // Reset style in case close is blocked by terminal
-        terminal.disown();
         terminal.restoreIcon();
+        terminal.disown();
         terminal.restoreStyle();
 
         terminal.close();
@@ -191,8 +191,8 @@ public class TerminalDockView {
                 terminalInstance.removeStyle();
                 terminalInstance.focus();
             } else {
-                terminalInstance.disown();
                 terminalInstance.restoreIcon();
+                terminalInstance.disown();
                 terminalInstance.backOfMainWindow();
             }
         });
@@ -220,7 +220,7 @@ public class TerminalDockView {
                 return;
             }
 
-            terminalInstance.close();
+            closeTerminal(terminalInstance);
         });
         terminalInstances.clear();
     }
@@ -254,6 +254,10 @@ public class TerminalDockView {
     }
 
     public void attach() {
+        if (viewBounds == null) {
+            return;
+        }
+
         TrackEvent.withTrace("Terminal view attached").handle();
 
         terminalInstances.forEach(terminalInstance -> {

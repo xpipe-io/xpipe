@@ -6,14 +6,21 @@ import java.util.regex.Pattern;
 
 public class DataStorageQuery {
 
-    public static List<DataStoreEntry> queryUserInput(String connection) {
-        var found = queryEntry("**", "**" + connection + "**", "*");
+    public static List<DataStoreEntry> queryUserInput(String input) {
+        var found = queryEntry("**", "**" + input + "**", "*");
         if (found.size() > 1) {
-            var narrow = found.stream()
-                    .filter(dataStoreEntry -> dataStoreEntry.getName().equalsIgnoreCase(connection))
+            var narrowPath = found.stream()
+                    .filter(dataStoreEntry -> DataStorage.get().getStorePath(dataStoreEntry).toString().equalsIgnoreCase(input))
                     .toList();
-            if (narrow.size() >= 1) {
-                return narrow;
+            if (narrowPath.size() >= 1) {
+                return narrowPath;
+            }
+
+            var narrowName = found.stream()
+                    .filter(dataStoreEntry -> dataStoreEntry.getName().equalsIgnoreCase(input))
+                    .toList();
+            if (narrowName.size() >= 1) {
+                return narrowName;
             }
         }
         return found;

@@ -86,6 +86,10 @@ public class McpCategory extends AppPrefsCategory {
                }
                """);
 
+        var claudeCodeTemplate = createMcpConfig("""
+               $ claude mcp add %s --transport http "http://localhost:%s/mcp" --header "Authorization: Bearer %s"
+               """);
+
         var tabComp = RegionBuilder.of(() -> {
             var vsCode = new TextArea();
             vsCode.setEditable(false);
@@ -116,10 +120,10 @@ public class McpCategory extends AppPrefsCategory {
 
             var claude = new TextArea();
             claude.setEditable(false);
-            claude.textProperty().bind(vsCodeTemplate);
+            claude.textProperty().bind(claudeCodeTemplate);
             claude.setPrefRowCount(12);
             var claudeTab = new Tab();
-            claudeTab.textProperty().bind(AppI18n.observable("claude"));
+            claudeTab.textProperty().bind(AppI18n.observable("claudeCode"));
             claudeTab.setContent(claude);
             claudeTab.setClosable(false);
 

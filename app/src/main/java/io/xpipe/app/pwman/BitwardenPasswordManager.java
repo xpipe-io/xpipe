@@ -39,7 +39,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class BitwardenPasswordManager implements PasswordManager {
 
     private static ShellControl SHELL;
-    private static boolean copied;
     private final PasswordManagerKeyStrategy keyStrategy;
 
     private static synchronized ShellControl getOrStartShell() throws Exception {
@@ -126,15 +125,11 @@ public class BitwardenPasswordManager implements PasswordManager {
     }
 
     private static void copyConfigIfNeeded() {
-        if (copied) {
-            return;
-        }
-
         var cacheDataFile = AppCache.getBasePath().resolve("data.json");
         var def = getDefaultConfigPath();
         if (Files.exists(def)) {
             try {
-                var defIsNewer = Files.getLastModifiedTime(def).compareTo(Files.getLastModifiedTime(cacheDataFile)) > 0;
+                var defIsNewer = !Files.exists(cacheDataFile) || Files.getLastModifiedTime(def).compareTo(Files.getLastModifiedTime(cacheDataFile)) > 0;
                 if (defIsNewer) {
                     Files.copy(def, cacheDataFile, StandardCopyOption.REPLACE_EXISTING);
                 }
@@ -142,7 +137,6 @@ public class BitwardenPasswordManager implements PasswordManager {
                 ErrorEventFactory.fromThrowable(e).handle();
             }
         }
-        copied = true;
     }
 
     private static boolean loginOrUnlock() throws Exception {
