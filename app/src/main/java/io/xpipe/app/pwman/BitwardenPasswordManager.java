@@ -92,7 +92,11 @@ public class BitwardenPasswordManager implements PasswordManager {
 
             @Override
             public CommandBuilder commandBase() {
-                return CommandBuilder.of().add("flatpak", "run", "--command=bw", "com.bitwarden.desktop");
+                return CommandBuilder.of()
+                        .add("flatpak", "run")
+                        .add("--filesystem=host")
+                        .add("--command=bw")
+                        .add("com.bitwarden.desktop");
             }
 
             @Override
