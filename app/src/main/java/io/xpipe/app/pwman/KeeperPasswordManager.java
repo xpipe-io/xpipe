@@ -45,7 +45,12 @@ public class KeeperPasswordManager implements PasswordManager {
 
     private static Path getSocketLocation() {
         var socket = switch (OsType.ofLocal()) {
-            case OsType.Linux ignored -> AppSystemInfo.ofLinux().getConfigDir().resolve("Keeper Password Manager", "keeper-ssh-agent.sock");
+            case OsType.Linux ignored -> {
+                var l = List.of(
+                        AppSystemInfo.ofLinux().getConfigDir().resolve("Keeper Password Manager", "keeper-ssh-agent.sock"),
+                        AppSystemInfo.ofLinux().getUserHome().resolve("snap", "keepersecurity", "current", ".config", "Keeper Password Manager", "keeper-ssh-agent.sock"));
+                yield l.stream().filter(Files::exists).findFirst().orElse(l.getFirst());
+            }
             case OsType.MacOs ignored -> {
                 var l = List.of(AppSystemInfo.ofMacOs().getTemp().resolve("keeper-ssh-agent.sock"),
                     AppSystemInfo.ofMacOs().getUserHome().resolve("Library/Containers/com.callpod.keepermac.lite/Data/tmp/keeper-ssh-agent.sock"));

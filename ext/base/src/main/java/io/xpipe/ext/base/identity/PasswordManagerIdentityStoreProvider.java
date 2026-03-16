@@ -84,6 +84,7 @@ public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider 
                             return PasswordManagerIdentityStore.builder()
                                     .key(key.get())
                                     .sshKey(sshKey.get())
+                                    .perUser(perUser.get())
                                     .build();
                         },
                         store)
