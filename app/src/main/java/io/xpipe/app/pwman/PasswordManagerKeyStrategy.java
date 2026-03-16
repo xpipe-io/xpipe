@@ -57,6 +57,29 @@ public interface PasswordManagerKeyStrategy {
         }
     }
 
+
+    @JsonTypeName("inlineSeparate")
+    @Value
+    @Jacksonized
+    @Builder
+    class InlineSeparate implements PasswordManagerKeyStrategy {
+
+        @SuppressWarnings("unused")
+        public static String getOptionsNameKey() {
+            return "inlineKey";
+        }
+
+        @Override
+        public boolean useAgent() {
+            return false;
+        }
+
+        @Override
+        public SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
+            return null;
+        }
+    }
+
     @JsonTypeName("agent")
     @Value
     @Jacksonized
@@ -218,6 +241,7 @@ public interface PasswordManagerKeyStrategy {
         l.add(KeePassXcOpenSshAgent.class);
         l.add(KeePassXcPageant.class);
         l.add(Inline.class);
+        l.add(InlineSeparate.class);
         return l;
     }
 }

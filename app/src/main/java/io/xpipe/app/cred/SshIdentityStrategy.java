@@ -20,7 +20,7 @@ import java.util.Optional;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface SshIdentityStrategy {
 
-    static List<Class<?>> getClasses() {
+    static List<Class<?>> getAvailable() {
         var l = new ArrayList<Class<?>>();
         l.add(NoIdentityStrategy.class);
         l.add(InPlaceKeyStrategy.class);
@@ -36,6 +36,24 @@ public interface SshIdentityStrategy {
         if (PageantStrategy.isSupported()) {
             l.add(PageantStrategy.class);
         }
+        l.add(YubikeyPivStrategy.class);
+        l.add(CustomPkcs11LibraryStrategy.class);
+        l.add(OtherExternalAgentStrategy.class);
+
+        return l;
+    }
+
+    static List<Class<?>> getClasses() {
+        var l = new ArrayList<Class<?>>();
+        l.add(NoIdentityStrategy.class);
+        l.add(InPlaceKeyStrategy.class);
+        l.add(KeyFileStrategy.class);
+        l.add(OpenSshAgentStrategy.class);
+        l.add(PasswordManagerAgentStrategy.class);
+        l.add(PasswordManagerInPlaceKeyStrategy.class);
+        l.add(CustomAgentStrategy.class);
+        l.add(GpgAgentStrategy.class);
+        l.add(PageantStrategy.class);
         l.add(YubikeyPivStrategy.class);
         l.add(CustomPkcs11LibraryStrategy.class);
         l.add(OtherExternalAgentStrategy.class);

@@ -85,7 +85,7 @@ public class IdentityChoiceBuilder {
                 .allowNull(false)
                 .property(identity)
                 .customConfiguration(config)
-                .available(SshIdentityStrategy.getClasses())
+                .available(SshIdentityStrategy.getAvailable())
                 .transformer(entryComboBox -> {
                     var button = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2k-key-plus"), () -> {
                         ProcessControlProvider.get().showSshKeygenDialog(null, identity);
