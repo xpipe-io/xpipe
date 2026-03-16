@@ -41,6 +41,7 @@ public class PodmanContainerActionProviderMenu implements HubBranchProvider<Podm
                 new StoreStartActionProvider(),
                 new StoreStopActionProvider(),
                 new StoreRestartActionProvider(),
+                new PodmanContainerUnitFileEditActionProvider(),
                 new PodmanContainerInspectActionProvider(),
                 new PodmanContainerLogsActionProvider(),
                 new PodmanContainerAttachActionProvider());

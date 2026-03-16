@@ -3,10 +3,12 @@ package io.xpipe.ext.system.podman;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
 
+import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 import lombok.NonNull;
 import lombok.Value;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -113,10 +115,12 @@ public class PodmanCommandView extends CommandViewBase {
                             commandBuilder.add("ls -a --format=\"{{.Names}};{{.Image}};{{.Status}}\""))
                     .start()) {
                 var output = c.readStdoutOrThrow();
-                return output.lines()
-                        .filter(s -> s.split(";").length == 3)
-                        .map(s -> new ContainerEntry(s.split(";")[0], s.split(";")[1], s.split(";")[2]))
-                        .toList();
+                var l = new ArrayList<ContainerEntry>();
+                for (String s : output.lines().toList()) {
+                    var systemd = queryLabel(s.split(";")[0], "PODMAN_SYSTEMD_UNIT").orElse(null);
+                    l.add(new ContainerEntry(s.split(";")[0], s.split(";")[1], s.split(";")[2], systemd));
+                }
+                return l;
             }
         }
 
@@ -157,13 +161,10 @@ public class PodmanCommandView extends CommandViewBase {
                     .execute();
         }
 
-        public void restart(String container) throws Exception {
-            if (shellControl.getOsType() == OsType.LINUX) {
-                var systemd = queryLabel(container, "PODMAN_SYSTEMD_UNIT");
-                if (systemd.isPresent()) {
-                    shellControl.command(CommandBuilder.of().add("systemctl", "restart", "--user").addQuoted(systemd.get())).execute();
-                    return;
-                }
+        public void restart(String container, String service) throws Exception {
+            if (shellControl.getOsType() == OsType.LINUX && service != null) {
+                shellControl.command(CommandBuilder.of().add("systemctl", "restart", "--user").addQuoted(service)).execute();
+                return;
             }
 
             build(commandBuilder -> commandBuilder.add("restart").addQuoted(container)).execute();
@@ -192,6 +193,7 @@ public class PodmanCommandView extends CommandViewBase {
             String name;
             String image;
             String status;
+            String systemdUnit;
         }
     }
 }

@@ -33,7 +33,7 @@ public class PodmanContainerStore
                 ShellStore,
                 InternalCacheDataStore,
                 FixedChildStore,
-                StatefulDataStore<ContainerStoreState>,
+                StatefulDataStore<PodmanContainerStoreState>,
                 FixedServiceCreatorStore,
                 SelfReferentialStore,
                 ContainerImageStore,
@@ -113,8 +113,8 @@ public class PodmanContainerStore
     }
 
     @Override
-    public Class<ContainerStoreState> getStateClass() {
-        return ContainerStoreState.class;
+    public Class<PodmanContainerStoreState> getStateClass() {
+        return PodmanContainerStoreState.class;
     }
 
     @Override
@@ -186,7 +186,7 @@ public class PodmanContainerStore
         stopSessionIfNeeded();
         var sc = getCmd().getStore().getHost().getStore().getOrStartSession();
         var view = commandView(sc);
-        view.restart(containerName);
+        view.restart(containerName, getState().getSystemdUnit());
         refreshContainerState(sc);
     }
 }

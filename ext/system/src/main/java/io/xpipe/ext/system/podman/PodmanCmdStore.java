@@ -60,10 +60,11 @@ public class PodmanCmdStore
                             .containerName(s.getName())
                             .build();
                     var entry = DataStoreEntry.createNew(s.getName(), c);
-                    entry.setStorePersistentState(ContainerStoreState.builder()
+                    entry.setStorePersistentState(PodmanContainerStoreState.builder()
                             .containerState(s.getStatus())
                             .imageName(s.getImage())
                             .running(running)
+                            .systemdUnit(s.getSystemdUnit())
                             .build());
                     return entry.<PodmanContainerStore>ref();
                 })

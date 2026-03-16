@@ -3,6 +3,7 @@ package io.xpipe.app.core;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.LocalExec;
+import io.xpipe.app.util.PasswdFile;
 import io.xpipe.core.OsType;
 
 import com.sun.jna.platform.win32.*;
@@ -368,6 +369,19 @@ public abstract class AppSystemInfo {
                 return (config = AppSystemInfo.ofLinux()
                         .getUserHome()
                         .resolve(".config"));
+            }
+        }
+
+        public Path getRuntimeDir() {
+            if (config != null) {
+                return config;
+            }
+
+            if (System.getenv("XDG_RUNTIME_DIR") != null) {
+                return (config = Path.of(System.getenv("XDG_RUNTIME_DIR")));
+            } else {
+                // Bad fallback, but we don't want to run any commands to retrieve uids here
+                return (config = Path.of("/run/user/1000"));
             }
         }
 
