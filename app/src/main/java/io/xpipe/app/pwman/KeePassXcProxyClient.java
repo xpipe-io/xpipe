@@ -74,7 +74,13 @@ public class KeePassXcProxyClient {
         // Generate actual cryptographic keys
         this.keyPair = TweetNaClHelper.generateKeyPair();
 
-        var pb = new ProcessBuilder(List.of(proxyExecutable.toString()));
+        var l = new ArrayList<String>();
+        if (proxyExecutable.toString().contains("flatpak")) {
+            l.addAll(List.of("flatpak", "run", "--command=keepassxc-proxy", "org.keepassxc.KeePassXC"));
+        } else {
+            l.add(proxyExecutable.toString());
+        }
+        var pb = new ProcessBuilder(l);
         this.process = pb.start();
     }
 

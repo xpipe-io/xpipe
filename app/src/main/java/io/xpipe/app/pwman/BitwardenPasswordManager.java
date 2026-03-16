@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Jacksonized
 public class BitwardenPasswordManager implements PasswordManager {
 
-    private static enum Dist {
+    private enum Dist {
 
         WINDOWS {
             @Override
@@ -87,7 +87,7 @@ public class BitwardenPasswordManager implements PasswordManager {
         FLATPAK {
             @Override
             public Path getSocketLocation() {
-                return AppSystemInfo.ofLinux().getUserHome().resolve(".var", "app", "com.bitwarden.desktop", ".bitwarden-ssh-agent.sock");
+                return AppSystemInfo.ofLinux().getUserHome().resolve(".var", "app", "com.bitwarden.desktop", "data", ".bitwarden-ssh-agent.sock");
             }
 
             @Override

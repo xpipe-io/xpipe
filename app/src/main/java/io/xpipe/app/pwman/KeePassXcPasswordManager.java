@@ -122,7 +122,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
                         p);
     }
 
-    private static KeePassXcAssociationKey associate() throws IOException {
+    private static KeePassXcAssociationKey associate() throws Exception {
         var found = findKeePassProxy();
         if (found.isEmpty()) {
             throw ErrorEventFactory.expected(new UnsupportedOperationException("No KeePassXC installation was found"));
@@ -206,7 +206,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
         return client;
     }
 
-    private static Optional<Path> findKeePassProxy() throws IOException {
+    private static Optional<Path> findKeePassProxy() throws Exception {
         try (var sc = LocalShell.getShell().start()) {
             var found = sc.view().findProgram("keepassxc-proxy").map(filePath -> filePath.asLocalPath());
             if (found.isPresent()) {
@@ -220,10 +220,16 @@ public class KeePassXcPasswordManager implements PasswordManager {
         Optional<Path> found =
                 switch (OsType.ofLocal()) {
                     case OsType.Linux ignored -> {
-                        var paths = List.of(
+                        var paths = new ArrayList<>(List.of(
                                 Path.of("/usr/bin/keepassxc-proxy"),
                                 Path.of("/usr/local/bin/keepassxc-proxy"),
-                                Path.of("/snap/keepassxc/current/usr/bin/keepassxc-proxy"));
+                                Path.of("/snap/keepassxc/current/usr/bin/keepassxc-proxy")));
+
+                        var flatpak = FlatpakCache.getApp("org.keepassxc.KeePassXC");
+                        if (flatpak.isPresent()) {
+                            paths.add(flatpak.get().getInstallDir().resolve("files", "bin", "keepassxc-proxy"));
+                        }
+
                         yield paths.stream().filter(path -> Files.exists(path)).findFirst();
                     }
                     case OsType.MacOs ignored -> {
