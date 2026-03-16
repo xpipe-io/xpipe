@@ -3,6 +3,7 @@ package io.xpipe.app.pwman;
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.cred.*;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
@@ -26,14 +27,6 @@ import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface PasswordManagerKeyStrategy {
-
-    @Value
-    @Builder
-    class OptionsConfig {
-
-        boolean allowSocketChoice;
-        Path defaultSocketLocation;
-    }
 
     @JsonTypeName("inline")
     @Value
@@ -86,8 +79,6 @@ public interface PasswordManagerKeyStrategy {
     @Builder
     class Agent implements PasswordManagerKeyStrategy {
 
-        FilePath socket;
-
         @Override
         public boolean useAgent() {
             return true;
@@ -99,43 +90,43 @@ public interface PasswordManagerKeyStrategy {
         }
 
         @SuppressWarnings("unused")
-        static OptionsBuilder createOptions(Property<Agent> property, OptionsConfig config) {
-            var customSocket = new SimpleObjectProperty<>(property.getValue().getSocket());
-            if (config.getDefaultSocketLocation() != null && customSocket.get() == null) {
-                customSocket.set(FilePath.of(config.getDefaultSocketLocation()));
-            }
+        static OptionsBuilder createOptions(Property<Agent> property) {
+            var socket = new SimpleObjectProperty<FilePath>();
+            AppPrefs.get().passwordManager().subscribe(passwordManager -> {
+                socket.set(passwordManager != null ? FilePath.of(passwordManager.getKeyConfiguration().getDefaultSocketLocation()) : null);
+            });
 
             var choice = new ContextualFileReferenceChoiceComp(
                     new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()),
-                    customSocket,
+                    socket,
                     null,
                     List.of(),
                     e -> e.equals(DataStorage.get().local()),
                     false);
-            if (config.getDefaultSocketLocation() != null) {
-                choice.setPrompt(new ReadOnlyObjectWrapper<>(FilePath.of(config.getDefaultSocketLocation())));
-            }
-            if (!config.isAllowSocketChoice()) {
-                choice.disable();
-            }
+            choice.disable();
             choice.style("agent-socket-choice");
 
             return new OptionsBuilder()
-                    .addComp(new SshAgentTestComp(Bindings.createObjectBinding(() -> {
-                        return property.getValue().getSshIdentityStrategy(null, false);
-                    }, property)))
+                    .addComp(new SshAgentTestComp(() -> {
+                        var passwordManager = AppPrefs.get().passwordManager().getValue();
+                        socket.set(passwordManager != null ? FilePath.of(passwordManager.getKeyConfiguration().getDefaultSocketLocation()) : null);
+                    }, Bindings.createObjectBinding(() -> {
+                            return property.getValue().getSshIdentityStrategy(null, false);
+                        }, property)
+                    ))
                     .nameAndDescription("passwordManagerSshAgentSocket")
-                    .addComp(choice, customSocket)
-                    .hide(!config.isAllowSocketChoice() && config.getDefaultSocketLocation() == null)
+                    .addComp(choice, socket)
+                    .hide(socket.isNull())
                     .bind(
-                            () -> Agent.builder()
-                                    .socket(customSocket.get())
-                                    .build(),
+                            () -> Agent.builder().build(),
                             property);
         }
 
         @Override
         public SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
+            var pwman = AppPrefs.get().passwordManager().getValue();
+            var socket = pwman != null ? FilePath.of(pwman.getKeyConfiguration().getDefaultSocketLocation()) : null;
+
             return new SshIdentityAgentStrategy() {
                 @Override
                 public void prepareParent(ShellControl parent) throws Exception {
@@ -184,7 +175,7 @@ public interface PasswordManagerKeyStrategy {
         @SuppressWarnings("unused")
         static OptionsBuilder createOptions(Property<KeePassXcOpenSshAgent> property) {
             return new OptionsBuilder()
-                    .addComp(new SshAgentTestComp(Bindings.createObjectBinding(() -> {
+                    .addComp(new SshAgentTestComp(() -> {}, Bindings.createObjectBinding(() -> {
                         return property.getValue().getSshIdentityStrategy(null, false);
                     }, property)))
                     .bind(
@@ -212,7 +203,7 @@ public interface PasswordManagerKeyStrategy {
         @SuppressWarnings("unused")
         static OptionsBuilder createOptions(Property<KeePassXcPageant> property) {
             return new OptionsBuilder()
-                    .addComp(new SshAgentTestComp(Bindings.createObjectBinding(() -> {
+                    .addComp(new SshAgentTestComp(() -> {}, Bindings.createObjectBinding(() -> {
                         return property.getValue().getSshIdentityStrategy(null, false);
                     }, property)))
                     .bind(

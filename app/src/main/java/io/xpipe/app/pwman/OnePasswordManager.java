@@ -70,10 +70,6 @@ public class OnePasswordManager implements PasswordManager {
                 .allowNull(true)
                 .available(List.of(PasswordManagerKeyStrategy.Agent.class))
                 .property(keyStrategy)
-                .customConfiguration(PasswordManagerKeyStrategy.OptionsConfig.builder()
-                        .defaultSocketLocation(getSocketLocation())
-                        .allowSocketChoice(false)
-                        .build())
                 .build();
 
         return new OptionsBuilder()

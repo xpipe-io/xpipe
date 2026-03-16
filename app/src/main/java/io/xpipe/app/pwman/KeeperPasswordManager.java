@@ -461,10 +461,6 @@ public class KeeperPasswordManager implements PasswordManager {
                 .allowNull(true)
                 .available(List.of(PasswordManagerKeyStrategy.Agent.class, PasswordManagerKeyStrategy.Inline.class))
                 .property(keyStrategy)
-                .customConfiguration(PasswordManagerKeyStrategy.OptionsConfig.builder()
-                        .defaultSocketLocation(getSocketLocation())
-                        .allowSocketChoice(false)
-                        .build())
                 .build();
 
 

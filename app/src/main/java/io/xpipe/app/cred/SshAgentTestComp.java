@@ -21,9 +21,12 @@ import javafx.scene.layout.VBox;
 
 public class SshAgentTestComp extends SimpleRegionBuilder {
 
+    private final Runnable beforeTest;
     private final ObservableValue<? extends SshIdentityAgentStrategy> sshIdentityStrategy;
 
-    public SshAgentTestComp(ObservableValue<? extends SshIdentityAgentStrategy> sshIdentityStrategy) {this.sshIdentityStrategy = sshIdentityStrategy;}
+    public SshAgentTestComp(Runnable beforeTest, ObservableValue<? extends SshIdentityAgentStrategy> sshIdentityStrategy) {
+        this.beforeTest = beforeTest;
+        this.sshIdentityStrategy = sshIdentityStrategy;}
 
     @Override
     protected Region createSimple() {
@@ -33,6 +36,7 @@ public class SshAgentTestComp extends SimpleRegionBuilder {
             struc.setOnAction(event -> {
                 DataStoreEntryRef<ShellStore> refToUse = DataStorage.get().local().ref();
                 ThreadHelper.runFailableAsync(() -> {
+                    beforeTest.run();
                     var list = SshAgentKeyList.listAgentIdentities(refToUse, sshIdentityStrategy.getValue());
                     Platform.runLater(() -> {
                         var popover = new Popover();

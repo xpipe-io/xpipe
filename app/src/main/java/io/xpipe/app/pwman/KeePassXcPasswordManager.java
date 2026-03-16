@@ -68,10 +68,6 @@ public class KeePassXcPasswordManager implements PasswordManager {
                 .allowNull(true)
                 .available(strategyList)
                 .property(keyStrategy)
-                .customConfiguration(PasswordManagerKeyStrategy.OptionsConfig.builder()
-                        .defaultSocketLocation(null)
-                        .allowSocketChoice(false)
-                        .build())
                 .build();
 
         var prop = FXCollections.<KeePassXcAssociationKey>observableArrayList();

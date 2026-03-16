@@ -34,7 +34,7 @@ public class SshCategory extends AppPrefsCategory {
             options.addComp(prefs.getCustomOptions("x11WslInstance").buildComp());
         }
 
-        var agentTest = new SshAgentTestComp(new SimpleObjectProperty<>(CustomAgentStrategy.builder().build()));
+        var agentTest = new SshAgentTestComp(() -> {}, new SimpleObjectProperty<>(CustomAgentStrategy.builder().build()));
         if (OsType.ofLocal() != OsType.WINDOWS) {
             var choice = new ContextualFileReferenceChoiceComp(
                     new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()),

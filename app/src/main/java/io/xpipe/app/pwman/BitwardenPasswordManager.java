@@ -211,10 +211,6 @@ public class BitwardenPasswordManager implements PasswordManager {
         return SHELL;
     }
 
-    private static Path getSocketLocation() {
-        return Dist.get().getSocketLocation();
-    }
-
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<BitwardenPasswordManager> p) {
         var keyStrategy = new SimpleObjectProperty<>(p.getValue().keyStrategy);
@@ -236,10 +232,6 @@ public class BitwardenPasswordManager implements PasswordManager {
                 .allowNull(true)
                 .available(List.of(PasswordManagerKeyStrategy.Agent.class))
                 .property(keyStrategy)
-                .customConfiguration(PasswordManagerKeyStrategy.OptionsConfig.builder()
-                        .defaultSocketLocation(getSocketLocation())
-                        .allowSocketChoice(false)
-                        .build())
                 .build();
 
         return new OptionsBuilder()
@@ -400,7 +392,7 @@ public class BitwardenPasswordManager implements PasswordManager {
 
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {
-        return PasswordManagerKeyConfiguration.of(true, false, true, keyStrategy, getSocketLocation());
+        return PasswordManagerKeyConfiguration.of(true, false, true, keyStrategy, Dist.get().getSocketLocation());
     }
 
     @Override
