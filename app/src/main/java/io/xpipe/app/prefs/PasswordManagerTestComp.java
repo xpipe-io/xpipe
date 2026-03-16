@@ -109,7 +109,13 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
             List<String> elements = new ArrayList<>();
             if (r.getCredentials() != null) {
                 elements.add(r.getCredentials().getUsername() != null ? r.getCredentials().getUsername() : "<no user>");
-                elements.add(r.getCredentials().getPassword() != null ? ("[" + r.getCredentials().getPassword().getSecretValue() + "]") : "<no password>");
+                if (r.getCredentials().getPassword() != null) {
+                    var secret = r.getCredentials().getPassword().getSecretValue();
+                    var secretFormatted = secret.length() > 4 ? secret.substring(0, 4) + "*".repeat(secret.length() - 4) : secret;
+                    elements.add("[" + secretFormatted + "]");
+                } else {
+                    elements.add("<no password>");
+                }
             } else {
                 elements.add("<no credentials>");
             }

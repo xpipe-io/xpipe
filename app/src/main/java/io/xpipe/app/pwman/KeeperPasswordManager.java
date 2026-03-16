@@ -174,7 +174,7 @@ public class KeeperPasswordManager implements PasswordManager {
                           """;
                     return input;
                 } else {
-                    var totp = AskpassAlert.queryRaw("Enter Keeper Commander SMS Code", null, true);
+                    var totp = AskpassAlert.queryRaw("Enter Keeper Commander SMS Code", null, false);
                     if (totp.getState() != SecretQueryState.NORMAL) {
                         return null;
                     }
@@ -259,7 +259,7 @@ public class KeeperPasswordManager implements PasswordManager {
                           """;
                     return input;
                 } else {
-                    var totp = AskpassAlert.queryRaw("Enter Keeper 2FA Code", null, true);
+                    var totp = AskpassAlert.queryRaw("Enter Keeper 2FA Code", null, false);
                     if (totp.getState() != SecretQueryState.NORMAL) {
                         return null;
                     }

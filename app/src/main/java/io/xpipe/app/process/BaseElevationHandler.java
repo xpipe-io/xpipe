@@ -34,7 +34,8 @@ public class BaseElevationHandler implements ElevationHandler {
                 List.of(),
                 List.of(),
                 countDown,
-                interactive);
+                interactive,
+                true);
         return true;
     }
 

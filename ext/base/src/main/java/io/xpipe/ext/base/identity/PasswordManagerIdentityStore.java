@@ -124,7 +124,7 @@ public class PasswordManagerIdentityStore extends IdentityStore
             public SecretQuery query() {
                 return new SecretQuery() {
                     @Override
-                    public SecretQueryResult query(String prompt) {
+                    public SecretQueryResult query(String prompt, boolean forceFocus) {
                         var r = retrieve();
                         if (r == null || r.getCredentials() == null || r.getCredentials().getPassword() == null) {
                             return new SecretQueryResult(null, SecretQueryState.RETRIEVAL_FAILURE);

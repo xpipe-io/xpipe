@@ -38,8 +38,8 @@ public interface SecretQuery {
             }
 
             @Override
-            public SecretQueryResult query(String prompt) {
-                var r = original.query(prompt);
+            public SecretQueryResult query(String prompt, boolean forceFocus) {
+                var r = original.query(prompt, forceFocus);
                 if (r.getState() != SecretQueryState.NORMAL) {
                     return r;
                 }
@@ -75,8 +75,8 @@ public interface SecretQuery {
     static SecretQuery prompt(boolean cache) {
         return new SecretQuery() {
             @Override
-            public SecretQueryResult query(String prompt) {
-                return AskpassAlert.queryRaw(prompt, null, true);
+            public SecretQueryResult query(String prompt, boolean forceFocus) {
+                return AskpassAlert.queryRaw(prompt, null, forceFocus);
             }
 
             @Override
@@ -101,7 +101,7 @@ public interface SecretQuery {
         return r.map(secretValue -> new SecretQueryResult(secretValue, SecretQueryState.NORMAL));
     }
 
-    SecretQueryResult query(String prompt);
+    SecretQueryResult query(String prompt, boolean forceFocus);
 
     Duration cacheDuration();
 

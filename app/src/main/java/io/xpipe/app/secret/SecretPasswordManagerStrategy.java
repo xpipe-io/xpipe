@@ -70,7 +70,7 @@ public class SecretPasswordManagerStrategy implements SecretRetrievalStrategy {
     public SecretQuery query() {
         return new SecretQuery() {
             @Override
-            public SecretQueryResult query(String prompt) {
+            public SecretQueryResult query(String prompt, boolean forceFocus) {
                 var pm = AppPrefs.get().passwordManager().getValue();
                 if (pm == null) {
                     ErrorEventFactory.fromMessage(

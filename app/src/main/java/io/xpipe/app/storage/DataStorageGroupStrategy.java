@@ -105,7 +105,7 @@ public interface DataStorageGroupStrategy {
                     .key(key)
                     .build()
                     .query()
-                    .query("Group secret");
+                    .query("Group secret", false);
             return r.getState() == SecretQueryState.NORMAL ? r.getSecret().getSecretValue() : null;
         }
     }
