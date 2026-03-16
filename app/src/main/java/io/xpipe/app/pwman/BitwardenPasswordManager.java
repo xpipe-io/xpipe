@@ -286,7 +286,7 @@ public class BitwardenPasswordManager implements PasswordManager {
                                     "BITWARDENCLI_APPDATA_DIR",
                                     AppCache.getBasePath().toString()),
                     sc.getShellDialect().getEchoCommand("Log in into your Bitwarden account from the CLI:", false),
-                    "bw login");
+                    Dist.get().commandBase().buildFull(sc) + " login");
             TerminalLaunch.builder()
                     .title("Bitwarden login")
                     .localScript(script)
