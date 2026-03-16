@@ -40,8 +40,22 @@ import java.util.concurrent.atomic.AtomicReference;
 @Jacksonized
 public class BitwardenPasswordManager implements PasswordManager {
 
-    private static enum LinuxDist {
+    private static enum Dist {
 
+        WINDOWS {
+            @Override
+            public Path getSocketLocation() {
+                return null;
+            }
+
+            @Override
+            public Path getConfigLocation() {
+                return AppSystemInfo.ofWindows()
+                        .getRoamingAppData()
+                        .resolve("Bitwarden CLI")
+                        .resolve("data.json");
+            }
+        },
         NORMAL {
             @Override
             public Path getSocketLocation() {
@@ -82,11 +96,46 @@ public class BitwardenPasswordManager implements PasswordManager {
             }
 
             @Override
+            public boolean checkInPath() {
+                return false;
+            }
+
+            @Override
             public Path getConfigLocation() {
                 return AppSystemInfo.ofLinux()
                         .getUserHome()
                         .resolve(".var", "app", "com.bitwarden.desktop", "config", "Bitwarden CLI")
                         .resolve("data.json");
+            }
+        },
+
+
+        MACOS {
+            @Override
+            public Path getSocketLocation() {
+                return AppSystemInfo.ofMacOs().getUserHome().resolve(".bitwarden-ssh-agent.sock");
+            }
+
+            @Override
+            public Path getConfigLocation() {
+                return AppSystemInfo.ofMacOs()
+                        .getUserHome()
+                        .resolve("Library", "Application Support", "Bitwarden CLI", "data.json");
+            }
+        },
+
+
+        MACOS_APP_STORE {
+            @Override
+            public Path getSocketLocation() {
+                return AppSystemInfo.ofMacOs().getUserHome().resolve("Library", "Containers", "com.bitwarden.desktop", "Data", ".bitwarden-ssh-agent.sock");
+            }
+
+            @Override
+            public Path getConfigLocation() {
+                return AppSystemInfo.ofMacOs()
+                        .getUserHome()
+                        .resolve("Library", "Application Support", "Bitwarden CLI", "data.json");
             }
         };
 
@@ -94,16 +143,32 @@ public class BitwardenPasswordManager implements PasswordManager {
             return CommandBuilder.of().add("bw");
         }
 
+        public boolean checkInPath() {
+            return true;
+        }
+
         public abstract Path getSocketLocation();
 
         public abstract Path getConfigLocation();
 
-        private static LinuxDist dist;
+        private static Dist dist;
 
         @SneakyThrows
-        static LinuxDist get() {
+        static Dist get() {
             if (dist != null) {
                 return dist;
+            }
+
+            if (OsType.ofLocal() == OsType.WINDOWS) {
+                return dist = Dist.WINDOWS;
+            }
+
+            if (OsType.ofLocal() == OsType.MACOS) {
+                if (Files.exists(AppSystemInfo.ofMacOs().getUserHome().resolve("Library", "Containers", "com.bitwarden.desktop"))) {
+                    return dist = MACOS_APP_STORE;
+                } else {
+                    return dist = MACOS;
+                }
             }
 
             var sc = getOrStartShell();
@@ -143,18 +208,7 @@ public class BitwardenPasswordManager implements PasswordManager {
     }
 
     private static Path getSocketLocation() {
-        var socket = switch (OsType.ofLocal()) {
-            case OsType.Linux ignored -> LinuxDist.get().getSocketLocation();
-            case OsType.MacOs ignored -> {
-                var paths = List.of(
-                        AppSystemInfo.ofMacOs().getUserHome().resolve(".bitwarden-ssh-agent.sock"),
-                        AppSystemInfo.ofMacOs().getUserHome().resolve("Library", "Containers", "com.bitwarden.desktop", "Data", ".bitwarden-ssh-agent.sock")
-                );
-                yield paths.stream().filter(path -> Files.exists(path)).findFirst().orElse(paths.getFirst());
-            }
-            case OsType.Windows ignored -> null;
-        };
-        return socket;
+        return Dist.get().getSocketLocation();
     }
 
     @SuppressWarnings("unused")
@@ -203,7 +257,7 @@ public class BitwardenPasswordManager implements PasswordManager {
             return;
         }
 
-        getOrStartShell().command(CommandBuilder.of().add("bw", "sync")).execute();
+        getOrStartShell().command(CommandBuilder.of().add(Dist.get().commandBase()).add("sync")).execute();
     }
 
     private static void copyConfigIfNeeded() {
@@ -223,7 +277,7 @@ public class BitwardenPasswordManager implements PasswordManager {
 
     private static boolean loginOrUnlock() throws Exception {
         var sc = getOrStartShell();
-        var command = sc.command(CommandBuilder.of().add("bw", "get", "item", "xpipe-test", "--nointeraction"));
+        var command = sc.command(CommandBuilder.of().add(Dist.get().commandBase()).add("get", "item", "xpipe-test", "--nointeraction"));
         var r = command.readStdoutAndStderr();
         if (r[1].contains("You are not logged in")) {
             var script = ShellScript.lines(
@@ -249,7 +303,7 @@ public class BitwardenPasswordManager implements PasswordManager {
                 return false;
             }
             var cmd = sc.command(CommandBuilder.of()
-                    .add("bw", "unlock", "--raw", "--passwordenv", "BW_PASSWORD")
+                    .add(Dist.get().commandBase()).add("unlock", "--raw", "--passwordenv", "BW_PASSWORD")
                     .fixedEnvironment("BW_PASSWORD", pw.getSecret().getSecretValue()));
             cmd.sensitive();
             var out = cmd.readStdoutOrThrow();
@@ -261,13 +315,13 @@ public class BitwardenPasswordManager implements PasswordManager {
 
     @Override
     public synchronized Result query(String key) {
-        try {
-            CommandSupport.isInLocalPathOrThrow("Bitwarden CLI", "bw");
-        } catch (Exception e) {
-            ErrorEventFactory.fromThrowable(e)
-                    .link("https://bitwarden.com/help/cli/#download-and-install")
-                    .handle();
-            return null;
+        if (Dist.get().checkInPath()) {
+            try {
+                CommandSupport.isInLocalPathOrThrow("Bitwarden CLI", "bw");
+            } catch (Exception e) {
+                ErrorEventFactory.fromThrowable(e).link("https://bitwarden.com/help/cli/#download-and-install").handle();
+                return null;
+            }
         }
 
         // Copy existing file if possible to retain configuration. Only once per session
@@ -280,7 +334,7 @@ public class BitwardenPasswordManager implements PasswordManager {
 
             var sc = getOrStartShell();
             var cmd =
-                    CommandBuilder.of().add("bw", "get", "item").addLiteral(key).add("--nointeraction");
+                    CommandBuilder.of().add(Dist.get().commandBase()).add("get", "item").addLiteral(key).add("--nointeraction");
             var json = JacksonMapper.getDefault()
                     .readTree(sc.command(cmd).sensitive().readStdoutOrThrow());
 
@@ -316,22 +370,13 @@ public class BitwardenPasswordManager implements PasswordManager {
         if (System.getenv("BITWARDENCLI_APPDATA_DIR") != null) {
             try {
                 var path = Path.of(System.getenv("BITWARDENCLI_APPDATA_DIR"));
-                return path.resolve("data.json");
+                if (Files.isDirectory(path)) {
+                    return path.resolve("data.json");
+                }
             } catch (InvalidPathException ignored) {}
         }
 
-        return switch (OsType.ofLocal()) {
-            case OsType.Linux ignored -> LinuxDist.get().getConfigLocation();
-            case OsType.MacOs ignored ->
-                AppSystemInfo.ofMacOs()
-                        .getUserHome()
-                        .resolve("Library", "Application Support", "Bitwarden CLI", "data.json");
-            case OsType.Windows ignored ->
-                AppSystemInfo.ofWindows()
-                        .getRoamingAppData()
-                        .resolve("Bitwarden CLI")
-                        .resolve("data.json");
-        };
+        return Dist.get().getConfigLocation();
     }
 
     @Override
