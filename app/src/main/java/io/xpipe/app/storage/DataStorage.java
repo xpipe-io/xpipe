@@ -340,7 +340,7 @@ public abstract class DataStorage {
         return true;
     }
 
-    protected void refreshEntries() {
+    public void refreshEntries() {
         storeEntries.keySet().forEach(dataStoreEntry -> {
             dataStoreEntry.refreshStore();
         });

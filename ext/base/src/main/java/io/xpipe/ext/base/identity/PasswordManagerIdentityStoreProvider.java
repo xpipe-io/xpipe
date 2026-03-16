@@ -1,9 +1,11 @@
 package io.xpipe.ext.base.identity;
 
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.cred.PasswordManagerAgentStrategy;
 import io.xpipe.app.cred.SshIdentityStrategyChoiceConfig;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.prefs.AppPrefs;
@@ -20,8 +22,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider {
-
-
 
     @Override
     public UUID getTargetCategory(DataStore store, UUID target) {
@@ -62,15 +62,15 @@ public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider 
         var hideSshKeyChoice = Bindings.createBooleanBinding(() -> {
             var pwman = AppPrefs.get().passwordManager().getValue();
             var strat = pwman.getKeyConfiguration();
-            return strat.useInline();
-        }, AppPrefs.get().passwordManager());
+            return strat.useInline() && sshKey.get() == null;
+        }, AppPrefs.get().passwordManager(), sshKey);
 
         var testComp = new PasswordManagerTestComp(key, false);
         return new OptionsBuilder()
                 .nameAndDescription("passwordManagerKey")
                 .addComp(testComp.hgrow(), key)
                 .nonNull()
-                .nameAndDescription("passwordManagerIdentityAgentKey")
+                .nameAndDescription("passwordManagerAdditionalKey")
                 .sub(sshKeyChoice.build(), sshKey)
                 .hide(hideSshKeyChoice)
                 .nameAndDescription(
@@ -88,6 +88,11 @@ public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider 
                         },
                         store)
                 .buildDialog();
+    }
+
+    @Override
+    public String summaryString(StoreEntryWrapper wrapper) {
+        return wrapper.getEntry().isPerUserStore() ? AppI18n.get("userPasswordManagerIdentity") : AppI18n.get("globalPasswordManagerIdentity");
     }
 
     @Override

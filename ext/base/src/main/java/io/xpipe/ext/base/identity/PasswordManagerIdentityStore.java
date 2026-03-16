@@ -229,6 +229,14 @@ public class PasswordManagerIdentityStore extends IdentityStore
         Validators.nonNull(key);
         if (sshKey != null) {
             sshKey.checkComplete();
+
+            var pwman = AppPrefs.get().passwordManager().getValue();
+            if (pwman != null) {
+                var keyConfig = pwman.getKeyConfiguration();
+                if (keyConfig != null && !keyConfig.useAgent()) {
+                    throw new ValidationException("Password manager is not configured to use an agent");
+                }
+            }
         }
     }
 

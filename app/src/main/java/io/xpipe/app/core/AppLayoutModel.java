@@ -3,10 +3,16 @@ package io.xpipe.app.core;
 import io.xpipe.app.browser.BrowserFullSessionComp;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.base.ModalButton;
+import io.xpipe.app.comp.base.ModalOverlay;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.hub.comp.StoreLayoutComp;
+import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.AppPrefsComp;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.TerminalDockHubManager;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
@@ -60,6 +66,42 @@ public class AppLayoutModel {
     public static void init() {
         var state = AppCache.getNonNull("layoutState", SavedState.class, () -> new SavedState(270, 300));
         INSTANCE = new AppLayoutModel(state);
+        INSTANCE.addListeners();
+    }
+
+    private void addListeners() {
+        getSelected().addListener((c, o, n) -> {
+            if (o != null && o.equals(getEntries().get(2))) {
+                var prefs = AppPrefs.get();
+                if (prefs != null) {
+                    prefs.save();
+                }
+                var storage = DataStorage.get();
+                if (storage != null) {
+                    ThreadHelper.runAsync(() -> {
+                        storage.refreshEntries();
+                        storage.saveAsync();
+                    });
+                }
+
+                if (AppPrefs.get() != null && AppPrefs.get().getRequiresRestart().get()) {
+                    GlobalTimer.delay(() -> {
+                        var modal = ModalOverlay.of("prefsRestartTitle", AppDialog.dialogTextKey("prefsRestartContent"));
+                        modal.addButton(ModalButton.cancel());
+                        modal.addButton(new ModalButton("restart", () -> AppRestart.restart(), true, true));
+                        modal.show();
+                    }, Duration.ofSeconds(1));
+                    AppPrefs.get().getRequiresRestart().set(false);
+                }
+            }
+
+            if (o != null && o.equals(getEntries().get(0))) {
+                var svs = StoreViewState.get();
+                if (svs != null) {
+                    svs.triggerStoreListUpdate();
+                }
+            }
+        });
     }
 
     public static void reset() {

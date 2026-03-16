@@ -145,12 +145,10 @@ public class TerminalLauncher {
                             : TerminalInitFunction.none());
             TerminalLauncherManager.submitAsync(
                     config.getRequest(), config.getProcessControl(), terminalConfig, config.getDirectory(), latch);
-            var effectivePreferTabs =
-                    preferTabs && AppPrefs.get().preferTerminalTabs().get();
 
             var paneIndex = configs.indexOf(config);
             var paneConfig = TerminalPaneConfiguration.create(
-                    config.getRequest(), entry, config.getTitle(), paneIndex, effectivePreferTabs, config.isAlwaysKeepOpen());
+                    config.getRequest(), entry, config.getTitle(), paneIndex, log, config.isAlwaysKeepOpen());
             paneList.add(paneConfig);
         }
 

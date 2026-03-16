@@ -37,19 +37,22 @@ public class SshAgentKeyList {
 
         if (list.isEmpty()) {
             var noNames = all.stream().allMatch(entry -> entry.getName() == null);
+
+            var isPublicKey = identifier.contains(" ");
+            if (!isPublicKey) {
+                try {
+                    Base64.getDecoder().decode(identifier);
+                    isPublicKey = true;
+                } catch (IllegalArgumentException ignored) {}
+            }
+
             if (noNames) {
-                var isPublicKey = identifier.contains(" ");
                 if (!isPublicKey) {
-                    try {
-                        Base64.getDecoder().decode(identifier);
-                        isPublicKey = true;
-                    } catch (IllegalArgumentException ignored) {}
-                    if (!isPublicKey) {
-                        throw ErrorEventFactory.expected(new IllegalArgumentException("Found no agent identity for name " + identifier + " as the agent does not support names. Use a public key instead"));
-                    }
+                    throw ErrorEventFactory.expected(new IllegalArgumentException("Found no agent identity for name " + identifier + " as the agent does not support names. Use a public key instead"));
                 }
             }
-            throw ErrorEventFactory.expected(new IllegalArgumentException("No such agent identity: " + identifier));
+
+            throw ErrorEventFactory.expected(new IllegalArgumentException("Found no agent identity for " + (isPublicKey ? "public key " : "name ") + identifier));
         }
 
         if (list.size() > 1) {

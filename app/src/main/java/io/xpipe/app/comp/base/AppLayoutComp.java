@@ -55,35 +55,6 @@ public class AppLayoutComp extends RegionStructureBuilder<BorderPane, AppLayoutC
         pane.setCenter(multiR);
         var sidebarR = sidebar.build();
         pane.setRight(sidebarR);
-        model.getSelected().addListener((c, o, n) -> {
-            if (o != null && o.equals(model.getEntries().get(2))) {
-                var prefs = AppPrefs.get();
-                if (prefs != null) {
-                    prefs.save();
-                }
-                var storage = DataStorage.get();
-                if (storage != null) {
-                    storage.saveAsync();
-                }
-
-                if (AppPrefs.get() != null && AppPrefs.get().getRequiresRestart().get()) {
-                    GlobalTimer.delay(() -> {
-                        var modal = ModalOverlay.of("prefsRestartTitle", AppDialog.dialogTextKey("prefsRestartContent"));
-                        modal.addButton(ModalButton.cancel());
-                        modal.addButton(new ModalButton("restart", () -> AppRestart.restart(), true, true));
-                        modal.show();
-                    }, Duration.ofSeconds(1));
-                    AppPrefs.get().getRequiresRestart().set(false);
-                }
-            }
-
-            if (o != null && o.equals(model.getEntries().get(0))) {
-                var svs = StoreViewState.get();
-                if (svs != null) {
-                    svs.triggerStoreListUpdate();
-                }
-            }
-        });
         pane.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             sidebarR.getChildrenUnmodifiable().forEach(node -> {
                 var shortcut = (KeyCodeCombination) node.getProperties().get("shortcut");

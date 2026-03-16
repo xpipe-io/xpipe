@@ -204,7 +204,7 @@ public class StoreChoicePopover<T extends DataStore> {
             content.setFillWidth(true);
             content.getStyleClass().add("choice-comp-content");
             content.setPrefWidth(480);
-            content.setMaxHeight(550);
+            content.setMaxHeight(430);
 
             popover.setContentNode(content);
             popover.setCloseButtonEnabled(true);

@@ -112,7 +112,7 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
                 if (r.getCredentials().getPassword() != null) {
                     var secret = r.getCredentials().getPassword().getSecretValue();
                     var secretFormatted = secret.length() > 4 ? secret.substring(0, 4) + "*".repeat(secret.length() - 4) : secret;
-                    elements.add("[" + secretFormatted + "]");
+                    elements.add(secretFormatted);
                 } else {
                     elements.add("<no password>");
                 }
@@ -121,10 +121,10 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
             }
 
             if (r.getSshKey() != null) {
-                elements.add("[" + AppI18n.get("sshKey") + "]");
+                elements.add(AppI18n.get("sshKey"));
             }
 
-            var formatted = String.join(" ", elements);
+            var formatted = String.join(" / ", elements);
             Platform.runLater(() -> {
                 testPasswordManagerResult.set("    " + AppI18n.get("retrievedPassword", formatted));
             });

@@ -66,9 +66,10 @@ public class PasswordManagerCategory extends AppPrefsCategory {
 
     @Override
     protected BaseRegionBuilder<?, ?> create() {
+        var prefs = AppPrefs.get();
         return new OptionsBuilder()
                 .title("passwordManager")
-                .sub(passwordManagerChoice())
+                .sub(passwordManagerChoice(), prefs.passwordManager)
                 .buildComp();
     }
 }
