@@ -30,6 +30,7 @@ import lombok.ToString;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
@@ -45,7 +46,11 @@ public class KeeperPasswordManager implements PasswordManager {
     private static Path getSocketLocation() {
         var socket = switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> AppSystemInfo.ofLinux().getConfigDir().resolve("Keeper Password Manager", "keeper-ssh-agent.sock");
-            case OsType.MacOs ignored -> AppSystemInfo.ofMacOs().getTemp().resolve("keeper-ssh-agent.sock");
+            case OsType.MacOs ignored -> {
+                var l = List.of(AppSystemInfo.ofMacOs().getTemp().resolve("keeper-ssh-agent.sock"),
+                    AppSystemInfo.ofMacOs().getUserHome().resolve("Library/Containers/com.callpod.keepermac.lite/Data/tmp/keeper-ssh-agent.sock"));
+                yield l.stream().filter(Files::exists).findFirst().orElse(l.getFirst());
+            }
             case OsType.Windows ignored -> null;
         };
         return socket;
@@ -58,7 +63,7 @@ public class KeeperPasswordManager implements PasswordManager {
 
     @Override
     public boolean selectInitial() throws Exception {
-        return LocalShell.getShell().view().findProgram("keeper-commander").isPresent();
+        return LocalShell.getShell().view().findProgram(getExecutable()).isPresent();
     }
 
     @Override
@@ -481,7 +486,7 @@ public class KeeperPasswordManager implements PasswordManager {
         key = key.replaceFirst("https://\\w+\\.\\w+/vault/#detail/", "");
 
         try {
-            CommandSupport.isInLocalPathOrThrow("Keeper Commander CLI", "keeper-commander");
+            CommandSupport.isInLocalPathOrThrow("Keeper Commander CLI", getExecutable());
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e)
                     .link("https://docs.keeper.io/en/keeperpam/commander-cli/commander-installation-setup")

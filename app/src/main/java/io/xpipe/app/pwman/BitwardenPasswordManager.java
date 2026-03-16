@@ -124,7 +124,7 @@ public class BitwardenPasswordManager implements PasswordManager {
             public Path getConfigLocation() {
                 return AppSystemInfo.ofMacOs()
                         .getUserHome()
-                        .resolve("Library", "Application Support", "Bitwarden CLI", "data.json");
+                        .resolve("Library", "Application Support", "Bitwarden", "data.json");
             }
         },
 
@@ -139,7 +139,7 @@ public class BitwardenPasswordManager implements PasswordManager {
             public Path getConfigLocation() {
                 return AppSystemInfo.ofMacOs()
                         .getUserHome()
-                        .resolve("Library", "Application Support", "Bitwarden CLI", "data.json");
+                        .resolve("Library", "Application Support", "Bitwarden", "data.json");
             }
         };
 
