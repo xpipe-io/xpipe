@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.cred.SshIdentityStrategy;
 import io.xpipe.app.cred.UsernameStrategy;
 import io.xpipe.app.ext.StatefulDataStore;
+import io.xpipe.app.ext.UserScopeStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStorage;
@@ -24,9 +25,10 @@ import java.util.UUID;
 @Value
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class MultiIdentityStore extends IdentityStore implements StatefulDataStore<MultiIdentityStoreState> {
+public class MultiIdentityStore extends IdentityStore implements StatefulDataStore<MultiIdentityStoreState>, UserScopeStore {
 
     List<UUID> identities;
+    boolean perUser;
 
     public List<DataStoreEntryRef<IdentityStore>> getAvailableIdentities() {
         return identities.stream().map(uuid -> DataStorage.get().getStoreEntryIfPresent(uuid)).flatMap(Optional::stream)

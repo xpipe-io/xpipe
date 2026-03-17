@@ -1,6 +1,7 @@
 package io.xpipe.app.pwman;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
@@ -10,6 +11,7 @@ import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.*;
 import io.xpipe.app.terminal.TerminalLaunch;
+import io.xpipe.core.JacksonMapper;
 import io.xpipe.core.OsType;
 import javafx.beans.property.*;
 import lombok.Builder;
@@ -17,6 +19,7 @@ import lombok.Getter;
 import lombok.extern.jackson.Jacksonized;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonTypeName("protonPass")
@@ -32,7 +35,7 @@ public class ProtonPasswordManager implements PasswordManager {
 
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {
-        return PasswordManagerKeyConfiguration.of(false, false, true, keyStrategy, getSocketLocation());
+        return PasswordManagerKeyConfiguration.of(true, true, true, keyStrategy, getSocketLocation());
     }
 
     @Override
@@ -46,8 +49,8 @@ public class ProtonPasswordManager implements PasswordManager {
 
     private static Path getSocketLocation() {
         var socket = switch (OsType.ofLocal()) {
-            case OsType.Linux ignored -> AppSystemInfo.ofLinux().getUserHome().resolve(".1password", "agent.sock");
-            case OsType.MacOs ignored -> AppSystemInfo.ofMacOs().getUserHome().resolve("Library", "Group Containers", "2BUA8C4S2C.com.1password", "t", "agent.sock");
+            case OsType.Linux ignored -> AppSystemInfo.ofLinux().getUserHome().resolve(".ssh", "proton-pass-agent.sock");
+            case OsType.MacOs ignored -> AppSystemInfo.ofMacOs().getUserHome().resolve(".ssh", "proton-pass-agent.sock");
             case OsType.Windows ignored -> null;
         };
         return socket;
@@ -59,7 +62,7 @@ public class ProtonPasswordManager implements PasswordManager {
 
         var keyStrategyChoice = OptionsChoiceBuilder.builder()
                 .allowNull(true)
-                .available(List.of(PasswordManagerKeyStrategy.Agent.class))
+                .available(List.of(PasswordManagerKeyStrategy.Inline.class, PasswordManagerKeyStrategy.ProtonPassAgent.class))
                 .property(keyStrategy)
                 .build();
 
@@ -109,7 +112,84 @@ public class ProtonPasswordManager implements PasswordManager {
                 return null;
             }
 
-            return null;
+            var split = key.split("/", 2);
+            var vault = split.length > 1 ? split[0] : null;
+            var itemName = split.length > 1 ? split[1] : key;
+
+            if (vault == null) {
+                var b = CommandBuilder.of().add("pass-cli", "vault", "list", "--output", "json");
+                var out = sc.command(b).readStdoutOrThrow();
+                var json = JacksonMapper.getDefault().readTree(out);
+                var vaultsNode = json.required("vaults");
+                if (vaultsNode == null || vaultsNode.size() == 0) {
+                    throw ErrorEventFactory.expected(new IllegalStateException("No Proton Pass vaults are available"));
+                }
+
+                vault = vaultsNode.get(0).required("name").textValue();
+
+                if (vaultsNode.size() > 1) {
+                    var all = new ArrayList<String>();
+                    for (JsonNode vaultNode : vaultsNode) {
+                        all.add(vaultNode.required("name").textValue());
+                    }
+                    throw ErrorEventFactory.expected(new IllegalStateException("No vault was specified but multiple are available: " + String.join(", ", all) + ". Specify the vault with <Vault Name>/<Item name>, e.g. " + vault + "/" + itemName));
+                }
+            }
+
+            var b = CommandBuilder.of().add("pass-cli", "item", "view");
+            if (vault != null) {
+                b.add("--vault-name").addQuoted(vault);
+            }
+            b.add("--item-title").addQuoted(itemName);
+            b.add("--output", "json");
+            var out = sc.command(b).readStdoutOrThrow();
+            var json = JacksonMapper.getDefault().readTree(out);
+
+            var itemNode = json.get("item");
+            if (itemNode == null) {
+                return null;
+            }
+
+            var contentNode = itemNode.get("content");
+            if (contentNode == null) {
+                return null;
+            }
+
+            var subContentNode = contentNode.get("content");
+            if (subContentNode == null) {
+                return null;
+            }
+
+            var login = subContentNode.get("Login");
+            if (login != null) {
+                var username = login.required("username").textValue();
+                var password = login.required("password").textValue();
+                return Result.of(Credentials.of(username, password), null);
+            }
+
+            var sshKey = subContentNode.get("SshKey");
+            if (sshKey == null) {
+                return null;
+            }
+
+            var privateKey = sshKey.get("private_key").textValue();
+            var publicKey = sshKey.get("public_key").textValue();
+
+            var extraFields = contentNode.get("extra_fields");
+            String username = null;
+            String password = null;
+            if (extraFields != null) {
+                for (JsonNode extraField : extraFields) {
+                    var name = extraField.required("name").textValue();
+                    if (name.equalsIgnoreCase("Username")) {
+                        username = extraField.required("content").required("Text").textValue();
+                    } else if (name.equalsIgnoreCase("Password")) {
+                        password = extraField.required("content").required("Text").textValue();
+                    }
+                }
+            }
+
+            return Result.of(Credentials.of(username, password), SshKey.of(null, publicKey, privateKey));
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
             return null;

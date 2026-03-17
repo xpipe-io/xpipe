@@ -78,7 +78,7 @@ public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider 
                                 ? "identityPerUser"
                                 : "identityPerUserDisabled")
                 .addToggle(perUser)
-                .hide(DataStorageUserHandler.getInstance().getActiveUser() == null)
+                .disable(DataStorageUserHandler.getInstance().getActiveUser() == null)
                 .bind(
                         () -> {
                             return PasswordManagerIdentityStore.builder()

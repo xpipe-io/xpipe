@@ -70,7 +70,7 @@ public interface PasswordManager {
         l.add(KeePassXcPasswordManager.class);
         l.add(BitwardenPasswordManager.class);
         l.add(KeeperPasswordManager.class);
-        // l.add(ProtonPasswordManager.class);
+        l.add(ProtonPasswordManager.class);
         l.add(HashicorpVaultPasswordManager.class);
         if (OsType.ofLocal() != OsType.WINDOWS) {
             l.add(LastpassPasswordManager.class);

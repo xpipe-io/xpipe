@@ -124,7 +124,7 @@ public class BitwardenPasswordManager implements PasswordManager {
             public Path getConfigLocation() {
                 return AppSystemInfo.ofMacOs()
                         .getUserHome()
-                        .resolve("Library", "Application Support", "Bitwarden", "data.json");
+                        .resolve("Library", "Application Support", "Bitwarden CLI", "data.json");
             }
         },
 
@@ -139,7 +139,7 @@ public class BitwardenPasswordManager implements PasswordManager {
             public Path getConfigLocation() {
                 return AppSystemInfo.ofMacOs()
                         .getUserHome()
-                        .resolve("Library", "Application Support", "Bitwarden", "data.json");
+                        .resolve("Library", "Application Support", "Bitwarden CLI", "data.json");
             }
         };
 
@@ -205,7 +205,7 @@ public class BitwardenPasswordManager implements PasswordManager {
             SHELL.view()
                     .setEnvironmentVariable(
                             "BITWARDENCLI_APPDATA_DIR",
-                            AppCache.getBasePath().toString());
+                            AppCache.getBasePath().resolve("bitwarden").toString());
         }
         SHELL.start();
         return SHELL;
@@ -257,12 +257,13 @@ public class BitwardenPasswordManager implements PasswordManager {
     }
 
     private static void copyConfigIfNeeded() {
-        var cacheDataFile = AppCache.getBasePath().resolve("data.json");
+        var cacheDataFile = AppCache.getBasePath().resolve("bitwarden").resolve("data.json");
         var def = getDefaultConfigPath();
         if (Files.exists(def)) {
             try {
                 var defIsNewer = !Files.exists(cacheDataFile) || Files.getLastModifiedTime(def).compareTo(Files.getLastModifiedTime(cacheDataFile)) > 0;
                 if (defIsNewer) {
+                    Files.createDirectories(cacheDataFile.getParent());
                     Files.copy(def, cacheDataFile, StandardCopyOption.REPLACE_EXISTING);
                 }
             } catch (IOException e) {
@@ -280,7 +281,7 @@ public class BitwardenPasswordManager implements PasswordManager {
                     LocalShell.getDialect()
                             .getSetEnvironmentVariableCommand(
                                     "BITWARDENCLI_APPDATA_DIR",
-                                    AppCache.getBasePath().toString()),
+                                    AppCache.getBasePath().resolve("bitwarden").toString()),
                     sc.getShellDialect().getEchoCommand("Log in into your Bitwarden account from the CLI:", false),
                     Dist.get().commandBase().buildFull(sc) + " login");
             TerminalLaunch.builder()
