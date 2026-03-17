@@ -54,14 +54,16 @@ public class StoreCreationMenu {
 
         menu.getItems().add(categoryMenu("addDesktop", "mdi2c-camera-plus", DataStoreCreationCategory.DESKTOP, null));
 
+        menu.getItems().add(cloudMenu());
+
+        menu.getItems().add(new SeparatorMenuItem());
+
         menu.getItems()
                 .add(categoryMenu(
                         "addIdentity",
                         "mdi2a-account-multiple-plus",
                         DataStoreCreationCategory.IDENTITY,
                         "localIdentity"));
-
-        menu.getItems().add(cloudMenu());
 
         menu.getItems().add(new SeparatorMenuItem());
 
