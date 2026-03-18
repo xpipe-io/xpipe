@@ -3,24 +3,23 @@ package io.xpipe.app.update;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.base.ModalOverlay;
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
 
 public class UpdateAvailableDialog {
 
-    public static void showIfNeeded(boolean wait) {
+    public static boolean showIfNeeded(boolean wait) {
         UpdateHandler uh = AppDistributionType.get().getUpdateHandler();
         if (uh.getPreparedUpdate().getValue() == null) {
-            return;
+            return false;
         }
 
         // Check whether we still have the latest version prepared
         uh.refreshUpdateCheckSilent(false, uh.getPreparedUpdate().getValue().isSecurityOnly());
         if (uh.getPreparedUpdate().getValue() == null) {
-            ThreadHelper.runFailableAsync(() -> {
-                uh.prepareUpdate();
-            });
-            return;
+            return false;
         }
 
         TrackEvent.withInfo("Showing update alert ...")
@@ -42,5 +41,6 @@ public class UpdateAvailableDialog {
         } else {
             modal.show();
         }
+        return true;
     }
 }
