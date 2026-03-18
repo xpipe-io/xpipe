@@ -84,6 +84,15 @@ public class ProtonPasswordManager implements PasswordManager {
         return SHELL;
     }
 
+    private String runCommand(CommandBuilder b) throws Exception {
+        var r = getOrStartShell().command(b).sensitive().readStdoutAndStderr();
+        // pass-cli does not set exit codes on failure
+        if (r[0].isEmpty() && !r[1].isEmpty()) {
+            throw ErrorEventFactory.expected(ProcessOutputException.of(1, r[1]));
+        }
+        return r[0];
+    }
+
     @Override
     public synchronized Result query(String key) {
         try {
@@ -117,8 +126,7 @@ public class ProtonPasswordManager implements PasswordManager {
             var itemName = split.length > 1 ? split[1] : key;
 
             if (vault == null) {
-                var b = CommandBuilder.of().add("pass-cli", "vault", "list", "--output", "json");
-                var out = sc.command(b).readStdoutOrThrow();
+                var out = runCommand(CommandBuilder.of().add("pass-cli", "vault", "list", "--output", "json"));
                 var json = JacksonMapper.getDefault().readTree(out);
                 var vaultsNode = json.required("vaults");
                 if (vaultsNode == null || vaultsNode.size() == 0) {
@@ -142,7 +150,7 @@ public class ProtonPasswordManager implements PasswordManager {
             }
             b.add("--item-title").addQuoted(itemName);
             b.add("--output", "json");
-            var out = sc.command(b).readStdoutOrThrow();
+            var out = runCommand(b);
             var json = JacksonMapper.getDefault().readTree(out);
 
             var itemNode = json.get("item");
