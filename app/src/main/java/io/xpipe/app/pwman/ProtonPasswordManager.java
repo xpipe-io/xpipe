@@ -149,12 +149,12 @@ public class ProtonPasswordManager implements PasswordManager {
                 b.add("--vault-name").addQuoted(vault);
             }
             b.add("--item-title").addQuoted(itemName);
-            b.add("--output", "json");
-            var out = runCommand(b);
+            var out = runCommand(CommandBuilder.of().add(b).add("--output", "json"));
             var json = JacksonMapper.getDefault().readTree(out);
 
             var itemNode = json.get("item");
             if (itemNode == null) {
+                runCommand(b);
                 return null;
             }
 
