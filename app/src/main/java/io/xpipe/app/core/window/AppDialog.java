@@ -141,6 +141,13 @@ public class AppDialog {
                 .prefWidth(450);
     }
 
+    public static void information(String translationKey) {
+        var content = dialogTextKey(translationKey + "Content");
+        var modal = ModalOverlay.of(translationKey + "Title", content);
+        modal.addButton(ModalButton.ok());
+        show(modal);
+    }
+
     public static boolean confirm(String translationKey) {
         var confirmed = new AtomicBoolean(false);
         var content = dialogTextKey(translationKey + "Content");

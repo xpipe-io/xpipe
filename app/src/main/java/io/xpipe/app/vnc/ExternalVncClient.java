@@ -22,7 +22,7 @@ public interface ExternalVncClient extends PrefsValue {
         if (!client.supportsPasswords() && configuration.hasFixedPassword()) {
             var pw = configuration.retrievePassword();
             if (pw.isPresent()) {
-                ClipboardHelper.copyPassword(pw.get());
+                ClipboardHelper.copyPassword(pw.get(), false);
             }
         }
 

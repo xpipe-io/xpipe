@@ -74,13 +74,6 @@ public class StoreCreationMenu {
                 .add(categoryMenu(
                         "addTunnel", "mdi2v-vector-polyline-plus", DataStoreCreationCategory.TUNNEL, "sshLocalTunnel"));
 
-        menu.getItems()
-                .add(categoryMenu(
-                        "addFileSystem",
-                        "mdi2f-folder-plus-outline",
-                        DataStoreCreationCategory.FILE_SYSTEM,
-                        "genericS3Bucket"));
-
         menu.getItems().add(new SeparatorMenuItem());
 
         menu.getItems()
@@ -105,6 +98,13 @@ public class StoreCreationMenu {
             actionMenu.getParentPopup().hide();
         });
         actionMenu.getItems().addFirst(item);
+
+        menu.getItems()
+                .add(categoryMenu(
+                        "addFileSystem",
+                        "mdi2f-folder-plus-outline",
+                        DataStoreCreationCategory.FILE_SYSTEM,
+                        "genericS3Bucket"));
 
         menu.getItems().add(categoryMenu("addSerial", "mdi2s-serial-port", DataStoreCreationCategory.SERIAL, "serial"));
 

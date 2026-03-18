@@ -1,7 +1,9 @@
 package io.xpipe.app.platform;
 
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.core.SecretValue;
 
 import javafx.animation.PauseTransition;
@@ -48,7 +50,7 @@ public class ClipboardHelper {
         }
     }
 
-    public static void copyPassword(SecretValue pass) {
+    public static void copyPassword(SecretValue pass, boolean userInitiated) {
         if (pass == null) {
             return;
         }
@@ -58,6 +60,14 @@ public class ClipboardHelper {
             var text = clipboard.getString();
 
             apply(Map.of(DataFormat.PLAIN_TEXT, pass.getSecretValue()), true);
+
+            if (!userInitiated) {
+                var shown = AppCache.getBoolean("clipboardDialogShown", false);
+                if (!shown) {
+                    AppDialog.information("clipboardNotice");
+                    AppCache.update("clipboardDialogShown", true);
+                }
+            }
 
             var transition = new PauseTransition(Duration.millis(15000));
             transition.setOnFinished(e -> {

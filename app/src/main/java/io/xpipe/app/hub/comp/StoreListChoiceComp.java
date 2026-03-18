@@ -117,7 +117,14 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleRegionBuilde
             list.add(RegionBuilder.vspacer(5).hide(Bindings.isEmpty(selectedList)));
             list.add(add);
         }
-        var vbox = new VerticalComp(list).apply(struc -> struc.setFillWidth(true));
+        var vbox = new VerticalComp(list).apply(struc -> {
+            struc.setFillWidth(true);
+            struc.focusedProperty().subscribe(focus -> {
+                if (focus) {
+                    struc.getChildren().getLast().requestFocus();
+                }
+            });
+        });
         return vbox.style("data-store-list-choice-comp").build();
     }
 }

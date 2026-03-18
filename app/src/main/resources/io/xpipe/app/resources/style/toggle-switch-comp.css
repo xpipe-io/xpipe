@@ -1,5 +1,5 @@
 .root:key-navigation .toggle-switch-comp:focused > .thumb-area {
-    -fx-background-color: -color-neutral-emphasis;
+    -fx-border-color: -color-accent-emphasis;
 }
 
 .toggle-switch-comp:has-graphic .label {

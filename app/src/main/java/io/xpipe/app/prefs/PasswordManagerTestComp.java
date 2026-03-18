@@ -74,6 +74,11 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
 
         var vbox = new VerticalComp(List.of(field, testRow));
         vbox.spacing(6);
+        vbox.apply(r -> r.focusedProperty().subscribe(focus -> {
+            if (focus) {
+                r.getChildren().getFirst().requestFocus();
+            }
+        }));
         return vbox.build();
     }
 
@@ -120,8 +125,10 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
                 elements.add("<no credentials>");
             }
 
-            if (r.getSshKey() != null) {
-                elements.add(AppI18n.get("sshKey"));
+            if (prefs.passwordManager.getValue() != null && prefs.passwordManager.getValue().getKeyConfiguration().useInline()) {
+                if (r.getSshKey() != null) {
+                    elements.add(AppI18n.get("sshKey"));
+                }
             }
 
             var formatted = String.join(" / ", elements);

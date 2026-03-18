@@ -47,7 +47,7 @@ public interface BrowserFileInput {
             return false;
         }
 
-        if (info != null) {
+        if (info != null && info.getPermissions() != null) {
             var otherWrite = info.getPermissions().charAt(6) == 'r';
             if (otherWrite) {
                 return false;
