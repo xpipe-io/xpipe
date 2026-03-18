@@ -26,26 +26,19 @@ public class OtherExternalAgentStrategy implements SshIdentityAgentStrategy {
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(
             Property<OtherExternalAgentStrategy> p, SshIdentityStrategyChoiceConfig config) {
-        var forward =
-                new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
         var publicKey =
                 new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
         return new OptionsBuilder()
                 .nameAndDescription("publicKey")
                 .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false), publicKey)
-                .nameAndDescription("forwardAgent")
-                .addToggle(forward)
-                .nonNull()
-                .hide(!config.isAllowAgentForward())
                 .nameAndDescription("publicKey")
                 .bind(
                         () -> {
-                            return new OtherExternalAgentStrategy(forward.get(), publicKey.get());
+                            return new OtherExternalAgentStrategy(publicKey.get());
                         },
                         p);
     }
 
-    boolean forwardAgent;
     String publicKey;
 
     @Override
@@ -68,7 +61,6 @@ public class OtherExternalAgentStrategy implements SshIdentityAgentStrategy {
         var file = SshIdentityStrategy.getPublicKeyPath(sc, publicKey);
         return List.of(
                 new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
-                new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
                 new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
                 new KeyValue("PKCS11Provider", "none"));
     }

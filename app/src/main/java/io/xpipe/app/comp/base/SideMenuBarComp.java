@@ -9,6 +9,7 @@ import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.update.UpdateAvailableDialog;
+import io.xpipe.app.update.UpdateHandler;
 import io.xpipe.app.util.Hyperlinks;
 
 import javafx.application.Platform;
@@ -69,15 +70,15 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
             var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableDialog.showIfNeeded(false));
             b.describe(d -> d.nameKey("updateAvailableTooltip"));
             var stack = createStyle(null, b);
+            var h = AppDistributionType.get().getUpdateHandler();
             stack.hide(Bindings.createBooleanBinding(
                     () -> {
-                        return AppDistributionType.get()
-                                        .getUpdateHandler()
+                        return h
                                         .getPreparedUpdate()
                                         .getValue()
-                                == null;
+                                == null && !h.getBusy().get();
                     },
-                    AppDistributionType.get().getUpdateHandler().getPreparedUpdate()));
+                    h.getPreparedUpdate(), h.getBusy()));
             vbox.getChildren().add(stack.build());
         }
 

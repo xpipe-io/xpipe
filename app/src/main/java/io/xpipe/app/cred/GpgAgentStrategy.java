@@ -31,16 +31,11 @@ public class GpgAgentStrategy implements SshIdentityAgentStrategy {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<GpgAgentStrategy> p, SshIdentityStrategyChoiceConfig config) {
-        var forward =
-                new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
         var publicKey =
                 new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
         return new OptionsBuilder()
                 .nameAndDescription("publicKey")
                 .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false), publicKey)
-                .nameAndDescription("forwardAgent")
-                .addToggle(forward)
-                .nonNull()
                 .addComp(
                         new TextFieldComp(publicKey)
                                 .apply(struc -> struc.setPromptText(
@@ -48,7 +43,7 @@ public class GpgAgentStrategy implements SshIdentityAgentStrategy {
                         publicKey)
                 .bind(
                         () -> {
-                            return new GpgAgentStrategy(forward.get(), publicKey.get());
+                            return new GpgAgentStrategy(publicKey.get());
                         },
                         p);
     }
@@ -69,7 +64,6 @@ public class GpgAgentStrategy implements SshIdentityAgentStrategy {
         }
     }
 
-    boolean forwardAgent;
     String publicKey;
 
     @Override
@@ -102,7 +96,6 @@ public class GpgAgentStrategy implements SshIdentityAgentStrategy {
         var file = SshIdentityStrategy.getPublicKeyPath(sc, publicKey);
         var l = new ArrayList<>(List.of(
                 new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
-                new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
                 new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
                 new KeyValue("PKCS11Provider", "none")));
 

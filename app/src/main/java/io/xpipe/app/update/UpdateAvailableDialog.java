@@ -4,6 +4,7 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.util.ThreadHelper;
 
 public class UpdateAvailableDialog {
 
@@ -16,6 +17,9 @@ public class UpdateAvailableDialog {
         // Check whether we still have the latest version prepared
         uh.refreshUpdateCheckSilent(false, uh.getPreparedUpdate().getValue().isSecurityOnly());
         if (uh.getPreparedUpdate().getValue() == null) {
+            ThreadHelper.runFailableAsync(() -> {
+                uh.prepareUpdate();
+            });
             return;
         }
 

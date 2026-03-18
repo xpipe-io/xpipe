@@ -31,8 +31,6 @@ public class OpenSshAgentStrategy implements SshIdentityAgentStrategy {
     public static OptionsBuilder createOptions(
             Property<OpenSshAgentStrategy> p, SshIdentityStrategyChoiceConfig config) {
         var socket = AppPrefs.get().defaultSshAgentSocket().getValue();
-        var forward =
-                new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
         var publicKey =
                 new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
         return new OptionsBuilder()
@@ -41,18 +39,13 @@ public class OpenSshAgentStrategy implements SshIdentityAgentStrategy {
                 .hide(OsType.ofLocal() == OsType.WINDOWS)
                 .nameAndDescription("publicKey")
                 .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false), publicKey)
-                .nameAndDescription("forwardAgent")
-                .addToggle(forward)
-                .nonNull()
-                .hide(!config.isAllowAgentForward())
                 .bind(
                         () -> {
-                            return new OpenSshAgentStrategy(forward.get(), publicKey.get());
+                            return new OpenSshAgentStrategy(publicKey.get());
                         },
                         p);
     }
 
-    boolean forwardAgent;
     String publicKey;
 
     @Override
@@ -87,7 +80,6 @@ public class OpenSshAgentStrategy implements SshIdentityAgentStrategy {
         var file = SshIdentityStrategy.getPublicKeyPath(sc, publicKey);
         var l = new ArrayList<>(List.of(
                 new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
-                new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
                 new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
                 new KeyValue("PKCS11Provider", "none")));
 
