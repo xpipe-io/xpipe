@@ -130,6 +130,7 @@ public class ProtonPasswordManager implements PasswordManager {
                 var json = JacksonMapper.getDefault().readTree(out);
                 var vaultsNode = json.required("vaults");
                 if (vaultsNode == null || vaultsNode.size() == 0) {
+                    runCommand(CommandBuilder.of().add("pass-cli", "vault", "list"));
                     throw ErrorEventFactory.expected(new IllegalStateException("No Proton Pass vaults are available"));
                 }
 
