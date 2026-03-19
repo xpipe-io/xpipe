@@ -117,7 +117,7 @@ public class ScriptStoreSetup {
         }
 
         var applicable = refs.stream()
-                .filter(ss -> ss.getStore().isCompatible(sc.getShellDialect()))
+                .filter(ss -> ss.getStore().isCompatible(sc))
                 .toList();
         if (applicable.isEmpty()) {
             return null;

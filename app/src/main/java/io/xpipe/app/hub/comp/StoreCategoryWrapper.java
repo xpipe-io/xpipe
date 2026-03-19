@@ -100,6 +100,16 @@ public class StoreCategoryWrapper {
         return cachedParent;
     }
 
+    public boolean isHierarchyExpanded() {
+        StoreCategoryWrapper current = this;
+        while ((current = current.getParent()) != null) {
+            if (!current.getExpanded().get()) {
+                return false;
+            }
+        };
+        return true;
+    }
+
     public void select() {
         PlatformThread.runLaterIfNeeded(() -> {
             StoreViewState.get().getActiveCategory().setValue(this);
@@ -152,9 +162,14 @@ public class StoreCategoryWrapper {
         this.expanded.set(!expanded.getValue());
     }
 
-    public void update() {
+    public synchronized void update() {
         // We are probably in shutdown then
         if (StoreViewState.get() == null) {
+            return;
+        }
+
+        // We received a delayed update after removal
+        if (!DataStorage.get().getStoreCategories().contains(category)) {
             return;
         }
 

@@ -49,7 +49,7 @@ public class ScriptCollectionSourceImportDialog {
     }
 
     private StoreCategoryWrapper findDefaultCategory() {
-        var all = StoreViewState.get().getSortedCategories(StoreViewState.get().getAllScriptsCategory())
+        var all = StoreViewState.get().getSortedCategories(StoreViewState.get().getAllScriptsCategory(), false)
                 .filtered(w -> w.getParent() != null &&
                         !w.getCategory().getUuid().equals(DataStorage.PREDEFINED_SCRIPTS_CATEGORY_UUID) &&
                         !w.getCategory().getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));

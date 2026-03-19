@@ -35,7 +35,7 @@ public class TerminalLauncher {
         var content = constructTerminalInitScript(t, processControl, workingDirectory, preInit, postInit, config, exit);
         var hash = ScriptHelper.getScriptHash(processControl, content);
         var file = t.getInitFileName(processControl, hash);
-        return ScriptHelper.createExecScriptRaw(processControl, file, content);
+        return ScriptHelper.createExecScriptRaw(processControl, file, content, true);
     }
 
     private static String constructTerminalInitScript(

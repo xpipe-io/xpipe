@@ -22,10 +22,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
@@ -278,13 +275,18 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
         if (category.canMove()) {
             var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
             StoreViewState.get()
-                    .getSortedCategories(getCategory().getRoot())
+                    .getSortedCategories(getCategory().getRoot(), true)
                     .getList()
                     .forEach(storeCategoryWrapper -> {
-                        MenuItem m = new MenuItem();
-                        m.textProperty()
-                                .setValue("  ".repeat(storeCategoryWrapper.getDepth())
-                                        + storeCategoryWrapper.getName().getValue());
+                        var m = new CustomMenuItem();
+
+                        var l = new Label();
+                        l.setGraphic(PrettyImageHelper.ofFixedSizeSquare(storeCategoryWrapper.getIconFile().getValue(), 16)
+                                .padding(new Insets(0, 0, 1, 0)).build());
+                        l.setText(storeCategoryWrapper.getName().getValue());
+                        l.setPadding(new Insets(0, 1, 1, storeCategoryWrapper.getDepth() * 10));
+                        m.setContent(l);
+
                         m.setOnAction(event -> {
                             category.moveToParent(storeCategoryWrapper.getCategory());
                             event.consume();

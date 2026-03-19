@@ -376,9 +376,11 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
         public LabelGraphic getIcon() {
             if (hierarchy.isLeaf()) {
                 return new LabelGraphic.ImageGraphic(hierarchy.getScript().get().getEffectiveIconFile(), 16);
+            } else {
+                var cat = hierarchy.getCategory();
+                var icon = cat.getEffectiveIconFile();
+                return new LabelGraphic.ImageGraphic(icon, 16);
             }
-
-            return new LabelGraphic.ImageGraphic("base:scriptGroup_icon.svg", 16);
         }
 
         @Override

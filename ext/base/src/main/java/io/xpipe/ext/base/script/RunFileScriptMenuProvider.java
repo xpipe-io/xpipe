@@ -104,12 +104,13 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
         return new BrowserMenuBranchProvider() {
             @Override
             public LabelGraphic getIcon() {
-                if (!hierarchy.isLeaf()) {
-                    return null;
+                if (hierarchy.isLeaf()) {
+                    return new LabelGraphic.ImageGraphic(hierarchy.getScript().get().getEffectiveIconFile(), 16);
+                } else {
+                    var cat = hierarchy.getCategory();
+                    var icon = cat.getEffectiveIconFile();
+                    return new LabelGraphic.ImageGraphic(icon, 16);
                 }
-
-                return new LabelGraphic.CompGraphic(PrettyImageHelper.ofFixedSize(
-                        hierarchy.getScript().get().getEffectiveIconFile(), 16, 16));
             }
 
             @Override

@@ -565,7 +565,7 @@ public class StoreViewState {
         }
     }
 
-    public DerivedObservableList<StoreCategoryWrapper> getSortedCategories(StoreCategoryWrapper root) {
+    public DerivedObservableList<StoreCategoryWrapper> getSortedCategories(StoreCategoryWrapper root, boolean requireExpanded) {
         Comparator<StoreCategoryWrapper> comparator = new Comparator<>() {
             @Override
             public int compare(StoreCategoryWrapper o1, StoreCategoryWrapper o2) {
@@ -620,6 +620,7 @@ public class StoreViewState {
         };
         return categories
                 .filtered(cat -> root == null || cat.getRoot().equals(root))
+                .filtered(storeCategoryWrapper -> !requireExpanded || storeCategoryWrapper.isHierarchyExpanded())
                 .sorted(comparator);
     }
 
