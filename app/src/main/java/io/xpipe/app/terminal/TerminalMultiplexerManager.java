@@ -77,8 +77,10 @@ public class TerminalMultiplexerManager {
 
                 ThreadHelper.sleep(100);
             }
-            // Give multiplexer a second to start in terminal
-            ThreadHelper.sleep(1000);
+
+            // We timed out
+            pendingMultiplexerLaunch = null;
+            runningMultiplexerContainer = null;
         }
 
         // Synchronize between multiple existing tab launches as well as some multiplexers might break there
