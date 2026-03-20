@@ -14,6 +14,7 @@ import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
+import javafx.event.EventType;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -84,6 +85,7 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
     }
 
     public void showMenu(Node anchor) {
+        keyBasedNavigation = true;
         getItems().clear();
         ThreadHelper.runFailableAsync(() -> {
             var entry = base.get();
@@ -291,7 +293,11 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
                         }
                     });
                     contextMenu.addEventFilter(MouseEvent.ANY, event -> {
-                        keyBasedNavigation = false;
+                        var mouseEvent = event.getEventType() == MouseEvent.MOUSE_PRESSED || event.getEventType() == MouseEvent.MOUSE_MOVED;
+                        keyBasedNavigation = keyBasedNavigation && !mouseEvent;
+                        if (keyBasedNavigation) {
+                            event.consume();
+                        }
                     });
                 }
             });
