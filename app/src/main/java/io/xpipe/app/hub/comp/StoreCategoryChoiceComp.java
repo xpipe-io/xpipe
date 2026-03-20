@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.SimpleRegionBuilder;
+import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.property.Property;
@@ -15,7 +16,7 @@ import lombok.Value;
 
 import java.util.function.Predicate;
 
-public class DataStoreCategoryChoiceComp extends SimpleRegionBuilder {
+public class StoreCategoryChoiceComp extends SimpleRegionBuilder {
 
     private final StoreCategoryWrapper root;
     private final Property<StoreCategoryWrapper> external;
@@ -23,7 +24,7 @@ public class DataStoreCategoryChoiceComp extends SimpleRegionBuilder {
     private final boolean applyExternalInitially;
     private final Predicate<StoreCategoryWrapper> filter;
 
-    public DataStoreCategoryChoiceComp(
+    public StoreCategoryChoiceComp(
             StoreCategoryWrapper root,
             Property<StoreCategoryWrapper> external,
             Property<StoreCategoryWrapper> value,
@@ -57,7 +58,7 @@ public class DataStoreCategoryChoiceComp extends SimpleRegionBuilder {
         if (!applyExternalInitially) {
             value.setValue(last);
         }
-        var box = new ComboBox<>(StoreViewState.get().getSortedCategories(root, false).filtered(filter).getList());
+        var box = new ComboBox<>(StoreViewState.get().getSortedCategories(root, true).filtered(filter).getList());
         box.setValue(value.getValue());
         box.valueProperty().addListener((observable, oldValue, newValue) -> {
             value.setValue(newValue);
@@ -83,9 +84,11 @@ public class DataStoreCategoryChoiceComp extends SimpleRegionBuilder {
             super.updateItem(w, empty);
             textProperty().unbind();
             if (w != null) {
+                setGraphic(PrettyImageHelper.ofFixedSizeSquare(w.getIconFile().getValue(), 16).build());
                 textProperty().bind(w.getShownName());
                 setPadding(new Insets(6, 6, 6, 8 + (indent ? w.getDepth() * 8 : 0)));
             } else {
+                setGraphic(null);
                 setText("None");
             }
         }

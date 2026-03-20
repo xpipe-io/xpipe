@@ -34,17 +34,12 @@ public class UnzipActionProvider implements BrowserActionProvider {
         public void executeImpl() throws Exception {
             var sc = model.getFileSystem().getShell().orElseThrow();
             if (sc.getOsType() == OsType.WINDOWS) {
-                if (ShellDialects.isPowershell(sc)) {
+                sc.enforceDialect(ShellDialects.POWERSHELL, p -> {
                     for (BrowserEntry entry : getEntries()) {
-                        runPowershellCommand(sc, model, entry);
+                        runPowershellCommand(p, model, entry);
                     }
-                } else {
-                    try (var sub = sc.subShell(ShellDialects.POWERSHELL)) {
-                        for (BrowserEntry entry : getEntries()) {
-                            runPowershellCommand(sub, model, entry);
-                        }
-                    }
-                }
+                    return null;
+                });
             } else {
                 for (BrowserEntry entry : getEntries()) {
                     var command = CommandBuilder.of()

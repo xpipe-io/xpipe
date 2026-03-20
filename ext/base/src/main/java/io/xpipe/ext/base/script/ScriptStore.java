@@ -77,7 +77,7 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
             var canSource = targetType.isSourceCompatibleTo(scriptDialect);
             var base = canSource
                     ? targetType.sourceScriptCommand(shellControl, script.toString())
-                    : targetType.runScriptCommand(shellControl, script.toString());
+                    : scriptDialect.runScriptInOtherDialectCommand(shellControl, script.toString());
             return base + (args ? " " + targetType.getCatchAllVariable() : "");
         }
 

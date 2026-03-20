@@ -185,6 +185,20 @@ public class StoreViewState {
         return batchModeSelectionSet.contains(entry);
     }
 
+    public void refreshActiveCategory() {
+        if (getActiveCategory().getValue().isHierarchyExpanded()) {
+            return;
+        }
+
+        StoreCategoryWrapper current = getActiveCategory().getValue();
+        while ((current = current.getParent()) != null) {
+            if (current.getParent() == null || current.getParent().getExpanded().get()) {
+                activeCategory.setValue(current);
+                break;
+            }
+        };
+    }
+
     public void selectBatchMode(StoreSection section) {
         var wrapper = section.getWrapper();
         if (wrapper != null && wrapper.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
@@ -379,6 +393,10 @@ public class StoreViewState {
                 });
             });
         }
+
+        getActiveCategory().addListener((observable, oldValue, newValue) -> {
+            refreshActiveCategory();
+        });
 
         // Watch out for synchronizing all calls to the entries and categories list!
         DataStorage.get().addListener(new StorageListener() {

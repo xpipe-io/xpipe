@@ -4,7 +4,7 @@ import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.FilterComp;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.app.hub.comp.DataStoreCategoryChoiceComp;
+import io.xpipe.app.hub.comp.StoreCategoryChoiceComp;
 import io.xpipe.app.hub.comp.StoreCategoryWrapper;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.util.ObservableSubscriber;
@@ -28,7 +28,7 @@ public final class BrowserConnectionListFilterComp extends SimpleRegionBuilder {
 
     @Override
     protected Region createSimple() {
-        var category = new DataStoreCategoryChoiceComp(
+        var category = new StoreCategoryChoiceComp(
                         StoreViewState.get().getAllConnectionsCategory(),
                         StoreViewState.get().getActiveCategory(),
                         this.category,

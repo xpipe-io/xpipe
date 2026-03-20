@@ -590,7 +590,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         }
 
         // If we docked once, we don't want to break it by opening new tabs in maybe still docked tabs
-        var preferTabs = !wasTerminalDocked && !dock;
+        var preferTabs = !TerminalDockHubManager.get().getDockModel().isRunning() && !wasTerminalDocked && !dock;
         wasTerminalDocked = wasTerminalDocked || dock;
 
         TerminalLaunch.builder()

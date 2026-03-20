@@ -147,6 +147,8 @@ public interface ShellDialect {
 
     String runScriptCommand(ShellControl parent, String file);
 
+    String runScriptInOtherDialectCommand(ShellControl parent, String file);
+
     String sourceScriptCommand(ShellControl sc, String file);
 
     String executeCommandWithShell(String cmd);

@@ -41,13 +41,16 @@ public class ScriptHelper {
 
     @SneakyThrows
     public static FilePath createExecScriptRaw(ShellControl processControl, FilePath file, String content, boolean log) {
-        if (processControl.view().fileExists(file)) {
+        var exists = processControl.view().fileExists(file);
+
+        if (log) {
+            TrackEvent.withTrace("Creating exec script").tag("file", file).tag("exists", exists).tag("content", content).handle();
+        }
+
+        if (exists) {
             return file;
         }
 
-        if (log) {
-            TrackEvent.withTrace("Writing exec script").tag("file", file).tag("content", content).handle();
-        }
         processControl.view().writeScriptFile(file, content);
         return file;
     }

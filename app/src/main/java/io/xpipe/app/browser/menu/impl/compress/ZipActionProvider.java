@@ -5,6 +5,7 @@ import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
@@ -53,13 +54,10 @@ public class ZipActionProvider implements BrowserActionProvider {
                         }
                     }
 
-                    if (ShellDialects.isPowershell(sc)) {
-                        sc.command(command).withWorkingDirectory(base).execute();
-                    } else {
-                        try (var sub = sc.subShell(ShellDialects.POWERSHELL)) {
-                            sub.command(command).withWorkingDirectory(base).execute();
-                        }
-                    }
+                    sc.enforceDialect(ShellDialects.POWERSHELL, p -> {
+                        p.command(command).withWorkingDirectory(base).execute();
+                        return null;
+                    });
                 } else {
                     var command = CommandBuilder.of().add("zip", "-q", "-y", "-r", "-");
                     for (BrowserEntry entry : getEntries()) {

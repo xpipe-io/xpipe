@@ -102,7 +102,7 @@ public class ScriptCollectionSourceImportDialog {
         stack.prefWidth(600);
         stack.prefHeight(650);
 
-        var catChoice = new DataStoreCategoryChoiceComp(
+        var catChoice = new StoreCategoryChoiceComp(
                 StoreViewState.get().getAllScriptsCategory(),
                 StoreViewState.get().getActiveCategory(),
                 targetCategory,

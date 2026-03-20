@@ -227,6 +227,8 @@ public class StoreCategoryWrapper {
         Optional.ofNullable(getParent()).ifPresent(storeCategoryWrapper -> {
             storeCategoryWrapper.update();
         });
+
+        StoreViewState.get().refreshActiveCategory();
     }
 
     private String translatedName(String original) {

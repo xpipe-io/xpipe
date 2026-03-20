@@ -138,7 +138,7 @@ public class StoreChoicePopover<T extends DataStore> {
                     },
                     initialExpanded);
 
-            var category = new DataStoreCategoryChoiceComp(
+            var category = new StoreCategoryChoiceComp(
                             rootCategory != null ? rootCategory.getRoot() : null,
                             StoreViewState.get().getActiveCategory(),
                             selectedCategory,
