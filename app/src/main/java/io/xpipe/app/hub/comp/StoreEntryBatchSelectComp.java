@@ -66,7 +66,8 @@ public class StoreEntryBatchSelectComp extends SimpleRegionBuilder {
     }
 
     private void externalUpdate(CheckBox checkBox) {
-        if (section.getWrapper() != null && section.getWrapper().getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
+        if (section.getWrapper() != null
+                && section.getWrapper().getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
             checkBox.setSelected(false);
             checkBox.setIndeterminate(false);
             checkBox.setDisable(true);

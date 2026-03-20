@@ -3,7 +3,6 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.icon.BrowserIcons;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.platform.BooleanAnimationTimer;
@@ -15,7 +14,6 @@ import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
-import javafx.css.PseudoClass;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -266,9 +264,9 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
                 }
             });
             new BooleanAnimationTimer(hover, 100, () -> {
-                if (!keyBasedNavigation) {
-                    expandDirectoryMenu(empty);
-                }
+                        if (!keyBasedNavigation) {
+                            expandDirectoryMenu(empty);
+                        }
                     })
                     .start();
         }

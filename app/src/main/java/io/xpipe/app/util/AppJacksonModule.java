@@ -134,7 +134,9 @@ public class AppJacksonModule extends SimpleModule {
             }
 
             var keyStrategyNode = tree.get("keyStrategy");
-            var keyStrategy = keyStrategyNode != null ? JacksonMapper.getDefault().treeToValue(keyStrategyNode, PasswordManagerKeyStrategy.class) : null;
+            var keyStrategy = keyStrategyNode != null
+                    ? JacksonMapper.getDefault().treeToValue(keyStrategyNode, PasswordManagerKeyStrategy.class)
+                    : null;
 
             if (tree.has("associationKey")) {
                 var parsed = JacksonMapper.getDefault()

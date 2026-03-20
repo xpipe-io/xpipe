@@ -152,8 +152,8 @@ public class DataStoreCategory extends StorageElement {
         var iconNode = json.get("icon");
         String icon = iconNode != null && !iconNode.isNull() ? iconNode.asText() : null;
 
-        return Optional.of(
-                new DataStoreCategory(dir, uuid, name, lastUsed, lastModified, false, icon, parentUuid, expanded, config));
+        return Optional.of(new DataStoreCategory(
+                dir, uuid, name, lastUsed, lastModified, false, icon, parentUuid, expanded, config));
     }
 
     public boolean setConfig(DataStoreCategoryConfig config) {

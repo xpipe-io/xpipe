@@ -2,9 +2,8 @@ package io.xpipe.ext.system.podman;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
-
-import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
+
 import lombok.NonNull;
 import lombok.Value;
 
@@ -117,7 +116,8 @@ public class PodmanCommandView extends CommandViewBase {
                 var output = c.readStdoutOrThrow();
                 var l = new ArrayList<ContainerEntry>();
                 for (String s : output.lines().toList()) {
-                    var systemd = queryLabel(s.split(";")[0], "PODMAN_SYSTEMD_UNIT").orElse(null);
+                    var systemd =
+                            queryLabel(s.split(";")[0], "PODMAN_SYSTEMD_UNIT").orElse(null);
                     l.add(new ContainerEntry(s.split(";")[0], s.split(";")[1], s.split(";")[2], systemd));
                 }
                 return l;
@@ -163,11 +163,16 @@ public class PodmanCommandView extends CommandViewBase {
 
         public void restart(String container, String service) throws Exception {
             if (shellControl.getOsType() == OsType.LINUX && service != null) {
-                shellControl.command(CommandBuilder.of().add("systemctl", "restart", "--user").addQuoted(service)).execute();
+                shellControl
+                        .command(CommandBuilder.of()
+                                .add("systemctl", "restart", "--user")
+                                .addQuoted(service))
+                        .execute();
                 return;
             }
 
-            build(commandBuilder -> commandBuilder.add("restart").addQuoted(container)).execute();
+            build(commandBuilder -> commandBuilder.add("restart").addQuoted(container))
+                    .execute();
         }
 
         public String port(String container) throws Exception {

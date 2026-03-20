@@ -25,7 +25,8 @@ public class NetworkContainerStoreState extends ContainerStoreState {
         return b.build();
     }
 
-    protected void mergeBuilder(NetworkContainerStoreState css, NetworkContainerStoreState.NetworkContainerStoreStateBuilder<?, ?> b) {
+    protected void mergeBuilder(
+            NetworkContainerStoreState css, NetworkContainerStoreState.NetworkContainerStoreStateBuilder<?, ?> b) {
         super.mergeBuilder(css, b);
         b.ipv4 = css.ipv4;
         b.ipv6 = css.ipv6;

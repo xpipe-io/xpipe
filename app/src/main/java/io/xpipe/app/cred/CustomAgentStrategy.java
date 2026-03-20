@@ -15,7 +15,6 @@ import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 
@@ -40,13 +39,16 @@ public class CustomAgentStrategy implements SshIdentityAgentStrategy {
         var publicKey =
                 new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
 
-        var socketBinding = Bindings.createObjectBinding(() -> {
-            var agent = AppPrefs.get().sshAgentSocket().getValue();
-            if (agent == null) {
-                agent = AppPrefs.get().defaultSshAgentSocket().getValue();
-            }
-            return agent != null ? agent.toString() : AppI18n.get("agentSocketNotConfigured");
-        }, AppPrefs.get().defaultSshAgentSocket(), AppPrefs.get().sshAgentSocket());
+        var socketBinding = Bindings.createObjectBinding(
+                () -> {
+                    var agent = AppPrefs.get().sshAgentSocket().getValue();
+                    if (agent == null) {
+                        agent = AppPrefs.get().defaultSshAgentSocket().getValue();
+                    }
+                    return agent != null ? agent.toString() : AppI18n.get("agentSocketNotConfigured");
+                },
+                AppPrefs.get().defaultSshAgentSocket(),
+                AppPrefs.get().sshAgentSocket());
         var socketProp = new SimpleStringProperty();
         socketProp.bind(socketBinding);
         var socketDisplay = new HorizontalComp(List.of(
@@ -64,13 +66,19 @@ public class CustomAgentStrategy implements SshIdentityAgentStrategy {
                 .addComp(socketDisplay)
                 .check(val -> Validator.create(
                         val,
-                        AppI18n.observable("agentSocketNotConfigured"), Bindings.createObjectBinding(() -> {
-                            var agent = AppPrefs.get().sshAgentSocket().getValue();
-                            if (agent == null) {
-                                agent = AppPrefs.get().defaultSshAgentSocket().getValue();
-                            }
-                            return agent;
-                        }, AppPrefs.get().sshAgentSocket(), AppPrefs.get().defaultSshAgentSocket()),
+                        AppI18n.observable("agentSocketNotConfigured"),
+                        Bindings.createObjectBinding(
+                                () -> {
+                                    var agent = AppPrefs.get().sshAgentSocket().getValue();
+                                    if (agent == null) {
+                                        agent = AppPrefs.get()
+                                                .defaultSshAgentSocket()
+                                                .getValue();
+                                    }
+                                    return agent;
+                                },
+                                AppPrefs.get().sshAgentSocket(),
+                                AppPrefs.get().defaultSshAgentSocket()),
                         i -> {
                             return i != null;
                         }))
@@ -92,8 +100,7 @@ public class CustomAgentStrategy implements SshIdentityAgentStrategy {
             if (agent == null) {
                 agent = AppPrefs.get().defaultSshAgentSocket().getValue();
             }
-            SshIdentityStateManager.prepareLocalCustomAgent(
-                    parent, agent);
+            SshIdentityStateManager.prepareLocalCustomAgent(parent, agent);
         }
     }
 

@@ -82,7 +82,8 @@ public class SyncCategory extends AppPrefsCategory {
                         .sub(prefs.getCustomOptions("gitVaultIdentityStrategy"))
                         .pref(prefs.syncMode)
                         .addComp(
-                                ChoiceComp.ofTranslatable(prefs.syncMode, Arrays.asList(SyncMode.values()), false).maxWidth(getCompWidth()),
+                                ChoiceComp.ofTranslatable(prefs.syncMode, Arrays.asList(SyncMode.values()), false)
+                                        .maxWidth(getCompWidth()),
                                 prefs.syncMode)
                         .addComp(createManualControls())
                         .hide(prefs.syncMode.isNotEqualTo(SyncMode.MANUAL).or(prefs.enableGitStorage.not()))

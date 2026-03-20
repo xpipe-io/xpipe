@@ -42,7 +42,11 @@ public class FlatpakCache {
         var props = PropertiesFormatsParser.parse(info.get(), ":");
         var name = props.get("Name");
 
-        var loc = Path.of(LocalShell.getShell().command(CommandBuilder.of().add("flatpak", "info", "--show-location").addQuoted(id)).readStdoutOrThrow());
+        var loc = Path.of(LocalShell.getShell()
+                .command(CommandBuilder.of()
+                        .add("flatpak", "info", "--show-location")
+                        .addQuoted(id))
+                .readStdoutOrThrow());
 
         var app = App.builder().id(id).name(name).installDir(loc).build();
         apps.put(id, app);

@@ -1,6 +1,5 @@
 package io.xpipe.app.pwman;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
@@ -12,11 +11,13 @@ import io.xpipe.app.process.*;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.JacksonMapper;
-
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.OsType;
+
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.jackson.Jacksonized;
@@ -47,17 +48,23 @@ public class OnePasswordManager implements PasswordManager {
     }
 
     private static ShellControl SHELL;
-    private static final MapProperty<String, String> availableAccounts = new SimpleMapProperty<>(FXCollections.observableMap(new LinkedHashMap<>()));
+    private static final MapProperty<String, String> availableAccounts =
+            new SimpleMapProperty<>(FXCollections.observableMap(new LinkedHashMap<>()));
 
     private final String account;
     private final PasswordManagerKeyStrategy keyStrategy;
 
     private static Path getSocketLocation() {
-        var socket = switch (OsType.ofLocal()) {
-            case OsType.Linux ignored -> AppSystemInfo.ofLinux().getUserHome().resolve(".1password", "agent.sock");
-            case OsType.MacOs ignored -> AppSystemInfo.ofMacOs().getUserHome().resolve("Library", "Group Containers", "2BUA8C4S2C.com.1password", "t", "agent.sock");
-            case OsType.Windows ignored -> null;
-        };
+        var socket =
+                switch (OsType.ofLocal()) {
+                    case OsType.Linux ignored ->
+                        AppSystemInfo.ofLinux().getUserHome().resolve(".1password", "agent.sock");
+                    case OsType.MacOs ignored ->
+                        AppSystemInfo.ofMacOs()
+                                .getUserHome()
+                                .resolve("Library", "Group Containers", "2BUA8C4S2C.com.1password", "t", "agent.sock");
+                    case OsType.Windows ignored -> null;
+                };
         return socket;
     }
 
@@ -80,9 +87,14 @@ public class OnePasswordManager implements PasswordManager {
                 .addComp(new PasswordManagerTestComp(true))
                 .nameAndDescription("passwordManagerKeyStrategy")
                 .sub(keyStrategyChoice.build(), keyStrategy)
-                .bind(() -> {
-                    return OnePasswordManager.builder().keyStrategy(keyStrategy.getValue()).account(account.get()).build();
-                }, p);
+                .bind(
+                        () -> {
+                            return OnePasswordManager.builder()
+                                    .keyStrategy(keyStrategy.getValue())
+                                    .account(account.get())
+                                    .build();
+                        },
+                        p);
     }
 
     private static synchronized ShellControl getOrStartShell() throws Exception {
@@ -94,7 +106,10 @@ public class OnePasswordManager implements PasswordManager {
     }
 
     private SequencedMap<String, String> listAccounts() throws Exception {
-        var out = getOrStartShell().command(CommandBuilder.of().add("op", "account", "list", "--format", "json")).sensitive().readStdoutOrThrow();
+        var out = getOrStartShell()
+                .command(CommandBuilder.of().add("op", "account", "list", "--format", "json"))
+                .sensitive()
+                .readStdoutOrThrow();
         var json = JacksonMapper.getDefault().readTree(out);
         if (!json.isArray()) {
             return new LinkedHashMap<>();
@@ -102,7 +117,9 @@ public class OnePasswordManager implements PasswordManager {
 
         var emails = new LinkedHashMap<String, String>();
         for (JsonNode jsonNode : json) {
-            emails.put(jsonNode.required("email").textValue(), jsonNode.required("user_uuid").textValue());
+            emails.put(
+                    jsonNode.required("email").textValue(),
+                    jsonNode.required("user_uuid").textValue());
         }
         return emails;
     }
@@ -122,7 +139,8 @@ public class OnePasswordManager implements PasswordManager {
 
         if (account != null) {
             if (availableAccounts.get(account) == null) {
-                throw ErrorEventFactory.expected(new IllegalArgumentException("Account " + account + " is not registered to the 1password CLI"));
+                throw ErrorEventFactory.expected(
+                        new IllegalArgumentException("Account " + account + " is not registered to the 1password CLI"));
             }
             return availableAccounts.get(account);
         }
@@ -172,13 +190,10 @@ public class OnePasswordManager implements PasswordManager {
         }
 
         try {
-            var b = CommandBuilder.of()
-                    .add("op", "item", "get")
-                    .addLiteral(name);
+            var b = CommandBuilder.of().add("op", "item", "get").addLiteral(name);
             var account = getActiveAccount();
             if (account != null) {
-                   b .add("--account")
-                        .addLiteral(account);
+                b.add("--account").addLiteral(account);
             }
             b.add("--format", "json");
             if (vault != null) {
@@ -187,7 +202,6 @@ public class OnePasswordManager implements PasswordManager {
 
             var r = getOrStartShell().command(b).sensitive().readStdoutOrThrow();
             var tree = JacksonMapper.getDefault().readTree(r);
-
 
             var username = getValue(tree, "username");
             var password = getValue(tree, "password");

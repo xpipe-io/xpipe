@@ -6,7 +6,12 @@ import java.nio.file.Path;
 
 public interface PasswordManagerKeyConfiguration {
 
-    static PasswordManagerKeyConfiguration of(boolean inline, boolean joined, boolean supportsAgentKeyNames, PasswordManagerKeyStrategy strategy, Path socket) {
+    static PasswordManagerKeyConfiguration of(
+            boolean inline,
+            boolean joined,
+            boolean supportsAgentKeyNames,
+            PasswordManagerKeyStrategy strategy,
+            Path socket) {
         return new PasswordManagerKeyConfiguration() {
             @Override
             public boolean useInline() {
@@ -32,7 +37,6 @@ public interface PasswordManagerKeyConfiguration {
             public Path getDefaultSocketLocation() {
                 return socket;
             }
-
         };
     }
 
@@ -62,7 +66,6 @@ public interface PasswordManagerKeyConfiguration {
             public Path getDefaultSocketLocation() {
                 return null;
             }
-
         };
     }
 
@@ -75,5 +78,4 @@ public interface PasswordManagerKeyConfiguration {
     SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward);
 
     Path getDefaultSocketLocation();
-
 }

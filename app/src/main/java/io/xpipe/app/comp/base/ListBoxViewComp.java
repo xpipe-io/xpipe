@@ -318,11 +318,7 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
         //        }
     }
 
-    private void refresh(
-            VBox vbox,
-            List<? extends T> shown,
-            List<? extends T> all,
-            Map<T, Region> cache) {
+    private void refresh(VBox vbox, List<? extends T> shown, List<? extends T> all, Map<T, Region> cache) {
         Runnable update = () -> {
             if (!Platform.isFxApplicationThread()) {
                 throw new IllegalStateException("Not in FxApplication thread");

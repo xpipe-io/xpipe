@@ -49,9 +49,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                 .build();
         var choice = choiceBuilder.build().buildComp().maxWidth(600);
 
-        return new OptionsBuilder()
-                        .pref(prefs.passwordManager)
-                        .addComp(choice);
+        return new OptionsBuilder().pref(prefs.passwordManager).addComp(choice);
     }
 
     @Override

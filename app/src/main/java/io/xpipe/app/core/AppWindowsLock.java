@@ -4,11 +4,11 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.util.User32Ex;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.*;
 import com.sun.jna.win32.StdCallLibrary;
-import io.xpipe.app.util.User32Ex;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -92,5 +92,4 @@ public class AppWindowsLock {
             return User32.INSTANCE.CallWindowProc(oldWindowProc, hwnd, uMsg, wParam, lParam);
         }
     }
-
 }

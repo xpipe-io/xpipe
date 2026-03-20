@@ -10,13 +10,19 @@ import java.util.Optional;
 public interface QuickConnectProvider extends ActionProvider {
 
     static List<QuickConnectProvider> getAll() {
-        return ActionProvider.ALL.stream().map(actionProvider -> actionProvider instanceof QuickConnectProvider qcp ? qcp : null).filter(Objects::nonNull).toList();
+        return ActionProvider.ALL.stream()
+                .map(actionProvider -> actionProvider instanceof QuickConnectProvider qcp ? qcp : null)
+                .filter(Objects::nonNull)
+                .toList();
     }
 
     static Optional<QuickConnectProvider> find(String input) {
-        return ActionProvider.ALL.stream().filter(actionProvider -> actionProvider instanceof QuickConnectProvider qcp &&
-                (input.toLowerCase().startsWith(qcp.getName().toLowerCase()) || qcp.getName().toLowerCase().startsWith(input.toLowerCase())))
-                .findFirst().map(qcp -> (QuickConnectProvider) qcp);
+        return ActionProvider.ALL.stream()
+                .filter(actionProvider -> actionProvider instanceof QuickConnectProvider qcp
+                        && (input.toLowerCase().startsWith(qcp.getName().toLowerCase())
+                                || qcp.getName().toLowerCase().startsWith(input.toLowerCase())))
+                .findFirst()
+                .map(qcp -> (QuickConnectProvider) qcp);
     }
 
     String getName();

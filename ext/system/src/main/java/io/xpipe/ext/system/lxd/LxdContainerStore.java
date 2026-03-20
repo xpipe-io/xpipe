@@ -31,13 +31,13 @@ import java.util.OptionalInt;
 @Value
 public class LxdContainerStore
         implements ShellStore,
-                   FixedChildStore,
-                   StatefulDataStore<NetworkContainerStoreState>,
-                   StartableStore,
-                   StoppableStore,
-                   PauseableStore,
-                   NameableStore,
-                   HostAddressGatewayStore {
+                FixedChildStore,
+                StatefulDataStore<NetworkContainerStoreState>,
+                StartableStore,
+                StoppableStore,
+                PauseableStore,
+                NameableStore,
+                HostAddressGatewayStore {
 
     DataStoreEntryRef<LxdCmdStore> cmd;
     String projectName;
@@ -77,7 +77,10 @@ public class LxdContainerStore
     @Override
     public FixedChildStore merge(FixedChildStore other) {
         var o = (LxdContainerStore) other;
-        return toBuilder().identity(identity != null ? identity : o.identity).projectName(o.projectName).build();
+        return toBuilder()
+                .identity(identity != null ? identity : o.identity)
+                .projectName(o.projectName)
+                .build();
     }
 
     @Override
@@ -86,8 +89,7 @@ public class LxdContainerStore
 
             @Override
             public ShellControl control(ShellControl parent) throws Exception {
-                refreshContainerState(
-                        getCmd().getStore().getHost().getStore().getOrStartSession());
+                refreshContainerState(getCmd().getStore().getHost().getStore().getOrStartSession());
 
                 var user = identity != null ? identity.unwrap().getUsername().retrieveUsername() : null;
                 var sc = new LxdCommandView(parent).exec(projectName, containerName, user, () -> {
@@ -99,7 +101,7 @@ public class LxdContainerStore
                 sc.withSourceStore(LxdContainerStore.this);
                 if (identity != null && identity.unwrap().getPassword() != null) {
                     sc.setElevationHandler(new BaseElevationHandler(
-                            LxdContainerStore.this, identity.unwrap().getPassword())
+                                    LxdContainerStore.this, identity.unwrap().getPassword())
                             .orElse(sc.getElevationHandler()));
                 }
                 sc.withShellStateInit(LxdContainerStore.this);
@@ -134,9 +136,12 @@ public class LxdContainerStore
         }
 
         var running = "Running".equals(displayState.get().getState());
-        var newState =
-                state.toBuilder().containerState(displayState.get().getState()).running(running)
-                        .ipv4(displayState.get().getIpv4Address()).ipv6(displayState.get().getIpv6Address()).build();
+        var newState = state.toBuilder()
+                .containerState(displayState.get().getState())
+                .running(running)
+                .ipv4(displayState.get().getIpv4Address())
+                .ipv6(displayState.get().getIpv6Address())
+                .build();
         setState(newState);
     }
 
@@ -183,7 +188,7 @@ public class LxdContainerStore
 
     @Override
     public HostAddress getHostAddress() {
-        var l = new ArrayList<String >();
+        var l = new ArrayList<String>();
         var state = getState();
         if (state.getIpv4() != null) {
             l.add(state.getIpv4());

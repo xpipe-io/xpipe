@@ -28,7 +28,8 @@ public class StoreRestartActionProvider implements HubLeafProvider<DataStore>, B
 
     @Override
     public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
-        return o.getStore() instanceof RestartableStore || (o.getStore() instanceof StartableStore && o.getStore() instanceof StoppableStore);
+        return o.getStore() instanceof RestartableStore
+                || (o.getStore() instanceof StartableStore && o.getStore() instanceof StoppableStore);
     }
 
     @Override

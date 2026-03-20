@@ -1,25 +1,18 @@
 package io.xpipe.app.cred;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.App;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.pwman.PasswordManagerKeyConfiguration;
-import io.xpipe.app.secret.SecretPasswordManagerStrategy;
-import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.Validators;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -58,7 +51,9 @@ public class PasswordManagerInPlaceKeyStrategy implements SshIdentityAgentStrate
                 .nonNull()
                 .bind(
                         () -> {
-                            return PasswordManagerInPlaceKeyStrategy.builder().key(keyProperty.get()).build();
+                            return PasswordManagerInPlaceKeyStrategy.builder()
+                                    .key(keyProperty.get())
+                                    .build();
                         },
                         p);
     }
@@ -66,17 +61,13 @@ public class PasswordManagerInPlaceKeyStrategy implements SshIdentityAgentStrate
     String key;
 
     @Override
-    public void prepareParent(ShellControl parent) throws Exception {
-
-    }
+    public void prepareParent(ShellControl parent) {}
 
     @Override
-    public void buildCommand(CommandBuilder builder) {
-
-    }
+    public void buildCommand(CommandBuilder builder) {}
 
     @Override
-    public List<KeyValue> configOptions(ShellControl sc) throws Exception {
+    public List<KeyValue> configOptions(ShellControl sc) {
         return List.of();
     }
 
@@ -86,7 +77,7 @@ public class PasswordManagerInPlaceKeyStrategy implements SshIdentityAgentStrate
     }
 
     @Override
-    public FilePath determinetAgentSocketLocation(ShellControl parent) throws Exception {
+    public FilePath determinetAgentSocketLocation(ShellControl parent) {
         return null;
     }
 }

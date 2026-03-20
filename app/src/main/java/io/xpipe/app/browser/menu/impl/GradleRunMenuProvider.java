@@ -11,6 +11,7 @@ import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.core.OsType;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
@@ -34,10 +35,11 @@ public class GradleRunMenuProvider implements BrowserMenuLeafProvider {
         }
 
         OsType.Any osType = model.getFileSystem().getShell().orElseThrow().getOsType();
-        var ext = switch (osType) {
-            case OsType.Windows ignored -> "gradlew.bat";
-            default -> "gradlew";
-        };
+        var ext =
+                switch (osType) {
+                    case OsType.Windows ignored -> "gradlew.bat";
+                    default -> "gradlew";
+                };
 
         if (!entries.getFirst().getFileName().equalsIgnoreCase(ext)) {
             return false;
@@ -79,15 +81,16 @@ public class GradleRunMenuProvider implements BrowserMenuLeafProvider {
             }
 
             var parent = entries.getFirst().getRawFileEntry().getPath().getParent();
-            var command = model.getFileSystem().getShell().orElseThrow().command(CommandBuilder.of()
-                    .add("sh")
-                    .addFile(entries.getFirst().getRawFileEntry().getPath())
-                    .add(fixedTasks)
-            );
+            var command = model.getFileSystem()
+                    .getShell()
+                    .orElseThrow()
+                    .command(CommandBuilder.of()
+                            .add("sh")
+                            .addFile(entries.getFirst().getRawFileEntry().getPath())
+                            .add(fixedTasks));
 
             model.openTerminalAsync(fixedTasks, parent, command, true);
         });
         modal.show();
     }
-
 }

@@ -81,7 +81,9 @@ public class SecretPasswordManagerStrategy implements SecretRetrievalStrategy {
                 }
 
                 var r = pm.query(key);
-                if (r == null || r.getCredentials() == null || r.getCredentials().getPassword() == null) {
+                if (r == null
+                        || r.getCredentials() == null
+                        || r.getCredentials().getPassword() == null) {
                     return new SecretQueryResult(null, SecretQueryState.RETRIEVAL_FAILURE);
                 }
 

@@ -116,9 +116,8 @@ public class ScriptStoreSetup {
             return null;
         }
 
-        var applicable = refs.stream()
-                .filter(ss -> ss.getStore().isCompatible(sc))
-                .toList();
+        var applicable =
+                refs.stream().filter(ss -> ss.getStore().isCompatible(sc)).toList();
         if (applicable.isEmpty()) {
             return null;
         }
@@ -162,11 +161,15 @@ public class ScriptStoreSetup {
         for (DataStoreEntryRef<ScriptStore> scriptStore : availableRefs) {
             var content = scriptStore.getStore().assembleScriptForFile(sc);
             if (content != null) {
-                var fileName = OsFileSystem.of(sc.getOsType()).makeFileSystemCompatible(
-                        scriptStore.get().getName().toLowerCase(Locale.ROOT).replaceAll(" ", "_"));
-                var fileType = scriptStore.getStore().getShellDialect() != null ?
-                        scriptStore.getStore().getShellDialect().getScriptFileEnding() :
-                        d.getScriptFileEnding();
+                var fileName = OsFileSystem.of(sc.getOsType())
+                        .makeFileSystemCompatible(scriptStore
+                                .get()
+                                .getName()
+                                .toLowerCase(Locale.ROOT)
+                                .replaceAll(" ", "_"));
+                var fileType = scriptStore.getStore().getShellDialect() != null
+                        ? scriptStore.getStore().getShellDialect().getScriptFileEnding()
+                        : d.getScriptFileEnding();
                 var scriptFile = targetDir.join(fileName + "." + fileType);
                 sc.view().writeScriptFile(scriptFile, content.getValue());
             }

@@ -52,7 +52,6 @@ public interface PasswordManagerKeyStrategy {
         }
     }
 
-
     @JsonTypeName("inlineSeparate")
     @Value
     @Jacksonized
@@ -95,7 +94,11 @@ public interface PasswordManagerKeyStrategy {
         static OptionsBuilder createOptions(Property<Agent> property) {
             var socket = new SimpleObjectProperty<FilePath>();
             AppPrefs.get().passwordManager().subscribe(passwordManager -> {
-                socket.set(passwordManager != null ? FilePath.of(passwordManager.getKeyConfiguration().getDefaultSocketLocation()) : null);
+                socket.set(
+                        passwordManager != null
+                                ? FilePath.of(
+                                        passwordManager.getKeyConfiguration().getDefaultSocketLocation())
+                                : null);
             });
 
             var choice = new ContextualFileReferenceChoiceComp(
@@ -109,28 +112,34 @@ public interface PasswordManagerKeyStrategy {
             choice.style("agent-socket-choice");
 
             return new OptionsBuilder()
-                    .addComp(new SshAgentTestComp(() -> {
-                        var passwordManager = AppPrefs.get().passwordManager().getValue();
-                        socket.set(passwordManager != null ? FilePath.of(passwordManager.getKeyConfiguration().getDefaultSocketLocation()) : null);
-                    }, Bindings.createObjectBinding(() -> {
-                            return property.getValue().getSshIdentityStrategy(null, false);
-                        }, property)
-                    ))
+                    .addComp(new SshAgentTestComp(
+                            () -> {
+                                var passwordManager =
+                                        AppPrefs.get().passwordManager().getValue();
+                                socket.set(
+                                        passwordManager != null
+                                                ? FilePath.of(passwordManager
+                                                        .getKeyConfiguration()
+                                                        .getDefaultSocketLocation())
+                                                : null);
+                            },
+                            Bindings.createObjectBinding(
+                                    () -> {
+                                        return property.getValue().getSshIdentityStrategy(null, false);
+                                    },
+                                    property)))
                     .nameAndDescription("passwordManagerSshAgentSocket")
                     .addComp(choice, socket)
                     .hide(socket.isNull())
-                    .bind(
-                            () -> Agent.builder().build(),
-                            property);
+                    .bind(() -> Agent.builder().build(), property);
         }
 
         @Override
         public SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
-            return PasswordManagerKeyStrategy.getAgentSshIdentityStrategy(publicKey, forward,
-                    (socket) -> SshIdentityStateManager.prepareLocalExternalAgent(socket));
+            return PasswordManagerKeyStrategy.getAgentSshIdentityStrategy(
+                    publicKey, forward, (socket) -> SshIdentityStateManager.prepareLocalExternalAgent(socket));
         }
     }
-
 
     @JsonTypeName("protonPassAgent")
     @Value
@@ -142,7 +151,11 @@ public interface PasswordManagerKeyStrategy {
         static OptionsBuilder createOptions(Property<ProtonPassAgent> property) {
             var socket = new SimpleObjectProperty<FilePath>();
             AppPrefs.get().passwordManager().subscribe(passwordManager -> {
-                socket.set(passwordManager != null ? FilePath.of(passwordManager.getKeyConfiguration().getDefaultSocketLocation()) : null);
+                socket.set(
+                        passwordManager != null
+                                ? FilePath.of(
+                                        passwordManager.getKeyConfiguration().getDefaultSocketLocation())
+                                : null);
             });
 
             var choice = new ContextualFileReferenceChoiceComp(
@@ -156,19 +169,26 @@ public interface PasswordManagerKeyStrategy {
             choice.style("agent-socket-choice");
 
             return new OptionsBuilder()
-                    .addComp(new SshAgentTestComp(() -> {
-                        var passwordManager = AppPrefs.get().passwordManager().getValue();
-                        socket.set(passwordManager != null ? FilePath.of(passwordManager.getKeyConfiguration().getDefaultSocketLocation()) : null);
-                    }, Bindings.createObjectBinding(() -> {
-                        return property.getValue().getSshIdentityStrategy(null, false);
-                    }, property)
-                    ))
+                    .addComp(new SshAgentTestComp(
+                            () -> {
+                                var passwordManager =
+                                        AppPrefs.get().passwordManager().getValue();
+                                socket.set(
+                                        passwordManager != null
+                                                ? FilePath.of(passwordManager
+                                                        .getKeyConfiguration()
+                                                        .getDefaultSocketLocation())
+                                                : null);
+                            },
+                            Bindings.createObjectBinding(
+                                    () -> {
+                                        return property.getValue().getSshIdentityStrategy(null, false);
+                                    },
+                                    property)))
                     .nameAndDescription("passwordManagerSshAgentSocket")
                     .addComp(choice, socket)
                     .hide(socket.isNull())
-                    .bind(
-                            () -> ProtonPassAgent.builder().build(),
-                            property);
+                    .bind(() -> ProtonPassAgent.builder().build(), property);
         }
 
         @Override
@@ -178,22 +198,23 @@ public interface PasswordManagerKeyStrategy {
 
         @Override
         public SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
-            return PasswordManagerKeyStrategy.getAgentSshIdentityStrategy(publicKey, forward,
-                    (socket) -> {
-                        try {
-                            SshIdentityStateManager.prepareLocalExternalAgent(socket);
-                        } catch (Exception ignored) {
-                            var shell = ProcessControlProvider.get().createLocalProcessControl(true).start();
-                            shell.writeLine("pass-cli ssh-agent start");
-                            ThreadHelper.sleep(1000);
-                            SshIdentityStateManager.prepareLocalExternalAgent(socket);
-                        }
-                    });
+            return PasswordManagerKeyStrategy.getAgentSshIdentityStrategy(publicKey, forward, (socket) -> {
+                try {
+                    SshIdentityStateManager.prepareLocalExternalAgent(socket);
+                } catch (Exception ignored) {
+                    var shell = ProcessControlProvider.get()
+                            .createLocalProcessControl(true)
+                            .start();
+                    shell.writeLine("pass-cli ssh-agent start");
+                    ThreadHelper.sleep(1000);
+                    SshIdentityStateManager.prepareLocalExternalAgent(socket);
+                }
+            });
         }
     }
 
-
-    private static SshIdentityAgentStrategy getAgentSshIdentityStrategy(String publicKey, boolean forward, FailableConsumer<FilePath, Exception> con) {
+    private static SshIdentityAgentStrategy getAgentSshIdentityStrategy(
+            String publicKey, boolean forward, FailableConsumer<FilePath, Exception> con) {
         var pwman = AppPrefs.get().passwordManager().getValue();
         var socket = pwman != null ? FilePath.of(pwman.getKeyConfiguration().getDefaultSocketLocation()) : null;
 
@@ -219,7 +240,8 @@ public interface PasswordManagerKeyStrategy {
                 var l = new ArrayList<>(List.of(
                         new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
                         new KeyValue("ForwardAgent", forward ? "yes" : "no"),
-                        new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
+                        new KeyValue(
+                                "IdentityFile", file.isPresent() ? file.get().toString() : "none"),
                         new KeyValue("PKCS11Provider", "none")));
                 if (socket != null) {
                     l.add(new KeyValue("IdentityAgent", "\"" + socket + "\""));
@@ -243,12 +265,14 @@ public interface PasswordManagerKeyStrategy {
         @SuppressWarnings("unused")
         static OptionsBuilder createOptions(Property<KeePassXcOpenSshAgent> property) {
             return new OptionsBuilder()
-                    .addComp(new SshAgentTestComp(() -> {}, Bindings.createObjectBinding(() -> {
-                        return property.getValue().getSshIdentityStrategy(null, false);
-                    }, property)))
-                    .bind(
-                            () -> KeePassXcOpenSshAgent.builder().build(),
-                            property);
+                    .addComp(new SshAgentTestComp(
+                            () -> {},
+                            Bindings.createObjectBinding(
+                                    () -> {
+                                        return property.getValue().getSshIdentityStrategy(null, false);
+                                    },
+                                    property)))
+                    .bind(() -> KeePassXcOpenSshAgent.builder().build(), property);
         }
 
         @Override
@@ -271,12 +295,14 @@ public interface PasswordManagerKeyStrategy {
         @SuppressWarnings("unused")
         static OptionsBuilder createOptions(Property<KeePassXcPageant> property) {
             return new OptionsBuilder()
-                    .addComp(new SshAgentTestComp(() -> {}, Bindings.createObjectBinding(() -> {
-                        return property.getValue().getSshIdentityStrategy(null, false);
-                    }, property)))
-                    .bind(
-                            () -> KeePassXcPageant.builder().build(),
-                            property);
+                    .addComp(new SshAgentTestComp(
+                            () -> {},
+                            Bindings.createObjectBinding(
+                                    () -> {
+                                        return property.getValue().getSshIdentityStrategy(null, false);
+                                    },
+                                    property)))
+                    .bind(() -> KeePassXcPageant.builder().build(), property);
         }
 
         @Override
@@ -292,7 +318,7 @@ public interface PasswordManagerKeyStrategy {
 
     boolean useAgent();
 
-    SshIdentityAgentStrategy  getSshIdentityStrategy(String publicKey, boolean forward);
+    SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward);
 
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();

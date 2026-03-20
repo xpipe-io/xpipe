@@ -1,6 +1,5 @@
 package io.xpipe.app.cred;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.LabelComp;
@@ -15,11 +14,14 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -39,22 +41,25 @@ public class PasswordManagerAgentStrategy implements SshIdentityAgentStrategy {
         var identifier =
                 new SimpleStringProperty(p.getValue() != null ? p.getValue().getIdentifier() : null);
 
-        var pwmanError = Bindings.createObjectBinding(() -> {
-            var pwman = AppPrefs.get().passwordManager().getValue();
-            if (pwman == null) {
-                return AppI18n.get("passwordManagerEmpty");
-            }
+        var pwmanError = Bindings.createObjectBinding(
+                () -> {
+                    var pwman = AppPrefs.get().passwordManager().getValue();
+                    if (pwman == null) {
+                        return AppI18n.get("passwordManagerEmpty");
+                    }
 
-            if (!pwman.supportsKeyConfiguration()) {
-                return AppI18n.get("passwordManagerNoAgentSupport");
-            }
+                    if (!pwman.supportsKeyConfiguration()) {
+                        return AppI18n.get("passwordManagerNoAgentSupport");
+                    }
 
-            if (!pwman.getKeyConfiguration().useAgent()) {
-                return AppI18n.get("passwordManagerNoAgentConfigured");
-            }
+                    if (!pwman.getKeyConfiguration().useAgent()) {
+                        return AppI18n.get("passwordManagerNoAgentConfigured");
+                    }
 
-            return null;
-        }, AppPrefs.get().passwordManager(), AppI18n.activeLanguage());
+                    return null;
+                },
+                AppPrefs.get().passwordManager(),
+                AppI18n.activeLanguage());
         var pwmanErrorProp = new SimpleStringProperty();
         pwmanErrorProp.bind(pwmanError);
         var pwmanDisplay = new HorizontalComp(List.of(
@@ -88,7 +93,11 @@ public class PasswordManagerAgentStrategy implements SshIdentityAgentStrategy {
 
     private static PasswordManagerKeyConfiguration getConfig() {
         var pwman = AppPrefs.get().passwordManager().getValue();
-        return pwman != null && pwman.getKeyConfiguration() != null && pwman.getKeyConfiguration().useAgent() ? pwman.getKeyConfiguration() : null;
+        return pwman != null
+                        && pwman.getKeyConfiguration() != null
+                        && pwman.getKeyConfiguration().useAgent()
+                ? pwman.getKeyConfiguration()
+                : null;
     }
 
     private static boolean useKeyName() {
@@ -151,8 +160,8 @@ public class PasswordManagerAgentStrategy implements SshIdentityAgentStrategy {
         }
 
         return new PublicKeyStrategy.Dynamic(() -> {
-            return SshAgentKeyList.findAgentIdentity(
-                    DataStorage.get().local().ref(), this, identifier).toString();
+            return SshAgentKeyList.findAgentIdentity(DataStorage.get().local().ref(), this, identifier)
+                    .toString();
         });
     }
 }

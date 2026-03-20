@@ -15,7 +15,8 @@ public final class WindowsTerminalSession extends ControllableTerminalSession {
 
     NativeWinWindowControl control;
 
-    public WindowsTerminalSession(ProcessHandle terminal, ExternalTerminalType terminalType, NativeWinWindowControl control) {
+    public WindowsTerminalSession(
+            ProcessHandle terminal, ExternalTerminalType terminalType, NativeWinWindowControl control) {
         super(terminal, terminalType);
         this.control = control;
     }
@@ -64,7 +65,9 @@ public final class WindowsTerminalSession extends ControllableTerminalSession {
     @Override
     public void removeStyle() {
         control.setWindowsTransitionsEnabled(false);
-        if (terminalType != null && terminalType instanceof TrackableTerminalType t && t.getDockMode() == TerminalDockMode.BORDERLESS) {
+        if (terminalType != null
+                && terminalType instanceof TrackableTerminalType t
+                && t.getDockMode() == TerminalDockMode.BORDERLESS) {
             control.removeBorders();
         }
     }
@@ -72,7 +75,9 @@ public final class WindowsTerminalSession extends ControllableTerminalSession {
     @Override
     public void restoreStyle() {
         control.setWindowsTransitionsEnabled(true);
-        if (terminalType != null && terminalType instanceof TrackableTerminalType t && t.getDockMode() == TerminalDockMode.BORDERLESS) {
+        if (terminalType != null
+                && terminalType instanceof TrackableTerminalType t
+                && t.getDockMode() == TerminalDockMode.BORDERLESS) {
             control.restoreBorders();
         }
     }

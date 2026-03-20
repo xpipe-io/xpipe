@@ -311,16 +311,17 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             return "nvim";
         }
 
-
         @Override
         public String getWebsite() {
             return "https://neovim.io/";
         }
 
-
         @Override
         public Optional<Path> determineInstallation() {
-            var programFiles = AppSystemInfo.ofWindows().getProgramFiles().resolve("Neovim", "bin").resolve("nvim.exe");
+            var programFiles = AppSystemInfo.ofWindows()
+                    .getProgramFiles()
+                    .resolve("Neovim", "bin")
+                    .resolve("nvim.exe");
             if (Files.exists(programFiles)) {
                 return Optional.of(programFiles);
             }
@@ -340,7 +341,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     .pauseOnExit(false)
                     .launch();
         }
-
     };
 
     WindowsType ZED_WINDOWS = new WindowsType() {

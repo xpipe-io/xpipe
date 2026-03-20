@@ -237,7 +237,9 @@ public class IdentityApplyDialog {
                             addPublicKey(
                                     systemState.get(),
                                     sc,
-                                    identity.getSshIdentity().getPublicKeyStrategy().retrievePublicKey());
+                                    identity.getSshIdentity()
+                                            .getPublicKeyStrategy()
+                                            .retrievePublicKey());
                             systemState.setValue(SystemState.of(sc, identity));
                         });
                     });

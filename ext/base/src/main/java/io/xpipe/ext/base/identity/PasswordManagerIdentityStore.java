@@ -14,9 +14,9 @@ import io.xpipe.app.secret.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
+import io.xpipe.core.KeyValue;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.core.KeyValue;
 import lombok.EqualsAndHashCode;
 import lombok.SneakyThrows;
 import lombok.ToString;
@@ -70,13 +70,15 @@ public class PasswordManagerIdentityStore extends IdentityStore
 
         var r = AppPrefs.get().passwordManager().getValue().query(key);
         if (r == null) {
-            throw ErrorEventFactory.expected(
-                    new UnsupportedOperationException("Credentials for input " + key + " were requested but could not be supplied by the password manager"));
+            throw ErrorEventFactory.expected(new UnsupportedOperationException("Credentials for input " + key
+                    + " were requested but could not be supplied by the password manager"));
         }
 
         if (r.getSshKey() != null && r.getCredentials() == null) {
             throw ErrorEventFactory.expected(
-                    new UnsupportedOperationException("Identity " + key + " does not provide credentials, only a key. Use another credentials entry as a base and reference the key via the password manager agent option instead"));
+                    new UnsupportedOperationException(
+                            "Identity " + key
+                                    + " does not provide credentials, only a key. Use another credentials entry as a base and reference the key via the password manager agent option instead"));
         }
 
         if (r.getCredentials() == null) {
@@ -97,8 +99,10 @@ public class PasswordManagerIdentityStore extends IdentityStore
             }
 
             if (pwman.getKeyConfiguration().useAgent()) {
-                SshAgentKeyList.findAgentIdentity(DataStorage.get().local().ref(),
-                        pwman.getKeyConfiguration().getSshIdentityStrategy(null, false), sshKey.getIdentifier());
+                SshAgentKeyList.findAgentIdentity(
+                        DataStorage.get().local().ref(),
+                        pwman.getKeyConfiguration().getSshIdentityStrategy(null, false),
+                        sshKey.getIdentifier());
             }
         }
 
@@ -111,7 +115,11 @@ public class PasswordManagerIdentityStore extends IdentityStore
     public UsernameStrategy getUsername() {
         return new UsernameStrategy.Dynamic(() -> {
             var r = retrieve();
-            var effective = r != null && r.getCredentials() != null && r.getCredentials().getUsername() != null ? r.getCredentials().getUsername() : "unknown";
+            var effective = r != null
+                            && r.getCredentials() != null
+                            && r.getCredentials().getUsername() != null
+                    ? r.getCredentials().getUsername()
+                    : "unknown";
             return effective;
         });
     }
@@ -126,7 +134,9 @@ public class PasswordManagerIdentityStore extends IdentityStore
                     @Override
                     public SecretQueryResult query(String prompt, boolean forceFocus) {
                         var r = retrieve();
-                        if (r == null || r.getCredentials() == null || r.getCredentials().getPassword() == null) {
+                        if (r == null
+                                || r.getCredentials() == null
+                                || r.getCredentials().getPassword() == null) {
                             return new SecretQueryResult(null, SecretQueryState.RETRIEVAL_FAILURE);
                         }
 
@@ -174,7 +184,8 @@ public class PasswordManagerIdentityStore extends IdentityStore
                         return;
                     }
 
-                    var inPlace = new InPlaceKeyStrategy(r.getSshKey().getPrivateKey(), null, new SecretPromptStrategy());
+                    var inPlace =
+                            new InPlaceKeyStrategy(r.getSshKey().getPrivateKey(), null, new SecretPromptStrategy());
                     inPlace.prepareParent(parent);
                 }
 
@@ -185,7 +196,8 @@ public class PasswordManagerIdentityStore extends IdentityStore
                         return;
                     }
 
-                    var inPlace = new InPlaceKeyStrategy(r.getSshKey().getPrivateKey(), null, new SecretPromptStrategy());
+                    var inPlace =
+                            new InPlaceKeyStrategy(r.getSshKey().getPrivateKey(), null, new SecretPromptStrategy());
                     inPlace.buildCommand(builder);
                 }
 
@@ -196,7 +208,8 @@ public class PasswordManagerIdentityStore extends IdentityStore
                         return List.of();
                     }
 
-                    var inPlace = new InPlaceKeyStrategy(r.getSshKey().getPrivateKey(), null, new SecretPromptStrategy());
+                    var inPlace =
+                            new InPlaceKeyStrategy(r.getSshKey().getPrivateKey(), null, new SecretPromptStrategy());
                     return inPlace.configOptions(sc);
                 }
 

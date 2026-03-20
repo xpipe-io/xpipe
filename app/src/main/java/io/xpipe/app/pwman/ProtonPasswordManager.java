@@ -1,7 +1,5 @@
 package io.xpipe.app.pwman;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
@@ -13,7 +11,11 @@ import io.xpipe.app.process.*;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.core.JacksonMapper;
 import io.xpipe.core.OsType;
+
 import javafx.beans.property.*;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.jackson.Jacksonized;
@@ -48,11 +50,14 @@ public class ProtonPasswordManager implements PasswordManager {
     private final PasswordManagerKeyStrategy keyStrategy;
 
     private static Path getSocketLocation() {
-        var socket = switch (OsType.ofLocal()) {
-            case OsType.Linux ignored -> AppSystemInfo.ofLinux().getUserHome().resolve(".ssh", "proton-pass-agent.sock");
-            case OsType.MacOs ignored -> AppSystemInfo.ofMacOs().getUserHome().resolve(".ssh", "proton-pass-agent.sock");
-            case OsType.Windows ignored -> null;
-        };
+        var socket =
+                switch (OsType.ofLocal()) {
+                    case OsType.Linux ignored ->
+                        AppSystemInfo.ofLinux().getUserHome().resolve(".ssh", "proton-pass-agent.sock");
+                    case OsType.MacOs ignored ->
+                        AppSystemInfo.ofMacOs().getUserHome().resolve(".ssh", "proton-pass-agent.sock");
+                    case OsType.Windows ignored -> null;
+                };
         return socket;
     }
 
@@ -62,7 +67,8 @@ public class ProtonPasswordManager implements PasswordManager {
 
         var keyStrategyChoice = OptionsChoiceBuilder.builder()
                 .allowNull(true)
-                .available(List.of(PasswordManagerKeyStrategy.Inline.class, PasswordManagerKeyStrategy.ProtonPassAgent.class))
+                .available(List.of(
+                        PasswordManagerKeyStrategy.Inline.class, PasswordManagerKeyStrategy.ProtonPassAgent.class))
                 .property(keyStrategy)
                 .build();
 
@@ -71,9 +77,13 @@ public class ProtonPasswordManager implements PasswordManager {
                 .addComp(new PasswordManagerTestComp(true))
                 .nameAndDescription("passwordManagerKeyStrategy")
                 .sub(keyStrategyChoice.build(), keyStrategy)
-                .bind(() -> {
-                    return ProtonPasswordManager.builder().keyStrategy(keyStrategy.getValue()).build();
-                }, p);
+                .bind(
+                        () -> {
+                            return ProtonPasswordManager.builder()
+                                    .keyStrategy(keyStrategy.getValue())
+                                    .build();
+                        },
+                        p);
     }
 
     private static synchronized ShellControl getOrStartShell() throws Exception {
@@ -107,10 +117,10 @@ public class ProtonPasswordManager implements PasswordManager {
 
         try {
             var sc = getOrStartShell();
-            var loggedIn = sc.command(CommandBuilder.of().add("pass-cli", "info")).executeAndCheck();
+            var loggedIn =
+                    sc.command(CommandBuilder.of().add("pass-cli", "info")).executeAndCheck();
             if (!loggedIn) {
-                var script = ShellScript.lines(
-                        "pass-cli login");
+                var script = ShellScript.lines("pass-cli login");
                 TerminalLaunch.builder()
                         .title("Proton Pass login")
                         .localScript(script)
@@ -141,7 +151,10 @@ public class ProtonPasswordManager implements PasswordManager {
                     for (JsonNode vaultNode : vaultsNode) {
                         all.add(vaultNode.required("name").textValue());
                     }
-                    throw ErrorEventFactory.expected(new IllegalStateException("No vault was specified but multiple are available: " + String.join(", ", all) + ". Specify the vault with <Vault Name>/<Item name>, e.g. " + vault + "/" + itemName));
+                    throw ErrorEventFactory.expected(new IllegalStateException(
+                            "No vault was specified but multiple are available: " + String.join(", ", all)
+                                    + ". Specify the vault with <Vault Name>/<Item name>, e.g. " + vault + "/"
+                                    + itemName));
                 }
             }
 
@@ -191,9 +204,11 @@ public class ProtonPasswordManager implements PasswordManager {
                 for (JsonNode extraField : extraFields) {
                     var name = extraField.required("name").textValue();
                     if (name.equalsIgnoreCase("Username")) {
-                        username = extraField.required("content").required("Text").textValue();
+                        username =
+                                extraField.required("content").required("Text").textValue();
                     } else if (name.equalsIgnoreCase("Password")) {
-                        password = extraField.required("content").required("Text").textValue();
+                        password =
+                                extraField.required("content").required("Text").textValue();
                     }
                 }
             }

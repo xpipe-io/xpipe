@@ -1,6 +1,5 @@
 package io.xpipe.app.pwman;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
@@ -20,6 +19,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -124,8 +124,14 @@ public class PsonoPasswordManager implements PasswordManager {
                             .add("json"))
                     .sensitive();
             var r = JacksonMapper.getDefault().readTree(cmd.readStdoutOrThrow());
-            var username = Optional.of(r.required("username")).filter(n -> !n.isNull()).map(JsonNode::textValue).orElse(null);
-            var password = Optional.of(r.required("password")).filter(n -> !n.isNull()).map(JsonNode::textValue).orElse(null);
+            var username = Optional.of(r.required("username"))
+                    .filter(n -> !n.isNull())
+                    .map(JsonNode::textValue)
+                    .orElse(null);
+            var password = Optional.of(r.required("password"))
+                    .filter(n -> !n.isNull())
+                    .map(JsonNode::textValue)
+                    .orElse(null);
             return Result.of(Credentials.of(username, password), null);
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();

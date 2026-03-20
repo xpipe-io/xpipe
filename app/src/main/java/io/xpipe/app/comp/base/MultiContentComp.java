@@ -19,8 +19,7 @@ public class MultiContentComp extends SimpleRegionBuilder {
     private final boolean requestFocus;
     private final Map<BaseRegionBuilder<?, ?>, ObservableValue<Boolean>> content;
 
-    public MultiContentComp(
-            boolean requestFocus, Map<BaseRegionBuilder<?, ?>, ObservableValue<Boolean>> content) {
+    public MultiContentComp(boolean requestFocus, Map<BaseRegionBuilder<?, ?>, ObservableValue<Boolean>> content) {
         this.requestFocus = requestFocus;
         this.content = FXCollections.observableMap(content);
     }

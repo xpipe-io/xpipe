@@ -84,7 +84,8 @@ public class ActionShortcutComp extends SimpleRegionBuilder {
                     ThreadHelper.runFailableAsync(() -> {
                         var file = DesktopShortcuts.createOpen(
                                 name.getValue(),
-                                "open \"" + url.getValue() + "\" -d \"" + AppProperties.get().getDataDir() + "\"",
+                                "open \"" + url.getValue() + "\" -d \""
+                                        + AppProperties.get().getDataDir() + "\"",
                                 null);
                         DesktopHelper.browseFileInDirectory(file);
                     });

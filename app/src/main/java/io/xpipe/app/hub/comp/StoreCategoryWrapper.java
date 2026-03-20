@@ -106,7 +106,7 @@ public class StoreCategoryWrapper {
             if (!current.getExpanded().get()) {
                 return false;
             }
-        };
+        }
         return true;
     }
 

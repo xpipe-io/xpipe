@@ -114,7 +114,8 @@ public class StoreSection {
         };
         var cached = topLevel.mapped(storeEntryWrapper -> {
             var section = new SimpleObjectProperty<StoreSection>();
-            var sectionEnabled = Bindings.createBooleanBinding(() -> {
+            var sectionEnabled = Bindings.createBooleanBinding(
+                    () -> {
                         if (!enabled.getValue()) {
                             return false;
                         }
@@ -196,64 +197,61 @@ public class StoreSection {
         var l = new ArrayList<>(parents);
         l.add(e);
         Predicate<StoreSection> showSection = section -> {
-                if (!enabled.getValue()) {
+            if (!enabled.getValue()) {
+                return false;
+            }
+
+            var isBatchSelected = selected.contains(section.getWrapper());
+
+            var matchesFilter = filterString == null
+                    || section.matchesFilter(filterString.getValue())
+                    || l.stream().anyMatch(p -> p.matchesFilter(filterString.getValue()));
+            if (!isBatchSelected && !matchesFilter) {
+                return false;
+            }
+
+            var hasFilter = filterString != null
+                    && filterString.getValue() != null
+                    && filterString.getValue().length() > 0;
+            if (!isBatchSelected && !hasFilter) {
+                var showProvider = true;
+                try {
+                    showProvider = section.getWrapper().getEntry().getProvider().shouldShow(section.getWrapper());
+                } catch (Exception ignored) {
+                }
+                if (!showProvider) {
                     return false;
                 }
+            }
 
-                var isBatchSelected = selected.contains(section.getWrapper());
+            var matchesSelector = section.anyMatches(entryFilter);
+            if (!isBatchSelected && !matchesSelector) {
+                return false;
+            }
 
-                var matchesFilter = filterString == null
-                        || section.matchesFilter(filterString.getValue())
-                        || l.stream().anyMatch(p -> p.matchesFilter(filterString.getValue()));
-                if (!isBatchSelected && !matchesFilter) {
-                    return false;
-                }
+            // Prevent updates for children on category switching by checking depth
+            var showCategory = showInCategory(category.getValue(), section.getWrapper()) || depth > 0;
+            if (!showCategory) {
+                return false;
+            }
 
-                var hasFilter = filterString != null
-                        && filterString.getValue() != null
-                        && filterString.getValue().length() > 0;
-                if (!isBatchSelected && !hasFilter) {
-                    var showProvider = true;
-                    try {
-                        showProvider = section.getWrapper()
-                                .getEntry()
-                                .getProvider()
-                                .shouldShow(section.getWrapper());
-                    } catch (Exception ignored) {
-                    }
-                    if (!showProvider) {
-                        return false;
-                    }
-                }
+            // If this entry is already shown as root due to a different category than parent, don't
+            // show it
+            // again here
+            var notRoot = !DataStorage.get()
+                    .isRootEntry(
+                            section.getWrapper().getEntry(), category.getValue().getCategory());
+            if (!notRoot) {
+                return false;
+            }
 
-                var matchesSelector = section.anyMatches(entryFilter);
-                if (!isBatchSelected && !matchesSelector) {
-                    return false;
-                }
-
-                // Prevent updates for children on category switching by checking depth
-                var showCategory = showInCategory(category.getValue(), section.getWrapper()) || depth > 0;
-                if (!showCategory) {
-                    return false;
-                }
-
-                // If this entry is already shown as root due to a different category than parent, don't
-                // show it
-                // again here
-                var notRoot = !DataStorage.get()
-                        .isRootEntry(
-                                section.getWrapper().getEntry(),
-                                category.getValue().getCategory());
-                if (!notRoot) {
-                    return false;
-                }
-
-                return true;
+            return true;
         };
 
         var cached = allChildren.mapped(c -> {
             var section = new SimpleObjectProperty<StoreSection>();
-            var sectionEnabled = Bindings.createBooleanBinding(() -> {
+            var sectionEnabled = Bindings.createBooleanBinding(
+                    () -> {
                         if (!enabled.getValue()) {
                             return false;
                         }
@@ -283,7 +281,8 @@ public class StoreSection {
             return section.get();
         });
         var ordered = sorted(e, cached, updateObservable);
-        var filtered = ordered.filtered(showSection,
+        var filtered = ordered.filtered(
+                showSection,
                 enabled,
                 category,
                 filterString,

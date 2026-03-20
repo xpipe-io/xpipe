@@ -328,8 +328,8 @@ public interface ScriptTextSource {
             }
 
             if (!Files.exists(found.getLocalFile())) {
-                throw ErrorEventFactory.expected(
-                        new IllegalStateException("Referenced script file " + found.getLocalFile() + " does not exist"));
+                throw ErrorEventFactory.expected(new IllegalStateException(
+                        "Referenced script file " + found.getLocalFile() + " does not exist"));
             }
         }
 

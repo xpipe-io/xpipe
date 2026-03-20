@@ -104,7 +104,8 @@ public class ErrorHandlerComp extends SimpleRegionBuilder {
         }
 
         if (desc == null && event.getThrowable() != null) {
-            desc = AppI18n.get("errorNoExceptionMessage", event.getThrowable().getClass().getSimpleName());
+            desc = AppI18n.get(
+                    "errorNoExceptionMessage", event.getThrowable().getClass().getSimpleName());
         }
 
         if (desc == null) {

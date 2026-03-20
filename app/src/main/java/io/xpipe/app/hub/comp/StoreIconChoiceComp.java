@@ -11,7 +11,6 @@ import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.geometry.Pos;
@@ -47,8 +46,8 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
             Set<SystemIcon> icons,
             int columns,
             SimpleStringProperty filter,
-            Runnable doubleClick, String defaultIcon
-    ) {
+            Runnable doubleClick,
+            String defaultIcon) {
         this.selected = selected;
         this.icons = icons;
         this.columns = columns;
@@ -165,7 +164,9 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
         available.addFirst(new SystemIcon(null, "default"));
 
         List<SystemIcon> shown;
-        if (filterString != null && !filterString.isBlank() && filterString.strip().length() >= 2) {
+        if (filterString != null
+                && !filterString.isBlank()
+                && filterString.strip().length() >= 2) {
             shown = available.stream()
                     .filter(icon -> containsString(icon.getId(), filterString.strip()))
                     .collect(Collectors.toCollection(ArrayList::new));

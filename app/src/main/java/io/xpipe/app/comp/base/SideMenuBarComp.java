@@ -12,8 +12,8 @@ import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.update.UpdateAvailableDialog;
 import io.xpipe.app.update.UpdateHandler;
 import io.xpipe.app.util.Hyperlinks;
-
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -84,12 +84,10 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
             var h = AppDistributionType.get().getUpdateHandler();
             stack.hide(Bindings.createBooleanBinding(
                     () -> {
-                        return h
-                                        .getPreparedUpdate()
-                                        .getValue()
-                                == null;
+                        return h.getPreparedUpdate().getValue() == null;
                     },
-                    h.getPreparedUpdate(), h.getBusy()));
+                    h.getPreparedUpdate(),
+                    h.getBusy()));
             vbox.getChildren().add(stack.build());
         }
 

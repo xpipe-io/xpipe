@@ -1,6 +1,5 @@
 package io.xpipe.app.pwman;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -10,8 +9,10 @@ import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.*;
 import io.xpipe.core.JacksonMapper;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import javafx.beans.property.Property;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.jackson.Jacksonized;
@@ -109,8 +110,12 @@ public class LastpassPasswordManager implements PasswordManager {
                         "Ambiguous item name, multiple password entries match: " + String.join(", ", matches)));
             }
 
-            var login = Optional.ofNullable(tree.get(0).get("username")).map(JsonNode::textValue).orElse(null);
-            var secret = Optional.ofNullable(tree.get(0).get("password")).map(JsonNode::textValue).orElse(null);
+            var login = Optional.ofNullable(tree.get(0).get("username"))
+                    .map(JsonNode::textValue)
+                    .orElse(null);
+            var secret = Optional.ofNullable(tree.get(0).get("password"))
+                    .map(JsonNode::textValue)
+                    .orElse(null);
             return Result.of(Credentials.of(login, secret), null);
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();

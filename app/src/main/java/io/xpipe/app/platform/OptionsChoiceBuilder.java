@@ -2,8 +2,8 @@ package io.xpipe.app.platform;
 
 import io.xpipe.app.comp.base.ChoicePaneComp;
 import io.xpipe.app.core.AppI18n;
-
 import io.xpipe.app.issue.ErrorEventFactory;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -81,7 +81,8 @@ public class OptionsChoiceBuilder {
             }
         } catch (InvocationTargetException e) {
             ErrorEventFactory.fromThrowable(e).handle();
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         return new OptionsBuilder();
     }
 
@@ -93,7 +94,7 @@ public class OptionsChoiceBuilder {
             return defValue;
         } catch (InvocationTargetException e) {
             ErrorEventFactory.fromThrowable(e).handle();
-        }  catch (Exception ignored) {
+        } catch (Exception ignored) {
         }
 
         try {
@@ -106,7 +107,7 @@ public class OptionsChoiceBuilder {
             return defValue;
         } catch (InvocationTargetException e) {
             ErrorEventFactory.fromThrowable(e).handle();
-        }  catch (Exception ignored) {
+        } catch (Exception ignored) {
         }
 
         try {

@@ -262,7 +262,8 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
             MenuItem m = new MenuItem();
             m.textProperty().bind(AppI18n.observable(dataStoreColor.getId()));
             m.setOnAction(event -> {
-                category.getCategory().setConfig(category.getCategory().getConfig().withColor(dataStoreColor));
+                category.getCategory()
+                        .setConfig(category.getCategory().getConfig().withColor(dataStoreColor));
                 event.consume();
             });
             m.setGraphic(DataStoreColor.createDisplayGraphic(dataStoreColor));
@@ -281,8 +282,10 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
                         var m = new CustomMenuItem();
 
                         var l = new Label();
-                        l.setGraphic(PrettyImageHelper.ofFixedSizeSquare(storeCategoryWrapper.getIconFile().getValue(), 16)
-                                .padding(new Insets(0, 0, 1, 0)).build());
+                        l.setGraphic(PrettyImageHelper.ofFixedSizeSquare(
+                                        storeCategoryWrapper.getIconFile().getValue(), 16)
+                                .padding(new Insets(0, 0, 1, 0))
+                                .build());
                         l.setText(storeCategoryWrapper.getName().getValue());
                         l.setPadding(new Insets(0, 1, 1, storeCategoryWrapper.getDepth() * 10));
                         m.setContent(l);

@@ -196,7 +196,7 @@ public class StoreViewState {
                 activeCategory.setValue(current);
                 break;
             }
-        };
+        }
     }
 
     public void selectBatchMode(StoreSection section) {
@@ -583,7 +583,8 @@ public class StoreViewState {
         }
     }
 
-    public DerivedObservableList<StoreCategoryWrapper> getSortedCategories(StoreCategoryWrapper root, boolean requireExpanded) {
+    public DerivedObservableList<StoreCategoryWrapper> getSortedCategories(
+            StoreCategoryWrapper root, boolean requireExpanded) {
         Comparator<StoreCategoryWrapper> comparator = new Comparator<>() {
             @Override
             public int compare(StoreCategoryWrapper o1, StoreCategoryWrapper o2) {

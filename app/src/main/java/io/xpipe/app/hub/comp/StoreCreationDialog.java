@@ -34,7 +34,8 @@ public class StoreCreationDialog {
         return showEdit(e, e.getStore(), true, c);
     }
 
-    public static StoreCreationModel showEdit(DataStoreEntry e, DataStore base, boolean addToStorage, Consumer<DataStoreEntry> c) {
+    public static StoreCreationModel showEdit(
+            DataStoreEntry e, DataStore base, boolean addToStorage, Consumer<DataStoreEntry> c) {
         StoreCreationConsumer consumer = (newE, validated) -> {
             ThreadHelper.runAsync(() -> {
                 if (!addToStorage) {
@@ -54,7 +55,8 @@ public class StoreCreationDialog {
                         var madeValid = !e.getValidity().isUsable()
                                 && newE.getValidity().isUsable();
                         DataStorage.get().updateEntry(e, newE);
-                        if (madeValid && validated
+                        if (madeValid
+                                && validated
                                 && e.getProvider().shouldShowScan()
                                 && AppPrefs.get()
                                         .openConnectionSearchWindowOnConnectionCreation()
@@ -126,8 +128,9 @@ public class StoreCreationDialog {
                 name,
                 prov,
                 base,
-                dataStoreProvider -> (category != null && dataStoreProvider.allowCreation() &&
-                        category.equals(dataStoreProvider.getCreationCategory()))
+                dataStoreProvider -> (category != null
+                                && dataStoreProvider.allowCreation()
+                                && category.equals(dataStoreProvider.getCreationCategory()))
                         || dataStoreProvider.equals(prov),
                 consumer,
                 false,
@@ -216,13 +219,18 @@ public class StoreCreationDialog {
                     button.visibleProperty().bind(Bindings.not(model.canConnect()));
                 }));
         if (!model.isQuickConnect()) {
-            modal.addButton(new ModalButton("skip", () -> {
-                model.commit(false);
-                modal.close();
-            }, false, false)).augment(button -> {
-                button.visibleProperty().bind(model.getSkippable());
-                button.disableProperty().bind(model.getBusy());
-            });
+            modal.addButton(new ModalButton(
+                            "skip",
+                            () -> {
+                                model.commit(false);
+                                modal.close();
+                            },
+                            false,
+                            false))
+                    .augment(button -> {
+                        button.visibleProperty().bind(model.getSkippable());
+                        button.disableProperty().bind(model.getBusy());
+                    });
         }
 
         modal.addButton(new ModalButton(
@@ -246,7 +254,9 @@ public class StoreCreationDialog {
                     button.textProperty()
                             .bind(Bindings.createStringBinding(
                                     () -> {
-                                        return !model.getBusy().get() ? AppI18n.get(model.isQuickConnect() ? "connect" : "finish") : null;
+                                        return !model.getBusy().get()
+                                                ? AppI18n.get(model.isQuickConnect() ? "connect" : "finish")
+                                                : null;
                                     },
                                     PlatformThread.sync(model.getBusy()),
                                     AppI18n.activeLanguage()));

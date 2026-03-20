@@ -18,10 +18,12 @@ public class StoreQuickConnect {
     private static DataStoreEntry quickConnectEntry;
 
     public static void init() {
-        quickConnectStore = AppCache.getNonNull("quickConnect", DataStore.class, () -> DataStoreProviders.byId("ssh").orElseThrow()
-                .defaultStore(StoreViewState.get().getActiveCategory().getValue()
-                .getCategory()));
-        quickConnectEntry = DataStoreEntry.createNew(STORE_ID, DataStorage.DEFAULT_CATEGORY_UUID, "quick-connect", quickConnectStore);
+        quickConnectStore = AppCache.getNonNull("quickConnect", DataStore.class, () -> DataStoreProviders.byId("ssh")
+                .orElseThrow()
+                .defaultStore(
+                        StoreViewState.get().getActiveCategory().getValue().getCategory()));
+        quickConnectEntry = DataStoreEntry.createNew(
+                STORE_ID, DataStorage.DEFAULT_CATEGORY_UUID, "quick-connect", quickConnectStore);
         DataStorage.get().addStoreEntryInProgress(quickConnectEntry);
     }
 

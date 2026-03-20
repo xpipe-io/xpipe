@@ -3,7 +3,6 @@ package io.xpipe.app.core;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.LocalExec;
-import io.xpipe.app.util.PasswdFile;
 import io.xpipe.core.OsType;
 
 import com.sun.jna.platform.win32.*;
@@ -366,9 +365,7 @@ public abstract class AppSystemInfo {
             if (System.getenv("XDG_CONFIG_HOME") != null) {
                 return (config = Path.of(System.getenv("XDG_CONFIG_HOME")));
             } else {
-                return (config = AppSystemInfo.ofLinux()
-                        .getUserHome()
-                        .resolve(".config"));
+                return (config = AppSystemInfo.ofLinux().getUserHome().resolve(".config"));
             }
         }
 

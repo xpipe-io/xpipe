@@ -4,14 +4,8 @@ import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionStructure;
 import io.xpipe.app.comp.RegionStructureBuilder;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.core.AppRestart;
-import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.PlatformThread;
-import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataStorage;
 
-import io.xpipe.app.util.GlobalTimer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
@@ -23,7 +17,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;

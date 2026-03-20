@@ -7,7 +7,6 @@ import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
 
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;

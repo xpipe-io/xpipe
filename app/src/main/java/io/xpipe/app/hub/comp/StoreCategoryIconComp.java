@@ -2,6 +2,7 @@ package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.PrettyImageHelper;
+
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -9,6 +10,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+
 import lombok.AllArgsConstructor;
 import org.kordamp.ikonli.javafx.FontIcon;
 

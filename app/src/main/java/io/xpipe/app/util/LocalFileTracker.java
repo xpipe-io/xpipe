@@ -19,11 +19,13 @@ public class LocalFileTracker {
         GlobalTimer.scheduleUntil(Duration.ofHours(1), false, () -> {
             synchronized (localFiles) {
                 var copy = new HashSet<>(localFiles);
-                GlobalTimer.delay(() -> {
-                    for (Path localFile : copy) {
-                        FileUtils.deleteQuietly(localFile.toFile());
-                    }
-                }, Duration.ofMinutes(1));
+                GlobalTimer.delay(
+                        () -> {
+                            for (Path localFile : copy) {
+                                FileUtils.deleteQuietly(localFile.toFile());
+                            }
+                        },
+                        Duration.ofMinutes(1));
             }
             return false;
         });

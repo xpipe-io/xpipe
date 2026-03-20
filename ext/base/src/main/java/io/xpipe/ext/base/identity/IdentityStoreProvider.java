@@ -38,9 +38,11 @@ public abstract class IdentityStoreProvider implements DataStoreProvider {
 
     @Override
     public ObservableValue<String> informationString(StoreSection section) {
-        return Bindings.createStringBinding(() -> {
-            var st = (IdentityStore) section.getWrapper().getStore().getValue();
-            return IdentitySummary.createSummary(st);
-        }, section.getWrapper().getPersistentState());
+        return Bindings.createStringBinding(
+                () -> {
+                    var st = (IdentityStore) section.getWrapper().getStore().getValue();
+                    return IdentitySummary.createSummary(st);
+                },
+                section.getWrapper().getPersistentState());
     }
 }

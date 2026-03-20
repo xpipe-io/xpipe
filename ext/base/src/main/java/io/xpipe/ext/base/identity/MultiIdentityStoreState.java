@@ -2,6 +2,7 @@ package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.ext.DataStoreState;
 import io.xpipe.app.process.ShellStoreState;
+
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
@@ -22,7 +23,6 @@ public class MultiIdentityStoreState extends ShellStoreState {
         var n = (MultiIdentityStoreState) newer;
         var b = toBuilder();
         mergeBuilder(n, b);
-        return b.selected(useNewer(selected, n.selected))
-                .build();
+        return b.selected(useNewer(selected, n.selected)).build();
     }
 }

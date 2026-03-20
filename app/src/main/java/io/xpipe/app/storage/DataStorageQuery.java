@@ -10,7 +10,10 @@ public class DataStorageQuery {
         var found = queryEntry("**", "**" + input + "**", "*");
         if (found.size() > 1) {
             var narrowPath = found.stream()
-                    .filter(dataStoreEntry -> DataStorage.get().getStorePath(dataStoreEntry).toString().equalsIgnoreCase(input))
+                    .filter(dataStoreEntry -> DataStorage.get()
+                            .getStorePath(dataStoreEntry)
+                            .toString()
+                            .equalsIgnoreCase(input))
                     .toList();
             if (narrowPath.size() >= 1) {
                 return narrowPath;

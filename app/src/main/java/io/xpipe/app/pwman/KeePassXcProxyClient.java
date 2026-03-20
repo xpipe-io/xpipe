@@ -302,8 +302,12 @@ public class KeePassXcProxyClient {
         }
 
         var object = (ObjectNode) tree.required("entries").get(0);
-        var login = Optional.ofNullable(object.get("login")).map(JsonNode::textValue).orElse(null);
-        var secret = Optional.ofNullable(object.get("password")).map(JsonNode::textValue).orElse(null);
+        var login = Optional.ofNullable(object.get("login"))
+                .map(JsonNode::textValue)
+                .orElse(null);
+        var secret = Optional.ofNullable(object.get("password"))
+                .map(JsonNode::textValue)
+                .orElse(null);
         return PasswordManager.Credentials.of(login, secret);
     }
 

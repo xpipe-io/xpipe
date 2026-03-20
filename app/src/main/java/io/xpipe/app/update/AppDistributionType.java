@@ -27,11 +27,10 @@ public enum AppDistributionType implements Translatable {
     NIX("nix", false, () -> new PortableUpdater(true)),
     HOMEBREW("homebrew", true, () -> {
         var pkg = AppNames.ofCurrent().getKebapName();
-        return new CommandUpdater(
-                ShellScript.lines(
-                        "brew upgrade --cask xpipe-io/tap/" + pkg,
-                        "if [ \"$?\" != 0 ]; then echo \"Update failed ...\"; read key; fi",
-                        AppRestart.getTerminalRestartCommand()));
+        return new CommandUpdater(ShellScript.lines(
+                "brew upgrade --cask xpipe-io/tap/" + pkg,
+                "if [ \"$?\" != 0 ]; then echo \"Update failed ...\"; read key; fi",
+                AppRestart.getTerminalRestartCommand()));
     }),
     APT_REPO("apt", true, () -> {
         var pkg = AppNames.ofCurrent().getKebapName();
@@ -54,7 +53,8 @@ public enum AppDistributionType implements Translatable {
         var pkg = AppNames.ofCurrent().getKebapName();
         return new CommandUpdater(ShellScript.lines(
                 "echo \"+ git -c core.autocrlf=false clone https://aur.archlinux.org/" + pkg + " . && makepkg -si\"",
-                "cd $(mktemp -d) && git -c core.autocrlf=false clone https://aur.archlinux.org/" + pkg + " . && makepkg -si --noconfirm",
+                "cd $(mktemp -d) && git -c core.autocrlf=false clone https://aur.archlinux.org/" + pkg
+                        + " . && makepkg -si --noconfirm",
                 "if [ \"$?\" != 0 ]; then echo \"Update failed ...\"; read key; fi",
                 AppRestart.getTerminalRestartCommand()));
     }),

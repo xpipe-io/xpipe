@@ -5,8 +5,9 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.LocalShell;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import javafx.beans.property.Property;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 

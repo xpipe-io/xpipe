@@ -37,7 +37,7 @@ public class IncusContainerStore
                 StoppableStore,
                 PauseableStore,
                 NameableStore,
-                   HostAddressGatewayStore {
+                HostAddressGatewayStore {
 
     DataStoreEntryRef<IncusInstallStore> install;
     String projectName;
@@ -77,7 +77,10 @@ public class IncusContainerStore
     @Override
     public FixedChildStore merge(FixedChildStore other) {
         var o = (IncusContainerStore) other;
-        return toBuilder().identity(identity != null ? identity : o.identity).projectName(o.projectName).build();
+        return toBuilder()
+                .identity(identity != null ? identity : o.identity)
+                .projectName(o.projectName)
+                .build();
     }
 
     @Override
@@ -134,9 +137,12 @@ public class IncusContainerStore
         }
 
         var running = "Running".equals(displayState.get().getState());
-        var newState =
-                state.toBuilder().containerState(displayState.get().getState()).running(running)
-                        .ipv4(displayState.get().getIpv4Address()).ipv6(displayState.get().getIpv6Address()).build();
+        var newState = state.toBuilder()
+                .containerState(displayState.get().getState())
+                .running(running)
+                .ipv4(displayState.get().getIpv4Address())
+                .ipv6(displayState.get().getIpv6Address())
+                .build();
         setState(newState);
     }
 
@@ -183,7 +189,7 @@ public class IncusContainerStore
 
     @Override
     public HostAddress getHostAddress() {
-        var l = new ArrayList<String >();
+        var l = new ArrayList<String>();
         var state = getState();
         if (state.getIpv4() != null) {
             l.add(state.getIpv4());

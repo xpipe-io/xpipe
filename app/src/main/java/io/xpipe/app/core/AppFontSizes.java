@@ -88,7 +88,9 @@ public class AppFontSizes {
         AppPrefs.get().useSystemFont().addListener((ignored, ignored2, newValue) -> {
             var refNode = ref.get();
             if (refNode != null) {
-                var effective = AppPrefs.get().theme().getValue() != null ? AppPrefs.get().theme().getValue().getFontSizes().get() : getDefault();
+                var effective = AppPrefs.get().theme().getValue() != null
+                        ? AppPrefs.get().theme().getValue().getFontSizes().get()
+                        : getDefault();
                 setFont(refNode, function.apply(effective));
             }
         });

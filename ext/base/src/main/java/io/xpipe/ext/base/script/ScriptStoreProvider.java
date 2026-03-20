@@ -186,15 +186,14 @@ public class ScriptStoreProvider implements DataStoreProvider {
         ScriptStore st = section.getWrapper().getEntry().getStore().asNeeded();
         var init = st.isInitScript() ? AppI18n.get("init") : null;
         var file = st.isFileScript() ? AppI18n.get("fileBrowser") : null;
-        var shell = st.isShellScript()
-                ? AppI18n.get("shell")
-                : null;
+        var shell = st.isShellScript() ? AppI18n.get("shell") : null;
         var name = st.isShellScript()
                 ? getShellSessionScriptName(section.getWrapper()).orElse(null)
                 : null;
         var runnable = st.isRunnableScript() ? AppI18n.get("hub") : null;
         return new ReadOnlyObjectWrapper<>(
-                new StoreStateFormat(List.of(), st.getTextSource().toSummary(), shell, init, file, runnable, name).format());
+                new StoreStateFormat(List.of(), st.getTextSource().toSummary(), shell, init, file, runnable, name)
+                        .format());
     }
 
     private Optional<String> getShellSessionScriptName(StoreEntryWrapper wrapper) {

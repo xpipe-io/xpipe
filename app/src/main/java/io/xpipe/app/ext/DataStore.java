@@ -1,7 +1,8 @@
 package io.xpipe.app.ext;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.app.storage.DataStoreEntryRef;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.util.List;
 

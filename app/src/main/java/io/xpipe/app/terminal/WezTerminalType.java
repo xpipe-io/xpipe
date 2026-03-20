@@ -11,8 +11,8 @@ import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.FilePath;
-
 import io.xpipe.core.OsType;
+
 import lombok.SneakyThrows;
 
 import java.io.IOException;
@@ -181,7 +181,8 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                                         activeSocket.get().toString()))
                         .withWorkingDirectory(FilePath.of(getSocketDir()))
                         .execute();
-                directionIterator.next();            }
+                directionIterator.next();
+            }
         }
     }
 

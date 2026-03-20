@@ -1,8 +1,8 @@
 package io.xpipe.app.platform;
 
 import io.xpipe.app.util.Rect;
-
 import io.xpipe.app.util.User32Ex;
+
 import javafx.stage.Window;
 
 import com.sun.jna.Library;
@@ -79,9 +79,21 @@ public class NativeWinWindowControl {
         var mod = style & ~(User32.WS_CAPTION | User32.WS_THICKFRAME | User32.WS_MAXIMIZEBOX);
         User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_STYLE, mod);
 
-        User32.INSTANCE.SetWindowPos(windowHandle, null, rect.getX(), rect.getY(), rect.getW() + 1, rect.getH(),
+        User32.INSTANCE.SetWindowPos(
+                windowHandle,
+                null,
+                rect.getX(),
+                rect.getY(),
+                rect.getW() + 1,
+                rect.getH(),
                 User32.SWP_NOACTIVATE | User32.SWP_NOMOVE | User32.SWP_NOZORDER);
-        User32.INSTANCE.SetWindowPos(windowHandle, null, rect.getX(), rect.getY(), rect.getW(), rect.getH(),
+        User32.INSTANCE.SetWindowPos(
+                windowHandle,
+                null,
+                rect.getX(),
+                rect.getY(),
+                rect.getW(),
+                rect.getH(),
                 User32.SWP_NOACTIVATE | User32.SWP_NOMOVE | User32.SWP_NOZORDER);
     }
 
@@ -92,9 +104,21 @@ public class NativeWinWindowControl {
         var mod = style | User32.WS_CAPTION | User32.WS_THICKFRAME | User32.WS_MAXIMIZEBOX;
         User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_STYLE, mod);
 
-        User32.INSTANCE.SetWindowPos(windowHandle, null, rect.getX(), rect.getY(), rect.getW() + 1, rect.getH(),
+        User32.INSTANCE.SetWindowPos(
+                windowHandle,
+                null,
+                rect.getX(),
+                rect.getY(),
+                rect.getW() + 1,
+                rect.getH(),
                 User32.SWP_NOACTIVATE | User32.SWP_NOMOVE | User32.SWP_NOZORDER);
-        User32.INSTANCE.SetWindowPos(windowHandle, null, rect.getX(), rect.getY(), rect.getW(), rect.getH(),
+        User32.INSTANCE.SetWindowPos(
+                windowHandle,
+                null,
+                rect.getX(),
+                rect.getY(),
+                rect.getW(),
+                rect.getH(),
                 User32.SWP_NOACTIVATE | User32.SWP_NOMOVE | User32.SWP_NOZORDER);
     }
 
@@ -149,7 +173,13 @@ public class NativeWinWindowControl {
 
     public void move(Rect bounds) {
         User32.INSTANCE.SetWindowPos(
-                windowHandle, null, bounds.getX(), bounds.getY(), bounds.getW(), bounds.getH(), User32.SWP_NOACTIVATE | User32.SWP_NOZORDER);
+                windowHandle,
+                null,
+                bounds.getX(),
+                bounds.getY(),
+                bounds.getW(),
+                bounds.getH(),
+                User32.SWP_NOACTIVATE | User32.SWP_NOZORDER);
     }
 
     public Rect getBounds() {

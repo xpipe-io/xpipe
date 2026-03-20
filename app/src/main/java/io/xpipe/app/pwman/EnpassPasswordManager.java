@@ -1,6 +1,5 @@
 package io.xpipe.app.pwman;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
@@ -24,6 +23,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.TextField;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -179,8 +179,12 @@ public class EnpassPasswordManager implements PasswordManager {
                             "Ambiguous item name, multiple password entries match: " + String.join(", ", matches)));
                 }
 
-                var login = Optional.ofNullable(json.get(0).get("login")).map(JsonNode::textValue).orElse(null);
-                var secret = Optional.ofNullable(json.get(0).get("password")).map(JsonNode::textValue).orElse(null);
+                var login = Optional.ofNullable(json.get(0).get("login"))
+                        .map(JsonNode::textValue)
+                        .orElse(null);
+                var secret = Optional.ofNullable(json.get(0).get("password"))
+                        .map(JsonNode::textValue)
+                        .orElse(null);
                 return Result.of(Credentials.of(login, secret), null);
             }
         } catch (Exception ex) {

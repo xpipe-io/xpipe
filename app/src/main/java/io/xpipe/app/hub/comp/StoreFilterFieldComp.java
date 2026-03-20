@@ -1,8 +1,5 @@
 package io.xpipe.app.hub.comp;
 
-import atlantafx.base.controls.CustomTextField;
-import atlantafx.base.controls.Popover;
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.RegionDescriptor;
 import io.xpipe.app.comp.SimpleRegionBuilder;
@@ -13,12 +10,17 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ObservableSubscriber;
+
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
+
+import atlantafx.base.controls.CustomTextField;
+import atlantafx.base.controls.Popover;
+import atlantafx.base.theme.Styles;
 
 import java.util.List;
 import java.util.Objects;
@@ -27,7 +29,9 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
 
     private final ObservableSubscriber filterTrigger;
 
-    public StoreFilterFieldComp(ObservableSubscriber filterTrigger) {this.filterTrigger = filterTrigger;}
+    public StoreFilterFieldComp(ObservableSubscriber filterTrigger) {
+        this.filterTrigger = filterTrigger;
+    }
 
     @Override
     public Region createSimple() {
@@ -56,22 +60,25 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
         });
 
         var clearButton = new IconButtonComp("mdi2c-close", () -> {
-            field.clear();
-        }).build();
+                    field.clear();
+                })
+                .build();
         clearButton.setCursor(Cursor.DEFAULT);
         AppFontSizes.sm(clearButton);
         var searchButton = new IconButtonComp("mdi2m-magnify", () -> {
-            if (state.open()) {
-                field.clear();
-            }
-        }).build();
+                    if (state.open()) {
+                        field.clear();
+                    }
+                })
+                .build();
         searchButton.setCursor(Cursor.DEFAULT);
         AppFontSizes.sm(searchButton);
-        var launchButton =  new IconButtonComp("mdi2p-play", () -> {
-            if (state.open()) {
-                field.clear();
-            }
-        }).build();
+        var launchButton = new IconButtonComp("mdi2p-play", () -> {
+                    if (state.open()) {
+                        field.clear();
+                    }
+                })
+                .build();
         launchButton.setCursor(Cursor.DEFAULT);
         AppFontSizes.sm(launchButton);
 
@@ -86,7 +93,8 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
                                 return state.getEffectiveFilter().get() != null ? clearButton : null;
                             }
 
-                            if (state.getIsQuickConnectString().get() || state.getIsUrlString().get()) {
+                            if (state.getIsQuickConnectString().get()
+                                    || state.getIsUrlString().get()) {
                                 return launchButton;
                             }
 
@@ -95,8 +103,9 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
                             }
 
                             return null;
-                                                    },
-                        field.focusedProperty(), state.getRawText()));
+                        },
+                        field.focusedProperty(),
+                        state.getRawText()));
         RegionDescriptor.builder().nameKey("search").showTooltips(false).build().apply(field);
 
         field.addEventFilter(KeyEvent.KEY_PRESSED, event -> {

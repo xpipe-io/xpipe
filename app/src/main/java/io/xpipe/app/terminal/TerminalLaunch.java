@@ -68,7 +68,8 @@ public class TerminalLaunch {
                 getFullTitle(),
                 directory,
                 request != null ? request : UUID.randomUUID(),
-                logIfEnabled, pauseOnExit,
+                logIfEnabled,
+                pauseOnExit,
                 command);
         TerminalLauncher.open(List.of(pane), preferTabs, type);
     }

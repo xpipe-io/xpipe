@@ -48,7 +48,7 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleRegionBuilde
         var listBox = new ListBoxViewComp<>(
                         selectedList,
                         selectedList,
-                t -> {
+                        t -> {
                             if (t == null) {
                                 return null;
                             }

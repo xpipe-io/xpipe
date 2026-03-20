@@ -1,6 +1,5 @@
 package io.xpipe.app.beacon.mcp;
 
-import io.modelcontextprotocol.json.jackson2.JacksonMcpJsonMapper;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppNames;
@@ -19,6 +18,7 @@ import io.xpipe.core.FilePath;
 import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import io.modelcontextprotocol.json.jackson2.JacksonMcpJsonMapper;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
 import lombok.Builder;
@@ -109,8 +109,13 @@ public final class McpTools {
                             continue;
                         }
 
-                        var section = StoreViewState.get().getSectionForWrapper(StoreViewState.get().getEntryWrapper(e));
-                        var info = section.isPresent() ? e.getProvider().informationString(section.get()).getValue() : null;
+                        var section = StoreViewState.get()
+                                .getSectionForWrapper(StoreViewState.get().getEntryWrapper(e));
+                        var info = section.isPresent()
+                                ? e.getProvider()
+                                        .informationString(section.get())
+                                        .getValue()
+                                : null;
 
                         var r = ConnectionResource.builder()
                                 .name(e.getName())

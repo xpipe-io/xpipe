@@ -177,54 +177,52 @@ public class TerminalCategory extends AppPrefsCategory {
                         .nameAndDescription("terminalLoggingDirectory")
                         .documentationLink(DocumentationLink.TERMINAL_LOGGING_FILES)
                         .addComp(new ButtonComp(AppI18n.observable("openSessionLogs"), () -> {
-                            var dir = AppProperties.get().getDataDir().resolve("sessions");
-                            try {
-                                Files.createDirectories(dir);
-                                DesktopHelper.browseFile(dir);
-                            } catch (IOException e) {
-                                ErrorEventFactory.fromThrowable(e).handle();
-                            }
-                        })
+                                    var dir = AppProperties.get().getDataDir().resolve("sessions");
+                                    try {
+                                        Files.createDirectories(dir);
+                                        DesktopHelper.browseFile(dir);
+                                    } catch (IOException e) {
+                                        ErrorEventFactory.fromThrowable(e).handle();
+                                    }
+                                })
                                 .disable(prefs.enableTerminalLogging.not())))
                 .title("terminalBehaviour")
-                .sub(
-                        new OptionsBuilder()
-                                .pref(prefs.enableConnectionHubTerminalDocking)
-                                .addToggle(prefs.enableConnectionHubTerminalDocking)
-                                .hide(OsType.ofLocal() != OsType.WINDOWS)
-                                .pref(prefs.enableFileBrowserTerminalDocking)
-                                .addToggle(prefs.enableFileBrowserTerminalDocking)
-                                .hide(OsType.ofLocal() != OsType.WINDOWS)
-                                .name("terminalSplitStrategy")
-                                .description(Bindings.createStringBinding(
-                                        () -> {
-                                            return AppI18n.get(
-                                                    splitViewSupported.get()
-                                                            ? "terminalSplitStrategyDescription"
-                                                            : "terminalSplitStrategyDisabledDescription");
-                                        },
-                                        splitViewSupported,
-                                        AppI18n.activeLanguage()))
-                                .documentationLink(DocumentationLink.TERMINAL_SPLIT)
-                                .addComp(
-                                        ChoiceComp.ofTranslatable(
-                                                        prefs.terminalSplitStrategy,
-                                                        Arrays.asList(TerminalSplitStrategy.values()),
-                                                        false)
-                                                .maxWidth(getCompWidth()),
-                                        prefs.terminalSplitStrategy)
-                                .disable(splitViewSupported.not())
-                                .pref(prefs.terminalAlwaysPauseOnExit)
-                                .addToggle(prefs.terminalAlwaysPauseOnExit)
-                                .pref(prefs.clearTerminalOnInit)
-                                .addToggle(prefs.clearTerminalOnInit)
-                                .pref(prefs.preferTerminalTabs)
-                                .addToggle(prefs.preferTerminalTabs)
-                                .hide(tabsSettingSupported.not())
-                                .pref(prefs.enableTerminalStartupBell)
-                                .addToggle(prefs.enableTerminalStartupBell)
-                                .hide(OsType.ofLocal() == OsType.WINDOWS)
-                        )
+                .sub(new OptionsBuilder()
+                        .pref(prefs.enableConnectionHubTerminalDocking)
+                        .addToggle(prefs.enableConnectionHubTerminalDocking)
+                        .hide(OsType.ofLocal() != OsType.WINDOWS)
+                        .pref(prefs.enableFileBrowserTerminalDocking)
+                        .addToggle(prefs.enableFileBrowserTerminalDocking)
+                        .hide(OsType.ofLocal() != OsType.WINDOWS)
+                        .name("terminalSplitStrategy")
+                        .description(Bindings.createStringBinding(
+                                () -> {
+                                    return AppI18n.get(
+                                            splitViewSupported.get()
+                                                    ? "terminalSplitStrategyDescription"
+                                                    : "terminalSplitStrategyDisabledDescription");
+                                },
+                                splitViewSupported,
+                                AppI18n.activeLanguage()))
+                        .documentationLink(DocumentationLink.TERMINAL_SPLIT)
+                        .addComp(
+                                ChoiceComp.ofTranslatable(
+                                                prefs.terminalSplitStrategy,
+                                                Arrays.asList(TerminalSplitStrategy.values()),
+                                                false)
+                                        .maxWidth(getCompWidth()),
+                                prefs.terminalSplitStrategy)
+                        .disable(splitViewSupported.not())
+                        .pref(prefs.terminalAlwaysPauseOnExit)
+                        .addToggle(prefs.terminalAlwaysPauseOnExit)
+                        .pref(prefs.clearTerminalOnInit)
+                        .addToggle(prefs.clearTerminalOnInit)
+                        .pref(prefs.preferTerminalTabs)
+                        .addToggle(prefs.preferTerminalTabs)
+                        .hide(tabsSettingSupported.not())
+                        .pref(prefs.enableTerminalStartupBell)
+                        .addToggle(prefs.enableTerminalStartupBell)
+                        .hide(OsType.ofLocal() == OsType.WINDOWS))
                 .buildComp();
     }
 

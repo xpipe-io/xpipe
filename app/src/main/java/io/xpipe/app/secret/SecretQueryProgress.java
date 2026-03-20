@@ -35,8 +35,8 @@ public class SecretQueryProgress {
             @NonNull List<SecretQueryFilter> filters,
             List<SecretQueryFormatter> formatters,
             @NonNull CountDown countDown,
-            boolean interactive, boolean forceFocus
-    ) {
+            boolean interactive,
+            boolean forceFocus) {
         this.requestId = requestId;
         this.storeId = storeId;
         this.suppliers = new ArrayList<>(suppliers);

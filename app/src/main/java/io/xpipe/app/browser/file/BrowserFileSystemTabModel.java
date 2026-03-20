@@ -425,7 +425,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 } else {
                     ThreadHelper.runFailableAsync(() -> {
                         BooleanScope.executeExclusive(busy, () -> {
-                            openTerminalSync(name, directory, fileSystem.getShell().get().command(adjustedPath), true);
+                            openTerminalSync(
+                                    name, directory, fileSystem.getShell().get().command(adjustedPath), true);
                         });
                     });
                 }

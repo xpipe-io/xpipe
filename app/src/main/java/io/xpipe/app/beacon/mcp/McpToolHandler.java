@@ -137,7 +137,8 @@ public interface McpToolHandler
             return e.ref();
         }
 
-        public DataStoreEntryRef<ShellStore> getShellStoreRef(String name, boolean mutation) throws BeaconClientException {
+        public DataStoreEntryRef<ShellStore> getShellStoreRef(String name, boolean mutation)
+                throws BeaconClientException {
             var ref = getDataStoreRef(name);
             var isShell = ref.getStore() instanceof ShellStore;
             if (!isShell) {
@@ -145,10 +146,12 @@ public interface McpToolHandler
                         + DataStorage.get().getStorePath(ref.get()).toString() + " is not a shell connection");
             }
 
-            var disableMutation = DataStorage.get().getEffectiveCategoryConfig(ref.get()).getDontAllowScripts();
+            var disableMutation =
+                    DataStorage.get().getEffectiveCategoryConfig(ref.get()).getDontAllowScripts();
             if (mutation && disableMutation != null && disableMutation) {
                 throw new BeaconClientException("Modifications to connection "
-                        + DataStorage.get().getStorePath(ref.get()).toString() + " is disabled by the category setting");
+                        + DataStorage.get().getStorePath(ref.get()).toString()
+                        + " is disabled by the category setting");
             }
 
             return ref.asNeeded();

@@ -2,9 +2,9 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.window.AppMainWindow;
-
 import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.util.GlobalTimer;
+
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -52,11 +52,13 @@ public class TerminalDockHubComp extends SimpleRegionBuilder {
         var scale = new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                GlobalTimer.delay(() -> {
-                    Platform.runLater(() -> {
-                        update(stack);
-                    });
-                }, Duration.ofMillis(500));
+                GlobalTimer.delay(
+                        () -> {
+                            Platform.runLater(() -> {
+                                update(stack);
+                            });
+                        },
+                        Duration.ofMillis(500));
             }
         };
         var update = new ChangeListener<Number>() {
@@ -80,11 +82,13 @@ public class TerminalDockHubComp extends SimpleRegionBuilder {
         var show = new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
-                GlobalTimer.delay(() -> {
-                    Platform.runLater(() -> {
-                        update(stack);
-                    });
-                }, Duration.ofMillis(100));
+                GlobalTimer.delay(
+                        () -> {
+                            Platform.runLater(() -> {
+                                update(stack);
+                            });
+                        },
+                        Duration.ofMillis(100));
             }
         };
         var hide = new EventHandler<WindowEvent>() {
@@ -128,7 +132,9 @@ public class TerminalDockHubComp extends SimpleRegionBuilder {
     }
 
     private void update(Region region) {
-        if (region.getScene() == null || region.getScene().getWindow() == null || NativeWinWindowControl.MAIN_WINDOW == null) {
+        if (region.getScene() == null
+                || region.getScene().getWindow() == null
+                || NativeWinWindowControl.MAIN_WINDOW == null) {
             return;
         }
 
@@ -137,7 +143,7 @@ public class TerminalDockHubComp extends SimpleRegionBuilder {
         var sx = region.getScene().getWindow().getOutputScaleX();
         var sy = region.getScene().getWindow().getOutputScaleY();
 
-        var scene =  region.getScene();
+        var scene = region.getScene();
         var windowRect = NativeWinWindowControl.MAIN_WINDOW.getBounds();
         if (windowRect.getX() == 0.0 && windowRect.getY() == 0.0 && windowRect.getW() == 0 && windowRect.getH() == 0) {
             return;
@@ -159,10 +165,6 @@ public class TerminalDockHubComp extends SimpleRegionBuilder {
             h = windowRect.getH() - 20;
         }
 
-        model.resizeView(
-                (int) Math.round(x),
-                (int) Math.round(y),
-                (int) Math.round(w),
-                (int) Math.round(h));
+        model.resizeView((int) Math.round(x), (int) Math.round(y), (int) Math.round(w), (int) Math.round(h));
     }
 }

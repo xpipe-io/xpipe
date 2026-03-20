@@ -36,24 +36,14 @@ public class StoreIconChoiceDialog {
 
     public static void show(DataStoreEntry entry) {
         var dialog = new StoreIconChoiceDialog(entry.getProvider().getDisplayIconFileName(entry.getStore()), s -> {
-            entry.setIcon(
-                    s != null && s.getSource() != null
-                            ? s.getSource().getId() + "/"
-                            + s.getId()
-                            : null,
-                    true);
+            entry.setIcon(s != null && s.getSource() != null ? s.getSource().getId() + "/" + s.getId() : null, true);
         });
         dialog.getOverlay().show();
     }
 
     public static void show(DataStoreCategory entry) {
         var dialog = new StoreIconChoiceDialog(entry.getDefaultIconFile(), s -> {
-            entry.setIcon(
-                    s != null && s.getSource() != null
-                            ? s.getSource().getId() + "/"
-                            + s.getId()
-                            : null,
-                    true);
+            entry.setIcon(s != null && s.getSource() != null ? s.getSource().getId() + "/" + s.getId() : null, true);
         });
         dialog.getOverlay().show();
     }
@@ -85,12 +75,12 @@ public class StoreIconChoiceDialog {
                 defaultIcon);
         comp.prefWidth(600);
 
-        var modal = ModalOverlay.of(
-                "chooseCustomIcon",
-                comp);
+        var modal = ModalOverlay.of("chooseCustomIcon", comp);
         var refresh = new ButtonComp(null, new FontIcon("mdi2r-refresh"), () -> {
-            comp.refresh();
-        }).maxHeight(100).disable(comp.getBusy());
+                    comp.refresh();
+                })
+                .maxHeight(100)
+                .disable(comp.getBusy());
         var settings = new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
                     overlay.close();
                     AppPrefs.get().selectCategory("icons");
@@ -103,9 +93,14 @@ public class StoreIconChoiceDialog {
         modal.addButton(ModalButton.ok(() -> {
                     finish();
                 }))
-                .augment(button -> button.disableProperty().bind(Bindings.createBooleanBinding(() -> {
-                    return selected.get() == null || comp.getBusy().get();
-                }, selected, PlatformThread.sync(comp.getBusy()))));
+                .augment(button -> button.disableProperty()
+                        .bind(Bindings.createBooleanBinding(
+                                () -> {
+                                    return selected.get() == null
+                                            || comp.getBusy().get();
+                                },
+                                selected,
+                                PlatformThread.sync(comp.getBusy()))));
         return modal;
     }
 

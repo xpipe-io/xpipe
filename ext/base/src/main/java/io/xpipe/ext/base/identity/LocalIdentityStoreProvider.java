@@ -1,5 +1,7 @@
 package io.xpipe.ext.base.identity;
 
+import io.xpipe.app.cred.NoIdentityStrategy;
+import io.xpipe.app.cred.SshIdentityStrategyChoiceConfig;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -10,8 +12,6 @@ import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
-import io.xpipe.app.cred.NoIdentityStrategy;
-import io.xpipe.app.cred.SshIdentityStrategyChoiceConfig;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;

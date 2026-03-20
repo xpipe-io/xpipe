@@ -1,5 +1,7 @@
 package io.xpipe.ext.base.identity;
 
+import io.xpipe.app.cred.NoIdentityStrategy;
+import io.xpipe.app.cred.SshIdentityStrategy;
 import io.xpipe.app.ext.DataStoreDependencies;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.secret.EncryptedValue;
@@ -10,8 +12,6 @@ import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
-import io.xpipe.app.cred.NoIdentityStrategy;
-import io.xpipe.app.cred.SshIdentityStrategy;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

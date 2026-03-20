@@ -31,7 +31,8 @@ public class ScriptHelper {
     }
 
     @SneakyThrows
-    public static FilePath createExecScript(ShellDialect type, ShellControl processControl, String content, boolean log) {
+    public static FilePath createExecScript(
+            ShellDialect type, ShellControl processControl, String content, boolean log) {
         content = type.prepareScriptContent(processControl, content);
         var fileName = "xpipe-" + getScriptHash(processControl, content);
         var temp = processControl.getSystemTemporaryDirectory();
@@ -40,11 +41,16 @@ public class ScriptHelper {
     }
 
     @SneakyThrows
-    public static FilePath createExecScriptRaw(ShellControl processControl, FilePath file, String content, boolean log) {
+    public static FilePath createExecScriptRaw(
+            ShellControl processControl, FilePath file, String content, boolean log) {
         var exists = processControl.view().fileExists(file);
 
         if (log) {
-            TrackEvent.withTrace("Creating exec script").tag("file", file).tag("exists", exists).tag("content", content).handle();
+            TrackEvent.withTrace("Creating exec script")
+                    .tag("file", file)
+                    .tag("exists", exists)
+                    .tag("content", content)
+                    .handle();
         }
 
         if (exists) {

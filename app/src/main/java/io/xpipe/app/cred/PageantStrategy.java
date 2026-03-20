@@ -12,7 +12,6 @@ import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -117,7 +116,8 @@ public class PageantStrategy implements SshIdentityAgentStrategy {
 
     private String getPageantWindowsPipe() {
         Memory p = new Memory(WinBase.WIN32_FIND_DATA.sizeOf());
-        var r = Kernel32.INSTANCE.FindFirstFile("\\\\.\\pipe\\*pageant." + AppSystemInfo.ofCurrent().getUser() + "*", p);
+        var r = Kernel32.INSTANCE.FindFirstFile(
+                "\\\\.\\pipe\\*pageant." + AppSystemInfo.ofCurrent().getUser() + "*", p);
         if (r == WinBase.INVALID_HANDLE_VALUE) {
             throw ErrorEventFactory.expected(new IllegalStateException("Pageant is not running"));
         }

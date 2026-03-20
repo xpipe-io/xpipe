@@ -15,12 +15,13 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.JacksonMapper;
 import io.xpipe.core.OsType;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Region;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.SneakyThrows;
 import lombok.extern.jackson.Jacksonized;
@@ -41,7 +42,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class BitwardenPasswordManager implements PasswordManager {
 
     private enum Dist {
-
         WINDOWS {
             @Override
             public Path getSocketLocation() {
@@ -73,7 +73,9 @@ public class BitwardenPasswordManager implements PasswordManager {
         SNAP {
             @Override
             public Path getSocketLocation() {
-                return AppSystemInfo.ofLinux().getUserHome().resolve("snap", "bitwarden", "current", ".bitwarden-ssh-agent.sock");
+                return AppSystemInfo.ofLinux()
+                        .getUserHome()
+                        .resolve("snap", "bitwarden", "current", ".bitwarden-ssh-agent.sock");
             }
 
             @Override
@@ -87,7 +89,9 @@ public class BitwardenPasswordManager implements PasswordManager {
         FLATPAK {
             @Override
             public Path getSocketLocation() {
-                return AppSystemInfo.ofLinux().getUserHome().resolve(".var", "app", "com.bitwarden.desktop", "data", ".bitwarden-ssh-agent.sock");
+                return AppSystemInfo.ofLinux()
+                        .getUserHome()
+                        .resolve(".var", "app", "com.bitwarden.desktop", "data", ".bitwarden-ssh-agent.sock");
             }
 
             @Override
@@ -113,7 +117,6 @@ public class BitwardenPasswordManager implements PasswordManager {
             }
         },
 
-
         MACOS {
             @Override
             public Path getSocketLocation() {
@@ -128,11 +131,12 @@ public class BitwardenPasswordManager implements PasswordManager {
             }
         },
 
-
         MACOS_APP_STORE {
             @Override
             public Path getSocketLocation() {
-                return AppSystemInfo.ofMacOs().getUserHome().resolve("Library", "Containers", "com.bitwarden.desktop", "Data", ".bitwarden-ssh-agent.sock");
+                return AppSystemInfo.ofMacOs()
+                        .getUserHome()
+                        .resolve("Library", "Containers", "com.bitwarden.desktop", "Data", ".bitwarden-ssh-agent.sock");
             }
 
             @Override
@@ -168,7 +172,9 @@ public class BitwardenPasswordManager implements PasswordManager {
             }
 
             if (OsType.ofLocal() == OsType.MACOS) {
-                if (Files.exists(AppSystemInfo.ofMacOs().getUserHome().resolve("Library", "Containers", "com.bitwarden.desktop"))) {
+                if (Files.exists(AppSystemInfo.ofMacOs()
+                        .getUserHome()
+                        .resolve("Library", "Containers", "com.bitwarden.desktop"))) {
                     return dist = MACOS_APP_STORE;
                 } else {
                     return dist = MACOS;
@@ -240,9 +246,13 @@ public class BitwardenPasswordManager implements PasswordManager {
                 .addComp(new PasswordManagerTestComp(true))
                 .nameAndDescription("passwordManagerKeyStrategy")
                 .sub(keyStrategyChoice.build(), keyStrategy)
-                .bind(() -> {
-                    return BitwardenPasswordManager.builder().keyStrategy(keyStrategy.getValue()).build();
-                }, p);
+                .bind(
+                        () -> {
+                            return BitwardenPasswordManager.builder()
+                                    .keyStrategy(keyStrategy.getValue())
+                                    .build();
+                        },
+                        p);
     }
 
     private static void sync() throws Exception {
@@ -253,7 +263,9 @@ public class BitwardenPasswordManager implements PasswordManager {
             return;
         }
 
-        getOrStartShell().command(CommandBuilder.of().add(Dist.get().commandBase()).add("sync")).execute();
+        getOrStartShell()
+                .command(CommandBuilder.of().add(Dist.get().commandBase()).add("sync"))
+                .execute();
     }
 
     private static void copyConfigIfNeeded() {
@@ -261,7 +273,8 @@ public class BitwardenPasswordManager implements PasswordManager {
         var def = getDefaultConfigPath();
         if (Files.exists(def)) {
             try {
-                var defIsNewer = !Files.exists(cacheDataFile) || Files.getLastModifiedTime(def).compareTo(Files.getLastModifiedTime(cacheDataFile)) > 0;
+                var defIsNewer = !Files.exists(cacheDataFile)
+                        || Files.getLastModifiedTime(def).compareTo(Files.getLastModifiedTime(cacheDataFile)) > 0;
                 if (defIsNewer) {
                     Files.createDirectories(cacheDataFile.getParent());
                     Files.copy(def, cacheDataFile, StandardCopyOption.REPLACE_EXISTING);
@@ -274,7 +287,8 @@ public class BitwardenPasswordManager implements PasswordManager {
 
     private static boolean loginOrUnlock() throws Exception {
         var sc = getOrStartShell();
-        var command = sc.command(CommandBuilder.of().add(Dist.get().commandBase()).add("get", "item", "xpipe-test", "--nointeraction"));
+        var command = sc.command(
+                CommandBuilder.of().add(Dist.get().commandBase()).add("get", "item", "xpipe-test", "--nointeraction"));
         var r = command.readStdoutAndStderr();
         if (r[1].contains("You are not logged in")) {
             var script = ShellScript.lines(
@@ -300,7 +314,8 @@ public class BitwardenPasswordManager implements PasswordManager {
                 return false;
             }
             var cmd = sc.command(CommandBuilder.of()
-                    .add(Dist.get().commandBase()).add("unlock", "--raw", "--passwordenv", "BW_PASSWORD")
+                    .add(Dist.get().commandBase())
+                    .add("unlock", "--raw", "--passwordenv", "BW_PASSWORD")
                     .fixedEnvironment("BW_PASSWORD", pw.getSecret().getSecretValue()));
             cmd.sensitive();
             var out = cmd.readStdoutOrThrow();
@@ -316,7 +331,9 @@ public class BitwardenPasswordManager implements PasswordManager {
             try {
                 CommandSupport.isInLocalPathOrThrow("Bitwarden CLI", "bw");
             } catch (Exception e) {
-                ErrorEventFactory.fromThrowable(e).link("https://bitwarden.com/help/cli/#download-and-install").handle();
+                ErrorEventFactory.fromThrowable(e)
+                        .link("https://bitwarden.com/help/cli/#download-and-install")
+                        .handle();
                 return null;
             }
         }
@@ -330,17 +347,26 @@ public class BitwardenPasswordManager implements PasswordManager {
             }
 
             var sc = getOrStartShell();
-            var cmd =
-                    CommandBuilder.of().add(Dist.get().commandBase()).add("get", "item").addLiteral(key).add("--nointeraction");
+            var cmd = CommandBuilder.of()
+                    .add(Dist.get().commandBase())
+                    .add("get", "item")
+                    .addLiteral(key)
+                    .add("--nointeraction");
             var json = JacksonMapper.getDefault()
                     .readTree(sc.command(cmd).sensitive().readStdoutOrThrow());
 
             SshKey credentialSshKey;
             var sshKey = json.get("sshKey");
             if (sshKey != null) {
-                var privateKey = Optional.ofNullable(sshKey.get("privateKey")).map(jsonNode -> jsonNode.textValue()).orElse(null);
-                var publicKey = Optional.ofNullable(sshKey.get("publicKey")).map(jsonNode -> jsonNode.textValue()).orElse(null);
-                var fingerprint = Optional.ofNullable(sshKey.get("fingerprint")).map(jsonNode -> jsonNode.textValue()).orElse(null);
+                var privateKey = Optional.ofNullable(sshKey.get("privateKey"))
+                        .map(jsonNode -> jsonNode.textValue())
+                        .orElse(null);
+                var publicKey = Optional.ofNullable(sshKey.get("publicKey"))
+                        .map(jsonNode -> jsonNode.textValue())
+                        .orElse(null);
+                var fingerprint = Optional.ofNullable(sshKey.get("fingerprint"))
+                        .map(jsonNode -> jsonNode.textValue())
+                        .orElse(null);
                 credentialSshKey = SshKey.of(fingerprint, publicKey, privateKey);
             } else {
                 credentialSshKey = null;
@@ -349,8 +375,12 @@ public class BitwardenPasswordManager implements PasswordManager {
             Credentials creds;
             var login = json.get("login");
             if (login != null) {
-                var username = Optional.ofNullable(login.get("username")).map(jsonNode -> jsonNode.textValue()).orElse(null);
-                var password = Optional.ofNullable(login.get("password")).map(jsonNode -> jsonNode.textValue()).orElse(null);
+                var username = Optional.ofNullable(login.get("username"))
+                        .map(jsonNode -> jsonNode.textValue())
+                        .orElse(null);
+                var password = Optional.ofNullable(login.get("password"))
+                        .map(jsonNode -> jsonNode.textValue())
+                        .orElse(null);
                 creds = Credentials.of(username, password);
             } else {
                 creds = null;
@@ -370,7 +400,8 @@ public class BitwardenPasswordManager implements PasswordManager {
                 if (Files.isDirectory(path)) {
                     return path.resolve("data.json");
                 }
-            } catch (InvalidPathException ignored) {}
+            } catch (InvalidPathException ignored) {
+            }
         }
 
         return Dist.get().getConfigLocation();
@@ -393,7 +424,8 @@ public class BitwardenPasswordManager implements PasswordManager {
 
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {
-        return PasswordManagerKeyConfiguration.of(true, false, true, keyStrategy, Dist.get().getSocketLocation());
+        return PasswordManagerKeyConfiguration.of(
+                true, false, true, keyStrategy, Dist.get().getSocketLocation());
     }
 
     @Override

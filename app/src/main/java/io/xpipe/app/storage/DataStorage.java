@@ -385,8 +385,7 @@ public abstract class DataStorage {
 
         var categoryChanged = !entry.getCategoryUuid().equals(newEntry.getCategoryUuid());
 
-        if (entry.getStore() != null
-                && newEntry.getStore() != null) {
+        if (entry.getStore() != null && newEntry.getStore() != null) {
             synchronized (storeMoveCache) {
                 storeMoveCache.put(entry.getStore(), newEntry.getStore());
             }

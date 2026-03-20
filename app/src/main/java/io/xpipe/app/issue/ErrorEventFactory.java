@@ -85,8 +85,11 @@ public class ErrorEventFactory {
             b.expected();
         }
 
-        if (OsType.ofLocal() == OsType.WINDOWS && t.getMessage() != null && t.getMessage().contains("The cloud file provider is not running")) {
-            b.description("The OneDrive cloud file provider is not running. Verify that your cloud storage is working and you are logged in.");
+        if (OsType.ofLocal() == OsType.WINDOWS
+                && t.getMessage() != null
+                && t.getMessage().contains("The cloud file provider is not running")) {
+            b.description(
+                    "The OneDrive cloud file provider is not running. Verify that your cloud storage is working and you are logged in.");
             b.expected();
         }
 

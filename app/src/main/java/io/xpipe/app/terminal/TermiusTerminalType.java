@@ -54,8 +54,8 @@ public class TermiusTerminalType implements ExternalTerminalType {
         var port = b.getPort();
         var user = URLEncoder.encode(b.getUser(), StandardCharsets.UTF_8);
         var name = b.getName();
-        DesktopHelper.openAssociatedApplication("termius://app/host-sharing#label=" + name + "&ip=" + host + "&port=" + port + "&username="
-                + user + "&os=undefined");
+        DesktopHelper.openAssociatedApplication("termius://app/host-sharing#label=" + name + "&ip=" + host + "&port="
+                + port + "&username=" + user + "&os=undefined");
     }
 
     @Override

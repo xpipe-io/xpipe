@@ -1,6 +1,5 @@
 package io.xpipe.ext.base.identity;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.cred.SshIdentityStrategy;
 import io.xpipe.app.cred.UsernameStrategy;
 import io.xpipe.app.ext.StatefulDataStore;
@@ -9,6 +8,8 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
@@ -25,22 +26,28 @@ import java.util.UUID;
 @Value
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class MultiIdentityStore extends IdentityStore implements StatefulDataStore<MultiIdentityStoreState>, UserScopeStore {
+public class MultiIdentityStore extends IdentityStore
+        implements StatefulDataStore<MultiIdentityStoreState>, UserScopeStore {
 
     List<UUID> identities;
     boolean perUser;
 
     public List<DataStoreEntryRef<IdentityStore>> getAvailableIdentities() {
-        return identities.stream().map(uuid -> DataStorage.get().getStoreEntryIfPresent(uuid)).flatMap(Optional::stream)
+        return identities.stream()
+                .map(uuid -> DataStorage.get().getStoreEntryIfPresent(uuid))
+                .flatMap(Optional::stream)
                 .map(e -> e.<IdentityStore>ref())
-                .filter(ref -> ref != null && ref.get().getValidity().isUsable()).toList();
+                .filter(ref -> ref != null && ref.get().getValidity().isUsable())
+                .toList();
     }
 
     public Optional<DataStoreEntryRef<IdentityStore>> getSelected() {
         var cached = getState().getSelected();
         if (cached != null) {
             var entry = DataStorage.get().getStoreEntryIfPresent(cached);
-            if (entry.isPresent() && entry.get().getValidity().isUsable() && getAvailableIdentities().contains(entry.get().ref())) {
+            if (entry.isPresent()
+                    && entry.get().getValidity().isUsable()
+                    && getAvailableIdentities().contains(entry.get().ref())) {
                 return Optional.of(entry.get().ref());
             }
         }
@@ -58,7 +65,9 @@ public class MultiIdentityStore extends IdentityStore implements StatefulDataSto
             return;
         }
 
-        setState(MultiIdentityStoreState.builder().selected(entry.get().getUuid()).build());
+        setState(MultiIdentityStoreState.builder()
+                .selected(entry.get().getUuid())
+                .build());
         DataStorage.get().finalizeWithDependencies(getSelfEntry());
     }
 
@@ -67,7 +76,8 @@ public class MultiIdentityStore extends IdentityStore implements StatefulDataSto
         if (found.isPresent()) {
             return found.get();
         }
-        throw ErrorEventFactory.expected(new IllegalStateException("No available identity for multi identity " + getSelfEntry().getName()));
+        throw ErrorEventFactory.expected(new IllegalStateException(
+                "No available identity for multi identity " + getSelfEntry().getName()));
     }
 
     @Override

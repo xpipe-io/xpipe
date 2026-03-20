@@ -29,7 +29,8 @@ import java.util.regex.Pattern;
 @Value
 public class PodmanContainerStore
         implements StartableStore,
-                StoppableStore, RestartableStore,
+                StoppableStore,
+                RestartableStore,
                 ShellStore,
                 InternalCacheDataStore,
                 FixedChildStore,
@@ -77,8 +78,6 @@ public class PodmanContainerStore
         view.stop(containerName);
         refreshContainerState(sc);
     }
-
-
 
     @Override
     public List<? extends DataStoreEntryRef<? extends AbstractServiceStore>> createFixedServices() throws Exception {

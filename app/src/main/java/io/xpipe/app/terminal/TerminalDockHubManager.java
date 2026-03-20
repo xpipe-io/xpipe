@@ -69,7 +69,9 @@ public class TerminalDockHubManager {
             return false;
         }
 
-        if (AppMainWindow.get() == null || !AppMainWindow.get().getStage().isShowing() || AppMainWindow.get().getStage().isIconified()) {
+        if (AppMainWindow.get() == null
+                || !AppMainWindow.get().getStage().isShowing()
+                || AppMainWindow.get().getStage().isIconified()) {
             return false;
         }
 
@@ -114,15 +116,24 @@ public class TerminalDockHubManager {
                 : new Rect(rect.getX(), rect.getY() - topAdjust, rect.getW(), rect.getH() + topAdjust);
     });
     private final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(
-            AppI18n.observable("toggleTerminalDock"), new LabelGraphic.NodeGraphic(() -> {
+            AppI18n.observable("toggleTerminalDock"),
+            new LabelGraphic.NodeGraphic(() -> {
                 var inner = new FontIcon();
-                inner.iconCodeProperty().bind(PlatformThread.sync(Bindings.createObjectBinding(() -> {
-                    return detached.get() || minimized.get() || !showing.get() ? MaterialDesignC.CONSOLE_LINE : MaterialDesignC.CONSOLE;
-                }, detached, minimized, showing)));
+                inner.iconCodeProperty()
+                        .bind(PlatformThread.sync(Bindings.createObjectBinding(
+                                () -> {
+                                    return detached.get() || minimized.get() || !showing.get()
+                                            ? MaterialDesignC.CONSOLE_LINE
+                                            : MaterialDesignC.CONSOLE;
+                                },
+                                detached,
+                                minimized,
+                                showing)));
                 inner.getStyleClass().add("graphic");
                 inner.getStyleClass().add("terminal-dock-button");
                 return inner;
-    }), () -> {
+            }),
+            () -> {
                 refreshDockStatus();
 
                 if (!enabled.get()) {
@@ -242,7 +253,8 @@ public class TerminalDockHubManager {
         }
 
         minimized.set(dockModel.isMinimized());
-        detached.set(!dockModel.isMinimized() && (dockModel.isCustomBounds() || AppMainWindow.get().getStage().isIconified()));
+        detached.set(!dockModel.isMinimized()
+                && (dockModel.isCustomBounds() || AppMainWindow.get().getStage().isIconified()));
     }
 
     public void openTerminal(UUID request) {

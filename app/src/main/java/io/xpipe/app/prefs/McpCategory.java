@@ -143,11 +143,15 @@ public class McpCategory extends AppPrefsCategory {
                         .addToggle(prefs.enableMcpMutationTools)
                         .hide(prefs.enableMcpServer.not())
                         .pref(prefs.mcpAdditionalContext)
-                        .addComp(new IntegratedTextAreaComp(prefs.mcpAdditionalContext, false, "prompt", new SimpleStringProperty("txt")).applyStructure(structure -> {
-                            structure.getTextArea().promptTextProperty().bind(AppI18n.observable("mcpAdditionalContextSample"));
-                        }))
-                        .hide(prefs.enableMcpServer.not())
-                )
+                        .addComp(new IntegratedTextAreaComp(
+                                        prefs.mcpAdditionalContext, false, "prompt", new SimpleStringProperty("txt"))
+                                .applyStructure(structure -> {
+                                    structure
+                                            .getTextArea()
+                                            .promptTextProperty()
+                                            .bind(AppI18n.observable("mcpAdditionalContextSample"));
+                                }))
+                        .hide(prefs.enableMcpServer.not()))
                 .buildComp();
     }
 }

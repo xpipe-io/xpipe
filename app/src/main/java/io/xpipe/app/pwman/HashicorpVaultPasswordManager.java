@@ -1,9 +1,5 @@
 package io.xpipe.app.pwman;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
@@ -16,9 +12,15 @@ import io.xpipe.app.process.*;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.HttpHelper;
 import io.xpipe.core.*;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -72,17 +74,26 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
                 var sc = getOrStartShell();
                 var script = ShellScript.lines(
                         sc.getShellDialect().getSetEnvironmentVariableCommand("VAULT_ADDR", pwman.getVaultAddress()),
-                        pwman.getVaultNamespace() != null ?
-                                sc.getShellDialect().getSetEnvironmentVariableCommand("VAULT_NAMESPACE", pwman.getVaultNamespace()) : null,
-                        sc.getShellDialect().getEchoCommand(
-                                "Your current vault login is expired. Please log in again with your currently selected auth method. The proper environment variables for your vault have already been configured in this session. The command syntax for this is:",
-                                false),
+                        pwman.getVaultNamespace() != null
+                                ? sc.getShellDialect()
+                                        .getSetEnvironmentVariableCommand("VAULT_NAMESPACE", pwman.getVaultNamespace())
+                                : null,
+                        sc.getShellDialect()
+                                .getEchoCommand(
+                                        "Your current vault login is expired. Please log in again with your currently selected auth method. The proper environment variables for your vault have already been configured in this session. The command syntax for this is:",
+                                        false),
                         sc.getShellDialect().getEchoCommand("", false),
-                        sc.getShellDialect().getEchoCommand("vault login --method=<auth_method> [optional auth method specific parameters]", false)
-                );
+                        sc.getShellDialect()
+                                .getEchoCommand(
+                                        "vault login --method=<auth_method> [optional auth method specific parameters]",
+                                        false));
                 var scriptFile = ScriptHelper.createExecScript(sc, script.toString());
-                TerminalLaunch.builder().localScript(ShellScript.of(sc.getShellDialect().terminalInitCommand(sc, scriptFile.toString(), false))).
-                        title("Vault login").pauseOnExit(false).launch();
+                TerminalLaunch.builder()
+                        .localScript(ShellScript.of(
+                                sc.getShellDialect().terminalInitCommand(sc, scriptFile.toString(), false)))
+                        .title("Vault login")
+                        .pauseOnExit(false)
+                        .launch();
                 return null;
             }
         }
@@ -105,9 +116,11 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
                         .nameAndDescription("hashicorpVaultToken")
                         .addComp(new SecretFieldComp(token, true).maxWidth(600), token)
                         .nonNull()
-                        .bind(() -> {
-                            return Token.builder().token(token.get()).build();
-                        }, p);
+                        .bind(
+                                () -> {
+                                    return Token.builder().token(token.get()).build();
+                                },
+                                p);
             }
 
             InPlaceSecretValue token;
@@ -146,7 +159,10 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
                         .nonNull()
                         .bind(
                                 () -> {
-                                    return AppRole.builder().roleId(roleId.get()).secretId(secretId.get()).build();
+                                    return AppRole.builder()
+                                            .roleId(roleId.get())
+                                            .secretId(secretId.get())
+                                            .build();
                                 },
                                 p);
             }
@@ -187,9 +203,9 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
                 return auth.required("client_token").textValue();
             }
         }
-}
+    }
 
-        private static ShellControl SHELL;
+    private static ShellControl SHELL;
 
     private final String vaultAddress;
     private final String vaultNamespace;
@@ -209,7 +225,8 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
     public static OptionsBuilder createOptions(Property<HashicorpVaultPasswordManager> p) {
         var vaultAddress = new SimpleStringProperty(p.getValue().getVaultAddress());
         var vaultNamespace = new SimpleStringProperty(p.getValue().getVaultNamespace());
-        var vaultAuth = new SimpleObjectProperty<>(p.getValue().getVaultAuth() != null ? p.getValue().getVaultAuth() : new VaultAuth.Existing());
+        var vaultAuth = new SimpleObjectProperty<>(
+                p.getValue().getVaultAuth() != null ? p.getValue().getVaultAuth() : new VaultAuth.Existing());
 
         return new OptionsBuilder()
                 .nameAndDescription("hashicorpVaultAddress")
@@ -224,7 +241,13 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
                 .nameAndDescription("hashicorpVaultNamespace")
                 .addString(vaultNamespace)
                 .nameAndDescription("hashicorpVaultAuthType")
-                .sub(OptionsChoiceBuilder.builder().available(VaultAuth.getClasses()).property(vaultAuth).build().build(), vaultAuth)
+                .sub(
+                        OptionsChoiceBuilder.builder()
+                                .available(VaultAuth.getClasses())
+                                .property(vaultAuth)
+                                .build()
+                                .build(),
+                        vaultAuth)
                 .nonNull()
                 .nameAndDescription("passwordManagerTest")
                 .addComp(new PasswordManagerTestComp(true))
@@ -327,12 +350,18 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
             }
 
             if (keys.size() > 1) {
-                var username = Optional.ofNullable(subData.get(keys.getFirst())).map(JsonNode::textValue).orElse(null);
-                var password = Optional.ofNullable(subData.get(keys.get(1))).map(JsonNode::textValue).orElse(null);
+                var username = Optional.ofNullable(subData.get(keys.getFirst()))
+                        .map(JsonNode::textValue)
+                        .orElse(null);
+                var password = Optional.ofNullable(subData.get(keys.get(1)))
+                        .map(JsonNode::textValue)
+                        .orElse(null);
                 var creds = Credentials.of(username, password);
                 return Result.of(creds, null);
             } else {
-                var password = Optional.ofNullable(subData.get(keys.getFirst())).map(JsonNode::textValue).orElse(null);
+                var password = Optional.ofNullable(subData.get(keys.getFirst()))
+                        .map(JsonNode::textValue)
+                        .orElse(null);
                 var creds = Credentials.of(null, password);
                 return Result.of(creds, null);
             }

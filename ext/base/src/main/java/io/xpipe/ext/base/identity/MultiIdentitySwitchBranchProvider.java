@@ -8,6 +8,7 @@ import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ObservableValue;
 
@@ -26,7 +27,8 @@ public class MultiIdentitySwitchBranchProvider implements HubBranchProvider<Mult
         var selected = store.getStore().getSelected();
         return store.getStore().getAvailableIdentities().stream()
                 .map(is -> {
-                    return new IdentityProvider(is, selected.map(ref -> ref.equals(is)).orElse(false));
+                    return new IdentityProvider(
+                            is, selected.map(ref -> ref.equals(is)).orElse(false));
                 })
                 .collect(Collectors.toList());
     }
@@ -75,7 +77,8 @@ public class MultiIdentitySwitchBranchProvider implements HubBranchProvider<Mult
 
         @Override
         public ObservableValue<String> getName(DataStoreEntryRef<MultiIdentityStore> store) {
-            return new ReadOnlyStringWrapper((active ? "> " : "") + identity.get().getName());
+            return new ReadOnlyStringWrapper(
+                    (active ? "> " : "") + identity.get().getName());
         }
 
         @Override

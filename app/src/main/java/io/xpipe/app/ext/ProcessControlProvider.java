@@ -78,5 +78,4 @@ public abstract class ProcessControlProvider {
     public abstract void cloneRepository(String url, Path target) throws Exception;
 
     public abstract void pullRepository(Path target) throws Exception;
-
 }

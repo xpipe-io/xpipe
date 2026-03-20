@@ -38,8 +38,6 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
     boolean fileScript;
     boolean runnableScript;
 
-
-
     @Override
     public Class<EnabledStoreState> getStateClass() {
         return EnabledStoreState.class;

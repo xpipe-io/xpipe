@@ -1,6 +1,5 @@
 package io.xpipe.app.pwman;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -9,8 +8,10 @@ import io.xpipe.app.process.*;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.core.JacksonMapper;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import javafx.beans.property.Property;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -22,7 +23,6 @@ import java.util.Optional;
 public class DashlanePasswordManager implements PasswordManager {
 
     private static ShellControl SHELL;
-
 
     @Override
     public boolean supportsKeyConfiguration() {
@@ -82,8 +82,12 @@ public class DashlanePasswordManager implements PasswordManager {
                     .addLiteral(key));
             var out = cmd.sensitive().readStdoutOrThrow();
             var tree = JacksonMapper.getDefault().readTree(out);
-            var login = Optional.ofNullable(tree.get("login")).map(JsonNode::textValue).orElse(null);
-            var password = Optional.ofNullable(tree.get("password")).map(JsonNode::textValue).orElse(null);
+            var login = Optional.ofNullable(tree.get("login"))
+                    .map(JsonNode::textValue)
+                    .orElse(null);
+            var password = Optional.ofNullable(tree.get("password"))
+                    .map(JsonNode::textValue)
+                    .orElse(null);
             return Result.of(Credentials.of(login, password), null);
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();

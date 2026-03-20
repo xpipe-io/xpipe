@@ -54,16 +54,23 @@ public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider 
                 .allowAgentForward(true)
                 .allowKeyFileSync(true)
                 .perUserKeyFileCheck(() -> false)
-                .fileSystem(new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()))
+                .fileSystem(
+                        new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()))
                 .build();
-        var sshKeyChoice = OptionsChoiceBuilder.builder().allowNull(true)
+        var sshKeyChoice = OptionsChoiceBuilder.builder()
+                .allowNull(true)
                 .customConfiguration(sshIdentityChoiceConfig)
-                .available(List.of(PasswordManagerAgentStrategy.class)).property(sshKey).build();
-        var hideSshKeyChoice = Bindings.createBooleanBinding(() -> {
-            var pwman = AppPrefs.get().passwordManager().getValue();
-            var strat = pwman.getKeyConfiguration();
-            return strat.useInline() && sshKey.get() == null;
-        }, AppPrefs.get().passwordManager(), sshKey);
+                .available(List.of(PasswordManagerAgentStrategy.class))
+                .property(sshKey)
+                .build();
+        var hideSshKeyChoice = Bindings.createBooleanBinding(
+                () -> {
+                    var pwman = AppPrefs.get().passwordManager().getValue();
+                    var strat = pwman.getKeyConfiguration();
+                    return strat.useInline() && sshKey.get() == null;
+                },
+                AppPrefs.get().passwordManager(),
+                sshKey);
 
         var testComp = new PasswordManagerTestComp(key, false);
         return new OptionsBuilder()
@@ -93,7 +100,9 @@ public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider 
 
     @Override
     public String summaryString(StoreEntryWrapper wrapper) {
-        return wrapper.getEntry().isPerUserStore() ? AppI18n.get("userPasswordManagerIdentity") : AppI18n.get("globalPasswordManagerIdentity");
+        return wrapper.getEntry().isPerUserStore()
+                ? AppI18n.get("userPasswordManagerIdentity")
+                : AppI18n.get("globalPasswordManagerIdentity");
     }
 
     @Override

@@ -1,7 +1,7 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.secret.SecretNoneStrategy;
 import io.xpipe.app.cred.NoIdentityStrategy;
+import io.xpipe.app.secret.SecretNoneStrategy;
 
 public class IdentitySummary {
 
@@ -9,7 +9,8 @@ public class IdentitySummary {
         if (st instanceof MultiIdentityStore mis) {
             var selected = mis.getSelected();
             if (selected.isPresent()) {
-                return createSummary(selected.get().getStore()) + " [" + selected.get().get().getName() + "]";
+                return createSummary(selected.get().getStore()) + " ["
+                        + selected.get().get().getName() + "]";
             }
         }
 

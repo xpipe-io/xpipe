@@ -57,7 +57,8 @@ public interface PasswordManager {
             m.setAccessible(true);
             var defValue = (PasswordManager) c.cast(m.invoke(b));
             var config = defValue.getKeyConfiguration();
-            if (config.getDefaultSocketLocation() != null && config.getDefaultSocketLocation().toString().equals(s)) {
+            if (config.getDefaultSocketLocation() != null
+                    && config.getDefaultSocketLocation().toString().equals(s)) {
                 return true;
             }
         }
@@ -146,7 +147,8 @@ public interface PasswordManager {
                 return null;
             }
 
-            return new Credentials(username != null && !username.isEmpty() ? username : null,
+            return new Credentials(
+                    username != null && !username.isEmpty() ? username : null,
                     password != null && !password.isEmpty() ? InPlaceSecretValue.of(password) : null);
         }
 

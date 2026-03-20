@@ -1,6 +1,7 @@
 package io.xpipe.app.cred;
 
 import io.xpipe.core.FailableSupplier;
+
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 

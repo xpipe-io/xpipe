@@ -33,7 +33,7 @@ public final class BrowserConnectionListFilterComp extends SimpleRegionBuilder {
                         StoreViewState.get().getActiveCategory(),
                         this.category,
                         true,
-                ignored -> true)
+                        ignored -> true)
                 .style(Styles.LEFT_PILL)
                 .apply(struc -> {
                     AppFontSizes.base(struc);

@@ -24,7 +24,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -60,9 +59,11 @@ public class KeePassXcPasswordManager implements PasswordManager {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<KeePassXcPasswordManager> p) {
-        List<Class<?>> strategyList = OsType.ofLocal() == OsType.WINDOWS ?
-                List.of(PasswordManagerKeyStrategy.KeePassXcOpenSshAgent.class, PasswordManagerKeyStrategy.KeePassXcPageant.class) :
-                List.of(PasswordManagerKeyStrategy.KeePassXcOpenSshAgent.class);
+        List<Class<?>> strategyList = OsType.ofLocal() == OsType.WINDOWS
+                ? List.of(
+                        PasswordManagerKeyStrategy.KeePassXcOpenSshAgent.class,
+                        PasswordManagerKeyStrategy.KeePassXcPageant.class)
+                : List.of(PasswordManagerKeyStrategy.KeePassXcOpenSshAgent.class);
         var keyStrategy = new SimpleObjectProperty<>(p.getValue().getKeyStrategy());
         var keyStrategyChoice = OptionsChoiceBuilder.builder()
                 .allowNull(true)

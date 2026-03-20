@@ -35,7 +35,6 @@ import javafx.scene.layout.Region;
 
 import atlantafx.base.layout.InputGroup;
 import atlantafx.base.theme.Styles;
-import javafx.scene.layout.StackPane;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.lang.ref.WeakReference;
@@ -651,8 +650,13 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                                 var m = new CustomMenuItem();
 
                                 var l = new Label();
-                                l.setGraphic(PrettyImageHelper.ofFixedSizeSquare(storeCategoryWrapper.getIconFile().getValue(), 16)
-                                        .padding(new Insets(0, 0, 1, 0)).build());
+                                l.setGraphic(PrettyImageHelper.ofFixedSizeSquare(
+                                                storeCategoryWrapper
+                                                        .getIconFile()
+                                                        .getValue(),
+                                                16)
+                                        .padding(new Insets(0, 0, 1, 0))
+                                        .build());
                                 l.setText(storeCategoryWrapper.getName().getValue());
                                 l.setPadding(new Insets(0, 1, 1, storeCategoryWrapper.getDepth() * 10));
                                 m.setContent(l);

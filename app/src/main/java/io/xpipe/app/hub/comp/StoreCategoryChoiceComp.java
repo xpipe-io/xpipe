@@ -28,8 +28,8 @@ public class StoreCategoryChoiceComp extends SimpleRegionBuilder {
             StoreCategoryWrapper root,
             Property<StoreCategoryWrapper> external,
             Property<StoreCategoryWrapper> value,
-            boolean applyExternalInitially, Predicate<StoreCategoryWrapper> filter
-    ) {
+            boolean applyExternalInitially,
+            Predicate<StoreCategoryWrapper> filter) {
         this.root = root;
         this.external = external;
         this.value = value;
@@ -58,7 +58,10 @@ public class StoreCategoryChoiceComp extends SimpleRegionBuilder {
         if (!applyExternalInitially) {
             value.setValue(last);
         }
-        var box = new ComboBox<>(StoreViewState.get().getSortedCategories(root, true).filtered(filter).getList());
+        var box = new ComboBox<>(StoreViewState.get()
+                .getSortedCategories(root, true)
+                .filtered(filter)
+                .getList());
         box.setValue(value.getValue());
         box.valueProperty().addListener((observable, oldValue, newValue) -> {
             value.setValue(newValue);
@@ -84,7 +87,8 @@ public class StoreCategoryChoiceComp extends SimpleRegionBuilder {
             super.updateItem(w, empty);
             textProperty().unbind();
             if (w != null) {
-                setGraphic(PrettyImageHelper.ofFixedSizeSquare(w.getIconFile().getValue(), 16).build());
+                setGraphic(PrettyImageHelper.ofFixedSizeSquare(w.getIconFile().getValue(), 16)
+                        .build());
                 textProperty().bind(w.getShownName());
                 setPadding(new Insets(6, 6, 6, 8 + (indent ? w.getDepth() * 8 : 0)));
             } else {

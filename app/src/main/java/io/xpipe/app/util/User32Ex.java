@@ -1,10 +1,11 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppWindowsLock;
+
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.win32.W32APIOptions;
-import io.xpipe.app.core.AppWindowsLock;
 
 public interface User32Ex extends W32APIOptions {
 

@@ -91,8 +91,11 @@ public class IntegratedTextAreaComp extends RegionStructureBuilder<AnchorPane, I
                                 var val = value.getValue() != null ? value.getValue() : "";
                                 var valCount = (int) val.lines().count() + (val.endsWith("\n") ? 1 : 0);
 
-                                var promptVal = struc.getTextArea().getPromptText() != null ? struc.getTextArea().getPromptText() : "";
-                                var promptValCount = (int) promptVal.lines().count() + (promptVal.endsWith("\n") ? 1 : 0);
+                                var promptVal = struc.getTextArea().getPromptText() != null
+                                        ? struc.getTextArea().getPromptText()
+                                        : "";
+                                var promptValCount =
+                                        (int) promptVal.lines().count() + (promptVal.endsWith("\n") ? 1 : 0);
 
                                 var count = Math.max(valCount, promptValCount);
                                 // Somehow the handling of trailing newlines is weird

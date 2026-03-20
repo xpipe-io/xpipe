@@ -2,7 +2,7 @@ package io.xpipe.ext.system.podman;
 
 import io.xpipe.app.ext.ContainerStoreState;
 import io.xpipe.app.ext.DataStoreState;
-import io.xpipe.core.FilePath;
+
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -27,7 +27,8 @@ public class PodmanContainerStoreState extends ContainerStoreState {
         return b.build();
     }
 
-    protected void mergeBuilder(PodmanContainerStoreState css, PodmanContainerStoreState.PodmanContainerStoreStateBuilder<?, ?> b) {
+    protected void mergeBuilder(
+            PodmanContainerStoreState css, PodmanContainerStoreState.PodmanContainerStoreStateBuilder<?, ?> b) {
         super.mergeBuilder(css, b);
         b.systemdUnit = css.systemdUnit;
     }

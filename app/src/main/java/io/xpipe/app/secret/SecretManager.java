@@ -39,8 +39,7 @@ public class SecretManager {
             List<SecretQueryFormatter> formatters,
             CountDown countDown,
             boolean interactive,
-            boolean forceFocus
-    ) {
+            boolean forceFocus) {
         var p = new SecretQueryProgress(
                 request, storeId, suppliers, fallback, filters, formatters, countDown, interactive, forceFocus);
         // Clear old ones in case we restarted a session

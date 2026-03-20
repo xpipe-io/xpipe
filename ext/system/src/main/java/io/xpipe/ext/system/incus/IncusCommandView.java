@@ -1,6 +1,5 @@
 package io.xpipe.ext.system.incus;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.ext.NetworkContainerStoreState;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
@@ -9,6 +8,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.JacksonMapper;
 import io.xpipe.ext.base.identity.IdentityValue;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.NonNull;
 import lombok.Value;
 
@@ -87,17 +87,29 @@ public class IncusCommandView extends CommandViewBase {
     }
 
     public void start(String projectName, String containerName) throws Exception {
-        build(commandBuilder -> commandBuilder.add("start").addQuoted(containerName).add("--project").addQuoted(projectName))
+        build(commandBuilder -> commandBuilder
+                        .add("start")
+                        .addQuoted(containerName)
+                        .add("--project")
+                        .addQuoted(projectName))
                 .execute();
     }
 
     public void stop(String projectName, String containerName) throws Exception {
-        build(commandBuilder -> commandBuilder.add("stop").addQuoted(containerName).add("--project").addQuoted(projectName))
+        build(commandBuilder -> commandBuilder
+                        .add("stop")
+                        .addQuoted(containerName)
+                        .add("--project")
+                        .addQuoted(projectName))
                 .execute();
     }
 
     public void pause(String projectName, String containerName) throws Exception {
-        build(commandBuilder -> commandBuilder.add("pause").addQuoted(containerName).add("--project").addQuoted(projectName))
+        build(commandBuilder -> commandBuilder
+                        .add("pause")
+                        .addQuoted(containerName)
+                        .add("--project")
+                        .addQuoted(projectName))
                 .execute();
     }
 
@@ -114,7 +126,8 @@ public class IncusCommandView extends CommandViewBase {
         return listContainers().stream()
                 .map(s -> {
                     boolean running = s.getState().toLowerCase(Locale.ROOT).equals("running");
-                    var c = new IncusContainerStore(store, s.getProject(), s.getName(), IdentityValue.ofBreakout(store.get()));
+                    var c = new IncusContainerStore(
+                            store, s.getProject(), s.getName(), IdentityValue.ofBreakout(store.get()));
                     var entry = DataStoreEntry.createNew(c.getContainerName(), c);
                     entry.setStorePersistentState(NetworkContainerStoreState.builder()
                             .containerState(s.getState())
@@ -130,9 +143,12 @@ public class IncusCommandView extends CommandViewBase {
 
     public Optional<ContainerEntry> queryContainerState(String projectName, String containerName) throws Exception {
         var l = listContainers();
-        var found = l.stream().filter(containerEntry -> (containerEntry.getProject().equals(projectName) ||
-                projectName == null && containerEntry.getProject().equals("default")) &&
-                containerEntry.getName().equals(containerName)).findFirst();
+        var found = l.stream()
+                .filter(containerEntry -> (containerEntry.getProject().equals(projectName)
+                                || projectName == null
+                                        && containerEntry.getProject().equals("default"))
+                        && containerEntry.getName().equals(containerName))
+                .findFirst();
         return found;
     }
 
@@ -162,7 +178,7 @@ public class IncusCommandView extends CommandViewBase {
                 if (network != null) {
                     var eth0 = network.get("eth0");
                     if (eth0 == null && network.size() > 0) {
-                        for (var it = network.fieldNames();it.hasNext();) {
+                        for (var it = network.fieldNames(); it.hasNext(); ) {
                             var field = it.next();
                             if (!field.equals("lo")) {
                                 eth0 = network.required(field);
@@ -233,6 +249,9 @@ public class IncusCommandView extends CommandViewBase {
 
     public CommandBuilder execCommand(String projectName, String containerName, boolean terminal) {
         var c = CommandBuilder.of().add("incus", "exec", terminal ? "-t" : "-T");
-        return c.addQuoted(containerName).add("--project").addQuoted(projectName).add("--");
+        return c.addQuoted(containerName)
+                .add("--project")
+                .addQuoted(projectName)
+                .add("--");
     }
 }

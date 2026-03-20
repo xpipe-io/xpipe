@@ -95,7 +95,9 @@ public class StoreCreationModel {
                             DataStorage.get().getSelectedCategory().getUuid(),
                             name.getValue(),
                             store.getValue());
-                    var entryRef = existingEntry != null ? existingEntry : DataStorage.get().getDefaultDisplayParent(initial).orElse(initial);
+                    var entryRef = existingEntry != null
+                            ? existingEntry
+                            : DataStorage.get().getDefaultDisplayParent(initial).orElse(initial);
                     var targetCategory = getTargetCategory(entryRef);
                     return DataStoreEntry.createNew(
                             UUID.randomUUID(), targetCategory.getUuid(), name.getValue(), store.getValue());

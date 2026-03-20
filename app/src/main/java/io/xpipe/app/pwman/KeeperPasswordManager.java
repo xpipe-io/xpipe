@@ -1,6 +1,5 @@
 package io.xpipe.app.pwman;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
@@ -21,6 +20,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -44,20 +44,35 @@ import java.util.stream.Collectors;
 public class KeeperPasswordManager implements PasswordManager {
 
     private static Path getSocketLocation() {
-        var socket = switch (OsType.ofLocal()) {
-            case OsType.Linux ignored -> {
-                var l = List.of(
-                        AppSystemInfo.ofLinux().getConfigDir().resolve("Keeper Password Manager", "keeper-ssh-agent.sock"),
-                        AppSystemInfo.ofLinux().getUserHome().resolve("snap", "keepersecurity", "current", ".config", "Keeper Password Manager", "keeper-ssh-agent.sock"));
-                yield l.stream().filter(Files::exists).findFirst().orElse(l.getFirst());
-            }
-            case OsType.MacOs ignored -> {
-                var l = List.of(AppSystemInfo.ofMacOs().getTemp().resolve("keeper-ssh-agent.sock"),
-                    AppSystemInfo.ofMacOs().getUserHome().resolve("Library/Containers/com.callpod.keepermac.lite/Data/tmp/keeper-ssh-agent.sock"));
-                yield l.stream().filter(Files::exists).findFirst().orElse(l.getFirst());
-            }
-            case OsType.Windows ignored -> null;
-        };
+        var socket =
+                switch (OsType.ofLocal()) {
+                    case OsType.Linux ignored -> {
+                        var l = List.of(
+                                AppSystemInfo.ofLinux()
+                                        .getConfigDir()
+                                        .resolve("Keeper Password Manager", "keeper-ssh-agent.sock"),
+                                AppSystemInfo.ofLinux()
+                                        .getUserHome()
+                                        .resolve(
+                                                "snap",
+                                                "keepersecurity",
+                                                "current",
+                                                ".config",
+                                                "Keeper Password Manager",
+                                                "keeper-ssh-agent.sock"));
+                        yield l.stream().filter(Files::exists).findFirst().orElse(l.getFirst());
+                    }
+                    case OsType.MacOs ignored -> {
+                        var l = List.of(
+                                AppSystemInfo.ofMacOs().getTemp().resolve("keeper-ssh-agent.sock"),
+                                AppSystemInfo.ofMacOs()
+                                        .getUserHome()
+                                        .resolve(
+                                                "Library/Containers/com.callpod.keepermac.lite/Data/tmp/keeper-ssh-agent.sock"));
+                        yield l.stream().filter(Files::exists).findFirst().orElse(l.getFirst());
+                    }
+                    case OsType.Windows ignored -> null;
+                };
         return socket;
     }
 
@@ -91,7 +106,6 @@ public class KeeperPasswordManager implements PasswordManager {
             l.add(Other.class);
             return l;
         }
-
 
         default List<String> getTotpDurationValues() {
             var values = List.of("login", "12_hours", "24_hours", "30_days", "forever");
@@ -146,7 +160,7 @@ public class KeeperPasswordManager implements PasswordManager {
                         .addLiteral(password.getSecretValue());
                 var file = sc.getSystemTemporaryDirectory().join("keeper" + Math.abs(new Random().nextInt()) + ".txt");
                 var input = """
-                            
+
                             1
                             -
                             q
@@ -172,7 +186,8 @@ public class KeeperPasswordManager implements PasswordManager {
             }
 
             @Override
-            public String constructKeeperInput(KeeperPasswordManager passwordManager, SecretValue password) throws Exception {
+            public String constructKeeperInput(KeeperPasswordManager passwordManager, SecretValue password)
+                    throws Exception {
                 var sent = sendInitialSms(password);
 
                 var index = getTotpDurationIndex();
@@ -195,8 +210,8 @@ public class KeeperPasswordManager implements PasswordManager {
                                 %s
 
                                 """.formatted(
-                            index != -1 ? "\n" + getTotpDurationValues().get(index) : "",
-                            totp.getSecret().getSecretValue());
+                                    index != -1 ? "\n" + getTotpDurationValues().get(index) : "",
+                                    totp.getSecret().getSecretValue());
                     return input;
                 }
             }
@@ -213,13 +228,14 @@ public class KeeperPasswordManager implements PasswordManager {
 
             @Override
             public String cleanMessage(String output) {
-                return output
-                        .replaceFirst("""
+                return output.replaceFirst("""
                              Select your 2FA method:
                                1. Send SMS Code.+
                                q. Cancel login
                              """, "")
-                        .replace(" Invalid entry, additional factors of authentication shown may be configured if not currently enabled.", "")
+                        .replace(
+                                " Invalid entry, additional factors of authentication shown may be configured if not currently enabled.",
+                                "")
                         .replace("""
                                 2FA Code Duration: Require Every Login.
                                 To change duration: 2fa_duration=login|12_hours|24_hours|30_days|forever
@@ -280,8 +296,8 @@ public class KeeperPasswordManager implements PasswordManager {
                                 %s
 
                                 """.formatted(
-                            index != -1 ? "\n" + getTotpDurationValues().get(index) : "",
-                            totp.getSecret().getSecretValue());
+                                    index != -1 ? "\n" + getTotpDurationValues().get(index) : "",
+                                    totp.getSecret().getSecretValue());
                     return input;
                 }
             }
@@ -302,23 +318,18 @@ public class KeeperPasswordManager implements PasswordManager {
                              Select your 2FA method:
                                1. TOTP (Google and Microsoft Authenticator) \s
                                q. Cancel login
-                             """, "")
-                        .replace(
-                        """
+                             """, "").replace("""
                         Selection: Invalid entry, additional factors of authentication shown may be configured if not currently enabled.
                         Selection:\s
                         2FA Code Duration: Require Every Login.
                         To change duration: 2fa_duration=login|12_hours|24_hours|30_days|forever
-                        """, "")
-                        .replace(
-                        """
+                        """, "").replace("""
                         This account requires 2FA Authentication
 
                           1. TOTP (Google and Microsoft Authenticator) \s
                           q. Quit login attempt and return to Commander prompt
                         """, "");
             }
-
         }
 
         @JsonTypeName("securityKey")
@@ -354,10 +365,11 @@ public class KeeperPasswordManager implements PasswordManager {
                                  1. WebAuthN (FIDO2 Security Key) \s
                                  q. Cancel login
                                """, "")
-                        .replace(" Invalid entry, additional factors of authentication shown may be configured if not currently enabled.", "");
+                        .replace(
+                                " Invalid entry, additional factors of authentication shown may be configured if not currently enabled.",
+                                "");
             }
         }
-
 
         @JsonTypeName("other")
         @Value
@@ -432,6 +444,7 @@ public class KeeperPasswordManager implements PasswordManager {
     private static final UUID KEEPER_PASSWORD_ID = UUID.randomUUID();
     private static ShellControl SHELL;
     private final KeeperAuth twoFactorAuth;
+
     @JsonIgnore
     private boolean hasCompletedRequestInSession;
 
@@ -450,7 +463,8 @@ public class KeeperPasswordManager implements PasswordManager {
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<KeeperPasswordManager> p) {
         var keyStrategy = new SimpleObjectProperty<>(p.getValue().getKeyStrategy());
-        var mfa = new SimpleObjectProperty<>(p.getValue().getTwoFactorAuth() != null ? p.getValue().getTwoFactorAuth() : new KeeperAuth.None());
+        var mfa = new SimpleObjectProperty<>(
+                p.getValue().getTwoFactorAuth() != null ? p.getValue().getTwoFactorAuth() : new KeeperAuth.None());
 
         var choice = OptionsChoiceBuilder.builder()
                 .allowNull(false)
@@ -462,7 +476,6 @@ public class KeeperPasswordManager implements PasswordManager {
                 .available(List.of(PasswordManagerKeyStrategy.Agent.class, PasswordManagerKeyStrategy.Inline.class))
                 .property(keyStrategy)
                 .build();
-
 
         return new OptionsBuilder()
                 .nameAndDescription("keeper2fa")
@@ -561,11 +574,9 @@ public class KeeperPasswordManager implements PasswordManager {
 
             sc.view().deleteFileIfPossible(file);
 
-            var out = result[0]
-                    .replace("\r\n", "\n");
+            var out = result[0].replace("\r\n", "\n");
             out = effectiveTwoFactor.cleanMessage(out);
-            out = out.replace("Selection:", "")
-                    .strip();
+            out = out.replace("Selection:", "").strip();
 
             var err = result[1]
                     .replace("\r\n", "\n")
@@ -579,7 +590,11 @@ public class KeeperPasswordManager implements PasswordManager {
             }
 
             var outPrefix = jsonStart <= 0 ? out : out.substring(0, jsonStart);
-            outPrefix = outPrefix.lines().filter(s -> !s.isBlank()).map(s -> s.strip()).collect(Collectors.joining("\n"));
+            outPrefix = outPrefix
+                    .lines()
+                    .filter(s -> !s.isBlank())
+                    .map(s -> s.strip())
+                    .collect(Collectors.joining("\n"));
 
             var outJson = jsonStart <= 0
                     ? (jsonEnd != -1 ? out.substring(0, jsonEnd) : out)
@@ -643,15 +658,23 @@ public class KeeperPasswordManager implements PasswordManager {
                 return Result.of(creds, null);
             }
 
-            var username = Optional.ofNullable(getValue(tree, "login")).map(n -> n.size() > 0 ? n.get(0).textValue() : null).orElse(null);
-            var password = Optional.ofNullable(getValue(tree, "password")).map(n -> n.size() > 0 ? n.get(0).textValue() : null).orElse(null);
+            var username = Optional.ofNullable(getValue(tree, "login"))
+                    .map(n -> n.size() > 0 ? n.get(0).textValue() : null)
+                    .orElse(null);
+            var password = Optional.ofNullable(getValue(tree, "password"))
+                    .map(n -> n.size() > 0 ? n.get(0).textValue() : null)
+                    .orElse(null);
             var creds = Credentials.of(username, password);
 
             var keyPairNode = getValue(tree, "keyPair");
             SshKey sshKey = null;
             if (keyPairNode != null && keyPairNode.size() > 0) {
-                var publicKey = Optional.ofNullable(keyPairNode.get(0).get("publicKey")).map(JsonNode::textValue).orElse(null);
-                var privateKey = Optional.ofNullable(keyPairNode.get(0).get("privateKey")).map(JsonNode::textValue).orElse(null);
+                var publicKey = Optional.ofNullable(keyPairNode.get(0).get("publicKey"))
+                        .map(JsonNode::textValue)
+                        .orElse(null);
+                var privateKey = Optional.ofNullable(keyPairNode.get(0).get("privateKey"))
+                        .map(JsonNode::textValue)
+                        .orElse(null);
                 sshKey = SshKey.of(null, publicKey, privateKey);
             }
 

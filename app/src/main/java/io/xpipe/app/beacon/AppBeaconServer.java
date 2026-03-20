@@ -172,7 +172,8 @@ public class AppBeaconServer {
 
     private boolean handleCorsHeaders(HttpExchange exchange) throws IOException {
         if (AppPrefs.get().enableHttpApi().get()) {
-            exchange.getResponseHeaders().add("Origin", "http://localhost:" + AppBeaconServer.get().getPort());
+            exchange.getResponseHeaders()
+                    .add("Origin", "http://localhost:" + AppBeaconServer.get().getPort());
             exchange.getResponseHeaders().add("Vary", "Origin");
             exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
             exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");

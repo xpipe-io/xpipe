@@ -38,5 +38,6 @@ open module io.xpipe.ext.system {
             PodmanContainerActionProviderMenu,
             PodmanContainerInspectActionProvider,
             PodmanContainerAttachActionProvider,
-            PodmanContainerLogsActionProvider, PodmanContainerUnitFileEditActionProvider;
+            PodmanContainerLogsActionProvider,
+            PodmanContainerUnitFileEditActionProvider;
 }

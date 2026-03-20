@@ -62,13 +62,13 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
         }
 
         var button = new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
-                    testPasswordManager(value.get(), testPasswordManagerResult);
-                });
+            testPasswordManager(value.get(), testPasswordManagerResult);
+        });
         button.padding(new Insets(6, 9, 6, 9));
         button.disable(value.isNull());
 
-        var testRow = new HorizontalComp(List.of(
-                        button, new LabelComp(testPasswordManagerResult).apply(struc -> struc.setOpacity(0.8))))
+        var testRow = new HorizontalComp(
+                        List.of(button, new LabelComp(testPasswordManagerResult).apply(struc -> struc.setOpacity(0.8))))
                 .apply(struc -> struc.setAlignment(Pos.CENTER_LEFT))
                 .apply(struc -> struc.setFillHeight(true));
 
@@ -113,10 +113,14 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
 
             List<String> elements = new ArrayList<>();
             if (r.getCredentials() != null) {
-                elements.add(r.getCredentials().getUsername() != null ? r.getCredentials().getUsername() : "<no user>");
+                elements.add(
+                        r.getCredentials().getUsername() != null
+                                ? r.getCredentials().getUsername()
+                                : "<no user>");
                 if (r.getCredentials().getPassword() != null) {
                     var secret = r.getCredentials().getPassword().getSecretValue();
-                    var secretFormatted = secret.length() > 4 ? secret.substring(0, 4) + "*".repeat(secret.length() - 4) : secret;
+                    var secretFormatted =
+                            secret.length() > 4 ? secret.substring(0, 4) + "*".repeat(secret.length() - 4) : secret;
                     elements.add(secretFormatted);
                 } else {
                     elements.add("<no password>");
@@ -125,7 +129,8 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
                 elements.add("<no credentials>");
             }
 
-            if (prefs.passwordManager.getValue() != null && prefs.passwordManager.getValue().getKeyConfiguration().useInline()) {
+            if (prefs.passwordManager.getValue() != null
+                    && prefs.passwordManager.getValue().getKeyConfiguration().useInline()) {
                 if (r.getSshKey() != null) {
                     elements.add(AppI18n.get("sshKey"));
                 }

@@ -51,29 +51,32 @@ public class BrowserTransferComp extends SimpleRegionBuilder {
                 .mapped(item -> item.getBrowserEntry())
                 .getList();
         var list = new BrowserFileSelectionListComp(binding, entry -> {
-            var sourceItem = model.getCurrentItems().stream()
-                    .filter(item -> item.getBrowserEntry() == entry)
-                    .findAny();
-            if (sourceItem.isEmpty()) {
-                return new SimpleStringProperty("?");
-            }
-            synchronized (sourceItem.get().getProgress()) {
-                return Bindings.createStringBinding(
-                        () -> {
-                            var p = sourceItem.get().getProgress().getValue();
-                            if (p == null || p.getTotal() == 0) {
-                                return entry.getFileName();
-                            }
+                    var sourceItem = model.getCurrentItems().stream()
+                            .filter(item -> item.getBrowserEntry() == entry)
+                            .findAny();
+                    if (sourceItem.isEmpty()) {
+                        return new SimpleStringProperty("?");
+                    }
+                    synchronized (sourceItem.get().getProgress()) {
+                        return Bindings.createStringBinding(
+                                () -> {
+                                    var p = sourceItem.get().getProgress().getValue();
+                                    if (p == null || p.getTotal() == 0) {
+                                        return entry.getFileName();
+                                    }
 
-                            var hideProgress =
-                                    sourceItem.get().getDownloadFinished().get();
-                            var share = p.getTransferred() * 100 / p.getTotal();
-                            var progressSuffix = hideProgress ? "" : " " + share + "%";
-                            return entry.getFileName() + progressSuffix;
-                        },
-                        sourceItem.get().getProgress());
-            }
-        }).vgrow();
+                                    var hideProgress = sourceItem
+                                            .get()
+                                            .getDownloadFinished()
+                                            .get();
+                                    var share = p.getTransferred() * 100 / p.getTotal();
+                                    var progressSuffix = hideProgress ? "" : " " + share + "%";
+                                    return entry.getFileName() + progressSuffix;
+                                },
+                                sourceItem.get().getProgress());
+                    }
+                })
+                .vgrow();
         var dragNotice = new LabelComp(AppI18n.observable("dragLocalFiles"))
                 .apply(struc -> struc.setGraphic(new FontIcon("mdi2h-hand-back-left-outline")))
                 .apply(struc -> struc.setWrapText(true))

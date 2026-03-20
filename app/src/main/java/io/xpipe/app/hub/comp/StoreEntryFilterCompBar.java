@@ -2,6 +2,7 @@ package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.util.ObservableSubscriber;
+
 import javafx.scene.layout.Region;
 
 public class StoreEntryFilterCompBar extends SimpleRegionBuilder {

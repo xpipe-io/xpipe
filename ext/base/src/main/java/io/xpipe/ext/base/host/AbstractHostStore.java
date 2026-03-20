@@ -26,6 +26,7 @@ public class AbstractHostStore implements DataStore, HostAddressStore, HostAddre
     public List<DataStoreEntryRef<?>> getDependencies() {
         return DataStoreDependencies.of(gateway);
     }
+
     @Override
     public void checkComplete() throws Throwable {
         Validators.nonNull(host);

@@ -9,6 +9,7 @@ import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -31,9 +32,13 @@ public class MultiIdentityStoreProvider extends IdentityStoreProvider {
 
         return new OptionsBuilder()
                 .nameAndDescription("multiIdentityList")
-                .addComp(new StoreListChoiceComp<>(identities, IdentityStore.class,
-                        ref -> !(ref.getStore() instanceof MultiIdentityStore) && !identities.contains(ref),
-                        StoreViewState.get().getAllIdentitiesCategory()), identities)
+                .addComp(
+                        new StoreListChoiceComp<>(
+                                identities,
+                                IdentityStore.class,
+                                ref -> !(ref.getStore() instanceof MultiIdentityStore) && !identities.contains(ref),
+                                StoreViewState.get().getAllIdentitiesCategory()),
+                        identities)
                 .nameAndDescription(
                         DataStorageUserHandler.getInstance().getActiveUser() != null
                                 ? "identityPerUser"
@@ -47,8 +52,11 @@ public class MultiIdentityStoreProvider extends IdentityStoreProvider {
                                 uuids.add(identity.get().getUuid());
                             }
                             for (UUID storeIdentity : st.getIdentities()) {
-                                if (initialIdentities.stream().anyMatch(ref -> ref.get().getUuid().equals(storeIdentity))) {
-                                    var wasRemoved = identities.stream().noneMatch(ref -> ref.get().getUuid().equals(storeIdentity));
+                                if (initialIdentities.stream()
+                                        .anyMatch(ref -> ref.get().getUuid().equals(storeIdentity))) {
+                                    var wasRemoved = identities.stream()
+                                            .noneMatch(
+                                                    ref -> ref.get().getUuid().equals(storeIdentity));
                                     if (!wasRemoved) {
                                         uuids.add(storeIdentity);
                                     }
@@ -66,9 +74,7 @@ public class MultiIdentityStoreProvider extends IdentityStoreProvider {
 
     @Override
     public DataStore defaultStore(DataStoreCategory category) {
-        return MultiIdentityStore.builder()
-                .identities(new ArrayList<>())
-                .build();
+        return MultiIdentityStore.builder().identities(new ArrayList<>()).build();
     }
 
     @Override

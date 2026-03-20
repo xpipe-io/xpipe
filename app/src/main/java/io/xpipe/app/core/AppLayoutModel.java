@@ -84,13 +84,17 @@ public class AppLayoutModel {
                     });
                 }
 
-                if (AppPrefs.get() != null && AppPrefs.get().getRequiresRestart().get()) {
-                    GlobalTimer.delay(() -> {
-                        var modal = ModalOverlay.of("prefsRestartTitle", AppDialog.dialogTextKey("prefsRestartContent"));
-                        modal.addButton(ModalButton.cancel());
-                        modal.addButton(new ModalButton("restart", () -> AppRestart.restart(), true, true));
-                        modal.show();
-                    }, Duration.ofSeconds(1));
+                if (AppPrefs.get() != null
+                        && AppPrefs.get().getRequiresRestart().get()) {
+                    GlobalTimer.delay(
+                            () -> {
+                                var modal = ModalOverlay.of(
+                                        "prefsRestartTitle", AppDialog.dialogTextKey("prefsRestartContent"));
+                                modal.addButton(ModalButton.cancel());
+                                modal.addButton(new ModalButton("restart", () -> AppRestart.restart(), true, true));
+                                modal.show();
+                            },
+                            Duration.ofSeconds(1));
                     AppPrefs.get().getRequiresRestart().set(false);
                 }
             }

@@ -44,7 +44,9 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
     private RegionBuilder<?> createToggle(Property<Boolean> prop, Boolean inherited) {
         var map = new LinkedHashMap<Boolean, ObservableValue<String>>();
         map.put(Boolean.FALSE, AppI18n.observable("no"));
-        map.put(null, AppI18n.observable("inherit", inherited != null && inherited ? AppI18n.get("yes") : AppI18n.get("no")));
+        map.put(
+                null,
+                AppI18n.observable("inherit", inherited != null && inherited ? AppI18n.get("yes") : AppI18n.get("no")));
         map.put(Boolean.TRUE, AppI18n.observable("yes"));
         var comp = new ToggleGroupComp<>(prop, new SimpleObjectProperty<>(map));
         return comp;
@@ -53,8 +55,9 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
     @Override
     protected Region createSimple() {
         var parents = DataStorage.get().getCategoryParentHierarchy(wrapper.getCategory());
-        var parentConfig = parents.size() > 1 ? DataStorage.get().getEffectiveCategoryConfig(parents.get(parents.size() - 2)) :
-                DataStoreCategoryConfig.empty();
+        var parentConfig = parents.size() > 1
+                ? DataStorage.get().getEffectiveCategoryConfig(parents.get(parents.size() - 2))
+                : DataStoreCategoryConfig.empty();
 
         var c = config.getValue();
         var scripts = new SimpleObjectProperty<>(c.getDontAllowScripts());
