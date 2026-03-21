@@ -87,9 +87,12 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
         asyncLines.addAll(List.of(
                 "sleep 0.5",
                 "zellij -s xpipe action new-tab --name \"" + escape(config.getColoredTitle(), false, true) + "\"",
+                "sleep 0.5",
                 "zellij -s xpipe action write-chars -- " + escape(" " + firstCommand, true, true) + "\\;exit",
                 "zellij -s xpipe action write 10",
-                "zellij -s xpipe action clear"));
+                "zellij -s xpipe action clear",
+                "zellij -s xpipe action go-to-previous-tab",
+                "zellij -s xpipe action close-tab"));
 
         if (config.getPanes().size() > 1) {
             var splitIterator =

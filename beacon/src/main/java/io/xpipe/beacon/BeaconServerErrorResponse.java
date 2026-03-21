@@ -18,7 +18,7 @@ public class BeaconServerErrorResponse {
     public void throwError() throws BeaconServerException {
         var message = error.getMessage();
         if (documentationLink != null) {
-            message = message + "\n\nFor more information, see: " + documentationLink;
+            message = message + "\n\nFor more information and troubleshooting steps, see: " + documentationLink;
         }
         throw new BeaconServerException(message, error);
     }

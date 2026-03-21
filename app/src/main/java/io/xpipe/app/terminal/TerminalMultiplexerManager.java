@@ -80,7 +80,6 @@ public class TerminalMultiplexerManager {
 
             // We timed out
             pendingMultiplexerLaunch = null;
-            runningMultiplexerContainer = null;
         }
 
         // Synchronize between multiple existing tab launches as well as some multiplexers might break there

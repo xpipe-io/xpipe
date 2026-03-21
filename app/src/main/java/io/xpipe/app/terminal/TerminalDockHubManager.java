@@ -20,6 +20,9 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import lombok.Getter;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
@@ -116,7 +119,7 @@ public class TerminalDockHubManager {
                 : new Rect(rect.getX(), rect.getY() - topAdjust, rect.getW(), rect.getH() + topAdjust);
     });
     private final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(
-            AppI18n.observable("toggleTerminalDock"),
+            AppI18n.observable("toggleTerminalDock", new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN).toString()),
             new LabelGraphic.NodeGraphic(() -> {
                 var inner = new FontIcon();
                 inner.iconCodeProperty()
@@ -214,6 +217,7 @@ public class TerminalDockHubManager {
                 dockModel.trackTerminal(controllable.get(), dock);
                 dockModel.closeOtherTerminals(session.getRequest());
                 enableDock();
+                showDock();
             }
 
             @Override
@@ -267,11 +271,6 @@ public class TerminalDockHubManager {
         }
 
         hubRequests.add(request);
-        if (!enabled.get()) {
-            enableDock();
-        } else if (!showing.get()) {
-            showDock();
-        }
     }
 
     private boolean shouldOpen() {
@@ -314,6 +313,18 @@ public class TerminalDockHubManager {
             NativeWinWindowControl.MAIN_WINDOW.setWindowsTransitionsEnabled(true);
             AppLayoutModel.get().getQueueEntries().remove(queueEntry);
         });
+    }
+
+    public void toggleDock() {
+        if (!enabled.get()) {
+            return;
+        }
+
+        if (showing.get()) {
+            hideDock();
+        }  else {
+            showDock();
+        }
     }
 
     public void showDock() {

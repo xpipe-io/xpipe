@@ -6,12 +6,15 @@ import io.xpipe.app.comp.RegionStructureBuilder;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.platform.PlatformThread;
 
+import io.xpipe.app.terminal.TerminalDockHubManager;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
@@ -56,6 +59,13 @@ public class AppLayoutComp extends RegionStructureBuilder<BorderPane, AppLayoutC
                     event.consume();
                 }
             });
+
+            if (new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN).match(event)) {
+                if (TerminalDockHubManager.get().getEnabled().get()) {
+                    TerminalDockHubManager.get().toggleDock();
+                    event.consume();
+                }
+            }
         });
         pane.getStyleClass().add("layout");
         return new Structure(pane, multiR, sidebarR, new ArrayList<>(multiR.getChildren()));
