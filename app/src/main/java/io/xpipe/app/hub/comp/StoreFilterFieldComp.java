@@ -17,11 +17,11 @@ import javafx.scene.Cursor;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
-import lombok.val;
 
 import atlantafx.base.controls.CustomTextField;
 import atlantafx.base.controls.Popover;
 import atlantafx.base.theme.Styles;
+import lombok.val;
 
 import java.util.List;
 import java.util.Objects;
@@ -65,17 +65,19 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
         clearButton.setCursor(Cursor.DEFAULT);
         AppFontSizes.sm(clearButton);
         var searchButton = new IconButtonComp("mdi2m-magnify", () -> {
-            if (state.onApply()) {
-                field.clear();
-            }
-        }).build();
+                    if (state.onApply()) {
+                        field.clear();
+                    }
+                })
+                .build();
         searchButton.setCursor(Cursor.DEFAULT);
         AppFontSizes.sm(searchButton);
-        var launchButton =  new IconButtonComp("mdi2p-play", () -> {
-            if (state.onApply()) {
-                field.clear();
-            }
-        }).build();
+        var launchButton = new IconButtonComp("mdi2p-play", () -> {
+                    if (state.onApply()) {
+                        field.clear();
+                    }
+                })
+                .build();
         launchButton.setCursor(Cursor.DEFAULT);
         AppFontSizes.sm(launchButton);
 

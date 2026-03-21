@@ -44,10 +44,14 @@ public class StoreFilterStateComp extends SimpleRegionBuilder {
         var searchesEmpty = Bindings.isEmpty(searches);
         var searchesList = new ListBoxViewComp<>(searches, searches, s -> createButton(s, s), false);
 
-        var searchesPlaceholders = FXCollections.observableList(List.of(AppI18n.get("recentSearchesDescriptionNames"),
-                AppI18n.get("recentSearchesDescriptionTags"), AppI18n.get("recentSearchesDescriptionTypes"),
-                AppI18n.get("recentSearchesDescriptionState"), AppI18n.get("recentSearchesDescriptionJoin")));
-        var searchesEmptyList = new ListBoxViewComp<>(searchesPlaceholders, searchesPlaceholders, s -> createButton(s, null), false);
+        var searchesPlaceholders = FXCollections.observableList(List.of(
+                AppI18n.get("recentSearchesDescriptionNames"),
+                AppI18n.get("recentSearchesDescriptionTags"),
+                AppI18n.get("recentSearchesDescriptionTypes"),
+                AppI18n.get("recentSearchesDescriptionState"),
+                AppI18n.get("recentSearchesDescriptionJoin")));
+        var searchesEmptyList =
+                new ListBoxViewComp<>(searchesPlaceholders, searchesPlaceholders, s -> createButton(s, null), false);
 
         var quickConnections = state.getRecentQuickConnections().getList();
         var quickConnectionsEmpty = Bindings.isEmpty(quickConnections);

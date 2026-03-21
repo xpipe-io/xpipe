@@ -5,8 +5,8 @@ import io.xpipe.app.comp.RegionStructure;
 import io.xpipe.app.comp.RegionStructureBuilder;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.platform.PlatformThread;
-
 import io.xpipe.app.terminal.TerminalDockHubManager;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;

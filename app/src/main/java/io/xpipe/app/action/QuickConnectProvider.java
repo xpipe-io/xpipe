@@ -17,10 +17,14 @@ public interface QuickConnectProvider extends ActionProvider {
     }
 
     static Optional<QuickConnectProvider> find(String input) {
-        return ActionProvider.ALL.stream().filter(actionProvider -> actionProvider instanceof QuickConnectProvider qcp &&
-                (input.length() <= qcp.getName().length() && input.toLowerCase().startsWith(qcp.getName().toLowerCase()) ||
-                        qcp.getName().toLowerCase().startsWith(input.toLowerCase())))
-                .findFirst().map(qcp -> (QuickConnectProvider) qcp);
+        return ActionProvider.ALL.stream()
+                .filter(actionProvider -> actionProvider instanceof QuickConnectProvider qcp
+                        && (input.length() <= qcp.getName().length()
+                                        && input.toLowerCase()
+                                                .startsWith(qcp.getName().toLowerCase())
+                                || qcp.getName().toLowerCase().startsWith(input.toLowerCase())))
+                .findFirst()
+                .map(qcp -> (QuickConnectProvider) qcp);
     }
 
     String getName();

@@ -12,11 +12,10 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableBooleanValue;
-import javafx.beans.value.ObservableStringValue;
+import javafx.beans.value.ObservableValue;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import javafx.beans.value.ObservableValue;
 import lombok.Getter;
 
 import java.net.URI;
@@ -61,15 +60,25 @@ public class StoreFilterState {
     private final BooleanProperty forceFilter = new SimpleBooleanProperty();
 
     @Getter
-    private final ObservableBooleanValue isSearchString = Bindings.createBooleanBinding(() -> {
-        return rawText.getValue() != null && rawText.getValue().length() > 2 &&
-                (forceFilter.getValue() || (!isUrlString.getValue() && !isQuickConnectString.getValue()));
-    }, rawText, isQuickConnectString, isUrlString, forceFilter);
+    private final ObservableBooleanValue isSearchString = Bindings.createBooleanBinding(
+            () -> {
+                return rawText.getValue() != null
+                        && rawText.getValue().length() > 2
+                        && (forceFilter.getValue() || (!isUrlString.getValue() && !isQuickConnectString.getValue()));
+            },
+            rawText,
+            isQuickConnectString,
+            isUrlString,
+            forceFilter);
 
     @Getter
-    private final ObservableValue<StoreFilter> effectiveFilter = Bindings.createObjectBinding(() -> {
-        return isSearchString.get()  ? StoreFilter.of(rawText.getValue()) : null;
-    }, rawText, isSearchString, forceFilter);
+    private final ObservableValue<StoreFilter> effectiveFilter = Bindings.createObjectBinding(
+            () -> {
+                return isSearchString.get() ? StoreFilter.of(rawText.getValue()) : null;
+            },
+            rawText,
+            isSearchString,
+            forceFilter);
 
     private static StoreFilterState INSTANCE;
 
@@ -87,7 +96,7 @@ public class StoreFilterState {
         INSTANCE.recentQuickConnections.setContent(recentQuickConnections);
 
         INSTANCE.rawText.subscribe(ignored -> {
-           INSTANCE.forceFilter.set(false);
+            INSTANCE.forceFilter.set(false);
         });
     }
 
@@ -171,7 +180,7 @@ public class StoreFilterState {
                 forceFilter.set(true);
                 return false;
             }
-            
+
             var provider = QuickConnectProvider.find(rawText.getValue());
             if (provider.isEmpty()) {
                 return false;

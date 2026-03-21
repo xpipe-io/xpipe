@@ -18,7 +18,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -145,7 +144,9 @@ public class StoreChoicePopover<T extends DataStore> {
                             explicitCategory == null,
                             ignored -> true)
                     .style(Styles.LEFT_PILL);
-            var filter = FilterComp.ofStoreFilter(storeFilter).style(Styles.CENTER_PILL).hgrow();
+            var filter = FilterComp.ofStoreFilter(storeFilter)
+                    .style(Styles.CENTER_PILL)
+                    .hgrow();
 
             var addButton = RegionBuilder.of(() -> {
                         var m = MenuHelper.createMenuButton();

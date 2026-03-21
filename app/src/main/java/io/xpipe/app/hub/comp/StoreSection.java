@@ -203,16 +203,14 @@ public class StoreSection {
 
             var isBatchSelected = selected.contains(section.getWrapper());
 
-            var matchesFilter = filterString == null
-                    || section.matchesFilter(filterString.getValue())
-                    || l.stream().anyMatch(p -> p.matchesFilter(filterString.getValue()));
+            var matchesFilter = filter == null
+                    || section.matchesFilter(filter.getValue())
+                    || l.stream().anyMatch(p -> p.matchesFilter(filter.getValue()));
             if (!isBatchSelected && !matchesFilter) {
                 return false;
             }
 
-            var hasFilter = filterString != null
-                    && filterString.getValue() != null
-                    && filterString.getValue().length() > 0;
+            var hasFilter = filter != null && filter.getValue() != null;
             if (!isBatchSelected && !hasFilter) {
                 var showProvider = true;
                 try {
@@ -229,28 +227,21 @@ public class StoreSection {
                 return false;
             }
 
-                var matchesFilter = filter == null
-                        || section.matchesFilter(filter.getValue())
-                        || l.stream().anyMatch(p -> p.matchesFilter(filter.getValue()));
-                if (!isBatchSelected && !matchesFilter) {
-                    return false;
-                }
+            // Prevent updates for children on category switching by checking depth
+            var showCategory = showInCategory(category.getValue(), section.getWrapper()) || depth > 0;
+            if (!showCategory) {
+                return false;
+            }
 
-                var hasFilter = filter != null
-                        && filter.getValue() != null;
-                if (!isBatchSelected && !hasFilter) {
-                    var showProvider = true;
-                    try {
-                        showProvider = section.getWrapper()
-                                .getEntry()
-                                .getProvider()
-                                .shouldShow(section.getWrapper());
-                    } catch (Exception ignored) {
-                    }
-                    if (!showProvider) {
-                        return false;
-                    }
-                }
+            // If this entry is already shown as root due to a different category than parent, don't
+            // show it
+            // again here
+            var notRoot = !DataStorage.get()
+                    .isRootEntry(
+                            section.getWrapper().getEntry(), category.getValue().getCategory());
+            if (!notRoot) {
+                return false;
+            }
 
             return true;
         };

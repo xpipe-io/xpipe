@@ -4,7 +4,6 @@ import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
-import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
@@ -113,13 +112,11 @@ public class SshIdentityStateManager {
             var r = c.readStdoutAndStderr();
             if (c.getExitCode() != 0) {
                 var posixMessage = sc.getOsType() != OsType.WINDOWS
-                        ? authSock != null
-                                ? " at the socket location " + authSock
-                                : ""
+                        ? authSock != null ? " at the socket location " + authSock : ""
                         : "";
                 var joined = (!r[0].isEmpty() ? r[0] + "\n" : "") + r[1];
-                var ex = new IllegalStateException("Unable to list agent identities via command ssh-add -l:\n" + joined + "\n\n"
-                        + "Please check whether the agent is running correctly%s.".formatted(posixMessage));
+                var ex = new IllegalStateException("Unable to list agent identities via command ssh-add -l:\n" + joined
+                        + "\n\n" + "Please check whether the agent is running correctly%s.".formatted(posixMessage));
                 var eventBuilder = ErrorEventFactory.fromThrowable(ex).expected();
                 ErrorEventFactory.preconfigure(eventBuilder);
                 throw ex;

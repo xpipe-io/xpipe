@@ -14,7 +14,10 @@ public class StoreFilter {
         }
 
         var split = s.split(",");
-        var l = Arrays.stream(split).map(sub -> sub.strip()).filter(sub -> !sub.isEmpty()).toList();
+        var l = Arrays.stream(split)
+                .map(sub -> sub.strip())
+                .filter(sub -> !sub.isEmpty())
+                .toList();
         return new StoreFilter(l);
     }
 
