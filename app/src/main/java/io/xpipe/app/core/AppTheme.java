@@ -90,11 +90,11 @@ public class AppTheme {
 
         r.pseudoClassStateChanged(PseudoClass.getPseudoClass(OsType.ofLocal().getId()), true);
 
-        Theme.ALL.forEach(theme -> {
-            r.pseudoClassStateChanged(
-                    PseudoClass.getPseudoClass(theme.getCssId()),
-                    theme.getCssId().equals(t.getCssId()));
-        });
+        if (t != null) {
+            Theme.ALL.forEach(theme -> {
+                r.pseudoClassStateChanged(PseudoClass.getPseudoClass(theme.getCssId()), theme.getCssId().equals(t.getCssId()));
+            });
+        }
 
         if (t != null) {
             r.pseudoClassStateChanged(LIGHT, !t.isDark());

@@ -105,6 +105,20 @@ public class TerminalMultiplexerManager {
     }
 
     public static Optional<UUID> getActiveMultiplexerContainerRequest() {
+        var mult = getEffectiveMultiplexer();
+        if (mult.isEmpty()) {
+            return Optional.empty();
+        }
+
+        // Check for changed multiplexer
+        var session = TerminalView.get().getSessions().stream()
+                .filter(shellSession -> shellSession.getTerminal().isRunning()
+                        && mult.get() == connectionHubRequests.get(shellSession.getRequest()))
+                .findFirst();
+        if (session.isEmpty()) {
+            return Optional.empty();
+        }
+
         return Optional.ofNullable(runningMultiplexerContainer);
     }
 

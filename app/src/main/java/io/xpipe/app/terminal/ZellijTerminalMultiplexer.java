@@ -1,10 +1,13 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.*;
 import io.xpipe.app.util.ThreadHelper;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 import lombok.Builder;
 import lombok.SneakyThrows;
 import lombok.extern.jackson.Jacksonized;
@@ -74,6 +77,16 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
 
     @Override
     public ShellScript launchNewSession(ShellControl control, TerminalLaunchConfiguration config) throws Exception {
+        var configFile = getConfigFile(control);
+        if (control.view().fileExists(configFile)) {
+            var text = control.view().readTextFile(configFile);
+            var s = "// show_startup_tips false";
+            if (text.contains(s)) {
+                var replaced = text.replace(s, "show_startup_tips false");
+                control.view().writeTextFile(configFile, replaced);
+            }
+        }
+
         var l = new ArrayList<String>();
         var firstConfig = config.getPanes().getFirst();
         var firstCommand = firstConfig.getDialectLaunchCommand().buildSimple();
@@ -133,6 +146,14 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
         TerminalView.get().addListener(listener);
 
         return ShellScript.lines(l);
+    }
+
+    private FilePath getConfigFile(ShellControl sc) throws Exception {
+        if (sc.getOsType() == OsType.MACOS) {
+            return sc.view().userHome().join("Library", "Application Support", "org.Zellij-Contributors.Zellij", "config.kdl");
+        } else {
+            return sc.view().getEnvironmentVariable("XDG_HOME").map(FilePath::of).orElse(sc.view().userHome().join(".config")).join("zellij", "config.kdl");
+        }
     }
 
     private String escape(String s, boolean spaces, boolean quotes) {

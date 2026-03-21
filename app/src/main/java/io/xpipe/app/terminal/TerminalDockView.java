@@ -133,6 +133,7 @@ public class TerminalDockView {
         terminal.restoreStyle();
 
         terminal.close();
+        // If the process blocked the exit, still don't track it anymore
         terminalInstances.remove(terminal);
     }
 
