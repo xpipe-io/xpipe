@@ -4,6 +4,7 @@ import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
@@ -118,6 +119,10 @@ public class SshIdentityStateManager {
                 var ex = new IllegalStateException("Unable to list agent identities via command ssh-add -l:\n" + joined
                         + "\n\n" + "Please check whether the agent is running correctly%s.".formatted(posixMessage));
                 var eventBuilder = ErrorEventFactory.fromThrowable(ex).expected();
+                if (joined.toLowerCase().contains("signing failed: agent refused operation") ||
+                        joined.toLowerCase().contains("error connecting to agent: connecting refused")) {
+                    eventBuilder.documentationLink(DocumentationLink.SSH_AGENT_REFUSAL);
+                }
                 ErrorEventFactory.preconfigure(eventBuilder);
                 throw ex;
             }
