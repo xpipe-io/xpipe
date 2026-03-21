@@ -9,7 +9,7 @@ import io.xpipe.app.process.CommandBuilder;
 import java.io.IOException;
 import java.nio.file.Files;
 
-public class KonsoleTerminalType implements ExternalTerminalType, ExternalApplicationType.LinuxApplication {
+public class KonsoleTerminalType implements TrackableTerminalType, ExternalTerminalType, ExternalApplicationType.LinuxApplication {
 
     @Override
     public TerminalOpenFormat getOpenFormat() {
