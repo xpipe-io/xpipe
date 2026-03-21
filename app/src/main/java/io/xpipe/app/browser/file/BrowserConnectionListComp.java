@@ -25,14 +25,14 @@ public final class BrowserConnectionListComp extends SimpleRegionBuilder {
     private final Predicate<StoreEntryWrapper> applicable;
     private final BiConsumer<StoreEntryWrapper, BooleanProperty> action;
     private final Property<StoreCategoryWrapper> category;
-    private final Property<String> filter;
+    private final Property<StoreFilter> filter;
 
     public BrowserConnectionListComp(
             ObservableValue<DataStoreEntry> selected,
             Predicate<StoreEntryWrapper> applicable,
             BiConsumer<StoreEntryWrapper, BooleanProperty> action,
             Property<StoreCategoryWrapper> category,
-            Property<String> filter) {
+            Property<StoreFilter> filter) {
         this.selected = selected;
         this.applicable = applicable;
         this.action = action;

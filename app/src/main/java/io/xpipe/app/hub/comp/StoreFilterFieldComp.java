@@ -17,6 +17,7 @@ import javafx.scene.Cursor;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
+import lombok.val;
 
 import atlantafx.base.controls.CustomTextField;
 import atlantafx.base.controls.Popover;
@@ -53,9 +54,7 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
             if (focus) {
                 popover.hide();
             } else {
-                if (state.getIsSearchString().get()) {
-                    state.open();
-                }
+                state.onFocusLost();
             }
         });
 
@@ -66,19 +65,17 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
         clearButton.setCursor(Cursor.DEFAULT);
         AppFontSizes.sm(clearButton);
         var searchButton = new IconButtonComp("mdi2m-magnify", () -> {
-                    if (state.open()) {
-                        field.clear();
-                    }
-                })
-                .build();
+            if (state.onApply()) {
+                field.clear();
+            }
+        }).build();
         searchButton.setCursor(Cursor.DEFAULT);
         AppFontSizes.sm(searchButton);
-        var launchButton = new IconButtonComp("mdi2p-play", () -> {
-                    if (state.open()) {
-                        field.clear();
-                    }
-                })
-                .build();
+        var launchButton =  new IconButtonComp("mdi2p-play", () -> {
+            if (state.onApply()) {
+                field.clear();
+            }
+        }).build();
         launchButton.setCursor(Cursor.DEFAULT);
         AppFontSizes.sm(launchButton);
 
@@ -90,7 +87,7 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
                 .bind(Bindings.createObjectBinding(
                         () -> {
                             if (!field.isFocused()) {
-                                return state.getEffectiveFilter().get() != null ? clearButton : null;
+                                return state.getEffectiveFilter().getValue() != null ? clearButton : null;
                             }
 
                             if (state.getIsQuickConnectString().get()
@@ -110,7 +107,7 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
 
         field.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.ENTER) {
-                if (state.open()) {
+                if (state.onApply()) {
                     field.clear();
                 }
                 field.getParent().getParent().requestFocus();
@@ -145,7 +142,7 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
 
         var menuButton = new IconButtonComp("mdi2a-animation-play", () -> {
             Bounds bounds = field.localToScreen(field.getBoundsInLocal());
-            popover.show(field, bounds.getMinX() + (field.getWidth() / 1.6), bounds.getMaxY() - 4.0);
+            popover.show(field, bounds.getMinX() + (field.getWidth() / 1.5), bounds.getMaxY() - 4.0);
         });
         menuButton.describe(d -> d.nameKey("quickConnect"));
         menuButton.style("quick-connect-button");

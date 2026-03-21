@@ -11,6 +11,7 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
+import io.xpipe.app.hub.comp.StoreFilter;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.InputHelper;
@@ -149,7 +150,7 @@ public class BrowserFullSessionComp extends SimpleRegionBuilder {
 
         var category = new SimpleObjectProperty<>(
                 StoreViewState.get().getActiveCategory().getValue());
-        var filter = new SimpleStringProperty();
+        var filter = new SimpleObjectProperty<StoreFilter>();
         var bookmarkTopBar = new BrowserConnectionListFilterComp(filterTrigger, category, filter);
         var bookmarksList = new BrowserConnectionListComp(
                 BindingsHelper.map(

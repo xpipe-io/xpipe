@@ -84,7 +84,7 @@ public class StoreSection {
             DerivedObservableList<StoreEntryWrapper> all,
             Set<StoreEntryWrapper> selected,
             Predicate<StoreEntryWrapper> entryFilter,
-            ObservableValue<String> filterString,
+            ObservableValue<StoreFilter> filter,
             ObservableValue<StoreCategoryWrapper> category,
             ObservableIntegerValue visibilityObservable,
             ObservableIntegerValue updateObservable,
@@ -104,7 +104,7 @@ public class StoreSection {
                 updateObservable);
         Predicate<StoreSection> showTopLevel = section -> {
             // matches filter
-            return (filterString == null || section.matchesFilter(filterString.getValue()))
+            return (filter == null || section.matchesFilter(filter.getValue()))
                     &&
                     // matches selector
                     (section.anyMatches(entryFilter))
@@ -125,7 +125,7 @@ public class StoreSection {
                     section,
                     enabled,
                     category,
-                    filterString,
+                    filter,
                     updateObservable);
             section.set(create(
                     List.of(),
@@ -134,7 +134,7 @@ public class StoreSection {
                     allEnabled,
                     selected,
                     entryFilter,
-                    filterString,
+                    filter,
                     category,
                     visibilityObservable,
                     updateObservable,
@@ -152,7 +152,7 @@ public class StoreSection {
                 },
                 enabled,
                 category,
-                filterString,
+                filter,
                 updateObservable);
         return new StoreSection(null, ordered, shown, 0);
     }
@@ -164,7 +164,7 @@ public class StoreSection {
             DerivedObservableList<StoreEntryWrapper> all,
             Set<StoreEntryWrapper> selected,
             Predicate<StoreEntryWrapper> entryFilter,
-            ObservableValue<String> filterString,
+            ObservableValue<StoreFilter> filter,
             ObservableValue<StoreCategoryWrapper> category,
             ObservableIntegerValue visibilityObservable,
             ObservableIntegerValue updateObservable,
@@ -229,21 +229,28 @@ public class StoreSection {
                 return false;
             }
 
-            // Prevent updates for children on category switching by checking depth
-            var showCategory = showInCategory(category.getValue(), section.getWrapper()) || depth > 0;
-            if (!showCategory) {
-                return false;
-            }
+                var matchesFilter = filter == null
+                        || section.matchesFilter(filter.getValue())
+                        || l.stream().anyMatch(p -> p.matchesFilter(filter.getValue()));
+                if (!isBatchSelected && !matchesFilter) {
+                    return false;
+                }
 
-            // If this entry is already shown as root due to a different category than parent, don't
-            // show it
-            // again here
-            var notRoot = !DataStorage.get()
-                    .isRootEntry(
-                            section.getWrapper().getEntry(), category.getValue().getCategory());
-            if (!notRoot) {
-                return false;
-            }
+                var hasFilter = filter != null
+                        && filter.getValue() != null;
+                if (!isBatchSelected && !hasFilter) {
+                    var showProvider = true;
+                    try {
+                        showProvider = section.getWrapper()
+                                .getEntry()
+                                .getProvider()
+                                .shouldShow(section.getWrapper());
+                    } catch (Exception ignored) {
+                    }
+                    if (!showProvider) {
+                        return false;
+                    }
+                }
 
             return true;
         };
@@ -261,7 +268,7 @@ public class StoreSection {
                     section,
                     enabled,
                     category,
-                    filterString,
+                    filter,
                     e.getPersistentState(),
                     e.getCache(),
                     visibilityObservable,
@@ -273,7 +280,7 @@ public class StoreSection {
                     all,
                     selected,
                     entryFilter,
-                    filterString,
+                    filter,
                     category,
                     visibilityObservable,
                     updateObservable,
@@ -285,7 +292,7 @@ public class StoreSection {
                 showSection,
                 enabled,
                 category,
-                filterString,
+                filter,
                 e.getPersistentState(),
                 e.getCache(),
                 visibilityObservable,
@@ -312,7 +319,7 @@ public class StoreSection {
         return false;
     }
 
-    public boolean matchesFilter(String filter) {
+    public boolean matchesFilter(StoreFilter filter) {
         return anyMatches(storeEntryWrapper -> storeEntryWrapper.matchesFilter(filter));
     }
 

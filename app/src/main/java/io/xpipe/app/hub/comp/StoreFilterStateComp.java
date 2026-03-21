@@ -6,6 +6,7 @@ import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.OptionsBuilder;
 
@@ -29,6 +30,7 @@ public class StoreFilterStateComp extends SimpleRegionBuilder {
         });
         button.disable(value == null);
         button.apply(r -> r.setAlignment(Pos.CENTER_LEFT));
+        button.apply(AppFontSizes::sm);
         button.style(Styles.FLAT);
         button.maxWidth(10000);
         return button;
@@ -42,12 +44,10 @@ public class StoreFilterStateComp extends SimpleRegionBuilder {
         var searchesEmpty = Bindings.isEmpty(searches);
         var searchesList = new ListBoxViewComp<>(searches, searches, s -> createButton(s, s), false);
 
-        var searchesPlaceholders = FXCollections.observableList(List.of(
-                AppI18n.get("recentSearchesDescriptionNames"),
-                AppI18n.get("recentSearchesDescriptionTags"),
-                AppI18n.get("recentSearchesDescriptionTypes")));
-        var searchesEmptyList =
-                new ListBoxViewComp<>(searchesPlaceholders, searchesPlaceholders, s -> createButton(s, null), false);
+        var searchesPlaceholders = FXCollections.observableList(List.of(AppI18n.get("recentSearchesDescriptionNames"),
+                AppI18n.get("recentSearchesDescriptionTags"), AppI18n.get("recentSearchesDescriptionTypes"),
+                AppI18n.get("recentSearchesDescriptionState"), AppI18n.get("recentSearchesDescriptionJoin")));
+        var searchesEmptyList = new ListBoxViewComp<>(searchesPlaceholders, searchesPlaceholders, s -> createButton(s, null), false);
 
         var quickConnections = state.getRecentQuickConnections().getList();
         var quickConnectionsEmpty = Bindings.isEmpty(quickConnections);

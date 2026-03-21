@@ -6,6 +6,7 @@ import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.hub.comp.StoreCategoryChoiceComp;
 import io.xpipe.app.hub.comp.StoreCategoryWrapper;
+import io.xpipe.app.hub.comp.StoreFilter;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.util.ObservableSubscriber;
 
@@ -24,7 +25,7 @@ public final class BrowserConnectionListFilterComp extends SimpleRegionBuilder {
 
     private final ObservableSubscriber filterTrigger;
     private final Property<StoreCategoryWrapper> category;
-    private final Property<String> filter;
+    private final Property<StoreFilter> filter;
 
     @Override
     protected Region createSimple() {
@@ -38,7 +39,7 @@ public final class BrowserConnectionListFilterComp extends SimpleRegionBuilder {
                 .apply(struc -> {
                     AppFontSizes.base(struc);
                 });
-        var filter = new FilterComp(this.filter)
+        var filter = FilterComp.ofStoreFilter(this.filter)
                 .style(Styles.RIGHT_PILL)
                 .minWidth(0)
                 .hgrow()

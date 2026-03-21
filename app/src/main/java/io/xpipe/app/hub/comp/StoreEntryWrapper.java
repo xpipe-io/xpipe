@@ -535,36 +535,22 @@ public class StoreEntryWrapper {
         }
     }
 
-    public boolean matchesFilter(String filter) {
-        if (filter == null || name.getValue().toLowerCase().contains(filter.toLowerCase())) {
+    public boolean matchesFilter(StoreFilter filter) {
+        if (filter == null) {
             return true;
         }
 
-        if (getEntry().getUuid().toString().equalsIgnoreCase(filter)) {
-            return true;
+        var l = new ArrayList<String>();
+        l.add(name.getValue());
+        l.add(getEntry().getUuid().toString());
+        if (entry.getValidity().isUsable()) {
+            l.addAll(entry.getProvider().getSearchableTerms(entry.getStore()));
+            l.add(AppI18n.get(entry.getProvider().getId() + ".displayName"));
         }
-
-        if (entry.getValidity().isUsable()
-                && entry.getProvider().getSearchableTerms(entry.getStore()).stream()
-                        .anyMatch(s -> s.toLowerCase().contains(filter.toLowerCase()))) {
-            return true;
-        }
-
-        var is = information.getValue();
-        if (is != null && is.toLowerCase().contains(filter.toLowerCase())) {
-            return true;
-        }
-
-        var ss = summary.getValue();
-        if (ss != null && ss.toLowerCase().contains(filter.toLowerCase())) {
-            return true;
-        }
-
-        if (tags.stream().anyMatch(s -> s.toLowerCase().contains(filter.toLowerCase()))) {
-            return true;
-        }
-
-        return false;
+        l.add(information.getValue());
+        l.add(summary.getValue());
+        l.addAll(tags);
+        return filter.matches(l);
     }
 
     public Property<String> nameProperty() {

@@ -11,6 +11,7 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
+import io.xpipe.app.hub.comp.StoreFilter;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.InputHelper;
@@ -123,7 +124,7 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
 
         var category = new SimpleObjectProperty<>(
                 StoreViewState.get().getActiveCategory().getValue());
-        var filter = new SimpleStringProperty();
+        var filter = new SimpleObjectProperty<StoreFilter>();
         var filterTrigger = new ObservableSubscriber();
         var bookmarkTopBar = new BrowserConnectionListFilterComp(filterTrigger, category, filter);
         var bookmarksList = new BrowserConnectionListComp(

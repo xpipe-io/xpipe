@@ -7,6 +7,8 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.DerivedObservableList;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableBooleanValue;
@@ -14,6 +16,7 @@ import javafx.beans.value.ObservableStringValue;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import javafx.beans.value.ObservableValue;
 import lombok.Getter;
 
 import java.net.URI;
@@ -55,25 +58,18 @@ public class StoreFilterState {
             },
             rawText);
 
-    @Getter
-    private final ObservableBooleanValue isSearchString = Bindings.createBooleanBinding(
-            () -> {
-                return rawText.getValue() != null
-                        && rawText.getValue().length() > 1
-                        && !isUrlString.getValue()
-                        && !isQuickConnectString.getValue();
-            },
-            rawText,
-            isQuickConnectString,
-            isUrlString);
+    private final BooleanProperty forceFilter = new SimpleBooleanProperty();
 
     @Getter
-    private final ObservableStringValue effectiveFilter = Bindings.createStringBinding(
-            () -> {
-                return isSearchString.get() ? rawText.getValue() : null;
-            },
-            rawText,
-            isSearchString);
+    private final ObservableBooleanValue isSearchString = Bindings.createBooleanBinding(() -> {
+        return rawText.getValue() != null && rawText.getValue().length() > 2 &&
+                (forceFilter.getValue() || (!isUrlString.getValue() && !isQuickConnectString.getValue()));
+    }, rawText, isQuickConnectString, isUrlString, forceFilter);
+
+    @Getter
+    private final ObservableValue<StoreFilter> effectiveFilter = Bindings.createObjectBinding(() -> {
+        return isSearchString.get()  ? StoreFilter.of(rawText.getValue()) : null;
+    }, rawText, isSearchString, forceFilter);
 
     private static StoreFilterState INSTANCE;
 
@@ -89,6 +85,10 @@ public class StoreFilterState {
         INSTANCE = new StoreFilterState();
         INSTANCE.recentSearches.setContent(recentSearches);
         INSTANCE.recentQuickConnections.setContent(recentQuickConnections);
+
+        INSTANCE.rawText.subscribe(ignored -> {
+           INSTANCE.forceFilter.set(false);
+        });
     }
 
     public static void reset() {
@@ -127,7 +127,19 @@ public class StoreFilterState {
         }
     }
 
-    public boolean open() {
+    public boolean onFocusLost() {
+        if (!isSearchString.get()) {
+            return false;
+        }
+
+        return apply(false);
+    }
+
+    public boolean onApply() {
+        return apply(true);
+    }
+
+    private boolean apply(boolean force) {
         if (rawText.getValue() == null) {
             return false;
         }
@@ -154,6 +166,12 @@ public class StoreFilterState {
         }
 
         if (isQuickConnectString.getValue()) {
+            var prefix = !rawText.getValue().contains(" ");
+            if (force && prefix) {
+                forceFilter.set(true);
+                return false;
+            }
+            
             var provider = QuickConnectProvider.find(rawText.getValue());
             if (provider.isEmpty()) {
                 return false;

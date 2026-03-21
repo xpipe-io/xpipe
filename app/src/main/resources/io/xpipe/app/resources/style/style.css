@@ -272,3 +272,7 @@
 .store-filter-state-comp .label {
     -fx-padding: 10 0 0 0;
 }
+
+.store-filter-state-comp .separator {
+    -fx-padding: 0.15em 0 0.15em 0;
+}
