@@ -78,13 +78,17 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
     @Override
     public ShellScript launchNewSession(ShellControl control, TerminalLaunchConfiguration config) throws Exception {
         var configFile = getConfigFile(control);
-        if (control.view().fileExists(configFile)) {
-            var text = control.view().readTextFile(configFile);
-            var s = "// show_startup_tips false";
-            if (text.contains(s)) {
-                var replaced = text.replace(s, "show_startup_tips false");
-                control.view().writeTextFile(configFile, replaced);
-            }
+
+        if (!control.view().fileExists(configFile)) {
+            var def = control.command(CommandBuilder.of().add("zellij", "setup", "--dump-config")).readStdoutOrThrow();
+            control.view().writeTextFile(configFile, def);
+        }
+        
+        var text = control.view().readTextFile(configFile);
+        var s = "// show_startup_tips false";
+        if (text.contains(s)) {
+            var replaced = text.replace(s, "show_startup_tips false");
+            control.view().writeTextFile(configFile, replaced);
         }
 
         var l = new ArrayList<String>();
