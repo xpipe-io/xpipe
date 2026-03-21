@@ -81,9 +81,10 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
 
         if (!control.view().fileExists(configFile)) {
             var def = control.command(CommandBuilder.of().add("zellij", "setup", "--dump-config")).readStdoutOrThrow();
+            control.view().mkdir(configFile.getParent());
             control.view().writeTextFile(configFile, def);
         }
-        
+
         var text = control.view().readTextFile(configFile);
         var s = "// show_startup_tips false";
         if (text.contains(s)) {
