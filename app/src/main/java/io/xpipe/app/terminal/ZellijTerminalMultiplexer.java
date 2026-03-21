@@ -85,11 +85,13 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
             control.view().writeTextFile(configFile, def);
         }
 
-        var text = control.view().readTextFile(configFile);
-        var s = "// show_startup_tips false";
-        if (text.contains(s)) {
-            var replaced = text.replace(s, "show_startup_tips false");
+        var configText = control.view().readTextFile(configFile);
+        var comment = "// show_startup_tips false";
+        if (configText.contains(comment)) {
+            var replaced = configText.replace(comment, "show_startup_tips false");
             control.view().writeTextFile(configFile, replaced);
+        } else if (!configText.contains("show_startup_tips")) {
+            control.view().writeTextFile(configFile, configText + "\n" + "show_startup_tips false");
         }
 
         var l = new ArrayList<String>();
