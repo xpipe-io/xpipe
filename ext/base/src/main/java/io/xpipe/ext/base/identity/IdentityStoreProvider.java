@@ -6,8 +6,8 @@ import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.hub.comp.StoreSection;
 import io.xpipe.app.hub.comp.SystemStateComp;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
@@ -38,7 +38,9 @@ public abstract class IdentityStoreProvider implements DataStoreProvider {
 
     @Override
     public ObservableValue<String> informationString(StoreSection section) {
-        var st = (IdentityStore) section.getWrapper().getStore().getValue();
-        return new SimpleStringProperty(IdentitySummary.createSummary(st));
+        return Bindings.createStringBinding(() -> {
+            var st = (IdentityStore) section.getWrapper().getStore().getValue();
+            return IdentitySummary.createSummary(st);
+        }, section.getWrapper().getPersistentState());
     }
 }

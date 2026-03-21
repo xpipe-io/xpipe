@@ -241,7 +241,7 @@ public class BrowserFileSystemTabComp extends SimpleRegionBuilder {
         });
 
         var home = new BrowserOverviewComp(model).style("browser-overview");
-        var stack = new MultiContentComp(false, Map.of(home, showOverview, fileList, showOverview.not()), false);
+        var stack = new MultiContentComp(false, Map.of(home, showOverview, fileList, showOverview.not()));
         var r = stack.style("browser-content-container").build();
         r.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {

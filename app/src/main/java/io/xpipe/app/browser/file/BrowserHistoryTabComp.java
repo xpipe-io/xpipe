@@ -63,7 +63,7 @@ public class BrowserHistoryTabComp extends SimpleRegionBuilder {
         var map = new LinkedHashMap<BaseRegionBuilder<?, ?>, ObservableValue<Boolean>>();
         map.put(emptyDisplay, empty);
         map.put(contentDisplay, empty.not());
-        var stack = new MultiContentComp(false, map, false);
+        var stack = new MultiContentComp(false, map);
         return stack.build();
     }
 

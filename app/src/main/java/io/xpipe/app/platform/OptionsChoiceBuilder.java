@@ -3,6 +3,7 @@ package io.xpipe.app.platform;
 import io.xpipe.app.comp.base.ChoicePaneComp;
 import io.xpipe.app.core.AppI18n;
 
+import io.xpipe.app.issue.ErrorEventFactory;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.SneakyThrows;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,8 +79,9 @@ public class OptionsChoiceBuilder {
             if (r != null) {
                 return (OptionsBuilder) r;
             }
-        } catch (Exception ignored) {
-        }
+        } catch (InvocationTargetException e) {
+            ErrorEventFactory.fromThrowable(e).handle();
+        } catch (Exception ignored) {}
         return new OptionsBuilder();
     }
 
@@ -88,7 +91,9 @@ public class OptionsChoiceBuilder {
             cd.setAccessible(true);
             var defValue = cd.invoke(null);
             return defValue;
-        } catch (Exception ignored) {
+        } catch (InvocationTargetException e) {
+            ErrorEventFactory.fromThrowable(e).handle();
+        }  catch (Exception ignored) {
         }
 
         try {
@@ -99,7 +104,9 @@ public class OptionsChoiceBuilder {
             m.setAccessible(true);
             var defValue = c.cast(m.invoke(b));
             return defValue;
-        } catch (Exception ignored) {
+        } catch (InvocationTargetException e) {
+            ErrorEventFactory.fromThrowable(e).handle();
+        }  catch (Exception ignored) {
         }
 
         try {

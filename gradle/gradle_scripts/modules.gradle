@@ -67,7 +67,6 @@ extraJavaModuleInfo {
 
 extraJavaModuleInfo {
     module("io.modelcontextprotocol.sdk:mcp-core", "io.modelcontextprotocol.sdk.mcp") {
-        mergeJar("io.modelcontextprotocol.sdk:mcp-json")
         mergeJar("io.modelcontextprotocol.sdk:mcp-json-jackson2")
         overrideModuleName()
         exportAllPackages()

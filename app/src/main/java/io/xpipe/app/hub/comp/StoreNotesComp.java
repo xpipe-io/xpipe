@@ -3,12 +3,9 @@ package io.xpipe.app.hub.comp;
 import io.xpipe.app.comp.*;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.storage.DataStorage;
 
 import io.xpipe.app.util.FileOpener;
-import javafx.application.Platform;
-import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Button;

@@ -1,10 +1,7 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.SimpleRegionBuilder;
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.HorizontalComp;
-import io.xpipe.app.comp.base.LabelComp;
-import io.xpipe.app.comp.base.TextFieldComp;
+import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
@@ -13,14 +10,15 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Region;
 
-import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -29,6 +27,10 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
     private final StringProperty value;
     private final boolean handleEnter;
     private final AtomicInteger counter = new AtomicInteger(0);
+
+    public PasswordManagerTestComp(boolean handleEnter) {
+        this(new SimpleStringProperty(), handleEnter);
+    }
 
     public PasswordManagerTestComp(StringProperty value, boolean handleEnter) {
         this.value = value;
@@ -49,7 +51,6 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
                                             : "?";
                                 },
                                 prefs.passwordManager)))
-                .style(Styles.LEFT_PILL)
                 .hgrow();
         if (handleEnter) {
             field.apply(struc -> struc.setOnKeyPressed(event -> {
@@ -60,28 +61,25 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
             }));
         }
 
-        var button = new ButtonComp(null, new FontIcon("mdi2p-play"), () -> {
+        var button = new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
                     testPasswordManager(value.get(), testPasswordManagerResult);
-                })
-                .describe(d -> d.nameKey("test"))
-                .style(Styles.RIGHT_PILL);
+                });
+        button.padding(new Insets(6, 9, 6, 9));
+        button.disable(value.isNull());
 
-        var testInput = new HorizontalComp(List.of(field, button));
-        testInput.apply(struc -> {
-            struc.setFillHeight(true);
-            var first = ((Region) struc.getChildren().get(0));
-            var second = ((Region) struc.getChildren().get(1));
-            second.minHeightProperty().bind(first.heightProperty());
-            second.maxHeightProperty().bind(first.heightProperty());
-            second.prefHeightProperty().bind(first.heightProperty());
-        });
-        testInput.hgrow();
-
-        var testPasswordManager = new HorizontalComp(List.of(
-                        testInput, new LabelComp(testPasswordManagerResult).apply(struc -> struc.setOpacity(0.8))))
+        var testRow = new HorizontalComp(List.of(
+                        button, new LabelComp(testPasswordManagerResult).apply(struc -> struc.setOpacity(0.8))))
                 .apply(struc -> struc.setAlignment(Pos.CENTER_LEFT))
                 .apply(struc -> struc.setFillHeight(true));
-        return testPasswordManager.build();
+
+        var vbox = new VerticalComp(List.of(field, testRow));
+        vbox.spacing(6);
+        vbox.apply(r -> r.focusedProperty().subscribe(focus -> {
+            if (focus) {
+                r.getChildren().getFirst().requestFocus();
+            }
+        }));
+        return vbox.build();
     }
 
     private void testPasswordManager(String key, StringProperty testPasswordManagerResult) {
@@ -96,18 +94,46 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
                 testPasswordManagerResult.set("    " + AppI18n.get("querying"));
             });
 
-            var r = prefs.passwordManager.getValue().retrieveCredentials(key);
+            var r = prefs.passwordManager.getValue().query(key);
             if (r == null) {
                 Platform.runLater(() -> {
-                    testPasswordManagerResult.set(null);
+                    testPasswordManagerResult.set("    " + AppI18n.get("queryFailed"));
                 });
+                GlobalTimer.delay(
+                        () -> {
+                            Platform.runLater(() -> {
+                                if (counter.get() == currentIndex) {
+                                    testPasswordManagerResult.set(null);
+                                }
+                            });
+                        },
+                        Duration.ofSeconds(5));
                 return;
             }
 
-            var pass = r.getPassword() != null ? r.getPassword().getSecretValue() : "?";
-            var format = (r.getUsername() != null ? r.getUsername() + " [" + pass + "]" : pass);
+            List<String> elements = new ArrayList<>();
+            if (r.getCredentials() != null) {
+                elements.add(r.getCredentials().getUsername() != null ? r.getCredentials().getUsername() : "<no user>");
+                if (r.getCredentials().getPassword() != null) {
+                    var secret = r.getCredentials().getPassword().getSecretValue();
+                    var secretFormatted = secret.length() > 4 ? secret.substring(0, 4) + "*".repeat(secret.length() - 4) : secret;
+                    elements.add(secretFormatted);
+                } else {
+                    elements.add("<no password>");
+                }
+            } else {
+                elements.add("<no credentials>");
+            }
+
+            if (prefs.passwordManager.getValue() != null && prefs.passwordManager.getValue().getKeyConfiguration().useInline()) {
+                if (r.getSshKey() != null) {
+                    elements.add(AppI18n.get("sshKey"));
+                }
+            }
+
+            var formatted = String.join(" / ", elements);
             Platform.runLater(() -> {
-                testPasswordManagerResult.set("    " + AppI18n.get("retrievedPassword", format));
+                testPasswordManagerResult.set("    " + AppI18n.get("retrievedPassword", formatted));
             });
             GlobalTimer.delay(
                     () -> {

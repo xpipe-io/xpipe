@@ -96,7 +96,7 @@ public class PersonalizationCategory extends AppPrefsCategory {
     @Override
     protected BaseRegionBuilder<?, ?> create() {
         return new OptionsBuilder()
-                .addTitle("personalization")
+                .title("personalization")
                 .sub(new OptionsBuilder().sub(languageChoice()).sub(themeChoice()))
                 .buildComp();
     }

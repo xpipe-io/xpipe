@@ -1,9 +1,14 @@
 package io.xpipe.app.ext;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.xpipe.app.storage.DataStoreEntryRef;
+
+import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface DataStore {
+
+    List<DataStoreEntryRef<?>> getDependencies();
 
     default boolean isComplete() {
         try {

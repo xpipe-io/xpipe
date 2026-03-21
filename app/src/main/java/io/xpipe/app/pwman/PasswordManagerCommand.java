@@ -13,8 +13,6 @@ import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.core.InPlaceSecretValue;
-import io.xpipe.core.SecretValue;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -33,6 +31,21 @@ public class PasswordManagerCommand implements PasswordManager {
 
     private static ShellControl SHELL;
     ShellScript script;
+
+    @Override
+    public boolean selectInitial() {
+        return false;
+    }
+
+    @Override
+    public PasswordManagerKeyConfiguration getKeyConfiguration() {
+        return PasswordManagerKeyConfiguration.none();
+    }
+
+    @Override
+    public boolean supportsKeyConfiguration() {
+        return false;
+    }
 
     @SuppressWarnings("unused")
     static OptionsBuilder createOptions(Property<PasswordManagerCommand> property) {
@@ -77,7 +90,7 @@ public class PasswordManagerCommand implements PasswordManager {
         return SHELL;
     }
 
-    public static SecretValue retrieveWithCommand(String cmd) {
+    public static String retrieveWithCommand(String cmd) {
         try (var cc = getOrStartShell().command(cmd).start()) {
             var out = cc.readStdoutOrThrow();
 
@@ -89,7 +102,7 @@ public class PasswordManagerCommand implements PasswordManager {
                         .orElse("");
             }
 
-            return InPlaceSecretValue.of(out);
+            return out;
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable("Unable to retrieve password with command " + cmd, ex)
                     .expected()
@@ -99,14 +112,14 @@ public class PasswordManagerCommand implements PasswordManager {
     }
 
     @Override
-    public CredentialResult retrieveCredentials(String key) {
+    public Result query(String key) {
         if (script == null || script.getValue().isBlank()) {
             return null;
         }
 
         var cmd = ExternalApplicationHelper.replaceVariableArgument(script.getValue(), "KEY", key);
         var secret = retrieveWithCommand(cmd);
-        return new CredentialResult(null, secret);
+        return Result.of(Credentials.of(null, secret), null);
     }
 
     @Override

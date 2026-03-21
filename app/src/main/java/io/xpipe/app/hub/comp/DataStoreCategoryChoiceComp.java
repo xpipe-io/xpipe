@@ -57,7 +57,7 @@ public class DataStoreCategoryChoiceComp extends SimpleRegionBuilder {
         if (!applyExternalInitially) {
             value.setValue(last);
         }
-        var box = new ComboBox<>(StoreViewState.get().getSortedCategories(root).filtered(filter).getList());
+        var box = new ComboBox<>(StoreViewState.get().getSortedCategories(root, false).filtered(filter).getList());
         box.setValue(value.getValue());
         box.valueProperty().addListener((observable, oldValue, newValue) -> {
             value.setValue(newValue);

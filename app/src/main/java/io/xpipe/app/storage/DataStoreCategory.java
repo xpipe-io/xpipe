@@ -1,5 +1,6 @@
 package io.xpipe.app.storage;
 
+import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -7,9 +8,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import lombok.EqualsAndHashCode;
-import lombok.NonNull;
-import lombok.Value;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.apache.commons.io.FileUtils;
 
@@ -21,8 +21,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-@EqualsAndHashCode(callSuper = true)
-@Value
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Getter
 public class DataStoreCategory extends StorageElement {
 
     @NonFinal
@@ -38,12 +38,28 @@ public class DataStoreCategory extends StorageElement {
             Instant lastUsed,
             Instant lastModified,
             boolean dirty,
+            String icon,
             UUID parentCategory,
             boolean expanded,
             DataStoreCategoryConfig config) {
-        super(directory, uuid, name, lastUsed, lastModified, expanded, dirty);
+        super(directory, uuid, name, lastUsed, lastModified, expanded, dirty, icon);
         this.parentCategory = parentCategory;
         this.config = config;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o == this || (o instanceof DataStoreCategory e && e.getUuid().equals(getUuid()));
+    }
+
+    @Override
+    public int hashCode() {
+        return getUuid().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 
     public static DataStoreCategory createNew(UUID parentCategory, @NonNull String name) {
@@ -54,6 +70,7 @@ public class DataStoreCategory extends StorageElement {
                 Instant.now(),
                 Instant.now(),
                 true,
+                null,
                 parentCategory,
                 true,
                 DataStoreCategoryConfig.empty());
@@ -67,6 +84,7 @@ public class DataStoreCategory extends StorageElement {
                 Instant.now(),
                 Instant.now(),
                 true,
+                null,
                 parentCategory,
                 true,
                 DataStoreCategoryConfig.empty());
@@ -131,8 +149,11 @@ public class DataStoreCategory extends StorageElement {
             config = config.withColor(color);
         }
 
+        var iconNode = json.get("icon");
+        String icon = iconNode != null && !iconNode.isNull() ? iconNode.asText() : null;
+
         return Optional.of(
-                new DataStoreCategory(dir, uuid, name, lastUsed, lastModified, false, parentUuid, expanded, config));
+                new DataStoreCategory(dir, uuid, name, lastUsed, lastModified, false, icon, parentUuid, expanded, config));
     }
 
     public boolean setConfig(DataStoreCategoryConfig config) {
@@ -156,6 +177,59 @@ public class DataStoreCategory extends StorageElement {
         this.parentCategory = parentCategory;
         if (changed) {
             notifyUpdate(false, true);
+        }
+    }
+
+    public String getDefaultIconFile() {
+        if (uuid.equals(DataStorage.ALL_CONNECTIONS_CATEGORY_UUID)) {
+            return "connectionsCategory_icon.svg";
+        }
+
+        if (uuid.equals(DataStorage.DEFAULT_CATEGORY_UUID)) {
+            return "connectionsCategory_icon.svg";
+        }
+
+        if (uuid.equals(DataStorage.ALL_IDENTITIES_CATEGORY_UUID)) {
+            return "identityCategory_icon.svg";
+        }
+
+        if (uuid.equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID)) {
+            return "localIdentity_icon.svg";
+        }
+
+        if (uuid.equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID)) {
+            return "syncedIdentity_icon.svg";
+        }
+
+        if (uuid.equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID)) {
+            return "scriptCategory_icon.svg";
+        }
+
+        if (uuid.equals(DataStorage.CUSTOM_SCRIPTS_CATEGORY_UUID)) {
+            return "scriptCategory_icon.svg";
+        }
+
+        if (uuid.equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID)) {
+            return "scriptCollectionSource_icon.svg";
+        }
+
+        if (uuid.equals(DataStorage.PREDEFINED_SCRIPTS_CATEGORY_UUID)) {
+            return "defaultShell_icon.svg";
+        }
+
+        return "connectionsCategory_icon.svg";
+    }
+
+    public String getEffectiveIconFile() {
+        if (icon == null) {
+            return getDefaultIconFile();
+        }
+
+        var found = SystemIconManager.getIcon(icon);
+        if (found.isPresent()) {
+            return SystemIconManager.getAndLoadIconFile(found.get(), true);
+        } else {
+            return "error.png";
         }
     }
 
@@ -205,6 +279,7 @@ public class DataStoreCategory extends StorageElement {
         stateObj.put("expanded", expanded);
         obj.put("parentUuid", parentCategory != null ? parentCategory.toString() : null);
         obj.set("config", JacksonMapper.getDefault().valueToTree(config));
+        obj.set("icon", mapper.valueToTree(icon));
 
         var entryString = mapper.writeValueAsString(obj);
         var stateString = mapper.writeValueAsString(stateObj);

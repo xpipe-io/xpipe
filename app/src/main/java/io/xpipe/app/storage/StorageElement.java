@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public abstract class StorageElement {
@@ -42,6 +43,10 @@ public abstract class StorageElement {
     @Getter
     protected boolean expanded;
 
+    @NonFinal
+    @Getter
+    protected String icon;
+
     public StorageElement(
             Path directory,
             UUID uuid,
@@ -49,7 +54,8 @@ public abstract class StorageElement {
             Instant lastUsed,
             Instant lastModified,
             boolean expanded,
-            boolean dirty) {
+            boolean dirty,
+            String icon) {
         this.directory = directory;
         this.uuid = uuid;
         this.name = name;
@@ -57,6 +63,19 @@ public abstract class StorageElement {
         this.lastModified = lastModified;
         this.expanded = expanded;
         this.dirty = dirty;
+        this.icon = icon;
+    }
+
+    public void setIcon(String icon, boolean force) {
+        if (this.icon != null && !force) {
+            return;
+        }
+
+        var changed = !Objects.equals(this.icon, icon);
+        this.icon = icon;
+        if (changed) {
+            notifyUpdate(false, true);
+        }
     }
 
     public Instant getStorageCreationDate() {

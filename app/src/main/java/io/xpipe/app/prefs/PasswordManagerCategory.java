@@ -3,7 +3,6 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
@@ -11,7 +10,6 @@ import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.util.*;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -20,20 +18,8 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 public class PasswordManagerCategory extends AppPrefsCategory {
 
-    @Override
-    protected String getId() {
-        return "passwordManager";
-    }
-
-    @Override
-    protected LabelGraphic getIcon() {
-        return new LabelGraphic.IconGraphic("mdomz-vpn_key");
-    }
-
-    @Override
-    protected BaseRegionBuilder<?, ?> create() {
+    public static OptionsBuilder passwordManagerChoice() {
         var prefs = AppPrefs.get();
-        var testPasswordManagerValue = new SimpleStringProperty();
 
         var choiceBuilder = OptionsChoiceBuilder.builder()
                 .property(prefs.passwordManager)
@@ -63,18 +49,27 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                 .build();
         var choice = choiceBuilder.build().buildComp().maxWidth(600);
 
-        var testInput = new PasswordManagerTestComp(testPasswordManagerValue, true);
-        testInput.maxWidth(getCompWidth());
-        testInput.hgrow();
-
         return new OptionsBuilder()
-                .addTitle("passwordManager")
-                .sub(new OptionsBuilder()
                         .pref(prefs.passwordManager)
-                        .addComp(choice)
-                        .nameAndDescription("passwordManagerCommandTest")
-                        .addComp(testInput)
-                        .hide(BindingsHelper.map(prefs.passwordManager, p -> p == null)))
+                        .addComp(choice);
+    }
+
+    @Override
+    protected String getId() {
+        return "passwordManager";
+    }
+
+    @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdomz-vpn_key");
+    }
+
+    @Override
+    protected BaseRegionBuilder<?, ?> create() {
+        var prefs = AppPrefs.get();
+        return new OptionsBuilder()
+                .title("passwordManager")
+                .sub(passwordManagerChoice(), prefs.passwordManager)
                 .buildComp();
     }
 }

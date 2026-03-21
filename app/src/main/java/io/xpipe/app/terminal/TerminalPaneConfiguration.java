@@ -7,8 +7,6 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.LicenseProvider;
-import io.xpipe.app.util.LicenseRequiredException;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
@@ -70,12 +68,6 @@ public class TerminalPaneConfiguration {
                     register + "\n" + sc.getShellDialect().terminalLauncherScript(request, title, alwaysPromptRestart);
             var config = new TerminalPaneConfiguration(request, title, paneIndex, launcherScript, sc.getShellDialect());
             return config;
-        }
-
-        var feature = LicenseProvider.get().getFeature("logging");
-        var supported = feature.isSupported();
-        if (!supported) {
-            throw new LicenseRequiredException(feature);
         }
 
         var log = getLogFile(paneIndex, entry);

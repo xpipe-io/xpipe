@@ -1,13 +1,16 @@
 package io.xpipe.app.pwman;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
@@ -22,6 +25,8 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.Optional;
+
 @Getter
 @Builder
 @ToString
@@ -33,6 +38,21 @@ public class PsonoPasswordManager implements PasswordManager {
     private final InPlaceSecretValue apiKey;
     private final InPlaceSecretValue apiSecretKey;
     private final String serverUrl;
+
+    @Override
+    public boolean supportsKeyConfiguration() {
+        return false;
+    }
+
+    @Override
+    public boolean selectInitial() throws Exception {
+        return LocalShell.getShell().view().findProgram("psonoci").isPresent();
+    }
+
+    @Override
+    public PasswordManagerKeyConfiguration getKeyConfiguration() {
+        return PasswordManagerKeyConfiguration.none();
+    }
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<PsonoPasswordManager> p) {
@@ -52,6 +72,8 @@ public class PsonoPasswordManager implements PasswordManager {
                 .addComp(new SecretFieldComp(apiKey, false).maxWidth(600), apiKey)
                 .nameAndDescription("psonoApiSecretKey")
                 .addComp(new SecretFieldComp(apiSecretKey, false).maxWidth(600), apiSecretKey)
+                .nameAndDescription("passwordManagerTest")
+                .addComp(new PasswordManagerTestComp(true))
                 .bind(
                         () -> {
                             return PsonoPasswordManager.builder()
@@ -72,7 +94,7 @@ public class PsonoPasswordManager implements PasswordManager {
     }
 
     @Override
-    public synchronized CredentialResult retrieveCredentials(String key) {
+    public synchronized Result query(String key) {
         if (serverUrl == null || apiKey == null || apiSecretKey == null) {
             return null;
         }
@@ -102,11 +124,9 @@ public class PsonoPasswordManager implements PasswordManager {
                             .add("json"))
                     .sensitive();
             var r = JacksonMapper.getDefault().readTree(cmd.readStdoutOrThrow());
-            var username = r.required("username");
-            var password = r.required("password");
-            return new CredentialResult(
-                    username.isNull() ? null : username.asText(),
-                    password.isNull() ? null : InPlaceSecretValue.of(password.asText()));
+            var username = Optional.of(r.required("username")).filter(n -> !n.isNull()).map(JsonNode::textValue).orElse(null);
+            var password = Optional.of(r.required("password")).filter(n -> !n.isNull()).map(JsonNode::textValue).orElse(null);
+            return Result.of(Credentials.of(username, password), null);
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
             return null;

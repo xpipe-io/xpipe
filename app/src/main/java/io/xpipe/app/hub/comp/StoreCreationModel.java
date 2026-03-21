@@ -167,6 +167,10 @@ public class StoreCreationModel {
                         store));
     }
 
+    boolean isQuickConnect() {
+        return existingEntry != null && existingEntry.getUuid().equals(StoreQuickConnect.STORE_ID);
+    }
+
     void connect() {
         var temp = entry.getValue() != null ? entry.getValue() : DataStoreEntry.createTempWrapper(store.getValue());
         var action = OpenHubMenuLeafProvider.Action.builder().ref(temp.ref()).build();
@@ -211,7 +215,7 @@ public class StoreCreationModel {
         }
 
         // We didn't change anything
-        if (store.getValue().isComplete() && !wasChanged()) {
+        if (store.getValue().isComplete() && !wasChanged() && !isQuickConnect()) {
             commit(false);
             return;
         }
@@ -307,7 +311,7 @@ public class StoreCreationModel {
                         || p.getCreationCategory().getCategory().equals(DataStorage.ALL_CONNECTIONS_CATEGORY_UUID)
                 ? "connection"
                 : p.getCreationCategory().getCategory().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID)
-                        ? (p.getId().equals("scriptGroup") ? "scriptGroup" : "script")
+                        ? "script"
                         : p.getCreationCategory().getCategory().equals(DataStorage.ALL_IDENTITIES_CATEGORY_UUID)
                                 ? "identity"
                                 : "macro";

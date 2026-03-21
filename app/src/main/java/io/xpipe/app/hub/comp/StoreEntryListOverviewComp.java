@@ -4,7 +4,6 @@ import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.CountComp;
-import io.xpipe.app.comp.base.FilterComp;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
@@ -22,7 +21,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
@@ -34,13 +32,9 @@ import java.util.function.Function;
 
 public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
 
-    private final ObservableSubscriber filterTrigger;
+    private final ObservableSubscriber quickConnectTrigger = new ObservableSubscriber();
 
-    public StoreEntryListOverviewComp(ObservableSubscriber filterTrigger) {
-        this.filterTrigger = filterTrigger;
-    }
-
-    private Region createGroupListHeader() {
+    private Region createHeaderBar() {
         var label = new Label();
         var name = BindingsHelper.flatMap(
                 StoreViewState.get().getActiveCategory(),
@@ -77,11 +71,11 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
                 label,
                 c,
                 RegionBuilder.hspacer().build(),
-                createIndexSortButton().build(),
-                sep,
                 createDateSortButton().build(),
                 RegionBuilder.hspacer(2).build(),
-                createAlphabeticalSortButton().build());
+                createAlphabeticalSortButton().build(),
+                sep,
+                createIndexSortButton().build());
         if (OsType.ofLocal() == OsType.MACOS) {
             AppFontSizes.xxxl(label);
             AppFontSizes.xxxl(c);
@@ -94,28 +88,20 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
         return topBar;
     }
 
-    private Region createGroupListFilter() {
-        var filter = new FilterComp(StoreViewState.get().getFilterString()).build();
-        filterTrigger.subscribe(() -> {
-            filter.requestFocus();
-        });
+    private Region createAddBar() {
         var add = createAddButton();
         var batchMode = createBatchModeButton().build();
-        var hbox = new HBox(add, filter, batchMode);
-        filter.minHeightProperty().bind(add.heightProperty());
-        filter.prefHeightProperty().bind(add.heightProperty());
-        filter.maxHeightProperty().bind(add.heightProperty());
+        var hbox = new HBox(add, batchMode);
+
         batchMode.minHeightProperty().bind(add.heightProperty());
         batchMode.prefHeightProperty().bind(add.heightProperty());
         batchMode.maxHeightProperty().bind(add.heightProperty());
         batchMode.minWidthProperty().bind(add.heightProperty());
         batchMode.prefWidthProperty().bind(add.heightProperty());
         batchMode.maxWidthProperty().bind(add.heightProperty());
-        hbox.setSpacing(8);
-        hbox.setAlignment(Pos.CENTER);
-        HBox.setHgrow(filter, Priority.ALWAYS);
 
-        filter.getStyleClass().add("filter-bar");
+        hbox.setSpacing(8);
+        hbox.setAlignment(Pos.CENTER_LEFT);
         return hbox;
     }
 
@@ -267,7 +253,8 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
 
     @Override
     public Region createSimple() {
-        var bar = new VBox(createGroupListHeader(), createGroupListFilter());
+        var addBar = createAddBar();
+        var bar = new VBox(createHeaderBar(), addBar);
         bar.setFillWidth(true);
         bar.getStyleClass().add("bar");
         bar.getStyleClass().add("store-header-bar");

@@ -6,6 +6,7 @@
 
 .root:nord .tile-button-comp {
     -fx-background-radius: 0;
+    -fx-border-radius: 0;
 }
 
 .tile-button-comp:hover:armed {

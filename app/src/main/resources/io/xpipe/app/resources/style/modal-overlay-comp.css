@@ -39,6 +39,10 @@
     -fx-background-radius: 0 6 0 0;
 }
 
+.root:seamless-frame:nord .modal-overlay-stack-element:loaded > .modal-overlay-comp.modal-pane > .scroll-pane > .viewport > * > .scrollable-content {
+    -fx-background-radius: 0;
+}
+
 .modal-overlay-stack-element > .modal-overlay-comp.modal-pane > .scroll-pane > .viewport > * > .scrollable-content {
     -color-modal-pane-overlay: transparent
 }

@@ -22,7 +22,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import org.bouncycastle.math.raw.Mod;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -47,7 +46,7 @@ public class AppLayoutComp extends RegionStructureBuilder<BorderPane, AppLayoutC
                                 model.getSelected()),
                         (v1, v2) -> v2,
                         LinkedHashMap::new));
-        var multi = new MultiContentComp(true, map, true);
+        var multi = new MultiContentComp(true, map);
         multi.style("background");
 
         var pane = new BorderPane();
@@ -56,34 +55,6 @@ public class AppLayoutComp extends RegionStructureBuilder<BorderPane, AppLayoutC
         pane.setCenter(multiR);
         var sidebarR = sidebar.build();
         pane.setRight(sidebarR);
-        model.getSelected().addListener((c, o, n) -> {
-            if (o != null && o.equals(model.getEntries().get(2))) {
-                var prefs = AppPrefs.get();
-                if (prefs != null) {
-                    prefs.save();
-                }
-                var storage = DataStorage.get();
-                if (storage != null) {
-                    storage.saveAsync();
-                }
-
-                if (AppPrefs.get() != null && AppPrefs.get().getRequiresRestart().get()) {
-                    GlobalTimer.delay(() -> {
-                        var modal = ModalOverlay.of("prefsRestartTitle", AppDialog.dialogTextKey("prefsRestartContent"));
-                        modal.addButton(ModalButton.cancel());
-                        modal.addButton(new ModalButton("restart", () -> AppRestart.restart(), true, true));
-                        modal.show();
-                    }, Duration.ofSeconds(1));
-                }
-            }
-
-            if (o != null && o.equals(model.getEntries().get(0))) {
-                var svs = StoreViewState.get();
-                if (svs != null) {
-                    svs.triggerStoreListUpdate();
-                }
-            }
-        });
         pane.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             sidebarR.getChildrenUnmodifiable().forEach(node -> {
                 var shortcut = (KeyCodeCombination) node.getProperties().get("shortcut");

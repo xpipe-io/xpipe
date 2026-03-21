@@ -9,6 +9,7 @@ import io.xpipe.app.util.Validators;
 import io.xpipe.ext.base.service.AbstractServiceStore;
 import io.xpipe.ext.base.service.FixedServiceCreatorStore;
 import io.xpipe.ext.base.service.MappedServiceStore;
+import io.xpipe.ext.base.store.RestartableStore;
 import io.xpipe.ext.base.store.StartableStore;
 import io.xpipe.ext.base.store.StoppableStore;
 
@@ -28,11 +29,11 @@ import java.util.regex.Pattern;
 @Value
 public class PodmanContainerStore
         implements StartableStore,
-                StoppableStore,
+                StoppableStore, RestartableStore,
                 ShellStore,
                 InternalCacheDataStore,
                 FixedChildStore,
-                StatefulDataStore<ContainerStoreState>,
+                StatefulDataStore<PodmanContainerStoreState>,
                 FixedServiceCreatorStore,
                 SelfReferentialStore,
                 ContainerImageStore,
@@ -40,6 +41,11 @@ public class PodmanContainerStore
 
     DataStoreEntryRef<PodmanCmdStore> cmd;
     String containerName;
+
+    @Override
+    public List<DataStoreEntryRef<?>> getDependencies() {
+        return DataStoreDependencies.of(cmd);
+    }
 
     @Override
     public String getName() {
@@ -65,11 +71,14 @@ public class PodmanContainerStore
 
     @Override
     public void stop() throws Exception {
+        stopSessionIfNeeded();
         var sc = getCmd().getStore().getHost().getStore().getOrStartSession();
         var view = commandView(sc);
         view.stop(containerName);
         refreshContainerState(sc);
     }
+
+
 
     @Override
     public List<? extends DataStoreEntryRef<? extends AbstractServiceStore>> createFixedServices() throws Exception {
@@ -104,8 +113,8 @@ public class PodmanContainerStore
     }
 
     @Override
-    public Class<ContainerStoreState> getStateClass() {
-        return ContainerStoreState.class;
+    public Class<PodmanContainerStoreState> getStateClass() {
+        return PodmanContainerStoreState.class;
     }
 
     @Override
@@ -154,13 +163,30 @@ public class PodmanContainerStore
         };
     }
 
-    private void refreshContainerState(ShellControl sc) throws Exception {
+    private boolean refreshContainerState(ShellControl sc) throws Exception {
         var state = getState();
         var view = new PodmanCommandView(sc).container();
         var displayState = view.queryState(containerName);
+        if (displayState.isEmpty()) {
+            var newState =
+                    state.toBuilder().containerState("Removed").running(false).build();
+            setState(newState);
+            return false;
+        }
+
         var running = displayState.startsWith("Up");
         var newState =
                 state.toBuilder().containerState(displayState).running(running).build();
         setState(newState);
+        return true;
+    }
+
+    @Override
+    public void restart() throws Exception {
+        stopSessionIfNeeded();
+        var sc = getCmd().getStore().getHost().getStore().getOrStartSession();
+        var view = commandView(sc);
+        view.restart(containerName, getState().getSystemdUnit());
+        refreshContainerState(sc);
     }
 }

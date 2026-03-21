@@ -2,7 +2,6 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
-import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.application.Platform;
@@ -18,13 +17,11 @@ import java.util.Map;
 public class MultiContentComp extends SimpleRegionBuilder {
 
     private final boolean requestFocus;
-    private final boolean log;
     private final Map<BaseRegionBuilder<?, ?>, ObservableValue<Boolean>> content;
 
     public MultiContentComp(
-            boolean requestFocus, Map<BaseRegionBuilder<?, ?>, ObservableValue<Boolean>> content, boolean log) {
+            boolean requestFocus, Map<BaseRegionBuilder<?, ?>, ObservableValue<Boolean>> content) {
         this.requestFocus = requestFocus;
-        this.log = log;
         this.content = FXCollections.observableMap(content);
     }
 
@@ -53,14 +50,7 @@ public class MultiContentComp extends SimpleRegionBuilder {
         });
 
         for (Map.Entry<BaseRegionBuilder<?, ?>, ObservableValue<Boolean>> e : content.entrySet()) {
-            var name = e.getKey().getClass().getSimpleName();
-            if (log) {
-                TrackEvent.trace("Creating content tab region for element " + name);
-            }
             var r = e.getKey().build();
-            if (log) {
-                TrackEvent.trace("Created content tab region for element " + name);
-            }
             e.getValue().subscribe(val -> {
                 PlatformThread.runLaterIfNeeded(() -> {
                     r.setManaged(val);
@@ -73,33 +63,8 @@ public class MultiContentComp extends SimpleRegionBuilder {
                 });
             });
             m.put(e.getKey(), r);
-            if (log) {
-                TrackEvent.trace("Added content tab region for element " + name);
-            }
         }
 
         return stack;
     }
-
-    //    Lazy impl
-    //    @Override
-    //    protected Region createSimple() {
-    //        var stack = new StackPane();
-    //        for (Map.Entry<BaseRegionBuilder<?,?>, ObservableValue<Boolean>> e : content.entrySet()) {
-    //            var r = e.getKey().build();
-    //            e.getValue().subscribe(val -> {
-    //                PlatformThread.runLaterIfNeeded(() -> {
-    //                    r.setManaged(val);
-    //                    r.setVisible(val);
-    //                    if (val && !stack.getChildren().contains(r)) {
-    //                        stack.getChildren().add(r);
-    //                    } else {
-    //                        stack.getChildren().remove(r);
-    //                    }
-    //                });
-    //            });
-    //        }
-    //
-    //        return stack;
-    //    }
 }

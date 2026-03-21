@@ -66,6 +66,7 @@ public enum DocumentationLink {
     SSH_BAD_FILE_DESCRIPTOR("troubleshoot/ssh#bad-file-descriptor"),
     SSH_KEX("troubleshoot/ssh#no-matching-key-exchange-method"),
     SSH_IPV6("troubleshoot/ssh#ipv6-issues"),
+    SSH_GATEWAY_TUNNELING_DISABLED("troubleshoot/ssh#gateway-tunnel--jump-server-failure"),
     SSH_CONNECTION_RESET("troubleshoot/ssh#connection-reset"),
     SSH_CONNECTION_CLOSED("troubleshoot/ssh#connection-closed-by-remote-host"),
     SSH_KEY_PERMISSIONS("troubleshoot/ssh#key-permissions-too-open"),

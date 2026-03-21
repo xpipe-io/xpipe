@@ -59,6 +59,7 @@ open module io.xpipe.app {
     exports io.xpipe.app.secret;
     exports io.xpipe.app.platform;
     exports io.xpipe.app.spice;
+    exports io.xpipe.app.cred;
 
     requires com.sun.jna;
     requires com.sun.jna.platform;

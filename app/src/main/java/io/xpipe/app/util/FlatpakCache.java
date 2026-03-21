@@ -8,6 +8,7 @@ import io.xpipe.app.process.PropertiesFormatsParser;
 import lombok.Builder;
 import lombok.Value;
 
+import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -20,6 +21,7 @@ public class FlatpakCache {
 
         String id;
         String name;
+        Path installDir;
     }
 
     private static final Map<String, App> apps = new LinkedHashMap<>();
@@ -39,7 +41,10 @@ public class FlatpakCache {
 
         var props = PropertiesFormatsParser.parse(info.get(), ":");
         var name = props.get("Name");
-        var app = App.builder().id(id).name(name).build();
+
+        var loc = Path.of(LocalShell.getShell().command(CommandBuilder.of().add("flatpak", "info", "--show-location").addQuoted(id)).readStdoutOrThrow());
+
+        var app = App.builder().id(id).name(name).installDir(loc).build();
         apps.put(id, app);
         return Optional.ofNullable(app);
     }

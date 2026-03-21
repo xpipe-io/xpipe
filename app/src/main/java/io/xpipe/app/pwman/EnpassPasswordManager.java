@@ -1,19 +1,21 @@
 package io.xpipe.app.pwman;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.secret.SecretManager;
 import io.xpipe.app.secret.SecretPromptStrategy;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
 import io.xpipe.core.FilePath;
-import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
 
 import javafx.application.Platform;
@@ -30,6 +32,7 @@ import lombok.extern.jackson.Jacksonized;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -43,6 +46,21 @@ public class EnpassPasswordManager implements PasswordManager {
     private static final UUID MASTER_PASSWORD_UUID = UUID.randomUUID();
     private static ShellControl SHELL;
     private final FilePath vaultPath;
+
+    @Override
+    public boolean supportsKeyConfiguration() {
+        return false;
+    }
+
+    @Override
+    public boolean selectInitial() throws Exception {
+        return LocalShell.getShell().view().findProgram("enpass-cli").isPresent();
+    }
+
+    @Override
+    public PasswordManagerKeyConfiguration getKeyConfiguration() {
+        return PasswordManagerKeyConfiguration.none();
+    }
 
     private static synchronized ShellControl getOrStartShell() throws Exception {
         if (SHELL == null) {
@@ -81,6 +99,8 @@ public class EnpassPasswordManager implements PasswordManager {
         return new OptionsBuilder()
                 .nameAndDescription("enpassVaultFile")
                 .addComp(comp, prop)
+                .nameAndDescription("passwordManagerTest")
+                .addComp(new PasswordManagerTestComp(true))
                 .bind(
                         () -> {
                             return EnpassPasswordManager.builder()
@@ -91,7 +111,7 @@ public class EnpassPasswordManager implements PasswordManager {
     }
 
     @Override
-    public synchronized CredentialResult retrieveCredentials(String key) {
+    public synchronized Result query(String key) {
         try {
             CommandSupport.isInLocalPathOrThrow("Enpass CLI", "enpass-cli");
         } catch (Exception e) {
@@ -159,10 +179,9 @@ public class EnpassPasswordManager implements PasswordManager {
                             "Ambiguous item name, multiple password entries match: " + String.join(", ", matches)));
                 }
 
-                var login = json.get(0).required("login").asText();
-                var secret = json.get(0).required("password").asText();
-                return new CredentialResult(
-                        !login.isEmpty() ? login : null, !secret.isEmpty() ? InPlaceSecretValue.of(secret) : null);
+                var login = Optional.ofNullable(json.get(0).get("login")).map(JsonNode::textValue).orElse(null);
+                var secret = Optional.ofNullable(json.get(0).get("password")).map(JsonNode::textValue).orElse(null);
+                return Result.of(Credentials.of(login, secret), null);
             }
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();

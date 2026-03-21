@@ -209,17 +209,19 @@ public class DerivedObservableList<T> {
         return filtered(new SimpleObjectProperty<>(predicate));
     }
 
-    public DerivedObservableList<T> filtered(Predicate<T> predicate, Observable... observables) {
-        return filtered(Bindings.createObjectBinding(
-                () -> {
-                    return new Predicate<>() {
-                        @Override
-                        public boolean test(T v) {
-                            return predicate.test(v);
-                        }
-                    };
-                },
-                Arrays.stream(observables).filter(Objects::nonNull).toArray(Observable[]::new)));
+    public DerivedObservableList<T> filtered(Predicate<T> predicate, ObservableValue<?>... observables) {
+        var object = new SimpleObjectProperty<>(predicate);
+        for (var observable : observables) {
+            observable.addListener((obs, o, n) -> {
+                object.set(new Predicate<>() {
+                    @Override
+                    public boolean test(T v) {
+                        return predicate.test(v);
+                    }
+                });
+            });
+        }
+        return filtered(object);
     }
 
     public DerivedObservableList<T> filtered(ObservableValue<Predicate<T>> predicate) {

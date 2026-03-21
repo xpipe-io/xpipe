@@ -1,6 +1,7 @@
 package io.xpipe.ext.base.desktop;
 
 import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.DataStoreDependencies;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
@@ -9,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+
+import java.util.List;
 
 @Value
 @SuperBuilder
@@ -19,6 +22,11 @@ public class DesktopApplicationStore implements DataStore {
     DataStoreEntryRef<DesktopBaseStore> desktop;
     String path;
     String arguments;
+
+    @Override
+    public List<DataStoreEntryRef<?>> getDependencies() {
+        return DataStoreDependencies.of(desktop);
+    }
 
     @Override
     public void checkComplete() throws Throwable {

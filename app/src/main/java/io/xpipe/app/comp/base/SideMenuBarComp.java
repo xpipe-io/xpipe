@@ -7,10 +7,13 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.update.UpdateAvailableDialog;
+import io.xpipe.app.update.UpdateHandler;
 import io.xpipe.app.util.Hyperlinks;
 
+import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -66,18 +69,27 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
         }
 
         {
-            var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableDialog.showIfNeeded(false));
+            var b = new IconButtonComp("mdi2u-update", () -> {
+                var r = UpdateAvailableDialog.showIfNeeded(false);
+                if (!r) {
+                    AppPrefs.get().selectCategory("about");
+                    ThreadHelper.runFailableAsync(() -> {
+                        UpdateHandler uh = AppDistributionType.get().getUpdateHandler();
+                        uh.prepareUpdate();
+                    });
+                }
+            });
             b.describe(d -> d.nameKey("updateAvailableTooltip"));
             var stack = createStyle(null, b);
+            var h = AppDistributionType.get().getUpdateHandler();
             stack.hide(Bindings.createBooleanBinding(
                     () -> {
-                        return AppDistributionType.get()
-                                        .getUpdateHandler()
+                        return h
                                         .getPreparedUpdate()
                                         .getValue()
                                 == null;
                     },
-                    AppDistributionType.get().getUpdateHandler().getPreparedUpdate()));
+                    h.getPreparedUpdate(), h.getBusy()));
             vbox.getChildren().add(stack.build());
         }
 

@@ -1,17 +1,21 @@
 package io.xpipe.ext.base.identity;
 
+import io.xpipe.app.cred.UsernameStrategy;
 import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
-import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
+import io.xpipe.app.cred.SshIdentityStrategy;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-@SuperBuilder
+import java.util.List;
+
+@SuperBuilder(toBuilder = true)
 @JsonTypeName("localIdentity")
 @Jacksonized
 @Value
@@ -43,5 +47,10 @@ public class LocalIdentityStore extends IdentityStore {
 
     EncryptedValue<SshIdentityStrategy> getEncryptedSshIdentity() {
         return sshIdentity;
+    }
+
+    @Override
+    public List<DataStoreEntryRef<?>> getDependencies() {
+        return List.of();
     }
 }

@@ -7,7 +7,6 @@ import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.Rect;
 
 import io.xpipe.app.util.ThreadHelper;
-import lombok.Getter;
 
 import java.time.Duration;
 import java.util.HashSet;
@@ -17,7 +16,6 @@ import java.util.function.UnaryOperator;
 
 public class TerminalDockView {
 
-    @Getter
     private final Set<ControllableTerminalSession> terminalInstances = new HashSet<>();
 
     private final UnaryOperator<Rect> windowBoundsFunction;

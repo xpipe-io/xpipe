@@ -54,14 +54,16 @@ public class StoreCreationMenu {
 
         menu.getItems().add(categoryMenu("addDesktop", "mdi2c-camera-plus", DataStoreCreationCategory.DESKTOP, null));
 
+        menu.getItems().add(cloudMenu());
+
+        menu.getItems().add(new SeparatorMenuItem());
+
         menu.getItems()
                 .add(categoryMenu(
                         "addIdentity",
                         "mdi2a-account-multiple-plus",
                         DataStoreCreationCategory.IDENTITY,
                         "localIdentity"));
-
-        menu.getItems().add(cloudMenu());
 
         menu.getItems().add(new SeparatorMenuItem());
 
@@ -71,13 +73,6 @@ public class StoreCreationMenu {
         menu.getItems()
                 .add(categoryMenu(
                         "addTunnel", "mdi2v-vector-polyline-plus", DataStoreCreationCategory.TUNNEL, "sshLocalTunnel"));
-
-        menu.getItems()
-                .add(categoryMenu(
-                        "addFileSystem",
-                        "mdi2f-folder-plus-outline",
-                        DataStoreCreationCategory.FILE_SYSTEM,
-                        "genericS3Bucket"));
 
         menu.getItems().add(new SeparatorMenuItem());
 
@@ -103,6 +98,13 @@ public class StoreCreationMenu {
             actionMenu.getParentPopup().hide();
         });
         actionMenu.getItems().addFirst(item);
+
+        menu.getItems()
+                .add(categoryMenu(
+                        "addFileSystem",
+                        "mdi2f-folder-plus-outline",
+                        DataStoreCreationCategory.FILE_SYSTEM,
+                        "genericS3Bucket"));
 
         menu.getItems().add(categoryMenu("addSerial", "mdi2s-serial-port", DataStoreCreationCategory.SERIAL, "serial"));
 
@@ -153,7 +155,7 @@ public class StoreCreationMenu {
         });
 
         int lastOrder = providers.getFirst().getOrderPriority();
-        for (io.xpipe.app.ext.DataStoreProvider dataStoreProvider : providers) {
+        for (var dataStoreProvider : providers) {
             if (dataStoreProvider.getOrderPriority() != lastOrder) {
                 menu.getItems().add(new SeparatorMenuItem());
                 lastOrder = dataStoreProvider.getOrderPriority();
@@ -167,6 +169,7 @@ public class StoreCreationMenu {
                 StoreCreationDialog.showCreation(dataStoreProvider, category);
                 event.consume();
             });
+            item.setDisable(!dataStoreProvider.allowCreation());
             menu.getItems().add(item);
         }
         return menu;

@@ -1,5 +1,5 @@
 .root:key-navigation .toggle-switch-comp:focused > .thumb-area {
-    -fx-background-color: -color-neutral-emphasis;
+    -fx-border-color: -color-accent-emphasis;
 }
 
 .toggle-switch-comp:has-graphic .label {
@@ -16,4 +16,66 @@
 
 .root:linux .toggle-switch-comp .label-container {
     -fx-padding: -0.05em 0 0 0;
+}
+
+.root:windows .toggle-switch-comp > .thumb-area {
+    -fx-padding: 0.65em 1.5em;
+    -fx-background-insets: 0, 1;
+}
+
+.root:windows .toggle-switch-comp > .thumb {
+    -fx-background-insets: 0.2em;
+    -fx-background-radius: 1em;
+    -fx-padding: 0.7em;
+}
+
+.root:windows:nord .toggle-switch-comp > .thumb {
+    -fx-background-radius: 0em;
+}
+
+.root:windows:nord .toggle-switch-comp > .thumb-area {
+    -fx-border-radius: 0;
+}
+
+.root:light .toggle-switch-comp > .thumb {
+    -fx-background-color: -color-fg-emphasis;
+}
+
+.root:light .toggle-switch-comp > .thumb-area {
+    -fx-border-radius: 1em;
+    -fx-border-width: 1;
+    -fx-border-color: derive(-color-border-default, -5%);
+    -fx-background-color: derive(-color-neutral-muted, -8%);
+}
+
+.root:light .toggle-switch-comp:selected > .thumb {
+    -fx-background-color: -color-accent-emphasis, -color-fg-emphasis;
+    -fx-opacity: 1;
+}
+
+.root:light .toggle-switch-comp:selected > .thumb-area {
+    -fx-background-color: -color-accent-emphasis, -color-accent-emphasis;
+}
+
+.root:macos .toggle-switch-comp > .thumb-area {
+    -fx-padding: 0.65em 1.5em;
+}
+
+.root:light:macos .toggle-switch-comp > .thumb-area {
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+}
+
+.root:macos .toggle-switch-comp > .thumb {
+    -fx-background-insets: 0.15em;
+    -fx-background-radius: 1em;
+    -fx-padding: 0.7em 1.0em 0.7em 1.0em;
+}
+
+.root:macos:nord .toggle-switch-comp > .thumb {
+    -fx-background-radius: 0em;
+}
+
+.root:macos:nord .toggle-switch-comp > .thumb-area {
+    -fx-border-radius: 0;
 }

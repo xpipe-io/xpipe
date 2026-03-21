@@ -24,6 +24,7 @@ public class SecretQueryProgress {
     private final List<String> seenPrompts;
     private final CountDown countDown;
     private final boolean interactive;
+    private final boolean forceFocus;
     private SecretQueryState state = SecretQueryState.NORMAL;
 
     public SecretQueryProgress(
@@ -34,7 +35,8 @@ public class SecretQueryProgress {
             @NonNull List<SecretQueryFilter> filters,
             List<SecretQueryFormatter> formatters,
             @NonNull CountDown countDown,
-            boolean interactive) {
+            boolean interactive, boolean forceFocus
+    ) {
         this.requestId = requestId;
         this.storeId = storeId;
         this.suppliers = new ArrayList<>(suppliers);
@@ -43,6 +45,7 @@ public class SecretQueryProgress {
         this.formatters = formatters;
         this.countDown = countDown;
         this.interactive = interactive;
+        this.forceFocus = forceFocus;
         this.seenPrompts = new ArrayList<>();
     }
 
@@ -87,7 +90,7 @@ public class SecretQueryProgress {
             }
 
             countDown.pause();
-            var r = fallback.query(prompt);
+            var r = fallback.query(prompt, forceFocus);
             countDown.resume();
 
             if (r.getState() != SecretQueryState.NORMAL) {
@@ -136,7 +139,7 @@ public class SecretQueryProgress {
         }
 
         countDown.pause();
-        var r = sup.query(prompt);
+        var r = sup.query(prompt, forceFocus);
         countDown.resume();
 
         if (r.getState() != SecretQueryState.NORMAL) {

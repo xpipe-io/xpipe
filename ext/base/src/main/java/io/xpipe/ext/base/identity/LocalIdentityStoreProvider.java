@@ -10,8 +10,8 @@ import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
-import io.xpipe.ext.base.identity.ssh.NoIdentityStrategy;
-import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
+import io.xpipe.app.cred.NoIdentityStrategy;
+import io.xpipe.app.cred.SshIdentityStrategyChoiceConfig;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;

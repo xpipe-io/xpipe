@@ -15,7 +15,7 @@ public class LinksCategory extends AppPrefsCategory {
 
     private BaseRegionBuilder<?, ?> createLinks() {
         return new OptionsBuilder()
-                .addTitle("links")
+                .title("links")
                 .addComp(RegionBuilder.vspacer(19))
                 .addComp(
                         new TileButtonComp("activeLicense", "activeLicenseDescription", "mdi2k-key-outline", e -> {

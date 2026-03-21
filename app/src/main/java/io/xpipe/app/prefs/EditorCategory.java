@@ -77,7 +77,7 @@ public class EditorCategory extends AppPrefsCategory {
     @Override
     protected BaseRegionBuilder<?, ?> create() {
         return new OptionsBuilder()
-                .addTitle("editorConfiguration")
+                .title("editorConfiguration")
                 .sub(editorChoice())
                 .buildComp();
     }

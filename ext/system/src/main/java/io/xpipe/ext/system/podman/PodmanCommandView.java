@@ -3,10 +3,14 @@ package io.xpipe.ext.system.podman;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
 
+import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 import lombok.NonNull;
 import lombok.Value;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class PodmanCommandView extends CommandViewBase {
@@ -67,6 +71,16 @@ public class PodmanCommandView extends CommandViewBase {
 
     public class Container extends CommandView {
 
+        public Optional<String> queryLabel(String container, String label) throws Exception {
+            var command = build(b -> b.add("inspect")
+                    .add(sc -> {
+                        var quote = ShellDialects.isPowershell(sc) ? "'" : "\"";
+                        return "--format=" + quote + "{{index (index .Config.Labels \\\"" + label + "\\\")}}" + quote;
+                    })
+                    .addQuoted(container));
+            return command.readStdoutIfPossible().filter(s -> !s.isBlank());
+        }
+
         public String queryState(String container) throws Exception {
             return build(commandBuilder -> commandBuilder.add(
                             "ls", "-a", "-f", "name=\"^" + container + "$\"", "--format=\"{{.Status}}\""))
@@ -101,10 +115,12 @@ public class PodmanCommandView extends CommandViewBase {
                             commandBuilder.add("ls -a --format=\"{{.Names}};{{.Image}};{{.Status}}\""))
                     .start()) {
                 var output = c.readStdoutOrThrow();
-                return output.lines()
-                        .filter(s -> s.split(";").length == 3)
-                        .map(s -> new ContainerEntry(s.split(";")[0], s.split(";")[1], s.split(";")[2]))
-                        .toList();
+                var l = new ArrayList<ContainerEntry>();
+                for (String s : output.lines().toList()) {
+                    var systemd = queryLabel(s.split(";")[0], "PODMAN_SYSTEMD_UNIT").orElse(null);
+                    l.add(new ContainerEntry(s.split(";")[0], s.split(";")[1], s.split(";")[2], systemd));
+                }
+                return l;
             }
         }
 
@@ -145,6 +161,15 @@ public class PodmanCommandView extends CommandViewBase {
                     .execute();
         }
 
+        public void restart(String container, String service) throws Exception {
+            if (shellControl.getOsType() == OsType.LINUX && service != null) {
+                shellControl.command(CommandBuilder.of().add("systemctl", "restart", "--user").addQuoted(service)).execute();
+                return;
+            }
+
+            build(commandBuilder -> commandBuilder.add("restart").addQuoted(container)).execute();
+        }
+
         public String port(String container) throws Exception {
             return build(commandBuilder -> commandBuilder.add("port").addQuoted(container))
                     .readStdoutOrThrow();
@@ -168,6 +193,7 @@ public class PodmanCommandView extends CommandViewBase {
             String name;
             String image;
             String status;
+            String systemdUnit;
         }
     }
 }

@@ -19,7 +19,7 @@ public class UpdatesCategory extends AppPrefsCategory {
     public BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
         var builder = new OptionsBuilder();
-        builder.addTitle("updates")
+        builder.title("updates")
                 .sub(new OptionsBuilder()
                         .pref(prefs.automaticallyCheckForUpdates)
                         .addToggle(prefs.automaticallyCheckForUpdates)

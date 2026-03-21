@@ -35,6 +35,7 @@ import javafx.scene.layout.Region;
 
 import atlantafx.base.layout.InputGroup;
 import atlantafx.base.theme.Styles;
+import javafx.scene.layout.StackPane;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.lang.ref.WeakReference;
@@ -304,7 +305,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
     }
 
     protected BaseRegionBuilder<?, ?> createIcon(int w, int h, Consumer<Node> fontSize) {
-        var icon = new StoreIconComp(getWrapper(), w, h);
+        var icon = new StoreEntryIconComp(getWrapper(), w, h);
         icon.apply(struc -> {
             struc.opacityProperty()
                     .bind(Bindings.createDoubleBinding(
@@ -644,13 +645,18 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                     var move = new Menu(AppI18n.get("category"), new FontIcon("mdi2f-folder-move-outline"));
                     StoreViewState.get()
                             .getSortedCategories(
-                                    getWrapper().getCategory().getValue().getRoot())
+                                    getWrapper().getCategory().getValue().getRoot(), true)
                             .getList()
                             .forEach(storeCategoryWrapper -> {
-                                MenuItem m = new MenuItem();
-                                m.textProperty()
-                                        .setValue("  ".repeat(storeCategoryWrapper.getDepth())
-                                                + storeCategoryWrapper.getName().getValue());
+                                var m = new CustomMenuItem();
+
+                                var l = new Label();
+                                l.setGraphic(PrettyImageHelper.ofFixedSizeSquare(storeCategoryWrapper.getIconFile().getValue(), 16)
+                                        .padding(new Insets(0, 0, 1, 0)).build());
+                                l.setText(storeCategoryWrapper.getName().getValue());
+                                l.setPadding(new Insets(0, 1, 1, storeCategoryWrapper.getDepth() * 10));
+                                m.setContent(l);
+
                                 m.setOnAction(event -> {
                                     getWrapper().moveTo(storeCategoryWrapper.getCategory());
                                     event.consume();

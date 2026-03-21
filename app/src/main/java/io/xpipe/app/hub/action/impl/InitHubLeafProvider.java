@@ -14,18 +14,7 @@ public abstract class InitHubLeafProvider<T extends DataStore, O> implements Hub
     public void init() {
         ThreadHelper.runFailableAsync(() -> {
             available = check();
-
-            // Update entries to potentially show item
-            if (available != null) {
-                StoreViewState.get().getAllEntries().getList().stream()
-                        .filter(w -> w.getValidity().getValue().isUsable())
-                        .forEach(w -> {
-                            if (getApplicableClass()
-                                    .isAssignableFrom(w.getStore().getValue().getClass())) {
-                                w.update();
-                            }
-                        });
-            }
+            StoreViewState.get().updateWrappers();
         });
     }
 

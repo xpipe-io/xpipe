@@ -1,18 +1,22 @@
 package io.xpipe.ext.base.identity;
 
+import io.xpipe.app.cred.UsernameStrategy;
 import io.xpipe.app.ext.UserScopeStore;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
-import io.xpipe.ext.base.identity.ssh.KeyFileStrategy;
-import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
+import io.xpipe.app.cred.KeyFileStrategy;
+import io.xpipe.app.cred.SshIdentityStrategy;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+
+import java.util.List;
 
 @SuperBuilder
 @JsonTypeName("syncedIdentity")
@@ -44,7 +48,12 @@ public class SyncedIdentityStore extends IdentityStore implements UserScopeStore
     }
 
     @Override
-    public void checkComplete() throws Throwable {
+    public List<DataStoreEntryRef<?>> getDependencies() {
+        return List.of();
+    }
+
+    @Override
+    public void checkComplete() throws ValidationException {
         super.checkComplete();
         if (getSshIdentity() instanceof KeyFileStrategy f) {
             if (!f.getFile().isInDataDirectory()) {

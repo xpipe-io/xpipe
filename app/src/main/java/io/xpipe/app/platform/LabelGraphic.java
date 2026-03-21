@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.PrettyImageHelper;
 
 import javafx.scene.Node;
 
+import javafx.scene.layout.Region;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -47,7 +48,7 @@ public abstract class LabelGraphic {
         int size;
 
         @Override
-        public Node createGraphicNode() {
+        public Region createGraphicNode() {
             return PrettyImageHelper.ofFixedSizeSquare(file, size)
                     .style("graphic")
                     .build();

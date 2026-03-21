@@ -16,6 +16,8 @@ import io.xpipe.app.core.window.AppWindowTitle;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.StartOnInitStore;
+import io.xpipe.app.hub.comp.StoreFilterState;
+import io.xpipe.app.hub.comp.StoreQuickConnect;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.issue.TrackEvent;
@@ -129,7 +131,9 @@ public class AppBaseMode extends AppOperationMode {
                     storageLoaded.countDown();
                     AppMcpServer.init();
                     iconsInit.await();
+                    StoreFilterState.init();
                     StoreViewState.init();
+                    StoreQuickConnect.init();
                     AppMainWindow.loadingText("loadingSettings");
                     TrackEvent.info("Connection storage initialization thread completed");
                 },
@@ -209,6 +213,7 @@ public class AppBaseMode extends AppOperationMode {
         AppBeaconServer.reset();
         KeePassXcPasswordManager.reset();
         StoreViewState.reset();
+        StoreFilterState.reset();
         AppLayoutModel.reset();
         AppTheme.reset();
         PlatformState.teardown();

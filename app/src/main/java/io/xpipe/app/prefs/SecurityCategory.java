@@ -19,7 +19,7 @@ public class SecurityCategory extends AppPrefsCategory {
     public BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
         var builder = new OptionsBuilder();
-        builder.addTitle("security")
+        builder.title("security")
                 .sub(new OptionsBuilder()
                         .pref(prefs.alwaysConfirmElevation)
                         .addToggle(prefs.alwaysConfirmElevation)

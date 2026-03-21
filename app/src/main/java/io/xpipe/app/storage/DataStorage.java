@@ -55,6 +55,7 @@ public abstract class DataStorage {
     private final Map<DataStore, DataStoreEntry> identityStoreEntryMapCache = new IdentityHashMap<>();
     private final Map<DataStore, DataStoreEntry> storeEntryMapCache = new HashMap<>();
     private final Map<DataStore, DataStore> storeMoveCache = new IdentityHashMap<>();
+    private final Map<DataStoreEntry, Collection<DataStoreEntryRef<?>>> storeDependencyCache = new HashMap<>();
 
     @Getter
     protected boolean entriesAvailable;
@@ -237,6 +238,7 @@ public abstract class DataStorage {
                     Instant.now(),
                     Instant.now(),
                     true,
+                    null,
                     ALL_CONNECTIONS_CATEGORY_UUID,
                     true,
                     DataStoreCategoryConfig.empty());
@@ -334,11 +336,11 @@ public abstract class DataStorage {
             } catch (Exception e) {
                 return false;
             }
-        } while ((c = DataStorage.get().getDefaultDisplayParent(c).orElse(null)) != null);
+        } while ((c = getDefaultDisplayParent(c).orElse(null)) != null);
         return true;
     }
 
-    protected void refreshEntries() {
+    public void refreshEntries() {
         storeEntries.keySet().forEach(dataStoreEntry -> {
             dataStoreEntry.refreshStore();
         });
@@ -357,11 +359,11 @@ public abstract class DataStorage {
             newEntry.setIcon(icon, true);
         }
 
-        var oldParent = DataStorage.get().getDefaultDisplayParent(entry);
-        var newParent = DataStorage.get().getDefaultDisplayParent(newEntry);
+        var oldParent = getDefaultDisplayParent(entry);
+        var newParent = getDefaultDisplayParent(newEntry);
         var sameParent = Objects.equals(oldParent, newParent);
 
-        finalizeWithChildren(entry);
+        finalizeWithDependencies(entry);
 
         var children = getDeepStoreChildren(entry);
         if (!sameParent) {
@@ -376,13 +378,15 @@ public abstract class DataStorage {
             synchronized (storeEntryMapCache) {
                 storeEntryMapCache.remove(entry.getStore());
             }
+            synchronized (storeDependencyCache) {
+                storeDependencyCache.remove(entry);
+            }
         }
 
         var categoryChanged = !entry.getCategoryUuid().equals(newEntry.getCategoryUuid());
 
         if (entry.getStore() != null
-                && newEntry.getStore() != null
-                && !entry.getStore().equals(newEntry.getStore())) {
+                && newEntry.getStore() != null) {
             synchronized (storeMoveCache) {
                 storeMoveCache.put(entry.getStore(), newEntry.getStore());
             }
@@ -412,13 +416,30 @@ public abstract class DataStorage {
         saveAsync();
     }
 
-    private void finalizeWithChildren(DataStoreEntry entry) {
-        var c = getDeepStoreChildren(entry);
-        var l = new ArrayList<>(c);
-        l.addFirst(entry);
-        for (int i = l.size() - 1; i >= 0; i--) {
-            l.get(i).finalizeEntry();
+    public void finalizeWithDependencies(DataStoreEntry entry) {
+        for (DataStoreEntry other : getStoreEntries()) {
+            var cached = storeDependencyCache.computeIfAbsent(other, this::getDependencies);
+            if (cached.contains(entry.ref())) {
+                other.finalizeEntry();
+            }
         }
+        entry.finalizeEntry();
+    }
+
+    private Collection<DataStoreEntryRef<?>> getDependencies(DataStoreEntry entry) {
+        var l = new HashSet<DataStoreEntryRef<?>>();
+
+        var store = entry.getStore();
+        if (store == null) {
+            return l;
+        }
+
+        var deps = store.getDependencies();
+        l.addAll(deps);
+        for (DataStoreEntryRef<?> dep : deps) {
+            l.addAll(getDependencies(dep.get()));
+        }
+        return l;
     }
 
     public void updateEntryStore(DataStoreEntry entry, DataStore store) {
@@ -426,15 +447,20 @@ public abstract class DataStorage {
             return;
         }
 
-        finalizeWithChildren(entry);
+        finalizeWithDependencies(entry);
         if (entry.getStore() != null && store != null && !entry.getStore().equals(store)) {
             synchronized (storeMoveCache) {
                 storeMoveCache.put(entry.getStore(), store);
             }
+            synchronized (storeDependencyCache) {
+                storeDependencyCache.put(entry, getDependencies(entry));
+            }
         }
         entry.setStoreInternal(store, false);
 
-        saveAsync();
+        if (storeEntries.containsKey(entry)) {
+            saveAsync();
+        }
     }
 
     public void updateCategory(DataStoreCategory category, DataStoreCategory newCategory) {
@@ -447,7 +473,7 @@ public abstract class DataStorage {
     public void updateCategoryConfig(DataStoreCategory category, DataStoreCategoryConfig config) {
         if (category.setConfig(config)) {
             // Update git remote if needed
-            DataStorage.get().saveAsync();
+            saveAsync();
         }
     }
 
@@ -464,6 +490,7 @@ public abstract class DataStorage {
                 Instant.now(),
                 Instant.now(),
                 true,
+                null,
                 cat.getUuid(),
                 true,
                 DataStoreCategoryConfig.empty());
@@ -851,6 +878,9 @@ public abstract class DataStorage {
             synchronized (storeEntryMapCache) {
                 storeEntryMapCache.remove(td.getStore());
             }
+            synchronized (storeDependencyCache) {
+                storeDependencyCache.remove(td);
+            }
             var parent = getDefaultDisplayParent(td);
             parent.ifPresent(p -> p.setChildrenCache(null));
         }
@@ -985,7 +1015,7 @@ public abstract class DataStorage {
     }
 
     public void deleteStoreEntry(@NonNull DataStoreEntry entry) {
-        finalizeWithChildren(entry);
+        finalizeWithDependencies(entry);
         this.storeEntries.remove(entry);
         synchronized (identityStoreEntryMapCache) {
             identityStoreEntryMapCache.remove(entry.getStore());
@@ -997,6 +1027,10 @@ public abstract class DataStorage {
         this.listeners.forEach(l -> l.onStoreRemove(entry));
         refreshEntries();
         saveAsync();
+    }
+
+    public boolean canCreateStoreCategoryWithin(@NonNull DataStoreCategory cat) {
+        return !cat.getUuid().equals(ALL_IDENTITIES_CATEGORY_UUID);
     }
 
     public boolean canDeleteStoreCategory(@NonNull DataStoreCategory cat) {
@@ -1062,8 +1096,8 @@ public abstract class DataStorage {
     }
 
     private DataStoreCategory getFallbackCategory(DataStoreCategory cat) {
-        var parent = getStoreCategoryIfPresent(cat.getParentCategory()).orElseThrow();
-        if (parent.getParentCategory() != null) {
+        var parent = getStoreCategoryIfPresent(cat.getParentCategory()).orElse(null);
+        if (parent != null && parent.getParentCategory() != null) {
             return parent;
         }
 

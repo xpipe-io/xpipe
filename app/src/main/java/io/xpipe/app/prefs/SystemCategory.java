@@ -23,7 +23,7 @@ public class SystemCategory extends AppPrefsCategory {
     public BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
         var builder = new OptionsBuilder();
-        builder.addTitle("system")
+        builder.title("system")
                 .sub(new OptionsBuilder()
                         .pref(prefs.startupBehaviour)
                         .addComp(ChoiceComp.ofTranslatable(

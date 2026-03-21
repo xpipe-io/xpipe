@@ -38,6 +38,10 @@ public class ScanHubBatchProvider implements BatchHubProvider<ShellStore> {
 
     @Override
     public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
+        if (!o.get().getProvider().shouldShowScan()) {
+            return false;
+        }
+
         var state = o.get().getStorePersistentState();
         if (state instanceof SystemState systemState) {
             return (systemState.getShellDialect() == null

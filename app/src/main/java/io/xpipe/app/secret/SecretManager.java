@@ -38,9 +38,11 @@ public class SecretManager {
             List<SecretQueryFilter> filters,
             List<SecretQueryFormatter> formatters,
             CountDown countDown,
-            boolean interactive) {
+            boolean interactive,
+            boolean forceFocus
+    ) {
         var p = new SecretQueryProgress(
-                request, storeId, suppliers, fallback, filters, formatters, countDown, interactive);
+                request, storeId, suppliers, fallback, filters, formatters, countDown, interactive, forceFocus);
         // Clear old ones in case we restarted a session
         clearSecretProgress(request);
         progress.add(p);
@@ -82,7 +84,8 @@ public class SecretManager {
                 List.of(),
                 List.of(),
                 CountDown.of(),
-                interactive);
+                interactive,
+                false);
         p.preAdvance(sub);
         var r = p.process(prompt);
         completeRequest(uuid);

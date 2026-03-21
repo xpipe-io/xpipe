@@ -36,7 +36,7 @@ public class StoreCategoryWrapper {
     private final IntegerProperty allContainedEntriesCount = new SimpleIntegerProperty();
     private final BooleanProperty expanded = new SimpleBooleanProperty();
     private final Property<DataStoreColor> color = new SimpleObjectProperty<>();
-    private final BooleanProperty largeCategoryOptimizations = new SimpleBooleanProperty();
+    private final Property<String> iconFile = new SimpleObjectProperty<>();
     private final Trigger<Void> renameTrigger = Trigger.of();
     private StoreCategoryWrapper cachedParent;
 
@@ -100,6 +100,16 @@ public class StoreCategoryWrapper {
         return cachedParent;
     }
 
+    public boolean isHierarchyExpanded() {
+        StoreCategoryWrapper current = this;
+        while ((current = current.getParent()) != null) {
+            if (!current.getExpanded().get()) {
+                return false;
+            }
+        };
+        return true;
+    }
+
     public void select() {
         PlatformThread.runLaterIfNeeded(() -> {
             StoreViewState.get().getActiveCategory().setValue(this);
@@ -152,9 +162,14 @@ public class StoreCategoryWrapper {
         this.expanded.set(!expanded.getValue());
     }
 
-    public void update() {
+    public synchronized void update() {
         // We are probably in shutdown then
         if (StoreViewState.get() == null) {
+            return;
+        }
+
+        // We received a delayed update after removal
+        if (!DataStorage.get().getStoreCategories().contains(category)) {
             return;
         }
 
@@ -169,6 +184,7 @@ public class StoreCategoryWrapper {
                 DataStorage.get().getEffectiveCategoryConfig(category).getSync()));
         expanded.setValue(category.isExpanded());
         color.setValue(DataStorage.get().getEffectiveCategoryConfig(category).getColor());
+        iconFile.setValue(category.getEffectiveIconFile());
 
         var allEntries = new ArrayList<>(StoreViewState.get().getAllEntries().getList());
         directContainedEntries.setContent(allEntries.stream()
@@ -191,15 +207,9 @@ public class StoreCategoryWrapper {
                 .sum();
         allContainedEntriesCount.setValue(direct + sub);
 
-        var performanceCount =
-                AppPrefs.get().showChildCategoriesInParentCategory().get() ? allContainedEntriesCount.get() : direct;
-        if (performanceCount > 500) {
-            largeCategoryOptimizations.setValue(true);
-        }
-
         var directFiltered = directContainedEntries.getList().stream()
                 .filter(storeEntryWrapper -> {
-                    var filter = StoreViewState.get().getFilterString().getValue();
+                    var filter = StoreFilterState.get().getEffectiveFilter().getValue();
                     if (filter != null) {
                         var matches = storeEntryWrapper.matchesFilter(filter);
                         return matches;

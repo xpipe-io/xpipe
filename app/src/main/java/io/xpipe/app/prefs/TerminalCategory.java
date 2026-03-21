@@ -4,6 +4,7 @@ import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
@@ -21,7 +22,6 @@ import io.xpipe.app.terminal.*;
 import io.xpipe.app.util.*;
 import io.xpipe.core.OsType;
 
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
@@ -33,6 +33,8 @@ import javafx.scene.layout.Region;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
@@ -151,20 +153,6 @@ public class TerminalCategory extends AppPrefsCategory {
     @Override
     protected BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
-        prefs.enableTerminalLogging.addListener((observable, oldValue, newValue) -> {
-            var feature = LicenseProvider.get().getFeature("logging");
-            if (newValue && !feature.isSupported()) {
-                try {
-                    // Disable it again so people don't forget that they left it on
-                    Platform.runLater(() -> {
-                        prefs.enableTerminalLogging.set(false);
-                    });
-                    feature.throwIfUnsupported();
-                } catch (LicenseRequiredException ex) {
-                    ErrorEventFactory.fromThrowable(ex).handle();
-                }
-            }
-        });
 
         var tabsSettingSupported = Bindings.createBooleanBinding(
                 () -> {
@@ -176,13 +164,29 @@ public class TerminalCategory extends AppPrefsCategory {
         var splitViewSupported = Bindings.isNotNull(TerminalSplitStrategy.getEffectiveSplitStrategyObservable());
 
         return new OptionsBuilder()
-                .addTitle("terminalConfiguration")
+                .title("terminalConfiguration")
                 .sub(terminalChoice(true))
                 .sub(terminalPrompt())
                 .sub(terminalProxy())
                 .sub(terminalMultiplexer())
                 // .sub(terminalInitScript())
-                .addTitle("terminalBehaviour")
+                .title("sessionLogging")
+                .sub(new OptionsBuilder()
+                        .pref(prefs.enableTerminalLogging)
+                        .addToggle(prefs.enableTerminalLogging)
+                        .nameAndDescription("terminalLoggingDirectory")
+                        .documentationLink(DocumentationLink.TERMINAL_LOGGING_FILES)
+                        .addComp(new ButtonComp(AppI18n.observable("openSessionLogs"), () -> {
+                            var dir = AppProperties.get().getDataDir().resolve("sessions");
+                            try {
+                                Files.createDirectories(dir);
+                                DesktopHelper.browseFile(dir);
+                            } catch (IOException e) {
+                                ErrorEventFactory.fromThrowable(e).handle();
+                            }
+                        })
+                                .disable(prefs.enableTerminalLogging.not())))
+                .title("terminalBehaviour")
                 .sub(
                         new OptionsBuilder()
                                 .pref(prefs.enableConnectionHubTerminalDocking)
@@ -220,8 +224,6 @@ public class TerminalCategory extends AppPrefsCategory {
                                 .pref(prefs.enableTerminalStartupBell)
                                 .addToggle(prefs.enableTerminalStartupBell)
                                 .hide(OsType.ofLocal() == OsType.WINDOWS)
-                        //                        .pref(prefs.terminalPromptForRestart)
-                        //                        .addToggle(prefs.terminalPromptForRestart)
                         )
                 .buildComp();
     }

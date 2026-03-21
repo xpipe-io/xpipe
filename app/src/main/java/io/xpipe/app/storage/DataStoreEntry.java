@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.apache.commons.io.FileUtils;
 
@@ -25,7 +26,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
-@Value
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Getter
 public class DataStoreEntry extends StorageElement {
 
     Map<String, Object> storeCache = Collections.synchronizedMap(new HashMap<>());
@@ -64,9 +66,6 @@ public class DataStoreEntry extends StorageElement {
 
     @NonFinal
     String lastWrittenNotes;
-
-    @NonFinal
-    String icon;
 
     @NonFinal
     @Getter
@@ -111,7 +110,7 @@ public class DataStoreEntry extends StorageElement {
             int orderIndex,
             UUID breakOutCategory,
             List<String> tags) {
-        super(directory, uuid, name, lastUsed, lastModified, expanded, dirty);
+        super(directory, uuid, name, lastUsed, lastModified, expanded, dirty, icon);
         this.color = color;
         this.categoryUuid = categoryUuid;
         this.store = store;
@@ -121,12 +120,26 @@ public class DataStoreEntry extends StorageElement {
         this.validity = this.provider != null ? validity : Validity.LOAD_FAILED;
         this.storePersistentStateNode = storePersistentState;
         this.notes = notes;
-        this.icon = icon;
         this.freeze = freeze;
         this.pinToTop = pinToTop;
         this.orderIndex = orderIndex;
         this.breakOutCategory = breakOutCategory;
         this.tags = tags;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o == this || (o instanceof DataStoreEntry e && e.getUuid().equals(getUuid()));
+    }
+
+    @Override
+    public int hashCode() {
+        return getUuid().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 
     public static DataStoreEntry createTempWrapper(@NonNull DataStore store) {
@@ -355,7 +368,7 @@ public class DataStoreEntry extends StorageElement {
 
         var found = SystemIconManager.getIcon(icon);
         if (found.isPresent()) {
-            return SystemIconManager.getAndLoadIconFile(found.get());
+            return SystemIconManager.getAndLoadIconFile(found.get(), true);
         } else {
             return "error.png";
         }
@@ -367,21 +380,6 @@ public class DataStoreEntry extends StorageElement {
         if (changed) {
             notifyUpdate(false, true);
         }
-    }
-
-    @Override
-    public int hashCode() {
-        return getUuid().hashCode();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return o == this || (o instanceof DataStoreEntry e && e.getUuid().equals(getUuid()));
-    }
-
-    @Override
-    public String toString() {
-        return getName();
     }
 
     public boolean isChangedForReload(DataStoreEntry other) {
@@ -457,18 +455,6 @@ public class DataStoreEntry extends StorageElement {
         var changed = !Objects.equals(storePersistentState, value);
         this.storePersistentState = value;
         this.storePersistentStateNode = JacksonMapper.getDefault().valueToTree(value);
-        if (changed) {
-            notifyUpdate(false, true);
-        }
-    }
-
-    public void setIcon(String icon, boolean force) {
-        if (this.icon != null && !force) {
-            return;
-        }
-
-        var changed = !Objects.equals(this.icon, icon);
-        this.icon = icon;
         if (changed) {
             notifyUpdate(false, true);
         }

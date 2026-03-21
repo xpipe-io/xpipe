@@ -6,6 +6,7 @@ import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.ext.DataStoreDependencies;
 import io.xpipe.app.ext.ShellDialectChoiceComp;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
@@ -100,6 +101,11 @@ public interface ScriptTextSource {
                                     .text(text.get())
                                     .build(),
                             property);
+        }
+
+        @Override
+        public List<DataStoreEntryRef<?>> getDependencies() {
+            return List.of();
         }
 
         @Override
@@ -238,6 +244,11 @@ public interface ScriptTextSource {
                 return ShellScript.empty();
             }
         }
+
+        @Override
+        public List<DataStoreEntryRef<?>> getDependencies() {
+            return List.of();
+        }
     }
 
     @JsonTypeName("source")
@@ -359,6 +370,11 @@ public interface ScriptTextSource {
             }
         }
 
+        @Override
+        public List<DataStoreEntryRef<?>> getDependencies() {
+            return DataStoreDependencies.of(ref);
+        }
+
         private ScriptCollectionSourceEntry findSourceEntryIfPossible() {
             if (ref == null) {
                 return null;
@@ -392,6 +408,8 @@ public interface ScriptTextSource {
     ShellDialect getDialect();
 
     ShellScript getText();
+
+    List<DataStoreEntryRef<?>> getDependencies();
 
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();

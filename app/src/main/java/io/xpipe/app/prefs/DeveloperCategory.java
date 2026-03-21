@@ -79,6 +79,6 @@ public class DeveloperCategory extends AppPrefsCategory {
                     .addToggle(prefs.developerDisableSshTunnelGateways);
         }
         sub.nameAndDescription("shellCommandTest").addComp(runLocalCommand);
-        return new OptionsBuilder().addTitle("developer").sub(sub).buildComp();
+        return new OptionsBuilder().title("developer").sub(sub).buildComp();
     }
 }

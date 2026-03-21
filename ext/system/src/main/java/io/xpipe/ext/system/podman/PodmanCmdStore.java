@@ -31,6 +31,16 @@ public class PodmanCmdStore
     }
 
     @Override
+    public boolean removeLeftovers() {
+        return false;
+    }
+
+    @Override
+    public List<DataStoreEntryRef<?>> getDependencies() {
+        return DataStoreDependencies.of(host);
+    }
+
+    @Override
     public void checkComplete() throws Throwable {
         Validators.nonNull(host);
         Validators.isType(host, ShellStore.class);
@@ -50,10 +60,11 @@ public class PodmanCmdStore
                             .containerName(s.getName())
                             .build();
                     var entry = DataStoreEntry.createNew(s.getName(), c);
-                    entry.setStorePersistentState(ContainerStoreState.builder()
+                    entry.setStorePersistentState(PodmanContainerStoreState.builder()
                             .containerState(s.getStatus())
                             .imageName(s.getImage())
                             .running(running)
+                            .systemdUnit(s.getSystemdUnit())
                             .build());
                     return entry.<PodmanContainerStore>ref();
                 })

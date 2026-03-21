@@ -26,17 +26,27 @@
     -fx-border-color: -color-neutral-emphasis;
 }
 
+.root:nord .edit-button.icon-button-comp {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+
 .scan-list {
     -fx-background-radius: 4px;
     -fx-border-width: 1;
     -fx-border-radius: 4px;
     -fx-padding: 1px;
-    -fx-background-color: -color-bg-default-transparent;
-    -fx-border-color: -color-neutral-emphasis;
+    -fx-background-color: -color-bg-muted;
+    -fx-border-color: -color-border-default;
 }
 
 .scan-list .list-content {
     -fx-padding: 0.7em 1px 1em 1em;
+}
+
+.root:nord .scan-list {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
 }
 
 .root:windows .text {
@@ -170,6 +180,10 @@
     -fx-fill: rgb(30, 180, 30, 0.7);
 }
 
+.store-active-comp:hover {
+    -fx-opacity: 0.8;
+}
+
 .toggle-group-comp .toggle-button {
     -fx-padding: 3 10;
 }
@@ -233,4 +247,32 @@
 
 .ikonli-font-icon.graphic.terminal-dock-button {
     -fx-icon-color: -color-accent-fg;
+}
+
+.text-field:focused {
+    -fx-prompt-text-fill: -color-fg-subtle;
+}
+
+.agent-socket-choice:disabled .text-field {
+    -fx-opacity: 1.0;
+}
+
+.store-filter-state-comp {
+    -fx-padding: 5 15 5 15;
+}
+
+.store-filter-state-comp .button {
+    -fx-padding: 5 10 5 10;
+}
+
+.store-filter-state-comp .button:disabled {
+    -fx-opacity: 0.9;
+}
+
+.store-filter-state-comp .label {
+    -fx-padding: 10 0 0 0;
+}
+
+.store-filter-state-comp .separator {
+    -fx-padding: 0.15em 0 0.15em 0;
 }

@@ -3,7 +3,6 @@ package io.xpipe.app.vnc;
 import io.xpipe.app.ext.PrefsValue;
 import io.xpipe.app.platform.ClipboardHelper;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.rdp.*;
 import io.xpipe.core.OsType;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -23,7 +22,7 @@ public interface ExternalVncClient extends PrefsValue {
         if (!client.supportsPasswords() && configuration.hasFixedPassword()) {
             var pw = configuration.retrievePassword();
             if (pw.isPresent()) {
-                ClipboardHelper.copyPassword(pw.get());
+                ClipboardHelper.copyPassword(pw.get(), false);
             }
         }
 

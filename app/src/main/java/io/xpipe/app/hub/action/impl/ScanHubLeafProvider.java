@@ -28,6 +28,11 @@ public class ScanHubLeafProvider implements HubLeafProvider<ShellStore> {
     }
 
     @Override
+    public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
+        return o.get().getProvider().shouldShowScan();
+    }
+
+    @Override
     public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
         return AppI18n.observable("scanConnections");
     }

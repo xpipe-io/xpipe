@@ -1,6 +1,13 @@
-
 .store-header-bar {
-    -fx-padding: 0.8em 1.0em 0.8em 1.0em;
+    -fx-padding: 0.8em 0.9em 0.8em 0.9em;
+}
+
+.store-filter-bar {
+    -fx-padding: 0.5em 0.9em 0.5em 0.9em;
+}
+
+.store-filter-comp {
+    -fx-padding: 0.3em 0.0em 0.3em 0.5em;
 }
 
 .bar {
@@ -26,7 +33,7 @@
 }
 
 .bar .filter-bar .text-field {
-    -fx-padding: 0.35em;
+    -fx-padding: 0.25em;
     -fx-text-fill: -color-fg-default;
 }
 
@@ -100,7 +107,7 @@
 }
 
 .store-category-bar > .viewport > .view > .scroll-comp-content {
-    -fx-padding: 0.5em 0.1em 0.2em 0.5em;
+    -fx-padding: 0.5em 0.0em 0.2em 0.5em;
 }
 
 .store-category-bar * {

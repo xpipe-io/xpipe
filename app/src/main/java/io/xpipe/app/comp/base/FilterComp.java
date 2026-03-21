@@ -4,10 +4,12 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.RegionDescriptor;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppOpenArguments;
+import io.xpipe.app.hub.comp.StoreFilter;
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Cursor;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -21,6 +23,14 @@ import java.util.List;
 import java.util.Objects;
 
 public class FilterComp extends RegionBuilder<CustomTextField> {
+
+    public static FilterComp ofStoreFilter(Property<StoreFilter> filter) {
+        var prop = new SimpleStringProperty();
+        prop.subscribe(s -> {
+            filter.setValue(StoreFilter.of(s));
+        });
+        return new FilterComp(prop);
+    }
 
     private final Property<String> filterText;
 

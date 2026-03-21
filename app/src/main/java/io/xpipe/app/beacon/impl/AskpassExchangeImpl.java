@@ -51,7 +51,7 @@ public class AskpassExchangeImpl extends AskpassExchange {
         prompt = prompt.replace("[sudo: authenticate]", "[sudo]");
 
         if (msg.getRequest() == null) {
-            var r = AskpassAlert.queryRaw(prompt, null, true);
+            var r = AskpassAlert.queryRaw(prompt, null, false);
             return Response.builder()
                     .value(r.getState() == SecretQueryState.NORMAL ? r.getSecret() : InPlaceSecretValue.of(""))
                     .build();

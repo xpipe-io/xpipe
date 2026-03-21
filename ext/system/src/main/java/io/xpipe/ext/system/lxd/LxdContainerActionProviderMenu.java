@@ -5,6 +5,7 @@ import io.xpipe.app.hub.action.HubBranchProvider;
 import io.xpipe.app.hub.action.HubMenuItemProvider;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.ext.base.host.CopyIpActionProvider;
 import io.xpipe.ext.base.store.StorePauseActionProvider;
 import io.xpipe.ext.base.store.StoreRestartActionProvider;
 import io.xpipe.ext.base.store.StoreStartActionProvider;
@@ -43,6 +44,7 @@ public class LxdContainerActionProviderMenu implements HubBranchProvider<LxdCont
                 new StoreStopActionProvider(),
                 new StorePauseActionProvider(),
                 new StoreRestartActionProvider(),
+                new CopyIpActionProvider(),
                 new LxdContainerConsoleActionProvider(),
                 new LxdContainerEditConfigActionProvider(),
                 new LxdContainerEditRunConfigActionProvider());

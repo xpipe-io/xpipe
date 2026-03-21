@@ -6,7 +6,9 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.*;
 import io.xpipe.core.OsType;
@@ -14,6 +16,7 @@ import io.xpipe.core.OsType;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -38,9 +41,35 @@ public class KeePassXcPasswordManager implements PasswordManager {
     private static KeePassXcProxyClient client;
 
     private final List<KeePassXcAssociationKey> associationKeys;
+    private final PasswordManagerKeyStrategy keyStrategy;
+
+    @Override
+    public boolean supportsKeyConfiguration() {
+        return true;
+    }
+
+    @Override
+    public boolean selectInitial() throws Exception {
+        return findKeePassProxy().isPresent();
+    }
+
+    @Override
+    public PasswordManagerKeyConfiguration getKeyConfiguration() {
+        return PasswordManagerKeyConfiguration.of(false, false, false, keyStrategy, null);
+    }
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<KeePassXcPasswordManager> p) {
+        List<Class<?>> strategyList = OsType.ofLocal() == OsType.WINDOWS ?
+                List.of(PasswordManagerKeyStrategy.KeePassXcOpenSshAgent.class, PasswordManagerKeyStrategy.KeePassXcPageant.class) :
+                List.of(PasswordManagerKeyStrategy.KeePassXcOpenSshAgent.class);
+        var keyStrategy = new SimpleObjectProperty<>(p.getValue().getKeyStrategy());
+        var keyStrategyChoice = OptionsChoiceBuilder.builder()
+                .allowNull(true)
+                .available(strategyList)
+                .property(keyStrategy)
+                .build();
+
         var prop = FXCollections.<KeePassXcAssociationKey>observableArrayList();
         p.subscribe(keePassXcManager -> {
             DerivedObservableList.wrap(prop, true)
@@ -78,14 +107,18 @@ public class KeePassXcPasswordManager implements PasswordManager {
                 }))
                 .hide(Bindings.isEmpty(prop))
                 .addProperty(prop)
+                .nameAndDescription("passwordManagerTest")
+                .addComp(new PasswordManagerTestComp(true))
+                .nameAndDescription("passwordManagerKeyStrategy")
+                .sub(keyStrategyChoice.build(), keyStrategy)
                 .bind(
                         () -> {
-                            return new KeePassXcPasswordManager(prop);
+                            return new KeePassXcPasswordManager(prop, keyStrategy.getValue());
                         },
                         p);
     }
 
-    private static KeePassXcAssociationKey associate() throws IOException {
+    private static KeePassXcAssociationKey associate() throws Exception {
         var found = findKeePassProxy();
         if (found.isEmpty()) {
             throw ErrorEventFactory.expected(new UnsupportedOperationException("No KeePassXC installation was found"));
@@ -169,7 +202,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
         return client;
     }
 
-    private static Optional<Path> findKeePassProxy() throws IOException {
+    private static Optional<Path> findKeePassProxy() throws Exception {
         try (var sc = LocalShell.getShell().start()) {
             var found = sc.view().findProgram("keepassxc-proxy").map(filePath -> filePath.asLocalPath());
             if (found.isPresent()) {
@@ -183,10 +216,16 @@ public class KeePassXcPasswordManager implements PasswordManager {
         Optional<Path> found =
                 switch (OsType.ofLocal()) {
                     case OsType.Linux ignored -> {
-                        var paths = List.of(
+                        var paths = new ArrayList<>(List.of(
                                 Path.of("/usr/bin/keepassxc-proxy"),
                                 Path.of("/usr/local/bin/keepassxc-proxy"),
-                                Path.of("/snap/keepassxc/current/usr/bin/keepassxc-proxy"));
+                                Path.of("/snap/keepassxc/current/usr/bin/keepassxc-proxy")));
+
+                        var flatpak = FlatpakCache.getApp("org.keepassxc.KeePassXC");
+                        if (flatpak.isPresent()) {
+                            paths.add(flatpak.get().getInstallDir().resolve("files", "bin", "keepassxc-proxy"));
+                        }
+
                         yield paths.stream().filter(path -> Files.exists(path)).findFirst();
                     }
                     case OsType.MacOs ignored -> {
@@ -228,7 +267,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
     }
 
     @Override
-    public CredentialResult retrieveCredentials(String key) {
+    public Result query(String key) {
         try {
             var hasScheme = Pattern.compile("^\\w+://").matcher(key).find();
             var fixedKey = hasScheme ? key : "https://" + key;
@@ -241,7 +280,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
                             .getAssociationKeys()
                     : associationKeys;
             var credentials = client.getCredentials(effectiveKeys, fixedKey);
-            return credentials;
+            return Result.of(credentials, null);
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
             return null;

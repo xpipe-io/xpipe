@@ -53,7 +53,7 @@ public class VncCategory extends AppPrefsCategory {
                 .build();
         var choice = choiceBuilder.build().buildComp().maxWidth(600);
         return new OptionsBuilder()
-                .addTitle("vncClient")
+                .title("vncClient")
                 .sub(new OptionsBuilder().pref(prefs.vncClient).addComp(choice))
                 .buildComp();
     }

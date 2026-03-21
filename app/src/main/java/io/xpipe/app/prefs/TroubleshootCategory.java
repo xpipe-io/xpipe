@@ -53,7 +53,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
     protected BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
         OptionsBuilder b = new OptionsBuilder()
-                .addTitle("troubleshootingOptions")
+                .title("troubleshootingOptions")
                 .sub(new OptionsBuilder().pref(prefs.sshVerboseOutput).addToggle(prefs.sshVerboseOutput))
                 .spacer(19)
                 .addComp(

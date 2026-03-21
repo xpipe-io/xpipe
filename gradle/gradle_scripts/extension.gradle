@@ -50,7 +50,7 @@ configurations {
 }
 
 dependencies {
-    compileOnly "com.fasterxml.jackson.core:jackson-databind:2.21.0"
+    compileOnly "com.fasterxml.jackson.core:jackson-databind:2.21.1"
     compileOnly project(':core')
     compileOnly project(':beacon')
     compileOnly project(':app')

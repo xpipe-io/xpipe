@@ -1,5 +1,6 @@
 package io.xpipe.ext.base.identity;
 
+import io.xpipe.app.ext.DataStoreDependencies;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.SecretNoneStrategy;
@@ -9,8 +10,8 @@ import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
-import io.xpipe.ext.base.identity.ssh.NoIdentityStrategy;
-import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
+import io.xpipe.app.cred.NoIdentityStrategy;
+import io.xpipe.app.cred.SshIdentityStrategy;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -18,6 +19,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+
+import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
@@ -93,6 +96,8 @@ public interface IdentityValue {
 
     boolean isInPlace();
 
+    List<DataStoreEntryRef<?>> getDependencies();
+
     default void checkCompleteUser() throws ValidationException {
         Validators.nonNull(unwrap().getUsername().hasUser() ? new Object() : null, "Identity username");
     }
@@ -136,6 +141,11 @@ public interface IdentityValue {
         public boolean isInPlace() {
             return true;
         }
+
+        @Override
+        public List<DataStoreEntryRef<?>> getDependencies() {
+            return List.of();
+        }
     }
 
     @JsonTypeName("ref")
@@ -150,6 +160,7 @@ public interface IdentityValue {
         public void checkComplete() throws ValidationException {
             Validators.nonNull(ref);
             Validators.isType(ref, IdentityStore.class);
+            ref.getStore().checkComplete();
         }
 
         @Override
@@ -167,6 +178,11 @@ public interface IdentityValue {
         @Override
         public boolean isInPlace() {
             return false;
+        }
+
+        @Override
+        public List<DataStoreEntryRef<?>> getDependencies() {
+            return DataStoreDependencies.of(ref);
         }
     }
 }

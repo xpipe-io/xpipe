@@ -210,14 +210,14 @@ public class OptionsBuilder {
         return this;
     }
 
-    public OptionsBuilder addTitle(String titleKey) {
+    public OptionsBuilder title(String titleKey) {
         finishCurrent();
         entries.add(new OptionsComp.Entry(
                 null, null, null, new LabelComp(AppI18n.observable(titleKey)).style("title-header")));
         return this;
     }
 
-    public OptionsBuilder addTitle(ObservableValue<String> title) {
+    public OptionsBuilder title(ObservableValue<String> title) {
         finishCurrent();
         entries.add(new OptionsComp.Entry(null, null, null, new LabelComp(title).style("title-header")));
         return this;
@@ -324,17 +324,6 @@ public class OptionsBuilder {
 
     public OptionsBuilder addToggle(Property<Boolean> prop) {
         var comp = new ToggleSwitchComp(prop, null, null);
-        pushComp(comp);
-        props.add(prop);
-        return this;
-    }
-
-    public OptionsBuilder addYesNoToggle(Property<Boolean> prop) {
-        var map = new LinkedHashMap<Boolean, ObservableValue<String>>();
-        map.put(Boolean.FALSE, AppI18n.observable("no"));
-        map.put(null, AppI18n.observable("inherit"));
-        map.put(Boolean.TRUE, AppI18n.observable("yes"));
-        var comp = new ToggleGroupComp<>(prop, new SimpleObjectProperty<>(map));
         pushComp(comp);
         props.add(prop);
         return this;

@@ -59,7 +59,6 @@ public class StoreEntryWrapper {
     private final Property<StoreCategoryWrapper> category = new SimpleObjectProperty<>();
     private final Property<String> summary = new SimpleObjectProperty<>();
     private final ObjectProperty<String> notes;
-    private final Property<String> customIcon = new SimpleObjectProperty<>();
     private final Property<String> iconFile = new SimpleObjectProperty<>();
     private final BooleanProperty sessionActive = new SimpleBooleanProperty();
     private final Property<DataStore> store = new SimpleObjectProperty<>();
@@ -69,7 +68,6 @@ public class StoreEntryWrapper {
     private final ObservableValue<String> shownSummary;
     private final ObservableValue<String> shownDescription;
     private final Property<String> shownInformation;
-    private final BooleanProperty largeCategoryOptimizations = new SimpleBooleanProperty();
     private final BooleanProperty readOnly = new SimpleBooleanProperty();
     private final BooleanProperty renaming = new SimpleBooleanProperty();
     private final BooleanProperty pinToTop = new SimpleBooleanProperty();
@@ -206,7 +204,6 @@ public class StoreEntryWrapper {
         orderIndex.setValue(entry.getOrderIndex());
         color.setValue(entry.getColor());
         notes.setValue(entry.getNotes());
-        customIcon.setValue(entry.getIcon());
         readOnly.setValue(entry.isFreeze());
         iconFile.setValue(entry.getEffectiveIconFile());
         busy.setValue(entry.getBusyCounter().get() != 0);
@@ -220,8 +217,6 @@ public class StoreEntryWrapper {
                         storeCategoryWrapper.getCategory().getUuid().equals(entry.getCategoryUuid()))
                 .findFirst()
                 .orElse(StoreViewState.get().getAllConnectionsCategory()));
-        largeCategoryOptimizations.setValue(
-                category.getValue().getLargeCategoryOptimizations().getValue());
         perUser.setValue(
                 !category.getValue().getRoot().equals(StoreViewState.get().getAllIdentitiesCategory())
                         && entry.isPerUserStore());
@@ -540,36 +535,22 @@ public class StoreEntryWrapper {
         }
     }
 
-    public boolean matchesFilter(String filter) {
-        if (filter == null || name.getValue().toLowerCase().contains(filter.toLowerCase())) {
+    public boolean matchesFilter(StoreFilter filter) {
+        if (filter == null) {
             return true;
         }
 
-        if (getEntry().getUuid().toString().equalsIgnoreCase(filter)) {
-            return true;
+        var l = new ArrayList<String>();
+        l.add(name.getValue());
+        l.add(getEntry().getUuid().toString());
+        if (entry.getValidity().isUsable()) {
+            l.addAll(entry.getProvider().getSearchableTerms(entry.getStore()));
+            l.add(AppI18n.get(entry.getProvider().getId() + ".displayName"));
         }
-
-        if (entry.getValidity().isUsable()
-                && entry.getProvider().getSearchableTerms(entry.getStore()).stream()
-                        .anyMatch(s -> s.toLowerCase().contains(filter.toLowerCase()))) {
-            return true;
-        }
-
-        var is = information.getValue();
-        if (is != null && is.toLowerCase().contains(filter.toLowerCase())) {
-            return true;
-        }
-
-        var ss = summary.getValue();
-        if (ss != null && ss.toLowerCase().contains(filter.toLowerCase())) {
-            return true;
-        }
-
-        if (tags.stream().anyMatch(s -> s.toLowerCase().contains(filter.toLowerCase()))) {
-            return true;
-        }
-
-        return false;
+        l.add(information.getValue());
+        l.add(summary.getValue());
+        l.addAll(tags);
+        return filter.matches(l);
     }
 
     public Property<String> nameProperty() {

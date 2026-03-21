@@ -15,8 +15,8 @@ public class SecretPromptStrategy implements SecretRetrievalStrategy {
     public SecretQuery query() {
         return new SecretQuery() {
             @Override
-            public SecretQueryResult query(String prompt) {
-                return AskpassAlert.queryRaw(prompt, null, true);
+            public SecretQueryResult query(String prompt, boolean forceFocus) {
+                return AskpassAlert.queryRaw(prompt, null, forceFocus);
             }
 
             @Override

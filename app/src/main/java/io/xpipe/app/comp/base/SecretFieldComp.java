@@ -121,7 +121,7 @@ public class SecretFieldComp extends RegionStructureBuilder<InputGroup, SecretFi
         HBox.setHgrow(field, Priority.ALWAYS);
 
         var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
-                    ClipboardHelper.copyPassword(value.getValue());
+                    ClipboardHelper.copyPassword(value.getValue(), true);
                 })
                 .describe(d -> d.nameKey("copy"));
 

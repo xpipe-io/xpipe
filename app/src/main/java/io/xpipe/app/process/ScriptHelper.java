@@ -27,23 +27,27 @@ public class ScriptHelper {
 
     @SneakyThrows
     public static FilePath createExecScript(ShellDialect type, ShellControl processControl, String content) {
+        return createExecScript(type, processControl, content, true);
+    }
+
+    @SneakyThrows
+    public static FilePath createExecScript(ShellDialect type, ShellControl processControl, String content, boolean log) {
         content = type.prepareScriptContent(processControl, content);
         var fileName = "xpipe-" + getScriptHash(processControl, content);
         var temp = processControl.getSystemTemporaryDirectory();
         var file = temp.join(fileName + "." + type.getScriptFileEnding());
-        return createExecScriptRaw(processControl, file, content);
+        return createExecScriptRaw(processControl, file, content, log);
     }
 
     @SneakyThrows
-    public static FilePath createExecScriptRaw(ShellControl processControl, FilePath file, String content) {
+    public static FilePath createExecScriptRaw(ShellControl processControl, FilePath file, String content, boolean log) {
         if (processControl.view().fileExists(file)) {
             return file;
         }
 
-        TrackEvent.withTrace("Writing exec script")
-                .tag("file", file)
-                .tag("content", content)
-                .handle();
+        if (log) {
+            TrackEvent.withTrace("Writing exec script").tag("file", file).tag("content", content).handle();
+        }
         processControl.view().writeScriptFile(file, content);
         return file;
     }

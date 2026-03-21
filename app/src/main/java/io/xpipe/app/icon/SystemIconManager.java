@@ -72,14 +72,14 @@ public class SystemIconManager {
         return ICONS;
     }
 
-    public static synchronized String getAndLoadIconFile(SystemIcon icon) {
+    public static synchronized String getAndLoadIconFile(SystemIcon icon, boolean allRes) {
         var id = "icons/" + icon.getSource().getId() + "/" + icon.getId() + ".svg";
         if (loadedIconImages.contains(icon)) {
             return id;
         }
 
         var dir = SystemIconCache.getDirectory(icon.getSource());
-        var res = AppDisplayScale.hasOnlyDefaultDisplayScale() ? List.of(16, 24, 40) : List.of(16, 24, 40, 80);
+        var res = !allRes ? List.of(40) : AppDisplayScale.hasOnlyDefaultDisplayScale() ? List.of(16, 24, 40) : List.of(16, 24, 40, 80);
         var files = new ArrayList<Path>();
         for (Integer re : res) {
             files.add(dir.resolve(icon.getId() + "-" + re + ".png"));
@@ -91,7 +91,9 @@ public class SystemIconManager {
             }
         }
 
-        loadedIconImages.add(icon);
+        if (allRes) {
+            loadedIconImages.add(icon);
+        }
         return id;
     }
 
@@ -188,7 +190,7 @@ public class SystemIconManager {
 
         try {
             for (var loadedIconImage : ICONS) {
-                getAndLoadIconFile(loadedIconImage);
+                getAndLoadIconFile(loadedIconImage, false);
             }
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
@@ -219,7 +221,7 @@ public class SystemIconManager {
 
     public static synchronized void loadAllAvailableIconImages() {
         for (SystemIcon icon : getIcons()) {
-            getAndLoadIconFile(icon);
+            getAndLoadIconFile(icon, false);
         }
     }
 

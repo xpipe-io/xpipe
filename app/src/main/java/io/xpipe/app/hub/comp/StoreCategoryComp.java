@@ -22,10 +22,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
@@ -37,6 +34,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -46,6 +44,7 @@ import java.util.Locale;
 public class StoreCategoryComp extends SimpleRegionBuilder {
 
     private static final PseudoClass SELECTED = PseudoClass.getPseudoClass("selected");
+    private static final PseudoClass ROOT = PseudoClass.getPseudoClass("root");
 
     StoreCategoryWrapper category;
 
@@ -136,20 +135,25 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
         var count = new CountComp(
                 category.getShownContainedEntriesCount(),
                 category.getAllContainedEntriesCount(),
-                string -> "(" + string + ")");
+                string -> "[" + string + "]");
+        count.style("count");
         count.hide(Bindings.equal(0, category.getShownContainedEntriesCount()));
         count.minWidth(Region.USE_PREF_SIZE);
+
+        var iconButton = new StoreCategoryIconComp(category, 16);
 
         var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().supportsSync()))
                 .or(showing)
                 .or(focus);
         var h = new HorizontalComp(List.of(
                 expandButton,
-                RegionBuilder.hspacer(category.getCategory().getParentCategory() == null ? 3 : 0),
+                RegionBuilder.hspacer(2),
+                iconButton,
+                RegionBuilder.hspacer(4),
                 RegionBuilder.of(() -> name).hgrow(),
                 RegionBuilder.hspacer(2),
                 count,
-                RegionBuilder.hspacer(7),
+                RegionBuilder.hspacer(9),
                 statusButton.hide(showStatus.not())));
         h.padding(new Insets(0, 10, 0, (category.getDepth() * 10)));
 
@@ -193,6 +197,7 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
         var v = new VerticalComp(List.of(categoryButton, children.hide(hide)));
         v.style("category");
         v.apply(struc -> {
+            struc.pseudoClassStateChanged(ROOT, category.getCategory().getParentCategory() == null);
             StoreViewState.get().getActiveCategory().subscribe(val -> {
                 struc.pseudoClassStateChanged(SELECTED, val.equals(category));
             });
@@ -226,6 +231,7 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
         newCategory.setOnAction(event -> {
             StoreViewState.get().createNewCategory(category);
         });
+        newCategory.setDisable(!DataStorage.get().canCreateStoreCategoryWithin(category.getCategory()));
         contextMenu.getItems().add(newCategory);
 
         contextMenu.getItems().add(new SeparatorMenuItem());
@@ -243,18 +249,44 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
         });
         contextMenu.getItems().add(rename);
 
+        var color = new Menu(AppI18n.get("color"), new FontIcon("mdi2f-format-color-fill"));
+        var none = new MenuItem();
+        none.textProperty().bind(AppI18n.observable("none"));
+        none.setOnAction(event -> {
+            category.getCategory().setConfig(category.getCategory().getConfig().withColor(null));
+            event.consume();
+        });
+        none.setGraphic(DataStoreColor.createDisplayGraphic(null));
+        color.getItems().add(none);
+        Arrays.stream(DataStoreColor.values()).forEach(dataStoreColor -> {
+            MenuItem m = new MenuItem();
+            m.textProperty().bind(AppI18n.observable(dataStoreColor.getId()));
+            m.setOnAction(event -> {
+                category.getCategory().setConfig(category.getCategory().getConfig().withColor(dataStoreColor));
+                event.consume();
+            });
+            m.setGraphic(DataStoreColor.createDisplayGraphic(dataStoreColor));
+            color.getItems().add(m);
+        });
+        contextMenu.getItems().add(color);
+
         contextMenu.getItems().add(new SeparatorMenuItem());
 
         if (category.canMove()) {
             var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
             StoreViewState.get()
-                    .getSortedCategories(getCategory().getRoot())
+                    .getSortedCategories(getCategory().getRoot(), true)
                     .getList()
                     .forEach(storeCategoryWrapper -> {
-                        MenuItem m = new MenuItem();
-                        m.textProperty()
-                                .setValue("  ".repeat(storeCategoryWrapper.getDepth())
-                                        + storeCategoryWrapper.getName().getValue());
+                        var m = new CustomMenuItem();
+
+                        var l = new Label();
+                        l.setGraphic(PrettyImageHelper.ofFixedSizeSquare(storeCategoryWrapper.getIconFile().getValue(), 16)
+                                .padding(new Insets(0, 0, 1, 0)).build());
+                        l.setText(storeCategoryWrapper.getName().getValue());
+                        l.setPadding(new Insets(0, 1, 1, storeCategoryWrapper.getDepth() * 10));
+                        m.setContent(l);
+
                         m.setOnAction(event -> {
                             category.moveToParent(storeCategoryWrapper.getCategory());
                             event.consume();

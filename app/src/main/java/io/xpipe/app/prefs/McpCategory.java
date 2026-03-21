@@ -1,11 +1,9 @@
 package io.xpipe.app.prefs;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
-import io.xpipe.app.comp.base.TextAreaComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.platform.LabelGraphic;
@@ -135,13 +133,12 @@ public class McpCategory extends AppPrefsCategory {
         });
 
         return new OptionsBuilder()
-                .addTitle("mcpServer")
+                .title("mcpServer")
                 .sub(new OptionsBuilder()
                         .pref(prefs.enableMcpServer)
                         .addToggle(prefs.enableMcpServer)
                         .nameAndDescription("mcpClientConfigurationDetails")
                         .addComp(tabComp)
-                        .hide(prefs.enableMcpServer.not())
                         .pref(prefs.enableMcpMutationTools)
                         .addToggle(prefs.enableMcpMutationTools)
                         .hide(prefs.enableMcpServer.not())

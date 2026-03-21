@@ -4,6 +4,7 @@ import io.xpipe.app.beacon.mcp.AppMcpServer;
 import io.xpipe.app.core.AppLocalTemp;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.beacon.BeaconConfig;
 import io.xpipe.beacon.BeaconInterface;
@@ -170,13 +171,15 @@ public class AppBeaconServer {
     }
 
     private boolean handleCorsHeaders(HttpExchange exchange) throws IOException {
-        exchange.getResponseHeaders()
-                .add("Origin", "http://localhost:" + AppBeaconServer.get().getPort());
-        exchange.getResponseHeaders().add("Vary", "Origin");
-        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-        exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
-        exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "*");
-        exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "*");
+        if (AppPrefs.get().enableHttpApi().get()) {
+            exchange.getResponseHeaders().add("Origin", "http://localhost:" + AppBeaconServer.get().getPort());
+            exchange.getResponseHeaders().add("Vary", "Origin");
+            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+            exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
+            exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "*");
+            exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "*");
+        }
+
         if (exchange.getRequestMethod().equals("OPTIONS")) {
             exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, -1);
             return true;

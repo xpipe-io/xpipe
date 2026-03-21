@@ -81,7 +81,7 @@ public class ScriptStoreSetup {
                             FilePath dir;
 
                             @Override
-                            public Optional<String> terminalContent(ShellControl shellControl) throws Exception {
+                            public Optional<String> terminalContent(ShellControl shellControl) {
                                 if (dir == null) {
                                     dir = initScriptsDirectory(shellControl, finalBringFlattened);
                                 }
@@ -117,7 +117,7 @@ public class ScriptStoreSetup {
         }
 
         var applicable = refs.stream()
-                .filter(ss -> ss.getStore().isCompatible(sc.getShellDialect()))
+                .filter(ss -> ss.getStore().isCompatible(sc))
                 .toList();
         if (applicable.isEmpty()) {
             return null;

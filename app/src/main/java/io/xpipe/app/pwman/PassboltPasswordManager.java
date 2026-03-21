@@ -9,8 +9,10 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.FilePath;
@@ -45,6 +47,21 @@ public class PassboltPasswordManager implements PasswordManager {
     private final InPlaceSecretValue passphrase;
     private final Path privateKey;
 
+    @Override
+    public boolean supportsKeyConfiguration() {
+        return false;
+    }
+
+    @Override
+    public boolean selectInitial() throws Exception {
+        return LocalShell.getShell().view().findProgram("passbolt").isPresent();
+    }
+
+    @Override
+    public PasswordManagerKeyConfiguration getKeyConfiguration() {
+        return PasswordManagerKeyConfiguration.none();
+    }
+
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<PassboltPasswordManager> p) {
         var serverUrl = new SimpleStringProperty(p.getValue().getServerUrl());
@@ -76,6 +93,8 @@ public class PassboltPasswordManager implements PasswordManager {
                 .nameAndDescription("passboltPrivateKey")
                 .addComp(chooser, privateKey)
                 .nonNull()
+                .nameAndDescription("passwordManagerTest")
+                .addComp(new PasswordManagerTestComp(true))
                 .bind(
                         () -> {
                             return PassboltPasswordManager.builder()
@@ -123,7 +142,11 @@ public class PassboltPasswordManager implements PasswordManager {
     private boolean mfaTotpInteractiveConfigured;
 
     @Override
-    public synchronized CredentialResult retrieveCredentials(String key) {
+    public synchronized Result query(String key) {
+        if (serverUrl == null || passphrase == null || privateKey == null) {
+            return null;
+        }
+
         try {
             CommandSupport.isInLocalPathOrThrow("Passbolt CLI", "passbolt");
         } catch (Exception e) {
@@ -174,8 +197,7 @@ public class PassboltPasswordManager implements PasswordManager {
             var r = JacksonMapper.getDefault().readTree(cmd.readStdoutOrThrow());
             var username = r.required("username").asText();
             var password = r.required("password").asText();
-            return new CredentialResult(
-                    username.isEmpty() ? null : username, password.isEmpty() ? null : InPlaceSecretValue.of(password));
+            return Result.of(Credentials.of(username, password), null);
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
             return null;

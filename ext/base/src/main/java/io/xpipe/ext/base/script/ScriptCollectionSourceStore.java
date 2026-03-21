@@ -1,6 +1,7 @@
 package io.xpipe.ext.base.script;
 
 import io.xpipe.app.ext.*;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -19,6 +20,11 @@ public class ScriptCollectionSourceStore
         implements DataStore, StatefulDataStore<ScriptCollectionSourceStore.State>, ValidatableStore {
 
     ScriptCollectionSource source;
+
+    @Override
+    public List<DataStoreEntryRef<?>> getDependencies() {
+        return List.of();
+    }
 
     @Override
     public void checkComplete() throws Throwable {

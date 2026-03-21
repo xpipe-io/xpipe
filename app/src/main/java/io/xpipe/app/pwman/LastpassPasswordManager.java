@@ -1,24 +1,53 @@
 package io.xpipe.app.pwman;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.CommandSupport;
-import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.prefs.PasswordManagerTestComp;
+import io.xpipe.app.process.*;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.*;
-import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import javafx.beans.property.Property;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.extern.jackson.Jacksonized;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @JsonTypeName("lastpass")
+@Builder
+@Jacksonized
+@Getter
 public class LastpassPasswordManager implements PasswordManager {
 
+    @Override
+    public PasswordManagerKeyConfiguration getKeyConfiguration() {
+        return PasswordManagerKeyConfiguration.none();
+    }
+
+    @Override
+    public boolean selectInitial() throws Exception {
+        return LocalShell.getShell().view().findProgram("lpass").isPresent();
+    }
+
     private static ShellControl SHELL;
+
+    @Override
+    public boolean supportsKeyConfiguration() {
+        return false;
+    }
+
+    @SuppressWarnings("unused")
+    public static OptionsBuilder createOptions(Property<LastpassPasswordManager> p) {
+        return new OptionsBuilder()
+                .nameAndDescription("passwordManagerTest")
+                .addComp(new PasswordManagerTestComp(true));
+    }
 
     private static synchronized ShellControl getOrStartShell() throws Exception {
         if (SHELL == null) {
@@ -29,7 +58,7 @@ public class LastpassPasswordManager implements PasswordManager {
     }
 
     @Override
-    public synchronized CredentialResult retrieveCredentials(String key) {
+    public synchronized Result query(String key) {
         try {
             CommandSupport.isInLocalPathOrThrow("LastPass CLI", "lpass");
         } catch (Exception e) {
@@ -80,11 +109,9 @@ public class LastpassPasswordManager implements PasswordManager {
                         "Ambiguous item name, multiple password entries match: " + String.join(", ", matches)));
             }
 
-            var username = tree.get(0).required("username").asText();
-            var password = tree.get(0).required("password").asText();
-            return new CredentialResult(
-                    !username.isEmpty() ? username : null,
-                    !password.isEmpty() ? InPlaceSecretValue.of(password) : null);
+            var login = Optional.ofNullable(tree.get(0).get("username")).map(JsonNode::textValue).orElse(null);
+            var secret = Optional.ofNullable(tree.get(0).get("password")).map(JsonNode::textValue).orElse(null);
+            return Result.of(Credentials.of(login, secret), null);
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();
             return null;

@@ -74,7 +74,13 @@ public class KeePassXcProxyClient {
         // Generate actual cryptographic keys
         this.keyPair = TweetNaClHelper.generateKeyPair();
 
-        var pb = new ProcessBuilder(List.of(proxyExecutable.toString()));
+        var l = new ArrayList<String>();
+        if (proxyExecutable.toString().contains("flatpak")) {
+            l.addAll(List.of("flatpak", "run", "--command=keepassxc-proxy", "org.keepassxc.KeePassXC"));
+        } else {
+            l.add(proxyExecutable.toString());
+        }
+        var pb = new ProcessBuilder(l);
         this.process = pb.start();
     }
 
@@ -262,8 +268,9 @@ public class KeePassXcProxyClient {
 
         Map<String, Object> responseMap = jsonToMap(responseJson);
         if (responseMap.containsKey("error")) {
-            throw ErrorEventFactory.expected(
-                    new IllegalStateException(responseMap.get("error").toString()));
+            var err = responseMap.get("error").toString();
+            var msg = "No logins found".equals(err) ? "No logins found for " + url : err;
+            throw ErrorEventFactory.expected(new IllegalStateException(msg));
         }
 
         if (responseMap.containsKey("message") && responseMap.containsKey("nonce")) {
@@ -275,7 +282,7 @@ public class KeePassXcProxyClient {
         throw new IllegalStateException("Login query failed for an unknown reason");
     }
 
-    public PasswordManager.CredentialResult getCredentials(List<KeePassXcAssociationKey> associationKeys, String key)
+    public PasswordManager.Credentials getCredentials(List<KeePassXcAssociationKey> associationKeys, String key)
             throws IOException {
         var message = getLoginsMessage(associationKeys, key);
         var tree = JacksonMapper.getDefault().readTree(message);
@@ -295,11 +302,9 @@ public class KeePassXcProxyClient {
         }
 
         var object = (ObjectNode) tree.required("entries").get(0);
-        var usernameField = object.required("login").asText();
-        var passwordField = object.required("password").asText();
-        return new PasswordManager.CredentialResult(
-                usernameField.isEmpty() ? null : usernameField,
-                passwordField.isEmpty() ? null : InPlaceSecretValue.of(passwordField));
+        var login = Optional.ofNullable(object.get("login")).map(JsonNode::textValue).orElse(null);
+        var secret = Optional.ofNullable(object.get("password")).map(JsonNode::textValue).orElse(null);
+        return PasswordManager.Credentials.of(login, secret);
     }
 
     /**

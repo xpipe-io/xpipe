@@ -52,7 +52,7 @@ public class IconsCategory extends AppPrefsCategory {
     @Override
     protected BaseRegionBuilder<?, ?> create() {
         return new OptionsBuilder()
-                .addTitle("customIcons")
+                .title("customIcons")
                 .sub(new OptionsBuilder()
                         .nameAndDescription("iconSources")
                         .documentationLink(DocumentationLink.ICONS)

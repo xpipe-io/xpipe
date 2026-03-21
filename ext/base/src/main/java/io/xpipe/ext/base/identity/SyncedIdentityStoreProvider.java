@@ -2,7 +2,6 @@ package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -15,9 +14,9 @@ import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
-import io.xpipe.ext.base.identity.ssh.KeyFileStrategy;
-import io.xpipe.ext.base.identity.ssh.NoIdentityStrategy;
-import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
+import io.xpipe.app.cred.KeyFileStrategy;
+import io.xpipe.app.cred.NoIdentityStrategy;
+import io.xpipe.app.cred.SshIdentityStrategyChoiceConfig;
 
 import javafx.beans.property.*;
 
@@ -29,8 +28,8 @@ import java.util.UUID;
 public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
 
     @Override
-    public DataStoreCreationCategory getCreationCategory() {
-        return DataStorage.get().supportsSync() ? DataStoreCreationCategory.IDENTITY : null;
+    public boolean allowCreation() {
+        return DataStorage.get().supportsSync();
     }
 
     @Override
