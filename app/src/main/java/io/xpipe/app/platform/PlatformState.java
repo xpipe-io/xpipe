@@ -1,5 +1,6 @@
 package io.xpipe.app.platform;
 
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.check.AppSystemFontCheck;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
@@ -12,6 +13,7 @@ import javafx.scene.text.Font;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.SystemUtils;
 
 import java.awt.*;
 import java.util.concurrent.CountDownLatch;
@@ -113,12 +115,13 @@ public enum PlatformState {
         }
 
         // This issue is now fixed in 27-ea+4
-        // if (SystemUtils.IS_OS_WINDOWS) {
-        // This is primarily intended to fix Windows unified stage transparency issues
-        // (https://bugs.openjdk.org/browse/JDK-8329382)
-        // But apparently it can also occur without a custom stage on Windows
-        // System.setProperty("prism.forceUploadingPainter", "true");
-        // }
+        // The bellsoft JavaFX build for ARM does not contain the fix yet
+        if (OsType.ofLocal() == OsType.WINDOWS && AppProperties.get().getArch().equals("x86_64")) {
+            // This is primarily intended to fix Windows unified stage transparency issues
+            // (https://bugs.openjdk.org/browse/JDK-8329382)
+            // But apparently it can also occur without a custom stage on Windows
+            System.setProperty("prism.forceUploadingPainter", "true");
+        }
 
         if (AppPrefs.get() != null
                 && AppPrefs.get().disableHardwareAcceleration().get()) {

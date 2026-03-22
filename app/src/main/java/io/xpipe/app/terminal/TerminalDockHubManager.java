@@ -215,10 +215,12 @@ public class TerminalDockHubManager {
                 }
 
                 var dock = !detached.get();
-                dockModel.trackTerminal(controllable.get(), dock);
-                dockModel.closeOtherTerminals(session.getRequest());
                 enableDock();
                 showDock();
+                Platform.runLater(() -> {
+                    dockModel.trackTerminal(controllable.get(), dock);
+                    dockModel.closeOtherTerminals(session.getRequest());
+                });
             }
 
             @Override

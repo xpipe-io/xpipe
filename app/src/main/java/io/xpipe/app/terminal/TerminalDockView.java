@@ -266,10 +266,10 @@ public class TerminalDockView {
 
         terminalInstances.forEach(terminalInstance -> {
             terminalInstance.show();
-            terminalInstance.updatePosition(windowBoundsFunction.apply(viewBounds));
             terminalInstance.removeIcon();
             terminalInstance.own();
             terminalInstance.removeStyle();
+            terminalInstance.updatePosition(windowBoundsFunction.apply(viewBounds));
             terminalInstance.focus();
         });
     }

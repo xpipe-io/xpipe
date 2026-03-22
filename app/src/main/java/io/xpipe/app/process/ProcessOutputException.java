@@ -31,6 +31,10 @@ public class ProcessOutputException extends Exception {
         }
     }
 
+    public void replaceOutput(String s, String replacement) {
+        replaceOutput(output.replace(s, replacement));
+    }
+
     @Override
     public String getMessage() {
         if (prefix == null && suffix == null && "".equals(output)) {
