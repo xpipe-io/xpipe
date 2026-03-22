@@ -108,6 +108,8 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                 "sleep 0.5",
                 "zellij -s xpipe action new-tab --name \"" + escape(config.getColoredTitle(), false, true) + "\"",
                 "sleep 0.5",
+                "zellij -s xpipe action go-to-tab 2",
+                "sleep 0.5",
                 "zellij -s xpipe action write-chars -- " + escape(" " + firstCommand, true, true) + "\\;exit",
                 "zellij -s xpipe action write 10",
                 "zellij -s xpipe action clear",
