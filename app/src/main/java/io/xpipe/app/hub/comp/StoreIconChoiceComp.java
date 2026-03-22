@@ -76,7 +76,9 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
         filter.addListener((observable, oldValue, newValue) -> updateData(table, newValue));
         busy.addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) {
-                updateData(table, filter.getValue());
+                PlatformThread.runLaterIfNeeded(() -> {
+                    updateData(table, filter.getValue());
+                });
             }
         });
 
