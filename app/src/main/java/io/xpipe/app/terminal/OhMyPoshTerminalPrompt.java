@@ -162,8 +162,9 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
         var dir = getBinaryDirectory(sc);
         sc.view().mkdir(dir);
         if (sc.getOsType() == OsType.WINDOWS) {
+            var arch = sc.view().getRecognizedArch().equals("x86_64") ? "amd64" : "arm64";
             var file = GithubReleaseDownloader.getDownloadTempFile(
-                    "JanDeDobbeleer/oh-my-posh", "posh-windows-amd64.exe", s -> s.equals("posh-windows-amd64.exe"));
+                    "JanDeDobbeleer/oh-my-posh", "posh-windows-" + arch + ".exe", s -> s.equals("posh-windows-" + arch + ".exe"));
             sc.view().transferLocalFile(file, dir.join("oh-my-posh.exe"));
         } else {
             var configDir = getConfigurationDirectory(sc);

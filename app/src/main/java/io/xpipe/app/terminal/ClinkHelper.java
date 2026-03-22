@@ -20,7 +20,8 @@ public class ClinkHelper {
         }
 
         var targetDir = getTargetDir(sc);
-        return sc.view().fileExists(targetDir.join("clink_x64.exe"));
+        var arch = sc.view().getRecognizedArch().equals("x86_64") ? "x64" : "arm64";
+        return sc.view().fileExists(targetDir.join("clink_" + arch + ".exe"));
     }
 
     public static void install(ShellControl sc) throws Exception {
@@ -28,15 +29,16 @@ public class ClinkHelper {
         sc.view().mkdir(targetDir);
         var temp = GithubReleaseDownloader.getDownloadTempFile(
                 "chrisant996/clink", "clink.zip", name -> name.endsWith(".zip") && !name.endsWith("symbols.zip"));
+        var arch = sc.view().getRecognizedArch().equals("x86_64") ? "x64" : "arm64";
         try (var fs = FileSystems.newFileSystem(temp)) {
-            var exeFile = fs.getPath("clink_x64.exe");
-            sc.view().transferLocalFile(exeFile, targetDir.join("clink_x64.exe"));
+            var exeFile = fs.getPath("clink_" + arch + ".exe");
+            sc.view().transferLocalFile(exeFile, targetDir.join("clink_" + arch + ".exe"));
 
             var batFile = fs.getPath("clink.bat");
             sc.view().transferLocalFile(batFile, targetDir.join("clink.bat"));
 
-            var dllFile = fs.getPath("clink_dll_x64.dll");
-            sc.view().transferLocalFile(dllFile, targetDir.join("clink_dll_x64.dll"));
+            var dllFile = fs.getPath("clink_dll_" + arch + ".dll");
+            sc.view().transferLocalFile(dllFile, targetDir.join("clink_dll_" + arch + ".dll"));
         }
     }
 }

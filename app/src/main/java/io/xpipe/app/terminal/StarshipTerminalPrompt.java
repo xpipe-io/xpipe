@@ -125,10 +125,11 @@ public class StarshipTerminalPrompt extends ConfigFileTerminalPrompt {
         var dir = getBinaryDirectory(sc);
         sc.view().mkdir(dir);
         if (sc.getOsType() == OsType.WINDOWS) {
+            var arch = sc.view().getRecognizedArch().equals("x86_64") ? "x86_64" : "aarch64";
             var file = GithubReleaseDownloader.getDownloadTempFile(
                     "starship/starship",
-                    "starship-x86_64-pc-windows-msvc.zip",
-                    s -> s.equals("starship-x86_64-pc-windows-msvc.zip"));
+                    "starship-" + arch + "-pc-windows-msvc.zip",
+                    s -> s.equals("starship-" + arch + "-pc-windows-msvc.zip"));
             try (var fs = FileSystems.newFileSystem(file)) {
                 var exeFile = fs.getPath("starship.exe");
                 sc.view().transferLocalFile(exeFile, dir.join("starship.exe"));
