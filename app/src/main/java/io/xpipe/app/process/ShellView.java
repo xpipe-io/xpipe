@@ -144,7 +144,8 @@ public class ShellView {
             var effective = "ARM64".equals(env) ? "arm64" : "x86_64";
             return recognized = effective;
         } else {
-            var uname = shellControl.command(CommandBuilder.of().add("uname", "-m")).readStdoutIfPossible();
+            var uname =
+                    shellControl.command(CommandBuilder.of().add("uname", "-m")).readStdoutIfPossible();
             return recognized = "arm64".equals(uname.orElse("x86_64")) ? "arm64" : "x86_64";
         }
     }

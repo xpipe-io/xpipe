@@ -9,8 +9,6 @@ import java.util.Optional;
 
 public interface PublicKeyStrategy {
 
-    Optional<String> getFixedPublicKey();
-
     String retrievePublicKey() throws Exception;
 
     @EqualsAndHashCode
@@ -31,8 +29,7 @@ public interface PublicKeyStrategy {
             return publicKey;
         }
 
-        @Override
-        public Optional<String> getFixedPublicKey() {
+        private Optional<String> getFixedPublicKey() {
             return Optional.ofNullable(publicKey);
         }
 
@@ -63,11 +60,6 @@ public interface PublicKeyStrategy {
         @Override
         public String toString() {
             return "<dynamic>";
-        }
-
-        @Override
-        public Optional<String> getFixedPublicKey() {
-            return Optional.empty();
         }
 
         @Override

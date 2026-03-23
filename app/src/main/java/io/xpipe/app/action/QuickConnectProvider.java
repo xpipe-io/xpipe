@@ -1,6 +1,7 @@
 package io.xpipe.app.action;
 
 import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.hub.action.impl.OpenHubMenuLeafProvider;
 import io.xpipe.app.storage.DataStoreEntry;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public interface QuickConnectProvider extends ActionProvider {
                         && (input.length() <= qcp.getName().length()
                                         && input.toLowerCase()
                                                 .startsWith(qcp.getName().toLowerCase())
-                                || qcp.getName().toLowerCase().startsWith(input.toLowerCase())))
+                                || input.toLowerCase().startsWith(qcp.getName().toLowerCase())))
                 .findFirst()
                 .map(qcp -> (QuickConnectProvider) qcp);
     }
@@ -38,6 +39,6 @@ public interface QuickConnectProvider extends ActionProvider {
     boolean skipDialogIfPossible();
 
     default void open(DataStoreEntry e) throws Exception {
-        e.getProvider().launch(e).run();
+        OpenHubMenuLeafProvider.Action.builder().ref(e.ref()).build().executeSync();
     }
 }

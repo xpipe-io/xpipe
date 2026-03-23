@@ -121,10 +121,6 @@ public class ScriptHierarchy {
         }
     }
 
-    public boolean show() {
-        return isLeaf() || !isEmptyBranch();
-    }
-
     public boolean isEmptyBranch() {
         if (category == null) {
             return false;

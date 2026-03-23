@@ -90,7 +90,8 @@ public class StoreSectionComp extends StoreSectionBaseComp {
                     c.getWrapper().executeDefaultAction();
                 });
             });
-            quickAccessButton.disable(Bindings.isEmpty(section.getShownChildren().getList()));
+            quickAccessButton.disable(
+                    Bindings.isEmpty(section.getShownChildren().getList()));
             quickAccessButton.vgrow();
             quickAccessButton.describe(d -> d.nameKey("quickAccess")
                     .focusTraversal(RegionDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)

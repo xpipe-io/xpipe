@@ -3,7 +3,6 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.OsType;
-import javafx.scene.media.Track;
 
 import java.time.Duration;
 import java.time.Instant;

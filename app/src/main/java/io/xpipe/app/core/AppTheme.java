@@ -92,7 +92,9 @@ public class AppTheme {
 
         if (t != null) {
             Theme.ALL.forEach(theme -> {
-                r.pseudoClassStateChanged(PseudoClass.getPseudoClass(theme.getCssId()), theme.getCssId().equals(t.getCssId()));
+                r.pseudoClassStateChanged(
+                        PseudoClass.getPseudoClass(theme.getCssId()),
+                        theme.getCssId().equals(t.getCssId()));
             });
         }
 

@@ -80,8 +80,7 @@ public class AppOpenArguments {
             var uri = URI.create(input);
             var scheme = uri.getScheme();
             if (scheme != null) {
-                var action = uri.getScheme();
-                var found = LauncherUrlProvider.find(action);
+                var found = LauncherUrlProvider.find(input);
                 if (found.isPresent()) {
                     AbstractAction a;
                     try {

@@ -21,7 +21,6 @@ import javafx.scene.layout.Region;
 import atlantafx.base.controls.CustomTextField;
 import atlantafx.base.controls.Popover;
 import atlantafx.base.theme.Styles;
-import lombok.val;
 
 import java.util.List;
 import java.util.Objects;

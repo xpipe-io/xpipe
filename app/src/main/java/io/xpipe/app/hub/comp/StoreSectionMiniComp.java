@@ -94,9 +94,11 @@ public class StoreSectionMiniComp extends StoreSectionBaseComp {
             var quickAccessButton = createQuickAccessButton(20, action);
             var quickAccessHidden = Bindings.createBooleanBinding(
                     () -> {
-                        return expanded.get() || section.getShownChildren().getList().isEmpty();
+                        return expanded.get()
+                                || section.getShownChildren().getList().isEmpty();
                     },
-                    expanded, section.getShownChildren().getList());
+                    expanded,
+                    section.getShownChildren().getList());
             quickAccessButton.hide(quickAccessHidden);
             buttonList.add(quickAccessButton);
         }

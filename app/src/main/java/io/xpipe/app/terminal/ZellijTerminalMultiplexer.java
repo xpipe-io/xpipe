@@ -1,13 +1,12 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.*;
 import io.xpipe.app.util.ThreadHelper;
-
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.SneakyThrows;
 import lombok.extern.jackson.Jacksonized;
@@ -80,7 +79,8 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
         var configFile = getConfigFile(control);
 
         if (!control.view().fileExists(configFile)) {
-            var def = control.command(CommandBuilder.of().add("zellij", "setup", "--dump-config")).readStdoutOrThrow();
+            var def = control.command(CommandBuilder.of().add("zellij", "setup", "--dump-config"))
+                    .readStdoutOrThrow();
             control.view().mkdir(configFile.getParent());
             control.view().writeTextFile(configFile, def);
         }
@@ -159,9 +159,15 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
 
     private FilePath getConfigFile(ShellControl sc) throws Exception {
         if (sc.getOsType() == OsType.MACOS) {
-            return sc.view().userHome().join("Library", "Application Support", "org.Zellij-Contributors.Zellij", "config.kdl");
+            return sc.view()
+                    .userHome()
+                    .join("Library", "Application Support", "org.Zellij-Contributors.Zellij", "config.kdl");
         } else {
-            return sc.view().getEnvironmentVariable("XDG_HOME").map(FilePath::of).orElse(sc.view().userHome().join(".config")).join("zellij", "config.kdl");
+            return sc.view()
+                    .getEnvironmentVariable("XDG_HOME")
+                    .map(FilePath::of)
+                    .orElse(sc.view().userHome().join(".config"))
+                    .join("zellij", "config.kdl");
         }
     }
 

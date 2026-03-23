@@ -934,13 +934,15 @@ public final class AppPrefs {
             PlatformThread.runLaterIfNeeded(() -> {
                 AppLayoutModel.get().selectSettings();
 
-                GlobalTimer.delay(() -> {
-                    Platform.runLater(() -> {
-                        // Reset scroll in case the target category is already somewhat in focus
-                        selectedCategory.setValue(null);
-                        selectedCategory.setValue(appPrefsCategory);
-                    });
-                }, Duration.ofMillis(100));
+                GlobalTimer.delay(
+                        () -> {
+                            Platform.runLater(() -> {
+                                // Reset scroll in case the target category is already somewhat in focus
+                                selectedCategory.setValue(null);
+                                selectedCategory.setValue(appPrefsCategory);
+                            });
+                        },
+                        Duration.ofMillis(100));
             });
         });
     }
