@@ -79,7 +79,6 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
         var syncDisable = !DataStorage.get().supportsSync()
                 || ((sync.getValue() == null || !sync.getValue())
                         && !wrapper.getCategory().canShare());
-        var syncHide = !DataStorage.get().supportsSync();
         options.name(
                         specialCategorySync
                                 ? AppI18n.observable(
@@ -88,7 +87,6 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
                 .description("categorySyncDescription")
                 .addComp(createToggle(sync, parentConfig.getSync()), sync)
                 .disable(syncDisable)
-                .hide(syncHide)
                 .nameAndDescription("categoryDontAllowScripts")
                 .addComp(createToggle(scripts, parentConfig.getDontAllowScripts()), scripts)
                 .hide(!connectionsCategory)

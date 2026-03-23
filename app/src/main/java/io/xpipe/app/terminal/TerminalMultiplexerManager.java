@@ -3,6 +3,7 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.OsType;
+import javafx.scene.media.Track;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -48,6 +49,11 @@ public class TerminalMultiplexerManager {
     public static Optional<TerminalMultiplexer> getEffectiveMultiplexer() {
         var multiplexer = AppPrefs.get().terminalMultiplexer().getValue();
         if (multiplexer == null) {
+            return Optional.empty();
+        }
+
+        var terminal = AppPrefs.get().terminalType().getValue();
+        if (!(terminal instanceof TrackableTerminalType)) {
             return Optional.empty();
         }
 

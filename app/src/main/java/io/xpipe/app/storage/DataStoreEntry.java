@@ -477,7 +477,7 @@ public class DataStoreEntry extends StorageElement {
     }
 
     public void addTag(String tag) {
-        if (tags == null || tag.isBlank()) {
+        if (tags == null || tag == null || tag.isBlank()) {
             return;
         }
 
@@ -492,7 +492,7 @@ public class DataStoreEntry extends StorageElement {
     }
 
     public void removeTag(String tag) {
-        if (tags == null || tag.isBlank()) {
+        if (tags == null || tag == null || tag.isBlank()) {
             return;
         }
 

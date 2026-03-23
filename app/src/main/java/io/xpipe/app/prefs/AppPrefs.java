@@ -41,6 +41,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import lombok.*;
 
 import java.nio.file.Files;
+import java.time.Duration;
 import java.util.*;
 
 public final class AppPrefs {
@@ -933,11 +934,13 @@ public final class AppPrefs {
             PlatformThread.runLaterIfNeeded(() -> {
                 AppLayoutModel.get().selectSettings();
 
-                Platform.runLater(() -> {
-                    // Reset scroll in case the target category is already somewhat in focus
-                    selectedCategory.setValue(null);
-                    selectedCategory.setValue(appPrefsCategory);
-                });
+                GlobalTimer.delay(() -> {
+                    Platform.runLater(() -> {
+                        // Reset scroll in case the target category is already somewhat in focus
+                        selectedCategory.setValue(null);
+                        selectedCategory.setValue(appPrefsCategory);
+                    });
+                }, Duration.ofMillis(100));
             });
         });
     }

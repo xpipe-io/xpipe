@@ -212,6 +212,7 @@ public class IdentityApplyDialog {
                                     system.getValue(), null, m -> file.getParent(), null, false);
                             var found = model.findFile(file);
                             if (found.isEmpty()) {
+                                model.getFileSystem().mkdirs(file.getParent());
                                 model.getFileSystem().touch(file);
                                 if (sc.getOsType() != OsType.WINDOWS) {
                                     sc.command(CommandBuilder.of()
