@@ -18,6 +18,10 @@
     -fx-padding: -0.05em 0 0 0;
 }
 
+.root:linux:nord .toggle-switch-comp > .thumb {
+    -fx-background-insets: 0.15em 0.2em 0.15em 0.2em;
+}
+
 .root:windows .toggle-switch-comp > .thumb-area {
     -fx-padding: 0.65em 1.5em;
     -fx-background-insets: 0, 1;
@@ -27,14 +31,6 @@
     -fx-background-insets: 0.2em;
     -fx-background-radius: 1em;
     -fx-padding: 0.7em;
-}
-
-.root:windows:nord .toggle-switch-comp > .thumb {
-    -fx-background-radius: 0em;
-}
-
-.root:windows:nord .toggle-switch-comp > .thumb-area {
-    -fx-border-radius: 0;
 }
 
 .root:light .toggle-switch-comp > .thumb {
