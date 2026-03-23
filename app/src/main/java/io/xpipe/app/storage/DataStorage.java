@@ -359,6 +359,11 @@ public abstract class DataStorage {
             newEntry.setIcon(icon, true);
         }
 
+        var syntheticParent = getSyntheticParent(newEntry);
+        if (syntheticParent.isPresent()) {
+            addStoreEntryIfNotPresent(syntheticParent.get());
+        }
+
         var oldParent = getDefaultDisplayParent(entry);
         var newParent = getDefaultDisplayParent(newEntry);
         var sameParent = Objects.equals(oldParent, newParent);
@@ -456,6 +461,11 @@ public abstract class DataStorage {
             }
         }
         entry.setStoreInternal(store, false);
+
+        var syntheticParent = getSyntheticParent(entry);
+        if (syntheticParent.isPresent()) {
+            addStoreEntryIfNotPresent(syntheticParent.get());
+        }
 
         if (storeEntries.containsKey(entry)) {
             saveAsync();

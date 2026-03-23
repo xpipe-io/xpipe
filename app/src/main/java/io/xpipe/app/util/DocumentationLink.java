@@ -73,7 +73,6 @@ public enum DocumentationLink {
     SSH_NO_ROUTE("troubleshoot/ssh#no-route-to-host"),
     SSH_AGENT_REFUSAL("troubleshoot/ssh#agent-refused-operation"),
     SSH_CONNECTION_TIMEOUT("troubleshoot/ssh#connection-timeout"),
-    SSH_SHELL_TIMEOUT("troubleshoot/ssh#shell-timeout"),
     SSH_CONFIG("guide/ssh#config-files"),
     SSH_KEYS("guide/ssh#key-based-authentication"),
     SSH_OPTIONS("guide/ssh#adding-ssh-options"),

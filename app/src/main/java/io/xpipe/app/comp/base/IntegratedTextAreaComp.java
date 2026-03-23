@@ -110,8 +110,8 @@ public class IntegratedTextAreaComp extends RegionStructureBuilder<AnchorPane, I
         var copyButton = createOpenButton();
         var pane = new AnchorPane(textAreaStruc.get(), copyButton);
         pane.setPickOnBounds(false);
-        AnchorPane.setTopAnchor(copyButton, 7.0);
-        AnchorPane.setRightAnchor(copyButton, 7.0);
+        AnchorPane.setTopAnchor(copyButton, 4.0);
+        AnchorPane.setRightAnchor(copyButton, 4.0);
         AnchorPane.setLeftAnchor(textAreaStruc.get(), 0.0);
         AnchorPane.setRightAnchor(textAreaStruc.get(), 0.0);
         pane.maxHeightProperty().bind(textAreaStruc.get().heightProperty());

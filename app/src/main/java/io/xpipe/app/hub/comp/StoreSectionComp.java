@@ -75,16 +75,6 @@ public class StoreSectionComp extends StoreSectionBaseComp {
             });
         });
 
-        var quickAccessButton = createQuickAccessButton(30, c -> {
-            ThreadHelper.runFailableAsync(() -> {
-                c.getWrapper().executeDefaultAction();
-            });
-        });
-        quickAccessButton.vgrow();
-        quickAccessButton.describe(d -> d.nameKey("quickAccess")
-                .focusTraversal(RegionDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)
-                .shortcut(new KeyCodeCombination(KeyCode.RIGHT)));
-
         var expandButton = createExpandButton(
                 () -> section.getWrapper().toggleExpanded(),
                 30,
@@ -95,6 +85,17 @@ public class StoreSectionComp extends StoreSectionBaseComp {
                 .shortcut(new KeyCodeCombination(KeyCode.SPACE)));
         var buttonList = new ArrayList<BaseRegionBuilder<?, ?>>();
         if (entryButton.isFullSize()) {
+            var quickAccessButton = createQuickAccessButton(30, c -> {
+                ThreadHelper.runFailableAsync(() -> {
+                    c.getWrapper().executeDefaultAction();
+                });
+            });
+            quickAccessButton.disable(Bindings.isEmpty(section.getShownChildren().getList()));
+            quickAccessButton.vgrow();
+            quickAccessButton.describe(d -> d.nameKey("quickAccess")
+                    .focusTraversal(RegionDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)
+                    .shortcut(new KeyCodeCombination(KeyCode.RIGHT)));
+
             buttonList.add(quickAccessButton);
         }
         buttonList.add(expandButton);

@@ -87,12 +87,17 @@ public class StoreSectionMiniComp extends StoreSectionBaseComp {
 
         var expandButton = createExpandButton(() -> expanded.set(!expanded.get()), 20, expanded);
 
-        var quickAccessButton = createQuickAccessButton(20, action);
-
         var buttonList = new ArrayList<BaseRegionBuilder<?, ?>>();
         buttonList.add(expandButton);
         buttonList.add(root);
         if (section.getDepth() == 1) {
+            var quickAccessButton = createQuickAccessButton(20, action);
+            var quickAccessHidden = Bindings.createBooleanBinding(
+                    () -> {
+                        return expanded.get() || section.getShownChildren().getList().isEmpty();
+                    },
+                    expanded, section.getShownChildren().getList());
+            quickAccessButton.hide(quickAccessHidden);
             buttonList.add(quickAccessButton);
         }
         var h = new HorizontalComp(buttonList);

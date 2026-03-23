@@ -660,6 +660,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                                 l.setText(storeCategoryWrapper.getName().getValue());
                                 l.setPadding(new Insets(0, 1, 1, storeCategoryWrapper.getDepth() * 10));
                                 m.setContent(l);
+                                l.prefWidthProperty().bind(contextMenu.widthProperty().subtract(40));
 
                                 m.setOnAction(event -> {
                                     getWrapper().moveTo(storeCategoryWrapper.getCategory());

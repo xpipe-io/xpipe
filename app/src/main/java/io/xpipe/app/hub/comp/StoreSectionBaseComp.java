@@ -172,18 +172,12 @@ public abstract class StoreSectionBaseComp extends RegionBuilder<VBox> {
     }
 
     protected RegionBuilder<Button> createQuickAccessButton(int width, Consumer<StoreSection> r) {
-        var quickAccessDisabled = Bindings.createBooleanBinding(
-                () -> {
-                    return section.getShownChildren().getList().isEmpty();
-                },
-                section.getShownChildren().getList());
         var quickAccessButton = new StoreQuickAccessButtonComp(section, r)
                 .style("quick-access-button")
                 .minWidth(width)
                 .prefWidth(width)
                 .maxHeight(100)
-                .describe(d -> d.nameKey("quickAccess"))
-                .disable(quickAccessDisabled);
+                .describe(d -> d.nameKey("quickAccess"));
         return quickAccessButton;
     }
 }
