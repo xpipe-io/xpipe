@@ -124,15 +124,14 @@ public interface PasswordManager {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     class SshKey {
 
-        public static SshKey of(String fingerprint, String publicKey, String privateKey) {
-            if (fingerprint == null && publicKey == null && privateKey == null) {
+        public static SshKey of(String publicKey, String privateKey) {
+            if (publicKey == null && privateKey == null) {
                 return null;
             }
 
-            return new SshKey(fingerprint, publicKey, privateKey != null ? InPlaceSecretValue.of(privateKey) : null);
+            return new SshKey(publicKey, privateKey != null ? InPlaceSecretValue.of(privateKey) : null);
         }
 
-        String fingerprint;
         String publicKey;
         SecretValue privateKey;
     }

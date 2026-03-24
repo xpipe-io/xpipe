@@ -207,10 +207,9 @@ public class OnePasswordManager implements PasswordManager {
             var password = getValue(tree, "password");
             var creds = Credentials.of(username, password);
 
-            var fingerprint = getValue(tree, "fingerprint");
             var publicKey = getValue(tree, "public_key");
             var privateKey = getValue(tree, "private_key");
-            var sshKey = SshKey.of(fingerprint, publicKey, privateKey);
+            var sshKey = SshKey.of(publicKey, privateKey);
 
             return Result.of(creds, sshKey);
         } catch (Exception e) {

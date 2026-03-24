@@ -675,7 +675,7 @@ public class KeeperPasswordManager implements PasswordManager {
                 var privateKey = Optional.ofNullable(keyPairNode.get(0).get("privateKey"))
                         .map(JsonNode::textValue)
                         .orElse(null);
-                sshKey = SshKey.of(null, publicKey, privateKey);
+                sshKey = SshKey.of(publicKey, privateKey);
             }
 
             return Result.of(creds, sshKey);

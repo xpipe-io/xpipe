@@ -162,6 +162,20 @@ public class PasswordManagerIdentityStore extends IdentityStore
         };
     }
 
+    public boolean hasAgentKey() {
+        var r = AppPrefs.get().passwordManager().getValue();
+        if (r == null) {
+            return false;
+        }
+
+        var strat = r.getKeyConfiguration();
+        if (strat == null || (!strat.useInline() && !strat.useAgent())) {
+            return false;
+        }
+
+        return strat.useAgent() && sshKey != null;
+    }
+
     @Override
     public SshIdentityStrategy getSshIdentity() {
         var def = new NoIdentityStrategy();

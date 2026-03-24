@@ -213,7 +213,7 @@ public class ProtonPasswordManager implements PasswordManager {
                 }
             }
 
-            return Result.of(Credentials.of(username, password), SshKey.of(null, publicKey, privateKey));
+            return Result.of(Credentials.of(username, password), SshKey.of(publicKey, privateKey));
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
             return null;

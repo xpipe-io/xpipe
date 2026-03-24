@@ -1,5 +1,6 @@
 package io.xpipe.app.pwman;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
@@ -32,6 +33,7 @@ import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -42,7 +44,7 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
 
     @Override
     public boolean supportsKeyConfiguration() {
-        return false;
+        return true;
     }
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
@@ -93,6 +95,8 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
                                 sc.getShellDialect().terminalInitCommand(sc, scriptFile.toString(), false)))
                         .title("Vault login")
                         .pauseOnExit(false)
+                        .logIfEnabled(false)
+                        .preferTabs(false)
                         .launch();
                 return null;
             }
@@ -213,7 +217,7 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
 
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {
-        return PasswordManagerKeyConfiguration.none();
+        return PasswordManagerKeyConfiguration.of(true, true, false, new PasswordManagerKeyStrategy.Inline(), null);
     }
 
     @Override
@@ -322,13 +326,18 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
                 return null;
             }
 
-            var keySplit = key.split(":", 2);
+            var keySplit = key.split("\\?", 2);
             if (keySplit.length != 2 || keySplit[0].isEmpty() || keySplit[1].isEmpty()) {
                 throw ErrorEventFactory.expected(new IllegalArgumentException("Invalid secret reference format"));
             }
 
             var secretPath = keySplit[0];
-            var keys = Arrays.stream(keySplit[1].split(",")).toList();
+            var keys = Arrays.stream(keySplit[1].split("&"))
+                    .filter(s -> s.split("=").length == 2)
+                    .collect(Collectors.toMap(s -> s.split("=", 2)[0], s -> s.split("=", 2)[1]));
+            if (keys.isEmpty()) {
+                throw ErrorEventFactory.expected(new IllegalArgumentException("Invalid secret reference format"));
+            }
 
             var b = CommandBuilder.of().add("vault", "read", "--format=json", "-non-interactive");
             if (vaultNamespace != null) {
@@ -349,22 +358,31 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
                 return null;
             }
 
-            if (keys.size() > 1) {
-                var username = Optional.ofNullable(subData.get(keys.getFirst()))
-                        .map(JsonNode::textValue)
-                        .orElse(null);
-                var password = Optional.ofNullable(subData.get(keys.get(1)))
-                        .map(JsonNode::textValue)
-                        .orElse(null);
-                var creds = Credentials.of(username, password);
-                return Result.of(creds, null);
-            } else {
-                var password = Optional.ofNullable(subData.get(keys.getFirst()))
-                        .map(JsonNode::textValue)
-                        .orElse(null);
-                var creds = Credentials.of(null, password);
-                return Result.of(creds, null);
+            var username = Optional.ofNullable(subData.get(keys.get("user")))
+                    .map(JsonNode::textValue)
+                    .orElse(null);
+            var password = Optional.ofNullable(subData.get(keys.get("pass")))
+                    .map(JsonNode::textValue)
+                    .orElse(null);
+            var publicKey = Optional.ofNullable(subData.get(keys.get("public-key")))
+                    .map(JsonNode::textValue)
+                    .orElse(null);
+            var privateKey = Optional.ofNullable(subData.get(keys.get("private-key")))
+                    .map(JsonNode::textValue)
+                    .orElse(null);
+            var creds = Credentials.of(username, password);
+            var sshKey = SshKey.of(publicKey, privateKey);
+            var r = Result.of(creds, sshKey);
+            if (r == null) {
+                if (subData.size() == 0) {
+                    throw ErrorEventFactory.expected(new IllegalArgumentException("Found data at path but no fields"));
+                }
+
+                var l = new ArrayList<String>();
+                subData.fieldNames().forEachRemaining(l::add);
+                throw ErrorEventFactory.expected(new IllegalArgumentException("Found data for specified key mapping, but only found the following unmapped keys: " + l));
             }
+            return r;
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
             return null;

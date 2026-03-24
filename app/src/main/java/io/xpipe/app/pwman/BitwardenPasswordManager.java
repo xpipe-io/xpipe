@@ -364,10 +364,7 @@ public class BitwardenPasswordManager implements PasswordManager {
                 var publicKey = Optional.ofNullable(sshKey.get("publicKey"))
                         .map(jsonNode -> jsonNode.textValue())
                         .orElse(null);
-                var fingerprint = Optional.ofNullable(sshKey.get("fingerprint"))
-                        .map(jsonNode -> jsonNode.textValue())
-                        .orElse(null);
-                credentialSshKey = SshKey.of(fingerprint, publicKey, privateKey);
+                credentialSshKey = SshKey.of(publicKey, privateKey);
             } else {
                 credentialSshKey = null;
             }

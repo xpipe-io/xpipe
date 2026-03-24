@@ -16,7 +16,7 @@ public class IdentitySummary {
 
         if (st instanceof PasswordManagerIdentityStore pmis) {
             var s = "Credentials " + pmis.getKey();
-            if (pmis.getSshIdentity() != null && !(pmis.getSshIdentity() instanceof NoIdentityStrategy)) {
+            if (pmis.hasAgentKey()) {
                 s += " + agent key";
             }
             return s;
