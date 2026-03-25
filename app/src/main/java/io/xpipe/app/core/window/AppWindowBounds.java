@@ -24,7 +24,7 @@ public class AppWindowBounds {
             var o = oldValue.doubleValue();
             if (stage.isShowing() && areNumbersValid(o, n)) {
                 // Ignore rounding events
-                if (Math.abs(n - o) < 0.5) {
+                if (Math.abs(n - o) <= 0.5) {
                     return;
                 }
 
@@ -40,7 +40,7 @@ public class AppWindowBounds {
             var o = oldValue.doubleValue();
             if (stage.isShowing() && areNumbersValid(o, n)) {
                 // Ignore rounding events
-                if (Math.abs(n - o) < 0.5) {
+                if (Math.abs(n - o) <= 0.5) {
                     return;
                 }
 
