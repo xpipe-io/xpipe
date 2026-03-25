@@ -113,6 +113,7 @@ public class BrowserNavBarComp extends RegionStructureBuilder<HBox, BrowserNavBa
 
         // Prevent overflow
         var clip = new Rectangle();
+        clip.setSmooth(false);
         clip.widthProperty().bind(stack.widthProperty());
         clip.heightProperty().bind(stack.heightProperty());
         stack.setClip(clip);

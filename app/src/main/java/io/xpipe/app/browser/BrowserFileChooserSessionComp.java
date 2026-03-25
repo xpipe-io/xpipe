@@ -142,6 +142,7 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
                     rec.heightProperty().bind(struc.heightProperty());
                     rec.setArcHeight(7);
                     rec.setArcWidth(7);
+                    rec.setSmooth(false);
                     struc.getChildren().getFirst().setClip(rec);
                 })
                 .vgrow();
@@ -169,7 +170,7 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
         var splitPane = new LeftSplitPaneComp(vertical, stack)
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
                 .applyStructure(struc -> {
-                    struc.getLeft().setMinWidth(200);
+                    struc.getLeft().setMinWidth(250);
                     struc.getLeft().setMaxWidth(500);
                 });
         splitPane.disable(model.getBusy());

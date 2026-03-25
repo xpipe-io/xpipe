@@ -90,7 +90,7 @@ public class BrowserFullSessionComp extends SimpleRegionBuilder {
                     leftSplit.set(d);
                 });
         splitPane.applyStructure(struc -> {
-            struc.getLeft().setMinWidth(200);
+            struc.getLeft().setMinWidth(250);
             struc.getLeft().setMaxWidth(500);
             struc.get().setPickOnBounds(false);
         });
@@ -165,6 +165,7 @@ public class BrowserFullSessionComp extends SimpleRegionBuilder {
         bookmarksContainer
                 .apply(struc -> {
                     var rec = new Rectangle();
+                    rec.setSmooth(false);
                     rec.widthProperty().bind(struc.widthProperty());
                     rec.heightProperty().bind(struc.heightProperty());
                     rec.setArcHeight(11);
@@ -225,6 +226,7 @@ public class BrowserFullSessionComp extends SimpleRegionBuilder {
             });
 
             var clip = new Rectangle();
+            clip.setSmooth(false);
             clip.widthProperty().bind(struc.widthProperty());
             clip.heightProperty().bind(struc.heightProperty());
             struc.setClip(clip);

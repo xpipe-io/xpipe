@@ -63,7 +63,7 @@ public class StoreFilterState {
     private final ObservableBooleanValue isSearchString = Bindings.createBooleanBinding(
             () -> {
                 return rawText.getValue() != null
-                        && rawText.getValue().length() > 2
+                        && (forceFilter.getValue() || rawText.getValue().length() > 2)
                         && (forceFilter.getValue() || (!isUrlString.getValue() && !isQuickConnectString.getValue()));
             },
             rawText,

@@ -49,18 +49,16 @@ public class StoreQuickConnect {
             return false;
         }
 
-        if (newStore.isComplete()) {
-            var existing = provider.get().findExisting(newStore);
-            if (existing.isPresent()) {
-                ThreadHelper.runAsync(() -> {
-                    try {
-                        provider.get().open(existing.get());
-                    } catch (Exception e) {
-                        ErrorEventFactory.fromThrowable(e).handle();
-                    }
-                });
-                return true;
-            }
+        var existing = provider.get().findExisting(newStore);
+        if (existing.isPresent()) {
+            ThreadHelper.runAsync(() -> {
+                try {
+                    provider.get().open(existing.get());
+                } catch (Exception e) {
+                    ErrorEventFactory.fromThrowable(e).handle();
+                }
+            });
+            return true;
         }
 
         DataStorage.get().updateEntryStore(quickConnectEntry, newStore);

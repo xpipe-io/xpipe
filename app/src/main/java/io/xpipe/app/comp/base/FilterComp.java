@@ -17,6 +17,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 
 import atlantafx.base.controls.CustomTextField;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Rectangle;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -92,6 +94,15 @@ public class FilterComp extends RegionBuilder<CustomTextField> {
 
             filterText.setValue(n != null && n.length() > 0 ? n : null);
         });
+
+        // Fix caret not being visible on right side when overflowing
+        filter.setSkin(filter.createDefaultSkin());
+        Pane pane = (Pane) filter.getChildrenUnmodifiable().getFirst();
+        var rec = new Rectangle();
+        rec.widthProperty().bind(pane.widthProperty().add(2));
+        rec.heightProperty().bind(pane.heightProperty());
+        rec.setSmooth(false);
+        filter.getChildrenUnmodifiable().getFirst().setClip(rec);
 
         return filter;
     }

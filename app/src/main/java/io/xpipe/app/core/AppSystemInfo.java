@@ -215,8 +215,10 @@ public abstract class AppSystemInfo {
                 var r = Shell32Util.getKnownFolderPath(KnownFolders.FOLDERID_Downloads);
                 // Replace 8.3 filename
                 return (downloads = Path.of(r).toRealPath());
-            } catch (Throwable e) {
-                ErrorEventFactory.fromThrowable(e).handle();
+            }  catch (Throwable e) {
+                if (!(e instanceof Win32Exception)) {
+                    ErrorEventFactory.fromThrowable(e).handle();
+                }
                 var fallback = getUserHome().resolve("Downloads");
                 return (downloads = fallback);
             }
@@ -232,7 +234,9 @@ public abstract class AppSystemInfo {
                 // Replace 8.3 filename
                 return (documents = Path.of(r).toRealPath());
             } catch (Throwable e) {
-                ErrorEventFactory.fromThrowable(e).handle();
+                if (!(e instanceof Win32Exception)) {
+                    ErrorEventFactory.fromThrowable(e).handle();
+                }
                 var fallback = getUserHome().resolve("Documents");
                 return (documents = fallback);
             }
@@ -249,7 +253,9 @@ public abstract class AppSystemInfo {
                 // Replace 8.3 filename
                 return (desktop = Path.of(r).toRealPath());
             } catch (Throwable e) {
-                ErrorEventFactory.fromThrowable(e).handle();
+                if (!(e instanceof Win32Exception)) {
+                    ErrorEventFactory.fromThrowable(e).handle();
+                }
                 var fallback = getUserHome().resolve("Desktop");
                 return (desktop = fallback);
             }

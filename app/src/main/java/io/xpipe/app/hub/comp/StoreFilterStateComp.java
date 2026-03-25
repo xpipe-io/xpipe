@@ -32,7 +32,7 @@ public class StoreFilterStateComp extends SimpleRegionBuilder {
         button.apply(r -> r.setAlignment(Pos.CENTER_LEFT));
         button.apply(AppFontSizes::sm);
         button.style(Styles.FLAT);
-        button.maxWidth(10000);
+        button.maxWidth(250);
         return button;
     }
 
