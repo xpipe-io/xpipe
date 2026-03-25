@@ -62,6 +62,10 @@
     -fx-border-color: transparent;
 }
 
+.root:linux .toggle-switch-comp > .thumb {
+    -fx-background-insets: 0.12em;
+}
+
 .root:macos .toggle-switch-comp > .thumb {
     -fx-background-insets: 0.15em;
     -fx-background-radius: 1em;
