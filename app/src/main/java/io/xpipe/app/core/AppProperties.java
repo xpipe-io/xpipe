@@ -10,6 +10,7 @@ import lombok.Value;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
 import java.util.*;
 
@@ -244,9 +245,10 @@ public class AppProperties {
         }
 
         try {
-            return Files.getLastModifiedTime(dir).toInstant();
-        } catch (IOException e) {
-            ErrorEventFactory.fromThrowable(e).handle();
+            var attr = Files.readAttributes(dir, BasicFileAttributes.class);
+            return attr.creationTime().toInstant();
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable(e).expected().omit().handle();
             return Instant.now();
         }
     }
