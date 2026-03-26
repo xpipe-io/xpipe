@@ -42,6 +42,8 @@ import lombok.*;
 
 import java.nio.file.Files;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 
 public final class AppPrefs {
@@ -864,16 +866,19 @@ public final class AppPrefs {
         }
 
         if (OsType.ofLocal() != OsType.WINDOWS) {
+            var changeDate = LocalDate.of(2026, 3, 25).atStartOfDay(ZoneId.systemDefault()).toInstant();
+            var removePasswordManagerAgent = AppProperties.get().getFirstStartupDate().compareTo(changeDate) > 0;
+
             // On Linux and macOS, we prefer the shell variable compared to any global env variable
             // as the one is set by default and might not be the right one
             // This happens for example with homebrew ssh
             var shellVariable = LocalShell.getShell().view().getEnvironmentVariable("SSH_AUTH_SOCK");
-            if (shellVariable.isPresent() && PasswordManager.isPasswordManagerSshAgent(shellVariable.get())) {
+            if (shellVariable.isPresent() && removePasswordManagerAgent && PasswordManager.isPasswordManagerSshAgent(shellVariable.get())) {
                 shellVariable = Optional.empty();
             }
 
             var envVariable = System.getenv("SSH_AUTH_SOCK");
-            if (envVariable != null && PasswordManager.isPasswordManagerSshAgent(envVariable)) {
+            if (envVariable != null && removePasswordManagerAgent && PasswordManager.isPasswordManagerSshAgent(envVariable)) {
                 envVariable = null;
             }
 

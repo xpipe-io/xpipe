@@ -10,6 +10,7 @@ import lombok.Value;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.*;
 
 @Value
@@ -234,5 +235,19 @@ public class AppProperties {
 
     public Optional<AppVersion> getCanonicalVersion() {
         return Optional.ofNullable(canonicalVersion);
+    }
+
+    public Instant getFirstStartupDate() {
+        var dir = defaultDataDir;
+        if (!Files.exists(dir)) {
+            return Instant.now();
+        }
+
+        try {
+            return Files.getLastModifiedTime(dir).toInstant();
+        } catch (IOException e) {
+            ErrorEventFactory.fromThrowable(e).handle();
+            return Instant.now();
+        }
     }
 }
