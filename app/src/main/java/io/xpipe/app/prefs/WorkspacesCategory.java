@@ -24,10 +24,9 @@ public class WorkspacesCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .title("manageWorkspaces")
                 .sub(new OptionsBuilder()
-                        .nameAndDescription("workspaceAdd")
+                        .nameAndDescription("workspaceManagement")
                         .licenseRequirement("workspaces")
-                        .addComp(
-                                new ButtonComp(AppI18n.observable("addWorkspace"), WorkspaceCreationDialog::showAsync)))
+                        .addComp(new WorkspaceOverviewComp().maxWidth(getCompWidth())))
                 .disable(!LicenseProvider.get().getFeature("workspaces").isSupported())
                 .buildComp();
     }

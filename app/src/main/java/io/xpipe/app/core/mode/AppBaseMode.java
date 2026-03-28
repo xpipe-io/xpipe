@@ -24,6 +24,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.app.platform.PlatformState;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.WorkspaceManager;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.pwman.KeePassXcPasswordManager;
 import io.xpipe.app.storage.DataStorage;
@@ -109,6 +110,7 @@ public class AppBaseMode extends AppOperationMode {
                     AppTestCommandCheck.check();
                     // This might be slow on macOS and might take longer than the platform init
                     AppPrefs.get().initDefaultValues();
+                    WorkspaceManager.init();
                     localPrefsLoaded.countDown();
                     PlatformInit.init(true);
                     TrackEvent.info("Shell initialization thread completed");
@@ -202,6 +204,7 @@ public class AppBaseMode extends AppOperationMode {
         TrackEvent.withInfo("Base mode shutdown started").build();
         AbstractAction.reset();
         AppMcpServer.reset();
+        WorkspaceManager.reset();
         AppPrefs.reset();
         DataStorage.reset();
         DataStorageSyncHandler.getInstance().reset();
