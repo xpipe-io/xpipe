@@ -31,6 +31,7 @@ public class AppLayoutComp extends RegionStructureBuilder<BorderPane, AppLayoutC
 
     @Override
     public Structure createBase() {
+        TrackEvent.info("oooo");
         var model = AppLayoutModel.get();
         Map<BaseRegionBuilder<?, ?>, ObservableValue<Boolean>> map = model.getEntries().stream()
                 .filter(entry -> entry.comp() != null)
@@ -45,10 +46,13 @@ public class AppLayoutComp extends RegionStructureBuilder<BorderPane, AppLayoutC
                         LinkedHashMap::new));
 
         var pane = new BorderPane();
+        TrackEvent.info("pppp");
 
         var multi = new MultiContentComp(true, map);
+        TrackEvent.info("qqqq");
         multi.style("background");
         StackPane multiR = (StackPane) multi.build();
+        TrackEvent.info("rrrr");
         pane.setCenter(multiR);
         TrackEvent.info("Window content comp created");
 

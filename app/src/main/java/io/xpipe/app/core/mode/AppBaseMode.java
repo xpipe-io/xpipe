@@ -141,12 +141,19 @@ public class AppBaseMode extends AppOperationMode {
                 },
                 () -> {
                     PlatformInit.init(true);
+                    TrackEvent.info("aaaa");
                     imagesLoaded.await();
+                    TrackEvent.info("bbbb");
                     browserLoaded.await();
+                    TrackEvent.info("cccc");
                     iconsLoaded.await();
+                    TrackEvent.info("dddd");
                     localPrefsLoaded.await();
+                    TrackEvent.info("eeee");
                     AppMainWindow.loadingText("loadingUserInterface");
+                    TrackEvent.info("ffff");
                     AppMainWindow.initContent();
+                    TrackEvent.info("gggg");
                     TrackEvent.info("Window content initialization thread completed");
                 },
                 () -> {

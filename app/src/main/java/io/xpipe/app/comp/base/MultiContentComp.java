@@ -2,6 +2,7 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.application.Platform;
@@ -26,6 +27,7 @@ public class MultiContentComp extends SimpleRegionBuilder {
 
     @Override
     protected Region createSimple() {
+        TrackEvent.info("afff");
         ObservableMap<BaseRegionBuilder<?, ?>, Region> m = FXCollections.observableHashMap();
         var stack = new StackPane();
         m.addListener((MapChangeListener<? super BaseRegionBuilder<?, ?>, Region>) change -> {
@@ -35,6 +37,7 @@ public class MultiContentComp extends SimpleRegionBuilder {
                 stack.getChildren().remove(change.getValueRemoved());
             }
         });
+        TrackEvent.info("bfff");
 
         stack.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
@@ -48,7 +51,9 @@ public class MultiContentComp extends SimpleRegionBuilder {
             }
         });
 
+        TrackEvent.info("cffff");
         for (Map.Entry<BaseRegionBuilder<?, ?>, ObservableValue<Boolean>> e : content.entrySet()) {
+            TrackEvent.info(e.getKey().getClass().getSimpleName());
             var r = e.getKey().build();
             e.getValue().subscribe(val -> {
                 PlatformThread.runLaterIfNeeded(() -> {
@@ -63,6 +68,7 @@ public class MultiContentComp extends SimpleRegionBuilder {
             });
             m.put(e.getKey(), r);
         }
+        TrackEvent.info("dffff");
 
         return stack;
     }

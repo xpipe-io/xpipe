@@ -143,13 +143,18 @@ public class AppMainWindow {
     }
 
     public static synchronized void initContent() {
+        TrackEvent.info("hhhh");
         PlatformThread.runLaterIfNeededBlocking(() -> {
+            TrackEvent.info("iiii");
             try {
                 TrackEvent.info("Window content node creation started");
                 var content = new AppLayoutComp();
+                TrackEvent.info("jjjj");
                 var s = content.createBase();
+                TrackEvent.info("llll");
                 TrackEvent.info("Window content node structure created");
                 loadedContent.setValue(s);
+                TrackEvent.info("xxxx");
             } catch (Throwable t) {
                 ErrorEventFactory.fromThrowable(t).term().handle();
             }
