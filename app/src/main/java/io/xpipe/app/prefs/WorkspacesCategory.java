@@ -1,8 +1,10 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.util.DocumentationLink;
@@ -28,7 +30,7 @@ public class WorkspacesCategory extends AppPrefsCategory {
                         .nameAndDescription("workspaceManagement")
                         .documentationLink(DocumentationLink.WORKSPACES)
                         .licenseRequirement("workspaces")
-                        .addComp(new WorkspaceOverviewComp().maxWidth(getCompWidth())))
+                        .addComp(AppProperties.get().isAotTrainMode() ? RegionBuilder.empty() : new WorkspaceOverviewComp().maxWidth(getCompWidth())))
                 .buildComp();
     }
 }

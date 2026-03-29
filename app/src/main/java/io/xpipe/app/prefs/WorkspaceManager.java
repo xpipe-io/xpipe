@@ -61,6 +61,10 @@ public class WorkspaceManager {
     }
 
     private void save() {
+        if (AppProperties.get().isAotTrainMode() ||AppProperties.get().isTest() || workspaces.isEmpty()) {
+            return;
+        }
+
         try {
             var file = AppProperties.get().getDefaultReleaseDataDir().resolve("workspaces.json");
             JacksonMapper.getDefault().writeValue(file.toFile(), workspaces);
