@@ -30,6 +30,7 @@ public class AppProperties {
     boolean useVirtualThreads;
     boolean debugThreads;
     Path dataDir;
+    Path defaultReleaseDataDir;
     Path defaultDataDir;
     Path dataBinDir;
     boolean showcase;
@@ -108,6 +109,7 @@ public class AppProperties {
                         System.getProperty(AppNames.propertyName("debugPlatformThreadAccess")))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
+        defaultReleaseDataDir = AppSystemInfo.ofCurrent().getUserHome().resolve(".xpipe");
         defaultDataDir = AppSystemInfo.ofCurrent().getUserHome().resolve(isStaging() ? ".xpipe-ptb" : ".xpipe");
         dataDir = Optional.ofNullable(System.getProperty(AppNames.propertyName("dataDir")))
                 .map(s -> {

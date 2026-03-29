@@ -24,7 +24,7 @@ public class AppAotTrain {
                 true);
         AppLayoutModel.get().selectSettings();
         ThreadHelper.sleep(1000);
-        AppLayoutModel.get().selectLicense();
+        // AppLayoutModel.get().selectLicense();
         ThreadHelper.sleep(1000);
         AppLayoutModel.get().selectBrowser();
         ThreadHelper.sleep(5000);

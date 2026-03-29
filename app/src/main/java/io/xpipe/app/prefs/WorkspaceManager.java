@@ -62,7 +62,7 @@ public class WorkspaceManager {
 
     private void save() {
         try {
-            var file = AppProperties.get().getDefaultDataDir().resolve("workspaces.json");
+            var file = AppProperties.get().getDefaultReleaseDataDir().resolve("workspaces.json");
             JacksonMapper.getDefault().writeValue(file.toFile(), workspaces);
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).expected().handle();

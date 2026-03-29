@@ -2,6 +2,7 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.VerticalComp;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
 
@@ -16,6 +17,7 @@ public class AppPrefsComp extends SimpleRegionBuilder {
 
     @Override
     protected Region createSimple() {
+        TrackEvent.info("paaaaa");
         var categories = AppPrefs.get().getCategories().stream()
                 .filter(appPrefsCategory -> appPrefsCategory.show())
                 .toList();
@@ -30,10 +32,13 @@ public class AppPrefsComp extends SimpleRegionBuilder {
             struc.getStyleClass().add("prefs-box");
         });
         boxComp.maxWidth(850);
+        TrackEvent.info("baaaaaa");
         var box = boxComp.build();
+        TrackEvent.info("caaaaa");
 
         var pane = new GraphicDecorationStackPane();
         pane.getChildren().add(box);
+        TrackEvent.info("daaaaaa");
 
         var scrollPane = new ScrollPane(pane);
 
@@ -83,6 +88,7 @@ public class AppPrefsComp extends SimpleRegionBuilder {
         scrollPane.setFitToWidth(true);
         HBox.setHgrow(scrollPane, Priority.ALWAYS);
 
+        TrackEvent.info("eaaaaaa");
         var sidebar = new AppPrefsSidebarComp().build();
         sidebar.setMinWidth(260);
         sidebar.setPrefWidth(260);
@@ -93,6 +99,7 @@ public class AppPrefsComp extends SimpleRegionBuilder {
         HBox.setMargin(sidebar, new Insets(4));
         split.setFillHeight(true);
         split.getStyleClass().add("prefs");
+        TrackEvent.info("faaaaa");
         return split;
     }
 
