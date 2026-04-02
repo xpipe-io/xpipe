@@ -6,7 +6,7 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.platform.NativeWinWindowControl;
+import io.xpipe.app.auxw.NativeWinWindowControl;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviourDialog;

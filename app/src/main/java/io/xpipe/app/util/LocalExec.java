@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public class LocalExec {
 
-    public static void executeAsync(String... command) {
+    public static Process executeAsync(String... command) {
         try {
             TrackEvent.withTrace("Running local command")
                     .tag("command", String.join(" ", command))
@@ -23,12 +23,13 @@ public class LocalExec {
             // https://bugs.openjdk.org/browse/JDK-8360500
             env.remove("_JPACKAGE_LAUNCHER");
 
-            pb.start();
+            return pb.start();
         } catch (Exception ex) {
             TrackEvent.withTrace("Local command finished")
                     .tag("command", String.join(" ", command))
                     .tag("error", ex.toString())
                     .handle();
+            return null;
         }
     }
 

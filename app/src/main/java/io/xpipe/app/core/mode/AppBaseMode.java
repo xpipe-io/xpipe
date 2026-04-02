@@ -2,6 +2,7 @@ package io.xpipe.app.core.mode;
 
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.action.ActionProvider;
+import io.xpipe.app.auxw.AppAuxiliaryWindow;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BlobManager;
 import io.xpipe.app.beacon.mcp.AppMcpServer;
@@ -156,6 +157,7 @@ public class AppBaseMode extends AppOperationMode {
                     TerminalView.init();
                     TerminalLauncherManager.init();
                     TerminalDockHubManager.init();
+                    AppAuxiliaryWindow.init();
                     TrackEvent.info("File/Terminal initialization thread completed");
                 },
                 () -> {

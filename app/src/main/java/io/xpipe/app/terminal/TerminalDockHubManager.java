@@ -7,7 +7,7 @@ import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.platform.LabelGraphic;
-import io.xpipe.app.platform.NativeWinWindowControl;
+import io.xpipe.app.auxw.NativeWinWindowControl;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
@@ -202,14 +202,13 @@ public class TerminalDockHubManager {
                     return;
                 }
 
-                var controllable = session.getTerminal().controllable();
-                if (controllable.isEmpty()) {
+                if (!(session.getTerminal() instanceof TerminalView.ControllableTerminalSession t)) {
                     return;
                 }
 
-                var term = controllable.get().getTerminalType();
-                if (term instanceof TrackableTerminalType t) {
-                    if (t.getDockMode() == TerminalDockMode.UNSUPPORTED) {
+                var term = t.getTerminalType();
+                if (term instanceof TrackableTerminalType trackableType) {
+                    if (trackableType.getDockMode() == TerminalDockMode.UNSUPPORTED) {
                         return;
                     }
                 }
@@ -218,7 +217,7 @@ public class TerminalDockHubManager {
                 enableDock();
                 showDock();
                 Platform.runLater(() -> {
-                    dockModel.trackTerminal(controllable.get(), dock);
+                    dockModel.trackTerminal(t, dock);
                     dockModel.closeOtherTerminals(session.getRequest());
                 });
             }

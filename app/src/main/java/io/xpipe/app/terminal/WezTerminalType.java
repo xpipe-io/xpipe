@@ -254,9 +254,10 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                 @SneakyThrows
                 public void onSessionOpened(TerminalView.ShellSession session) {
                     TerminalView.get().removeListener(this);
-                    var term = (WindowsTerminalSession) session.getTerminal();
-                    term.frontOfMainWindow();
-                    term.focus();
+                    if (session.getTerminal() instanceof TerminalView.ControllableTerminalSession t) {
+                        t.getControllable().frontOfMainWindow();
+                        t.getControllable().focus();
+                    }
                 }
             };
             TerminalView.get().addListener(listener);

@@ -1,20 +1,23 @@
-package io.xpipe.app.terminal;
+package io.xpipe.app.auxw;
 
 import io.xpipe.app.util.Rect;
 
 import lombok.Getter;
 
 @Getter
-public abstract class ControllableTerminalSession extends TerminalView.TerminalSession {
+public abstract class ControllableWindowProcess {
 
+    protected ProcessHandle process;
     protected Rect lastBounds;
     protected boolean customBounds;
 
-    protected ControllableTerminalSession(ProcessHandle terminalProcess, ExternalTerminalType terminalType) {
-        super(terminalProcess, terminalType);
+    protected ControllableWindowProcess(ProcessHandle p) {
+        this.process = p;
     }
 
-    public abstract void own();
+    public abstract boolean isRunning();
+
+    public abstract void own(NativeWinWindowControl window);
 
     public abstract void disown();
 
@@ -22,9 +25,9 @@ public abstract class ControllableTerminalSession extends TerminalView.TerminalS
 
     public abstract void restoreIcon();
 
-    public abstract void removeStyle();
+    public abstract void removeStyle(boolean borders);
 
-    public abstract void restoreStyle();
+    public abstract void restoreStyle(boolean borders);
 
     public abstract void show();
 
@@ -32,7 +35,7 @@ public abstract class ControllableTerminalSession extends TerminalView.TerminalS
 
     public abstract void frontOfMainWindow();
 
-    public abstract void backOfMainWindow();
+    public abstract void backOfWindow(NativeWinWindowControl window);
 
     public abstract void focus();
 

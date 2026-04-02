@@ -1,11 +1,13 @@
 package io.xpipe.app.rdp;
 
+import io.xpipe.app.auxw.AppAuxiliaryWindow;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.GlobalTimer;
+import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.RdpConfig;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.SecretValue;
@@ -58,14 +60,24 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
 
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
-        var adaptedRdpConfig = getAdaptedConfig(configuration);
+        var aux = AppAuxiliaryWindow.get();
+        if (aux != null) {
+            aux.show();
+        }
+
+        var adaptedRdpConfig = getAuxWindowConfig(getAdaptedConfig(configuration));
 
         var setCache = prepareLocalhostRegistryCache(configuration);
 
         var file = writeRdpConfigFile(configuration.getTitle(), adaptedRdpConfig);
-        LocalShell.getShell()
-                .command(CommandBuilder.of().add(getExecutable()).addFile(file.toString()))
-                .execute();
+        var process = LocalExec.executeAsync(getExecutable(), file.toString());
+        if (process != null && aux != null) {
+            aux.show();
+            aux.track(configuration.getTitle(), process, Duration.ofSeconds(30), p -> {
+                var bounds = p.queryBounds();
+                return bounds.getW() > 500 && bounds.getH() > 500;
+            });
+        }
 
         GlobalTimer.delay(
                 () -> {
@@ -94,6 +106,27 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
     @Override
     public String getWebsite() {
         return "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/mstsc";
+    }
+
+    private RdpConfig getAuxWindowConfig(RdpConfig input) {
+        var aux = AppAuxiliaryWindow.get();
+        if (aux != null) {
+            aux.show();
+            var s = aux.getDockBounds();
+            if (s != null) {
+                var pos = "0,1," + s.getX() + "," + s.getY() + "," + s.getW() + "," + s.getH();
+                var adapted = input.overlay(Map.of(
+                        "winposstr", new RdpConfig.TypedValue("s", pos),
+                        "pinconnectionbar", new RdpConfig.TypedValue("i", "0"),
+                        "displayconnectionbar", new RdpConfig.TypedValue("i", "0"),
+                        "screen mode id", new RdpConfig.TypedValue("i", "1"),
+                        "use multimon", new RdpConfig.TypedValue("i", "0"),
+                        "smart sizing", new RdpConfig.TypedValue("i", "1")));
+                return adapted;
+            }
+        }
+
+        return input;
     }
 
     private RdpConfig getAdaptedConfig(RdpLaunchConfig configuration) throws Exception {
