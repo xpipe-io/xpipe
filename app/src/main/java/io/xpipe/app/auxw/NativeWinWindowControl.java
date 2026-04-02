@@ -25,6 +25,7 @@ import java.util.Optional;
 public class NativeWinWindowControl {
 
     private static final int WS_EX_APPWINDOW = 0x00040000;
+    private static final int WS_EX_NOACTIVATE = 0x08000000;
 
     public static NativeWinWindowControl MAIN_WINDOW;
     private final WinDef.HWND windowHandle;
@@ -164,7 +165,7 @@ public class NativeWinWindowControl {
                 windowHandle, predecessor, 0, 0, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOMOVE | User32.SWP_NOSIZE);
     }
 
-    public void show() {
+    public void restore() {
         User32.INSTANCE.ShowWindow(windowHandle, User32.SW_RESTORE);
     }
 

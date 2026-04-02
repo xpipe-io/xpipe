@@ -2,6 +2,7 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.auxw.WindowDockComp;
 
+import javafx.application.Platform;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
@@ -22,6 +23,27 @@ public class TerminalDockHubComp extends WindowDockComp<TerminalDockView> {
         stack.setMinWidth(100);
         stack.setMinHeight(100);
         setupListeners(stack);
+        stack.sceneProperty().subscribe(scene -> {
+            if (scene == null) {
+                return;
+            }
+
+            var window = scene.getWindow();
+            window.focusedProperty().subscribe(focus -> {
+                if (!model.isActive()) {
+                    return;
+                }
+
+               if (focus) {
+                   var target = scene.getRoot().lookup(".icon-button-comp:hover");
+                   if (target == null) {
+                       Platform.runLater(() -> {
+                           model.focus();
+                       });
+                   }
+               }
+            });
+        });
         return stack;
     }
 }

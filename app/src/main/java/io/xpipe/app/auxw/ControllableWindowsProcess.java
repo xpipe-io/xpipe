@@ -37,7 +37,7 @@ public final class ControllableWindowsProcess extends ControllableWindowProcess 
 
     @Override
     public boolean isRunning() {
-        return process.isAlive() && control.isVisible();
+        return process.isAlive();
     }
 
     @Override
@@ -78,7 +78,7 @@ public final class ControllableWindowsProcess extends ControllableWindowProcess 
 
     @Override
     public void show() {
-        this.control.show();
+        this.control.restore();
     }
 
     @Override
@@ -103,6 +103,8 @@ public final class ControllableWindowsProcess extends ControllableWindowProcess 
 
     @Override
     public void updatePosition(Rect bounds) {
+        // In case it is maximized, make it normal again
+        control.restore();
         control.move(bounds);
         this.lastBounds = queryBounds();
         this.customBounds = false;

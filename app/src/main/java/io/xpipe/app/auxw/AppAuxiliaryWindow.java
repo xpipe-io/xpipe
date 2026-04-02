@@ -1,25 +1,33 @@
 package io.xpipe.app.auxw;
 
 import io.xpipe.app.core.*;
+import io.xpipe.app.core.window.AppModifiedStage;
 import io.xpipe.app.core.window.AppWindowStyle;
+import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.Rect;
 import io.xpipe.core.OsType;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.function.Predicate;
 
 public class AppAuxiliaryWindow {
@@ -43,6 +51,7 @@ public class AppAuxiliaryWindow {
             return INSTANCE.nativeWinWindowControl;
         });
         INSTANCE = new AppAuxiliaryWindow(state, model);
+        INSTANCE.startStateListener();
     }
 
     private WindowState state;
@@ -63,10 +72,13 @@ public class AppAuxiliaryWindow {
         }
 
         stage = new Stage();
-        stage.setScene(new Scene(new Region()));
+        var scene = new Scene(new Region());
+        scene.setFill(Color.TRANSPARENT);
+        stage.setScene(scene);
         stage.getScene().setRoot(new AuxDockCompImpl().build());
         stage.setWidth(1280);
         stage.setHeight(780);
+        stage.titleProperty().bind(PlatformThread.sync(createTitle()));
 
         if (AppPrefs.get() != null) {
             stage.opacityProperty().bind(PlatformThread.sync(AppPrefs.get().windowOpacity()));
@@ -100,13 +112,24 @@ public class AppAuxiliaryWindow {
         });
     }
 
+    public void focus() {
+        PlatformThread.runLaterIfNeeded(() -> {
+            model.focus();
+        });
+    }
+
     public void select(AuxEntry entry) {
         model.select(entry);
         selected.set(entry);
     }
 
-    public void track(String name, Process process, Duration maxWait, Predicate<ControllableWindowProcess> filter) {
+    public void track(String name, String icon, DataStoreColor color, Process process, Duration maxWait, Predicate<ControllableWindowProcess> filter) {
+        var start = Instant.now();
         GlobalTimer.scheduleUntil(Duration.ofSeconds(1), false, () -> {
+            if (Duration.between(start, Instant.now()).compareTo(maxWait) > 0) {
+                return true;
+            }
+
             var windows = NativeWinWindowControl.byPid(process.pid());
             if (windows.isEmpty()) {
                 return false;
@@ -118,7 +141,7 @@ public class AppAuxiliaryWindow {
                     continue;
                 }
 
-                var entry = new AuxEntry(name, c);
+                var entry = new AuxEntry(name, icon, color, c);
                 model.track(entry);
 
                 return true;
@@ -126,6 +149,38 @@ public class AppAuxiliaryWindow {
 
             return false;
         });
+    }
+
+    private ObservableStringValue createTitle() {
+        return Bindings.createStringBinding(() -> {
+            var selected = this.selected.get();
+            if (selected == null) {
+                return "Remote Desktop Dock";
+            }
+
+            var name = selected.getName();
+            return name + " - Remote Desktop Connection";
+        }, selected);
+    }
+
+    private void startStateListener() {
+        GlobalTimer.scheduleUntil(Duration.ofMillis(500), false, () -> {
+            if (stage == null || !stage.isShowing()) {
+                return false;
+            }
+
+            updateState();
+            return false;
+        });
+    }
+
+    private void updateState() {
+        model.clearDead();
+        selected.set(model.getSelected());
+        DerivedObservableList.wrap(processes, true).setContent(model.getEntries());
+        if (processes.isEmpty()) {
+            stage.hide();
+        }
     }
 
     private void onWindowChange() {

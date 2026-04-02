@@ -1,0 +1,22 @@
+.remote-desktop-dock .button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-border-width: 1;
+    -fx-padding: 3 7 3 7;
+    -fx-background-insets: 0;
+}
+
+.root:nord .remote-desktop-dock .button {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+
+.remote-desktop-dock .button:hover, .root:key-navigation .remote-desktop-dock .button:focused {
+    -fx-background-color: -color-bg-default-transparent;
+}
+
+.remote-desktop-dock .button:selected {
+    -fx-border-width: 1px;
+}
+

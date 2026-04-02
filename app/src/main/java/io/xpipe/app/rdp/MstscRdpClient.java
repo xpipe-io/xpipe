@@ -6,6 +6,7 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.RdpConfig;
@@ -73,7 +74,8 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
         var process = LocalExec.executeAsync(getExecutable(), file.toString());
         if (process != null && aux != null) {
             aux.show();
-            aux.track(configuration.getTitle(), process, Duration.ofSeconds(30), p -> {
+            var entry = configuration.getEntry();
+            aux.track(configuration.getTitle(), entry.getEffectiveIconFile(), DataStorage.get().getEffectiveColor(entry), process, Duration.ofSeconds(30), p -> {
                 var bounds = p.queryBounds();
                 return bounds.getW() > 500 && bounds.getH() > 500;
             });

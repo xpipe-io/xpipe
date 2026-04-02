@@ -32,6 +32,11 @@ public class TerminalDockView implements WindowDockListener {
                 !controllableTerminalSession.getTerminalProcess().isAlive());
     }
 
+    public synchronized boolean isActive() {
+        return viewActive && !terminalInstances.isEmpty() &&
+                terminalInstances.stream().anyMatch(s -> s.getControllable().isActive() && !s.getControllable().isCustomBounds());
+    }
+
     public synchronized boolean isRunning() {
         return terminalInstances.stream().anyMatch(terminal -> terminal.isRunning());
     }
@@ -124,6 +129,26 @@ public class TerminalDockView implements WindowDockListener {
             closeTerminal(other);
         }
         return others.size() > 0;
+    }
+
+    public synchronized void focus() {
+        if (!viewActive) {
+            return;
+        }
+
+        terminalInstances.forEach(terminalInstance -> {
+            var controllable = terminalInstance.getControllable();
+            if (!controllable.isActive()) {
+                return;
+            }
+
+            controllable.updateBoundsState();
+            if (controllable.isCustomBounds()) {
+                return;
+            }
+
+            controllable.focus();
+        });
     }
 
     public synchronized void closeTerminal(TerminalView.ControllableTerminalSession terminal) {

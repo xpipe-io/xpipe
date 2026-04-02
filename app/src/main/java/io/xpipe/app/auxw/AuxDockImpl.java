@@ -1,18 +1,17 @@
 package io.xpipe.app.auxw;
 
-import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.Rect;
 import lombok.Getter;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 public class AuxDockImpl implements WindowDockListener {
 
     @Getter
-    private final Set<AuxEntry> entries = new HashSet<>();
+    private final List<AuxEntry> entries = new ArrayList<>();
     @Getter
     private AuxEntry selected;
 
@@ -27,9 +26,28 @@ public class AuxDockImpl implements WindowDockListener {
         this.parent = parent;
     }
 
+    public synchronized void clearDead() {
+        for (AuxEntry entry : new ArrayList<>(entries)) {
+            if (!entry.getProcess().isRunning()) {
+                if (entry.equals(selected)) {
+                    var index = entries.indexOf(entry);
+                    var fallback = index == 0 ? (entries.size() > 1 ? entries.get(1) : null) : entries.get(index - 1);
+                    select(fallback);
+                }
+                entries.remove(entry);
+            }
+        }
+    }
+
     public synchronized void track(AuxEntry p) {
         entries.add(p);
         select(p);
+    }
+
+    public synchronized void focus() {
+        if (selected != null) {
+            selected.getProcess().focus();
+        }
     }
 
     public synchronized void select(AuxEntry p) {
@@ -37,21 +55,22 @@ public class AuxDockImpl implements WindowDockListener {
             return;
         }
 
+        if (p != null && p.equals(selected)) {
+            return;
+        }
+
         if (selected != null) {
             hide(selected);
         }
         selected = p;
-        show(selected);
+        if (p != null) {
+            show(p);
+        }
     }
 
     private synchronized void show(AuxEntry e) {
         var controllable = e.getProcess();
         if (!controllable.isActive()) {
-            return;
-        }
-
-        controllable.updateBoundsState();
-        if (controllable.isCustomBounds()) {
             return;
         }
 
@@ -69,7 +88,7 @@ public class AuxDockImpl implements WindowDockListener {
         updatePositions();
     }
 
-    public synchronized void closeTerminal(AuxEntry e) {
+    public synchronized void closeWindow(AuxEntry e) {
         if (!entries.contains(e)) {
             return;
         }
@@ -92,11 +111,9 @@ public class AuxDockImpl implements WindowDockListener {
     }
 
     public synchronized void onClose() {
-        TrackEvent.withTrace("Terminal view closed").handle();
-        entries.forEach(terminalInstance -> {
-            closeTerminal(terminalInstance);
-        });
-        entries.clear();
+        for (AuxEntry entry : new ArrayList<>(entries)) {
+            closeWindow(entry);
+        }
     }
 
     private void updatePositions() {
@@ -107,11 +124,6 @@ public class AuxDockImpl implements WindowDockListener {
         entries.forEach(e -> {
             var p = e.getProcess();
             if (!p.isActive()) {
-                return;
-            }
-
-            p.updateBoundsState();
-            if (p.isCustomBounds()) {
                 return;
             }
 
