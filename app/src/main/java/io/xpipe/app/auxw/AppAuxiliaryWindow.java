@@ -11,7 +11,9 @@ import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.Rect;
 import io.xpipe.core.OsType;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
@@ -65,6 +67,8 @@ public class AppAuxiliaryWindow {
     private final ObjectProperty<AuxEntry> selected = new SimpleObjectProperty<>();
     @Getter
     private final ObservableList<AuxEntry> processes = FXCollections.observableArrayList();
+
+    private final BooleanProperty locked = new SimpleBooleanProperty();
 
     private void createStage() {
         if (stage != null) {
@@ -175,11 +179,14 @@ public class AppAuxiliaryWindow {
     }
 
     private void updateState() {
+        var oldSize = processes.size();
         model.clearDead();
         selected.set(model.getSelected());
         DerivedObservableList.wrap(processes, true).setContent(model.getEntries());
-        if (processes.isEmpty()) {
-            stage.hide();
+        if (oldSize > 0 && processes.isEmpty()) {
+            PlatformThread.runLaterIfNeededBlocking(() -> {
+                stage.hide();
+            });
         }
     }
 

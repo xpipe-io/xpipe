@@ -20,3 +20,7 @@
     -fx-border-width: 1px;
 }
 
+.remote-desktop-dock .content {
+    -fx-background-color: transparent;
+}
+
