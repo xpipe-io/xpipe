@@ -92,7 +92,7 @@ public final class ControllableWindowsProcess extends ControllableWindowProcess 
     }
 
     @Override
-    public void frontOfMainWindow() {
+    public void moveToFront() {
         this.control.moveToFront();
     }
 

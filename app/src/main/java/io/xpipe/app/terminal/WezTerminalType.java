@@ -255,7 +255,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                 public void onSessionOpened(TerminalView.ShellSession session) {
                     TerminalView.get().removeListener(this);
                     if (session.getTerminal() instanceof TerminalView.ControllableTerminalSession t) {
-                        t.getControllable().frontOfMainWindow();
+                        t.getControllable().moveToFront();
                         t.getControllable().focus();
                     }
                 }

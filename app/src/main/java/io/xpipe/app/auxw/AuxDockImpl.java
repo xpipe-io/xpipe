@@ -29,12 +29,7 @@ public class AuxDockImpl implements WindowDockListener {
     public synchronized void clearDead() {
         for (AuxEntry entry : new ArrayList<>(entries)) {
             if (!entry.getProcess().isRunning()) {
-                if (entry.equals(selected)) {
-                    var index = entries.indexOf(entry);
-                    var fallback = index == 0 ? (entries.size() > 1 ? entries.get(1) : null) : entries.get(index - 1);
-                    select(fallback);
-                }
-                entries.remove(entry);
+                closeWindow(entry);
             }
         }
     }
@@ -70,10 +65,10 @@ public class AuxDockImpl implements WindowDockListener {
 
     private synchronized void show(AuxEntry e) {
         var controllable = e.getProcess();
-        if (!controllable.isActive()) {
-            return;
-        }
 
+        parent.get().moveToFront();
+
+        controllable.moveToFront();
         controllable.removeIcon();
         controllable.own(parent.get());
         controllable.removeStyle(true);
@@ -81,7 +76,7 @@ public class AuxDockImpl implements WindowDockListener {
         updatePositions();
     }
 
-    public synchronized void hide(AuxEntry e) {
+    private synchronized void hide(AuxEntry e) {
         var controllable = e.getProcess();
         controllable.disown();
         controllable.backOfWindow(parent.get());
@@ -94,13 +89,19 @@ public class AuxDockImpl implements WindowDockListener {
         }
 
         var p = e.getProcess();
-        // Reset style in case close is blocked by terminal
-        p.restoreIcon();
-        p.disown();
-        p.restoreStyle(true);
+        if (p.isRunning()) {
+            // Reset style in case close is prevented by application
+            p.restoreIcon();
+            p.disown();
+            p.restoreStyle(true);
+            p.close();
+        }
 
-        p.close();
-        // If the process blocked the exit, still don't track it anymore
+        if (e.equals(selected)) {
+            var index = entries.indexOf(e);
+            var fallback = index == 0 ? (entries.size() > 1 ? entries.get(1) : null) : entries.get(index - 1);
+            select(fallback);
+        }
         entries.remove(e);
     }
 

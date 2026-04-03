@@ -33,7 +33,7 @@ public abstract class ControllableWindowProcess {
 
     public abstract void minimize();
 
-    public abstract void frontOfMainWindow();
+    public abstract void moveToFront();
 
     public abstract void backOfWindow(NativeWinWindowControl window);
 

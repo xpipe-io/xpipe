@@ -62,8 +62,14 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
         var aux = AppAuxiliaryWindow.get();
+        String width = null;
+        String height = null;
         if (aux != null) {
             aux.show();
+            if (aux.getLocked().get()) {
+                width = "/w:" + aux.getDockBounds().getW();
+                height = "/h:" + aux.getDockBounds().getH();
+            }
         }
 
         var adaptedRdpConfig = getAuxWindowConfig(getAdaptedConfig(configuration));
@@ -71,7 +77,7 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
         var setCache = prepareLocalhostRegistryCache(configuration);
 
         var file = writeRdpConfigFile(configuration.getTitle(), adaptedRdpConfig);
-        var process = LocalExec.executeAsync(getExecutable(), file.toString());
+        var process = LocalExec.executeAsync(getExecutable(), file.toString(), width, height);
         if (process != null && aux != null) {
             aux.show();
             var entry = configuration.getEntry();
