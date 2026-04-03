@@ -122,7 +122,7 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
             aux.show();
             var s = aux.getDockBounds();
             if (s != null) {
-                var pos = "0,1," + s.getX() + "," + s.getY() + "," + s.getW() + "," + s.getH();
+                var pos = "0,1," + s.getX() + "," + s.getY() + "," + (s.getX() + s.getW()) + "," + (s.getY() + s.getH());
                 var adapted = input.overlay(Map.of(
                         "winposstr", new RdpConfig.TypedValue("s", pos),
                         "pinconnectionbar", new RdpConfig.TypedValue("i", "0"),
