@@ -23,6 +23,8 @@ public abstract class ControllableWindowProcess {
 
     public abstract void removeIcon();
 
+    public abstract void hide();
+
     public abstract void restoreIcon();
 
     public abstract void removeStyle(boolean borders);

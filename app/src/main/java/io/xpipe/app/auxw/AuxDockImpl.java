@@ -68,6 +68,7 @@ public class AuxDockImpl implements WindowDockListener {
 
         parent.get().moveToFront();
 
+        controllable.show();
         controllable.moveToFront();
         controllable.removeIcon();
         controllable.own(parent.get());
@@ -114,7 +115,8 @@ public class AuxDockImpl implements WindowDockListener {
     public synchronized void onWindowMinimize() {
         entries.forEach(e -> {
             var controllable = e.getProcess();
-            controllable.minimize();
+            controllable.disown();
+            controllable.hide();
         });
     }
 
@@ -131,10 +133,6 @@ public class AuxDockImpl implements WindowDockListener {
 
         entries.forEach(e -> {
             var p = e.getProcess();
-            if (!p.isActive()) {
-                return;
-            }
-
             p.updatePosition(windowBoundsFunction.apply(viewBounds));
         });
     }

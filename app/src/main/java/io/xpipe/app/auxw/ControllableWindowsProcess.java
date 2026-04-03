@@ -56,6 +56,11 @@ public final class ControllableWindowsProcess extends ControllableWindowProcess 
     }
 
     @Override
+    public void hide() {
+        control.hide();
+    }
+
+    @Override
     public void restoreIcon() {
         control.restoreIcon();
     }

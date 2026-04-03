@@ -37,7 +37,7 @@ public class AuxDockCompImpl extends SimpleRegionBuilder {
         vbox.focusWithinProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 var w = AppAuxiliaryWindow.get();
-                var target = vbox.getScene().getRoot().lookup("*:hover");
+                var target = vbox.getScene().getRoot().lookup(".button:hover");
                 if (target == null || (target.getProperties().get("entry") != null &&
                         target.getProperties().get("entry").equals(w.getSelected().getValue()))) {
                     Platform.runLater(() -> {

@@ -177,6 +177,10 @@ public class NativeWinWindowControl {
         User32.INSTANCE.ShowWindow(windowHandle, User32.SW_MINIMIZE);
     }
 
+    public void hide() {
+        User32.INSTANCE.ShowWindow(windowHandle, User32.SW_HIDE);
+    }
+
     public void move(Rect bounds) {
         User32.INSTANCE.SetWindowPos(
                 windowHandle,
