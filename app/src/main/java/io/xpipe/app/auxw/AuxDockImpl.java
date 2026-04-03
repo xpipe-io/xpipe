@@ -106,9 +106,16 @@ public class AuxDockImpl implements WindowDockListener {
     }
 
     public synchronized void onWindowShow() {
+        if (selected != null) {
+            show(selected);
+        }
     }
 
     public synchronized void onWindowMinimize() {
+        entries.forEach(e -> {
+            var controllable = e.getProcess();
+            controllable.minimize();
+        });
     }
 
     public synchronized void onClose() {
