@@ -81,7 +81,7 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
         if (process != null && window != null && !configuration.isRemoteApp()) {
             window.show();
             var entry = configuration.getEntry();
-            window.track(configuration.getTitle(), entry.getEffectiveIconFile(), DataStorage.get().getEffectiveColor(entry), process, Duration.ofSeconds(30), p -> {
+            window.trackExternal(configuration.getTitle(), entry.getEffectiveIconFile(), DataStorage.get().getEffectiveColor(entry), process, Duration.ofSeconds(30), p -> {
                 var bounds = p.queryBounds();
                 return bounds.getW() > 500 && bounds.getH() > 500;
             });

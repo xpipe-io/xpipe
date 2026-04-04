@@ -9,6 +9,7 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.RemoteDesktopDockContentEntry;
 import io.xpipe.app.vnc.VncBaseStore;
 import io.xpipe.core.SecretValue;
 
@@ -39,8 +40,8 @@ public abstract class ProcessControlProvider {
 
     public abstract ShellStore subShellEnvironment(DataStoreEntryRef<ShellStore> s, ShellDialect dialect);
 
-    public abstract BrowserStoreSessionTab<?> createVncSession(
-            BrowserFullSessionModel model, DataStoreEntryRef<VncBaseStore> ref);
+    public abstract RemoteDesktopDockContentEntry createVncSession(
+            DataStoreEntryRef<VncBaseStore> ref);
 
     public abstract DataStoreEntryRef<ShellStore> elevated(DataStoreEntryRef<ShellStore> e);
 

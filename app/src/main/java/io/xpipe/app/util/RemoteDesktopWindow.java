@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.*;
+import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.core.window.AppWindowStyle;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.PlatformThread;
@@ -89,8 +90,8 @@ public class RemoteDesktopWindow {
         scene.setFill(Color.TRANSPARENT);
         stage.setScene(scene);
         stage.getScene().setRoot(new RemoteDesktopDockComp().build());
-        stage.setWidth(1280);
-        stage.setHeight(780);
+        stage.setWidth(AppMainWindow.get() != null ? AppMainWindow.get().getStage().getWidth() : 1280);
+        stage.setHeight(AppMainWindow.get() != null ? AppMainWindow.get().getStage().getHeight() : 780);
         stage.titleProperty().bind(PlatformThread.sync(createTitle()));
 
         // We close this automatically after all children are gone
@@ -169,7 +170,12 @@ public class RemoteDesktopWindow {
         state = state.toBuilder().locked(locked.get()).build();
     }
 
-    public void track(String name, String icon, DataStoreColor color, Process process, Duration maxWait, Predicate<ControllableWindowProcess> filter) {
+    public void trackInternal(String name, String icon, DataStoreColor color, RemoteDesktopDockContentEntry entry) {
+        var toTrack = new RemoteDesktopDockEntry(name, icon, color, null, entry);
+        model.track(toTrack);
+    }
+
+    public void trackExternal(String name, String icon, DataStoreColor color, Process process, Duration maxWait, Predicate<ControllableWindowProcess> filter) {
         var start = process.info().startInstant().orElseThrow();
         GlobalTimer.scheduleUntil(Duration.ofMillis(200), false, () -> {
             if (Duration.between(start, Instant.now()).compareTo(maxWait) > 0) {
@@ -214,7 +220,7 @@ public class RemoteDesktopWindow {
                     continue;
                 }
 
-                var entry = new RemoteDesktopDockEntry(name, icon, color, c);
+                var entry = new RemoteDesktopDockEntry(name, icon, color, c, null);
                 model.track(entry);
                 return true;
             }
@@ -236,7 +242,7 @@ public class RemoteDesktopWindow {
     }
 
     private void startStateListener() {
-        GlobalTimer.scheduleUntil(Duration.ofMillis(500), false, () -> {
+        GlobalTimer.scheduleUntil(Duration.ofMillis(200), false, () -> {
             if (stage == null) {
                 return false;
             }

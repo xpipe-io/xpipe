@@ -16,29 +16,49 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RemoteDesktopDockComp extends SimpleRegionBuilder {
 
     @Override
     protected Region createSimple() {
+        var w = RemoteDesktopWindow.get();
+        var regionMap = new HashMap<RemoteDesktopDockEntry, Region>();
+        w.getProcesses().addListener((ListChangeListener<RemoteDesktopDockEntry>) c -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                while (c.next()) {
+                    if (c.wasAdded()) {
+                        c.getAddedSubList().forEach(e -> {
+                            if (e.isInternal()) {
+                                regionMap.put(e, e.getInternal().comp().style("internal-content").build());
+                            }
+                        });
+                    } else if (c.wasRemoved()) {
+                        c.getRemoved().forEach(e -> {
+                            regionMap.remove(e);
+                        });
+                    }
+                }
+            });
+        });
+
+
         var bar = createBar();
-        var content = createContent();
+        var content = createContent(regionMap);
         var vbox = new VBox(bar, content);
         VBox.setVgrow(content, Priority.ALWAYS);
         vbox.getStyleClass().add("remote-desktop-dock");
         vbox.focusWithinProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                var w = RemoteDesktopWindow.get();
                 var target = vbox.getScene().getRoot().lookup(".button:hover");
                 if (target == null || (target.getProperties().get("entry") != null &&
                         target.getProperties().get("entry").equals(w.getSelected().getValue()))) {
                     Platform.runLater(() -> {
+                        content.requestFocus();
                         w.focus();
                     });
                 }
@@ -125,10 +145,26 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
         return bar;
     }
 
-    private Region createContent() {
+    private Region createContent(Map<RemoteDesktopDockEntry, Region> map) {
         var w = RemoteDesktopWindow.get();
-        var sp = new WindowDockComp<>(w.getModel());
-        sp.style("content");
-        return sp.build();
+
+        var dock = new WindowDockComp<>(w.getModel());
+        dock.style("dock");
+
+        var stack = new StackPane();
+        stack.getChildren().add(dock.build());
+        w.getSelected().subscribe(entry -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                if (stack.getChildren().size() > 1) {
+                    stack.getChildren().removeLast();
+                }
+
+                if (entry != null && entry.isInternal()) {
+                    stack.getChildren().add(map.get(entry));
+                }
+            });
+        });
+
+        return stack;
     }
 }

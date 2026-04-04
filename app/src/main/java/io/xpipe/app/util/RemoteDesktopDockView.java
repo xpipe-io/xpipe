@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.issue.ErrorEventFactory;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -27,19 +28,30 @@ public class RemoteDesktopDockView implements WindowDockListener {
 
     public synchronized void clearDead() {
         for (RemoteDesktopDockEntry entry : new ArrayList<>(entries)) {
-            if (!entry.getProcess().isRunning()) {
+            if (entry.isExternal() && !entry.getProcess().isRunning()) {
                 closeWindow(entry);
             }
         }
     }
 
-    public synchronized void track(RemoteDesktopDockEntry p) {
-        entries.add(p);
-        select(p);
+    public void track(RemoteDesktopDockEntry p) {
+        try {
+            if (p.isInternal()) {
+                p.getInternal().init();
+            }
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable(e).handle();
+            return;
+        }
+
+        synchronized (entries) {
+            entries.add(p);
+            select(p);
+        }
     }
 
     public synchronized void focus() {
-        if (selected != null) {
+        if (selected != null && selected.isExternal()) {
             selected.getProcess().focus();
         }
     }
@@ -63,10 +75,13 @@ public class RemoteDesktopDockView implements WindowDockListener {
     }
 
     private synchronized void show(RemoteDesktopDockEntry e) {
-        var controllable = e.getProcess();
-
         parent.get().moveToFront();
 
+        if (!e.isExternal()) {
+            return;
+        }
+
+        var controllable = e.getProcess();
         controllable.show();
         controllable.moveToFront();
         controllable.removeIcon();
@@ -77,6 +92,10 @@ public class RemoteDesktopDockView implements WindowDockListener {
     }
 
     private synchronized void hide(RemoteDesktopDockEntry e) {
+        if (!e.isExternal()) {
+            return;
+        }
+
         var controllable = e.getProcess();
         controllable.disown();
         controllable.backOfWindow(parent.get());
@@ -89,8 +108,10 @@ public class RemoteDesktopDockView implements WindowDockListener {
         }
 
         var p = e.getProcess();
-        if (p.isRunning()) {
+        if (e.isExternal() && p.isRunning()) {
             p.close();
+        } else if (e.isInternal()) {
+            e.getInternal().close();
         }
 
         if (e.equals(selected)) {
@@ -109,6 +130,10 @@ public class RemoteDesktopDockView implements WindowDockListener {
 
     public synchronized void onWindowMinimize() {
         entries.forEach(e -> {
+            if (!e.isExternal()) {
+                return;
+            }
+
             var controllable = e.getProcess();
             controllable.disown();
             controllable.hide();
@@ -127,6 +152,10 @@ public class RemoteDesktopDockView implements WindowDockListener {
         }
 
         entries.forEach(e -> {
+            if (!e.isExternal()) {
+                return;
+            }
+
             var p = e.getProcess();
             p.updatePosition(windowBoundsFunction.apply(viewBounds));
         });

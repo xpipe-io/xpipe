@@ -11,4 +11,13 @@ public class RemoteDesktopDockEntry {
     DataStoreColor color;
 
     ControllableWindowProcess process;
+    RemoteDesktopDockContentEntry internal;
+
+    public boolean isInternal() {
+        return internal != null;
+    }
+
+    public boolean isExternal() {
+        return process != null;
+    }
 }
