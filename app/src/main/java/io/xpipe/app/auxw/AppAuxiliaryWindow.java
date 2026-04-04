@@ -85,6 +85,11 @@ public class AppAuxiliaryWindow {
         stage.setHeight(780);
         stage.titleProperty().bind(PlatformThread.sync(createTitle()));
 
+        // We close this automatically after all children are gone
+        stage.setOnCloseRequest(event -> {
+            event.consume();
+        });
+
         if (AppPrefs.get() != null) {
             stage.opacityProperty().bind(PlatformThread.sync(AppPrefs.get().windowOpacity()));
         }
@@ -94,23 +99,23 @@ public class AppAuxiliaryWindow {
         AppWindowStyle.addFontSize(stage);
         AppTheme.initThemeHandlers(stage);
 
-        if (state != null) {
-            if (state.maximized) {
-                stage.setMaximized(true);
-            } else {
-                stage.setX(state.windowX);
-                stage.setY(state.windowY);
-                stage.setWidth(state.windowWidth);
-                stage.setHeight(state.windowHeight);
-            }
-        }
-
         setupWindowListeners();
+    }
+
+    private void applyStageState() {
+        if (state != null) {
+            stage.setX(state.windowX);
+            stage.setY(state.windowY);
+            stage.setWidth(state.windowWidth);
+            stage.setHeight(state.windowHeight);
+            stage.setMaximized(state.maximized);
+        }
     }
 
     public void show() {
         PlatformThread.runLaterIfNeededBlocking(() -> {
             createStage();
+            applyStageState();
             stage.show();
             nativeWinWindowControl = new NativeWinWindowControl(stage);
             nativeWinWindowControl.setWindowsTransitionsEnabled(false);
@@ -179,7 +184,7 @@ public class AppAuxiliaryWindow {
 
     private void startStateListener() {
         GlobalTimer.scheduleUntil(Duration.ofMillis(500), false, () -> {
-            if (stage == null || !stage.isShowing()) {
+            if (stage == null) {
                 return false;
             }
 
@@ -222,13 +227,6 @@ public class AppAuxiliaryWindow {
         stage.maximizedProperty().addListener((c, o, n) -> {
             onWindowStateChange();
             locked.set(false);
-            Platform.runLater(() -> {
-                stage.setWidth(state.getWindowWidth());
-                stage.setHeight(state.getWindowHeight());
-            });
-        });
-        locked.addListener((v, o, n) -> {
-            stage.setResizable(!n);
         });
     }
 

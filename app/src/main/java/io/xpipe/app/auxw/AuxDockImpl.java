@@ -91,10 +91,6 @@ public class AuxDockImpl implements WindowDockListener {
 
         var p = e.getProcess();
         if (p.isRunning()) {
-            // Reset style in case close is prevented by application
-            p.restoreIcon();
-            p.disown();
-            p.restoreStyle(true);
             p.close();
         }
 
