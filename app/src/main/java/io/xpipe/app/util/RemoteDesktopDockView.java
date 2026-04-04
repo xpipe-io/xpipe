@@ -1,6 +1,5 @@
-package io.xpipe.app.auxw;
+package io.xpipe.app.util;
 
-import io.xpipe.app.util.Rect;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -8,12 +7,12 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
-public class AuxDockImpl implements WindowDockListener {
+public class RemoteDesktopDockView implements WindowDockListener {
 
     @Getter
-    private final List<AuxEntry> entries = new ArrayList<>();
+    private final List<RemoteDesktopDockEntry> entries = new ArrayList<>();
     @Getter
-    private AuxEntry selected;
+    private RemoteDesktopDockEntry selected;
 
     private final UnaryOperator<Rect> windowBoundsFunction;
     private final Supplier<NativeWinWindowControl> parent;
@@ -21,20 +20,20 @@ public class AuxDockImpl implements WindowDockListener {
     @Getter
     private Rect viewBounds;
 
-    public AuxDockImpl(UnaryOperator<Rect> windowBoundsFunction, Supplier<NativeWinWindowControl> parent) {
+    public RemoteDesktopDockView(UnaryOperator<Rect> windowBoundsFunction, Supplier<NativeWinWindowControl> parent) {
         this.windowBoundsFunction = windowBoundsFunction;
         this.parent = parent;
     }
 
     public synchronized void clearDead() {
-        for (AuxEntry entry : new ArrayList<>(entries)) {
+        for (RemoteDesktopDockEntry entry : new ArrayList<>(entries)) {
             if (!entry.getProcess().isRunning()) {
                 closeWindow(entry);
             }
         }
     }
 
-    public synchronized void track(AuxEntry p) {
+    public synchronized void track(RemoteDesktopDockEntry p) {
         entries.add(p);
         select(p);
     }
@@ -45,7 +44,7 @@ public class AuxDockImpl implements WindowDockListener {
         }
     }
 
-    public synchronized void select(AuxEntry p) {
+    public synchronized void select(RemoteDesktopDockEntry p) {
         if (!entries.contains(p)) {
             return;
         }
@@ -63,7 +62,7 @@ public class AuxDockImpl implements WindowDockListener {
         }
     }
 
-    private synchronized void show(AuxEntry e) {
+    private synchronized void show(RemoteDesktopDockEntry e) {
         var controllable = e.getProcess();
 
         parent.get().moveToFront();
@@ -77,14 +76,14 @@ public class AuxDockImpl implements WindowDockListener {
         updatePositions();
     }
 
-    private synchronized void hide(AuxEntry e) {
+    private synchronized void hide(RemoteDesktopDockEntry e) {
         var controllable = e.getProcess();
         controllable.disown();
         controllable.backOfWindow(parent.get());
         updatePositions();
     }
 
-    public synchronized void closeWindow(AuxEntry e) {
+    public synchronized void closeWindow(RemoteDesktopDockEntry e) {
         if (!entries.contains(e)) {
             return;
         }
@@ -117,7 +116,7 @@ public class AuxDockImpl implements WindowDockListener {
     }
 
     public synchronized void onClose() {
-        for (AuxEntry entry : new ArrayList<>(entries)) {
+        for (RemoteDesktopDockEntry entry : new ArrayList<>(entries)) {
             closeWindow(entry);
         }
     }

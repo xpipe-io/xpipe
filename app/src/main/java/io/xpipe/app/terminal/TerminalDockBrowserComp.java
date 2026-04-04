@@ -1,6 +1,6 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.auxw.WindowDockComp;
+import io.xpipe.app.util.WindowDockComp;
 import io.xpipe.app.comp.base.LoadingIconComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;

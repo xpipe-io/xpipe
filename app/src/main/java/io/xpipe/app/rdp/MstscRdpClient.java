@@ -1,6 +1,6 @@
 package io.xpipe.app.rdp;
 
-import io.xpipe.app.auxw.AppAuxiliaryWindow;
+import io.xpipe.app.util.RemoteDesktopWindow;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.ExternalApplicationType;
@@ -61,27 +61,27 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
 
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
-        var aux = AppAuxiliaryWindow.get();
+        var window = RemoteDesktopWindow.get();
         String width = null;
         String height = null;
-        if (!configuration.isRemoteApp() && aux != null) {
-            aux.show();
-            if (aux.getLocked().get()) {
-                width = "/w:" + aux.getDockBounds().getW();
-                height = "/h:" + aux.getDockBounds().getH();
+        if (!configuration.isRemoteApp() && window != null) {
+            window.show();
+            if (window.getLocked().get()) {
+                width = "/w:" + window.getDockBounds().getW();
+                height = "/h:" + window.getDockBounds().getH();
             }
         }
 
-        var adaptedRdpConfig = configuration.isRemoteApp() ? getAdaptedConfig(configuration) : getAuxWindowConfig(getAdaptedConfig(configuration));
+        var adaptedRdpConfig = configuration.isRemoteApp() ? getAdaptedConfig(configuration) : getRemoteDesktopWindowConfig(getAdaptedConfig(configuration));
 
         var setCache = prepareLocalhostRegistryCache(configuration);
 
         var file = writeRdpConfigFile(configuration.getTitle(), adaptedRdpConfig);
         var process = LocalExec.executeAsync(getExecutable(), file.toString(), width, height);
-        if (process != null && aux != null && !configuration.isRemoteApp()) {
-            aux.show();
+        if (process != null && window != null && !configuration.isRemoteApp()) {
+            window.show();
             var entry = configuration.getEntry();
-            aux.track(configuration.getTitle(), entry.getEffectiveIconFile(), DataStorage.get().getEffectiveColor(entry), process, Duration.ofSeconds(30), p -> {
+            window.track(configuration.getTitle(), entry.getEffectiveIconFile(), DataStorage.get().getEffectiveColor(entry), process, Duration.ofSeconds(30), p -> {
                 var bounds = p.queryBounds();
                 return bounds.getW() > 500 && bounds.getH() > 500;
             });
@@ -116,11 +116,11 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
         return "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/mstsc";
     }
 
-    private RdpConfig getAuxWindowConfig(RdpConfig input) {
-        var aux = AppAuxiliaryWindow.get();
-        if (aux != null) {
-            aux.show();
-            var s = aux.getDockBounds();
+    private RdpConfig getRemoteDesktopWindowConfig(RdpConfig input) {
+        var window = RemoteDesktopWindow.get();
+        if (window != null) {
+            window.show();
+            var s = window.getDockBounds();
             if (s != null) {
                 var pos = "0,1," + s.getX() + "," + s.getY() + "," + (s.getX() + s.getW()) + "," + (s.getY() + s.getH());
                 var adapted = input.overlay(Map.of(

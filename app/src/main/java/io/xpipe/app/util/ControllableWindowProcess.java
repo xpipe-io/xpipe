@@ -1,6 +1,4 @@
-package io.xpipe.app.auxw;
-
-import io.xpipe.app.util.Rect;
+package io.xpipe.app.util;
 
 import lombok.Getter;
 

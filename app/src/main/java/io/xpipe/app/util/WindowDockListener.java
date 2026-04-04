@@ -1,4 +1,4 @@
-package io.xpipe.app.auxw;
+package io.xpipe.app.util;
 
 public interface WindowDockListener {
 

@@ -1,8 +1,8 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.auxw.WindowDockListener;
+import io.xpipe.app.util.WindowDockListener;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.auxw.NativeWinWindowControl;
+import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.Rect;

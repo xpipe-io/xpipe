@@ -1,6 +1,6 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.auxw.WindowDockComp;
+import io.xpipe.app.util.WindowDockComp;
 
 import javafx.application.Platform;
 import javafx.scene.layout.Region;

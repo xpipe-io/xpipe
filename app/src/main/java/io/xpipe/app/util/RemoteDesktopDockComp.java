@@ -1,7 +1,6 @@
-package io.xpipe.app.auxw;
+package io.xpipe.app.util;
 
 import atlantafx.base.controls.Spacer;
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.LabelComp;
@@ -21,11 +20,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.TextAlignment;
 
 import java.util.List;
 
-public class AuxDockCompImpl extends SimpleRegionBuilder {
+public class RemoteDesktopDockComp extends SimpleRegionBuilder {
 
     @Override
     protected Region createSimple() {
@@ -36,7 +34,7 @@ public class AuxDockCompImpl extends SimpleRegionBuilder {
         vbox.getStyleClass().add("remote-desktop-dock");
         vbox.focusWithinProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                var w = AppAuxiliaryWindow.get();
+                var w = RemoteDesktopWindow.get();
                 var target = vbox.getScene().getRoot().lookup(".button:hover");
                 if (target == null || (target.getProperties().get("entry") != null &&
                         target.getProperties().get("entry").equals(w.getSelected().getValue()))) {
@@ -49,8 +47,8 @@ public class AuxDockCompImpl extends SimpleRegionBuilder {
         return vbox;
     }
 
-    private void fillToolbar(ToolBar bar, List<? extends AuxEntry> list) {
-        var w = AppAuxiliaryWindow.get();
+    private void fillToolbar(ToolBar bar, List<? extends RemoteDesktopDockEntry> list) {
+        var w = RemoteDesktopWindow.get();
         bar.getItems().clear();
         for (var entry : list) {
             var graphic = PrettyImageHelper.ofFixedSizeSquare(entry.getIcon(), 16).style("graphic").build();
@@ -93,7 +91,7 @@ public class AuxDockCompImpl extends SimpleRegionBuilder {
         bar.getItems().add(lock);
     }
 
-    private void updateSelection(ToolBar bar, AuxEntry entry) {
+    private void updateSelection(ToolBar bar, RemoteDesktopDockEntry entry) {
         for (Node item : bar.getItems()) {
             if (item.getProperties().get("entry") != null) {
                 if (item.getProperties().get("entry").equals(entry)) {
@@ -106,11 +104,11 @@ public class AuxDockCompImpl extends SimpleRegionBuilder {
     }
 
     private Region createBar() {
-        var w = AppAuxiliaryWindow.get();
+        var w = RemoteDesktopWindow.get();
         var bar = new ToolBar();
 
         fillToolbar(bar, w.getProcesses());
-        w.getProcesses().addListener((ListChangeListener<? super AuxEntry>) c -> {
+        w.getProcesses().addListener((ListChangeListener<? super RemoteDesktopDockEntry>) c -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 fillToolbar(bar, c.getList());
                 updateSelection(bar, w.getSelected().get());
@@ -128,7 +126,7 @@ public class AuxDockCompImpl extends SimpleRegionBuilder {
     }
 
     private Region createContent() {
-        var w = AppAuxiliaryWindow.get();
+        var w = RemoteDesktopWindow.get();
         var sp = new WindowDockComp<>(w.getModel());
         sp.style("content");
         return sp.build();

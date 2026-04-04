@@ -1,7 +1,6 @@
-package io.xpipe.app.auxw;
+package io.xpipe.app.util;
 
 import io.xpipe.app.comp.SimpleRegionBuilder;
-import io.xpipe.app.util.GlobalTimer;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

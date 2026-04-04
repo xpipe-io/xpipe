@@ -1,4 +1,4 @@
-package io.xpipe.app.auxw;
+package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;

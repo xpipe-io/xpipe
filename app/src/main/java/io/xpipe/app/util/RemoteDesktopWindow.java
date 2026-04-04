@@ -1,4 +1,4 @@
-package io.xpipe.app.auxw;
+package io.xpipe.app.util;
 
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.window.AppWindowStyle;
@@ -6,8 +6,6 @@ import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreColor;
-import io.xpipe.app.util.GlobalTimer;
-import io.xpipe.app.util.Rect;
 import io.xpipe.core.OsType;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -30,13 +28,12 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Predicate;
 
-public class AppAuxiliaryWindow {
+public class RemoteDesktopWindow {
 
-    private AppAuxiliaryWindow(State state, AuxDockImpl model) {
+    private RemoteDesktopWindow(State state, RemoteDesktopDockView model) {
         this.state = state;
         this.model = model;
         if (state != null) {
@@ -53,16 +50,16 @@ public class AppAuxiliaryWindow {
             return;
         }
 
-        State state = AppCache.getNonNull("auxiliaryWindowState", State.class, () -> null);
-        var model = new AuxDockImpl(rect -> rect, () -> {
+        State state = AppCache.getNonNull("remoteDesktopWindowState", State.class, () -> null);
+        var model = new RemoteDesktopDockView(rect -> rect, () -> {
             return INSTANCE.nativeWinWindowControl;
         });
-        INSTANCE = new AppAuxiliaryWindow(state, model);
+        INSTANCE = new RemoteDesktopWindow(state, model);
         INSTANCE.startStateListener();
     }
 
     public static void reset() {
-        AppCache.update("auxiliaryWindowState", INSTANCE.state);
+        AppCache.update("remoteDesktopWindowState", INSTANCE.state);
         INSTANCE = null;
     }
 
@@ -71,13 +68,13 @@ public class AppAuxiliaryWindow {
     private NativeWinWindowControl nativeWinWindowControl;
 
     @Getter
-    private final AuxDockImpl model;
+    private final RemoteDesktopDockView model;
 
     @Getter
-    private final ObjectProperty<AuxEntry> selected = new SimpleObjectProperty<>();
+    private final ObjectProperty<RemoteDesktopDockEntry> selected = new SimpleObjectProperty<>();
 
     @Getter
-    private final ObservableList<AuxEntry> processes = FXCollections.observableArrayList();
+    private final ObservableList<RemoteDesktopDockEntry> processes = FXCollections.observableArrayList();
 
     @Getter
     private final BooleanProperty locked = new SimpleBooleanProperty(true);
@@ -91,14 +88,14 @@ public class AppAuxiliaryWindow {
         var scene = new Scene(new Region());
         scene.setFill(Color.TRANSPARENT);
         stage.setScene(scene);
-        stage.getScene().setRoot(new AuxDockCompImpl().build());
+        stage.getScene().setRoot(new RemoteDesktopDockComp().build());
         stage.setWidth(1280);
         stage.setHeight(780);
         stage.titleProperty().bind(PlatformThread.sync(createTitle()));
 
         // We close this automatically after all children are gone
         stage.setOnCloseRequest(event -> {
-            AppCache.update("auxiliaryWindowState", state);
+            AppCache.update("remoteDesktopWindowState", state);
             if (processes.size() > 0) {
                 event.consume();
             }
@@ -158,12 +155,12 @@ public class AppAuxiliaryWindow {
         });
     }
 
-    public void select(AuxEntry entry) {
+    public void select(RemoteDesktopDockEntry entry) {
         model.select(entry);
         selected.set(entry);
     }
 
-    public void close(AuxEntry entry) {
+    public void close(RemoteDesktopDockEntry entry) {
         model.closeWindow(entry);
     }
 
@@ -217,7 +214,7 @@ public class AppAuxiliaryWindow {
                     continue;
                 }
 
-                var entry = new AuxEntry(name, icon, color, c);
+                var entry = new RemoteDesktopDockEntry(name, icon, color, c);
                 model.track(entry);
                 return true;
             }
@@ -296,9 +293,9 @@ public class AppAuxiliaryWindow {
         return model.getViewBounds();
     }
 
-    private static AppAuxiliaryWindow INSTANCE;
+    private static RemoteDesktopWindow INSTANCE;
 
-    public static AppAuxiliaryWindow get() {
+    public static RemoteDesktopWindow get() {
         return INSTANCE;
     }
 

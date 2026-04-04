@@ -1,7 +1,4 @@
-package io.xpipe.app.auxw;
-
-import io.xpipe.app.util.Rect;
-import io.xpipe.app.util.User32Ex;
+package io.xpipe.app.util;
 
 import javafx.stage.Window;
 
