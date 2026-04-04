@@ -113,6 +113,7 @@ public class AuxDockCompImpl extends SimpleRegionBuilder {
         w.getProcesses().addListener((ListChangeListener<? super AuxEntry>) c -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 fillToolbar(bar, c.getList());
+                updateSelection(bar, w.getSelected().get());
             });
         });
 

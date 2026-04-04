@@ -64,7 +64,7 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
         var aux = AppAuxiliaryWindow.get();
         String width = null;
         String height = null;
-        if (aux != null) {
+        if (!configuration.isRemoteApp() && aux != null) {
             aux.show();
             if (aux.getLocked().get()) {
                 width = "/w:" + aux.getDockBounds().getW();
@@ -72,13 +72,13 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
             }
         }
 
-        var adaptedRdpConfig = getAuxWindowConfig(getAdaptedConfig(configuration));
+        var adaptedRdpConfig = configuration.isRemoteApp() ? getAdaptedConfig(configuration) : getAuxWindowConfig(getAdaptedConfig(configuration));
 
         var setCache = prepareLocalhostRegistryCache(configuration);
 
         var file = writeRdpConfigFile(configuration.getTitle(), adaptedRdpConfig);
         var process = LocalExec.executeAsync(getExecutable(), file.toString(), width, height);
-        if (process != null && aux != null) {
+        if (process != null && aux != null && !configuration.isRemoteApp()) {
             aux.show();
             var entry = configuration.getEntry();
             aux.track(configuration.getTitle(), entry.getEffectiveIconFile(), DataStorage.get().getEffectiveColor(entry), process, Duration.ofSeconds(30), p -> {

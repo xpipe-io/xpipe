@@ -15,4 +15,8 @@ public class RdpLaunchConfig {
     RdpConfig config;
     UUID storeId;
     SecretValue password;
+
+    public boolean isRemoteApp() {
+        return config.get("remoteapplicationprogram").isPresent();
+    }
 }

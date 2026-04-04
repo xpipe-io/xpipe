@@ -26,7 +26,7 @@ public class RemminaRdpClient implements ExternalApplicationType.LinuxApplicatio
         RdpConfig c = configuration.getConfig();
 
         // Remmina does not support RemoteApps
-        if (c.get("remoteapplicationprogram").isPresent()) {
+        if (configuration.isRemoteApp()) {
             var freerdp = new FreeRdpClient();
             if (freerdp.isAvailable()) {
                 freerdp.launch(configuration);

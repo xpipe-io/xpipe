@@ -207,6 +207,7 @@ public class AppBaseMode extends AppOperationMode {
         AbstractAction.reset();
         AppMcpServer.reset();
         WorkspaceManager.reset();
+        AppAuxiliaryWindow.reset();
         AppPrefs.reset();
         DataStorage.reset();
         DataStorageSyncHandler.getInstance().reset();

@@ -24,11 +24,14 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 import java.util.function.Predicate;
 
 public class AppAuxiliaryWindow {
@@ -36,6 +39,9 @@ public class AppAuxiliaryWindow {
     private AppAuxiliaryWindow(State state, AuxDockImpl model) {
         this.state = state;
         this.model = model;
+        if (state != null) {
+            locked.set(state.locked);
+        }
     }
 
     public static boolean isSupported() {
@@ -53,6 +59,11 @@ public class AppAuxiliaryWindow {
         });
         INSTANCE = new AppAuxiliaryWindow(state, model);
         INSTANCE.startStateListener();
+    }
+
+    public static void reset() {
+        AppCache.update("auxiliaryWindowState", INSTANCE.state);
+        INSTANCE = null;
     }
 
     private State state;
@@ -87,7 +98,10 @@ public class AppAuxiliaryWindow {
 
         // We close this automatically after all children are gone
         stage.setOnCloseRequest(event -> {
-            event.consume();
+            AppCache.update("auxiliaryWindowState", state);
+            if (processes.size() > 0) {
+                event.consume();
+            }
         });
 
         if (AppPrefs.get() != null) {
@@ -104,22 +118,37 @@ public class AppAuxiliaryWindow {
 
     private void applyStageState() {
         if (state != null) {
-            stage.setX(state.windowX);
-            stage.setY(state.windowY);
-            stage.setWidth(state.windowWidth);
-            stage.setHeight(state.windowHeight);
-            stage.setMaximized(state.maximized);
+            if (state.maximized) {
+                stage.setMaximized(true);
+            } else {
+                stage.setX(state.windowX);
+                stage.setY(state.windowY);
+                stage.setWidth(state.windowWidth);
+                stage.setHeight(state.windowHeight);
+                stage.setMaximized(false);
+            }
         }
     }
 
+    @SneakyThrows
     public void show() {
         PlatformThread.runLaterIfNeededBlocking(() -> {
+            if (stage != null && stage.isShowing()) {
+                return;
+            }
+
             createStage();
             applyStageState();
             stage.show();
             nativeWinWindowControl = new NativeWinWindowControl(stage);
             nativeWinWindowControl.setWindowsTransitionsEnabled(false);
         });
+
+        var latch = new CountDownLatch(1);
+        Platform.runLater(() -> {
+            latch.countDown();
+        });
+        latch.await();
     }
 
     public void focus() {
@@ -143,11 +172,38 @@ public class AppAuxiliaryWindow {
     }
 
     public void track(String name, String icon, DataStoreColor color, Process process, Duration maxWait, Predicate<ControllableWindowProcess> filter) {
-        var start = Instant.now();
+        var start = process.info().startInstant().orElseThrow();
         GlobalTimer.scheduleUntil(Duration.ofMillis(200), false, () -> {
             if (Duration.between(start, Instant.now()).compareTo(maxWait) > 0) {
                 return true;
             }
+
+            if (!stage.isShowing()) {
+                return true;
+            }
+
+            if (!process.isAlive()) {
+                return true;
+            }
+
+//            var after = ProcessHandle.allProcesses().map(processHandle -> {
+//                var spawnedAfter = processHandle.info().startInstant().map(instant -> instant.equals(start) || instant.isAfter(start)).orElse(false);
+//                if (!spawnedAfter) {
+//                    return null;
+//                }
+//
+//                var windows = NativeWinWindowControl.byPid(processHandle.pid());
+//                if (windows.isEmpty()) {
+//                    return null;
+//                }
+//
+//                var c = new ControllableWindowsProcess(processHandle, windows.getFirst());
+//                if (!filter.test(c)) {
+//                    return null;
+//                }
+//
+//                return c;
+//            }).filter(Objects::nonNull).findFirst();
 
             var windows = NativeWinWindowControl.byPid(process.pid());
             if (windows.isEmpty()) {
@@ -162,7 +218,6 @@ public class AppAuxiliaryWindow {
 
                 var entry = new AuxEntry(name, icon, color, c);
                 model.track(entry);
-
                 return true;
             }
 
@@ -206,7 +261,16 @@ public class AppAuxiliaryWindow {
     }
 
     private void onWindowStateChange() {
-        state = new State(state != null && state.locked, stage.isMaximized(), stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight());
+        if (!stage.isShowing()) {
+            return;
+        }
+
+        if (state != null && stage.isMaximized()) {
+            state = state.toBuilder().maximized(true).build();
+            return;
+        }
+
+        state = new State(state != null && state.locked, false, stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight());
     }
 
     private void setupWindowListeners() {
@@ -218,15 +282,12 @@ public class AppAuxiliaryWindow {
         });
         stage.widthProperty().addListener((c, o, n) -> {
             onWindowStateChange();
-            locked.set(false);
         });
         stage.heightProperty().addListener((c, o, n) -> {
             onWindowStateChange();
-            locked.set(false);
         });
         stage.maximizedProperty().addListener((c, o, n) -> {
             onWindowStateChange();
-            locked.set(false);
         });
     }
 
