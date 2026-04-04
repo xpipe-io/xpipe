@@ -80,7 +80,7 @@ public class AppAuxiliaryWindow {
     private final ObservableList<AuxEntry> processes = FXCollections.observableArrayList();
 
     @Getter
-    private final BooleanProperty locked = new SimpleBooleanProperty();
+    private final BooleanProperty locked = new SimpleBooleanProperty(true);
 
     private void createStage() {
         if (stage != null) {
@@ -134,6 +134,7 @@ public class AppAuxiliaryWindow {
     public void show() {
         PlatformThread.runLaterIfNeededBlocking(() -> {
             if (stage != null && stage.isShowing()) {
+                stage.setIconified(false);
                 return;
             }
 
