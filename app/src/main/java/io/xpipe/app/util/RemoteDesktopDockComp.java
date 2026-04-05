@@ -63,6 +63,15 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
                 }
             }
         });
+
+        content.focusWithinProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue && w.getSelected().get() != null && w.getSelected().get().isInternal()) {
+                Platform.runLater(() -> {
+                    content.requestFocus();
+                });
+            }
+        });
+
         return vbox;
     }
 

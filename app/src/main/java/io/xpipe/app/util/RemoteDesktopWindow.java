@@ -21,6 +21,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -65,6 +66,7 @@ public class RemoteDesktopWindow {
     }
 
     private State state;
+    @Getter
     private Stage stage;
     private NativeWinWindowControl nativeWinWindowControl;
 
@@ -86,6 +88,7 @@ public class RemoteDesktopWindow {
         }
 
         stage = new Stage();
+        stage.initStyle(StageStyle.UNIFIED);
         var scene = new Scene(new Region());
         scene.setFill(Color.TRANSPARENT);
         stage.setScene(scene);

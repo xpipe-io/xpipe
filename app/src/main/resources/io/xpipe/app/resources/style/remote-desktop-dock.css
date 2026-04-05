@@ -38,7 +38,7 @@
 }
 
 .remote-desktop-dock .dock {
-    -fx-background-color: black;
+    -fx-background-color: -color-bg-default-transparent;
 }
 
 .remote-desktop-dock .close-button {
@@ -48,13 +48,14 @@
 .remote-desktop-dock .tool-bar {
     -fx-border-width: 1 0 1 0;
     -fx-border-color: -color-border-default;
+    -fx-background-color: -color-bg-default-transparent;
 }
 
-.remote-desktop-dock .internal-content {
-    -fx-border-color: -color-border-default;
-    -fx-border-width: 1 1 1 1;
-}
+/*.remote-desktop-dock .internal-content {*/
+/*    -fx-border-color: -color-border-default;*/
+/*    -fx-border-width: 1 1 1 1;*/
+/*}*/
 
-.remote-desktop-dock .internal-content:focused {
-    -fx-border-color: -color-accent-emphasis;
-}
+/*.remote-desktop-dock .internal-content:focused {*/
+/*    -fx-border-color: -color-accent-emphasis;*/
+/*}*/
