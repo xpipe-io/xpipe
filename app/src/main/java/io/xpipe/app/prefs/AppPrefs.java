@@ -23,6 +23,7 @@ import io.xpipe.app.terminal.TerminalSplitStrategy;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 import io.xpipe.app.vnc.ExternalVncClient;
+import io.xpipe.app.vnc.InternalVncClient;
 import io.xpipe.app.vnc.VncCategory;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
@@ -251,7 +252,7 @@ public final class AppPrefs {
     public final BooleanProperty dontCachePasswords =
             mapVaultShared(new GlobalBooleanProperty(false), "dontCachePasswords", Boolean.class, false);
     public final Property<ExternalVncClient> vncClient = map(Mapping.builder()
-            .property(new GlobalObjectProperty<>())
+            .property(new GlobalObjectProperty<>(InternalVncClient.builder().build()))
             .key("vncClient")
             .valueClass(ExternalVncClient.class)
             .documentationLink(DocumentationLink.VNC)
@@ -843,7 +844,6 @@ public final class AppPrefs {
         terminalType.set(ExternalTerminalType.determineDefault(terminalType.get()));
         rdpClientType.setValue(ExternalRdpClient.determineDefault(rdpClientType.get()));
         spiceClient.setValue(ExternalSpiceClient.determineDefault(spiceClient.getValue()));
-        vncClient.setValue(ExternalVncClient.determineDefault(vncClient.getValue()));
         passwordManager.setValue(PasswordManager.determineDefault(passwordManager.getValue()));
 
         PrefsProvider.getAll().forEach(prov -> prov.initDefaultValues());

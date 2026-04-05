@@ -13,6 +13,7 @@ import io.xpipe.app.util.RemoteDesktopDockContentEntry;
 import io.xpipe.app.vnc.VncBaseStore;
 import io.xpipe.core.SecretValue;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 
 import java.nio.file.Path;
@@ -41,7 +42,8 @@ public abstract class ProcessControlProvider {
     public abstract ShellStore subShellEnvironment(DataStoreEntryRef<ShellStore> s, ShellDialect dialect);
 
     public abstract RemoteDesktopDockContentEntry createVncSession(
-            DataStoreEntryRef<VncBaseStore> ref);
+            DataStoreEntryRef<VncBaseStore> ref, BooleanProperty resize
+            );
 
     public abstract DataStoreEntryRef<ShellStore> elevated(DataStoreEntryRef<ShellStore> e);
 

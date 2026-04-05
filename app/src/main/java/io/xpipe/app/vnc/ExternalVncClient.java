@@ -56,34 +56,6 @@ public interface ExternalVncClient extends PrefsValue {
         return l;
     }
 
-    static ExternalVncClient determineDefault(ExternalVncClient existing) {
-        // Verify that our selection is still valid
-        if (existing != null && existing.isAvailable()) {
-            return existing;
-        }
-
-        var l = new ArrayList<ExternalVncClient>();
-        switch (OsType.ofLocal()) {
-            case OsType.Linux ignored -> {
-                l.add(new TigerVncClient.Linux());
-                l.add(new RealVncClient.Linux());
-            }
-            case OsType.MacOs ignored -> {}
-            case OsType.Windows ignored -> {
-                l.add(new TightVncClient());
-            }
-        }
-
-        var found = l.stream()
-                .filter(externalVncClient -> externalVncClient.isAvailable())
-                .findFirst();
-        if (found.isPresent()) {
-            return found.get();
-        }
-
-        return new InternalVncClient();
-    }
-
     void launch(VncLaunchConfig configuration) throws Exception;
 
     boolean supportsPasswords();
