@@ -138,10 +138,14 @@ public class RemoteDesktopWindow {
             createStage();
             applyStageState();
             stage.show();
-            nativeWinWindowControl = new NativeWinWindowControl(stage);
-            nativeWinWindowControl.setWindowsTransitionsEnabled(false);
+
+            if (supportsDocking()) {
+                nativeWinWindowControl = new NativeWinWindowControl(stage);
+                nativeWinWindowControl.setWindowsTransitionsEnabled(false);
+            }
         });
 
+        // Wait one more pulse
         var latch = new CountDownLatch(1);
         Platform.runLater(() -> {
             latch.countDown();
