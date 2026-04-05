@@ -49,3 +49,12 @@
     -fx-border-width: 1 0 1 0;
     -fx-border-color: -color-border-default;
 }
+
+.remote-desktop-dock .internal-content {
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1 1 1 1;
+}
+
+.remote-desktop-dock .internal-content:focused {
+    -fx-border-color: -color-accent-emphasis;
+}

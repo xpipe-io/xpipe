@@ -58,7 +58,6 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
                 if (target == null || (target.getProperties().get("entry") != null &&
                         target.getProperties().get("entry").equals(w.getSelected().getValue()))) {
                     Platform.runLater(() -> {
-                        content.requestFocus();
                         w.focus();
                     });
                 }
@@ -160,9 +159,17 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
                 }
 
                 if (entry != null && entry.isInternal()) {
-                    stack.getChildren().add(map.get(entry));
+                    Region r = map.get(entry);
+                    stack.getChildren().add(r);
+                    r.requestFocus();
                 }
             });
+        });
+
+        stack.focusedProperty().subscribe(focus -> {
+            if (focus && stack.getChildren().size() > 1) {
+                stack.getChildren().getLast().requestFocus();
+            }
         });
 
         return stack;
