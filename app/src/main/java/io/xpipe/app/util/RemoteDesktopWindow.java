@@ -96,8 +96,11 @@ public class RemoteDesktopWindow {
         // We close this automatically after all children are gone
         stage.setOnCloseRequest(event -> {
             AppCache.update("remoteDesktopWindowState", state);
-            if (processes.size() > 0) {
-                event.consume();
+            // The dock handles the closing of the tabs
+            if (supportsDocking()) {
+                if (processes.size() > 0) {
+                    event.consume();
+                }
             }
         });
 
