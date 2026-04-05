@@ -75,7 +75,10 @@ public class RemoteDesktopDockView implements WindowDockListener {
     }
 
     private synchronized void show(RemoteDesktopDockEntry e) {
-        parent.get().moveToFront();
+        var p = parent.get();
+        if (p != null) {
+            p.moveToFront();
+        }
 
         if (!e.isExternal()) {
             return;
