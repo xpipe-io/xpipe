@@ -43,15 +43,7 @@ public class RemoteDesktopWindow {
         }
     }
 
-    public static boolean isSupported() {
-        return OsType.ofLocal() == OsType.WINDOWS;
-    }
-
     public static void init() {
-        if (!isSupported()) {
-            return;
-        }
-
         State state = AppCache.getNonNull("remoteDesktopWindowState", State.class, () -> null);
         var model = new RemoteDesktopDockView(rect -> rect, () -> {
             return INSTANCE.nativeWinWindowControl;
