@@ -156,11 +156,16 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
     private Region createContent(Map<RemoteDesktopDockEntry, Region> map) {
         var w = RemoteDesktopWindow.get();
 
-        var dock = new WindowDockComp<>(w.getModel());
-        dock.style("dock");
-
         var stack = new StackPane();
-        stack.getChildren().add(dock.build());
+
+        if (w.supportsDocking()) {
+            var dock = new WindowDockComp<>(w.getModel());
+            dock.style("dock");
+            stack.getChildren().add(dock.build());
+        } else {
+            stack.getChildren().add(new Region());
+        }
+
         w.getSelected().subscribe(entry -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 if (stack.getChildren().size() > 1) {

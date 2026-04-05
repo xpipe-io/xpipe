@@ -74,6 +74,10 @@ public class RemoteDesktopWindow {
     @Getter
     private final BooleanProperty locked = new SimpleBooleanProperty(true);
 
+    public boolean supportsDocking() {
+        return OsType.ofLocal() == OsType.WINDOWS;
+    }
+
     private void createStage() {
         if (stage != null) {
             return;
