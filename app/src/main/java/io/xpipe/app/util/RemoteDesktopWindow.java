@@ -95,12 +95,18 @@ public class RemoteDesktopWindow {
 
         // We close this automatically after all children are gone
         stage.setOnCloseRequest(event -> {
+            // Allow to close stuck window if somehow it is still showing with no tabs
+            if (processes.isEmpty()) {
+                return;
+            }
+
             AppCache.update("remoteDesktopWindowState", state);
             // The dock handles the closing of the tabs
             if (supportsDocking()) {
-                if (processes.size() > 0) {
-                    event.consume();
-                }
+                event.consume();
+            } else {
+                model.onClose();
+                event.consume();
             }
         });
 
