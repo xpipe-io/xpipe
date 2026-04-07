@@ -24,10 +24,10 @@ import atlantafx.base.theme.Styles;
 public class SshAgentTestComp extends SimpleRegionBuilder {
 
     private final Runnable beforeTest;
-    private final ObservableValue<? extends SshIdentityAgentStrategy> sshIdentityStrategy;
+    private final ObservableValue<? extends SshIdentityKeyListStrategy> sshIdentityStrategy;
 
     public SshAgentTestComp(
-            Runnable beforeTest, ObservableValue<? extends SshIdentityAgentStrategy> sshIdentityStrategy) {
+            Runnable beforeTest, ObservableValue<? extends SshIdentityKeyListStrategy> sshIdentityStrategy) {
         this.beforeTest = beforeTest;
         this.sshIdentityStrategy = sshIdentityStrategy;
     }

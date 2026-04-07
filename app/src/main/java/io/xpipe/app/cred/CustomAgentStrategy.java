@@ -107,7 +107,7 @@ public class CustomAgentStrategy implements SshIdentityAgentStrategy {
     }
 
     @Override
-    public FilePath determinetAgentSocketLocation(ShellControl sc) throws Exception {
+    public FilePath determineAgentSocketLocation(ShellControl sc) throws Exception {
         if (!sc.isLocal() || sc.getOsType() == OsType.WINDOWS) {
             return null;
         }
@@ -136,7 +136,7 @@ public class CustomAgentStrategy implements SshIdentityAgentStrategy {
                 new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
                 new KeyValue("PKCS11Provider", "none")));
 
-        var agent = determinetAgentSocketLocation(sc);
+        var agent = determineAgentSocketLocation(sc);
         if (agent != null) {
             l.add(new KeyValue("IdentityAgent", "\"" + agent + "\""));
         }

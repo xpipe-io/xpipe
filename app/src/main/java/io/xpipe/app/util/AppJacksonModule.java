@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.cred.SecurityKeyImpl;
 import io.xpipe.app.cred.SshIdentityStrategy;
 import io.xpipe.app.ext.HostAddress;
 import io.xpipe.app.process.ShellDialect;
@@ -78,6 +79,7 @@ public class AppJacksonModule extends SimpleModule {
             context.registerSubtypes(new NamedType(t.getClass()));
         }
 
+        context.registerSubtypes(SecurityKeyImpl.getClasses());
         context.registerSubtypes(SshIdentityStrategy.getClasses());
         context.registerSubtypes(PasswordManagerKeyStrategy.getClasses());
         context.registerSubtypes(PasswordManager.getClasses());

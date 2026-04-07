@@ -77,7 +77,7 @@ public class PasswordManagerInPlaceKeyStrategy implements SshIdentityAgentStrate
     }
 
     @Override
-    public FilePath determinetAgentSocketLocation(ShellControl parent) {
+    public FilePath determineAgentSocketLocation(ShellControl parent) {
         return null;
     }
 }
