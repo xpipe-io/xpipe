@@ -61,7 +61,7 @@ public class CommandBuilder {
             var sep = sc.getOsType() == OsType.WINDOWS ? ";" : ":";
             var var = sc.view().getEnvironmentVariable(name);
             if (var.isPresent()) {
-                return append ? var + sep + dir : dir + sep + var;
+                return append ? var.get() + sep + dir : dir + sep + var.get();
             } else {
                 return dir.toString();
             }
