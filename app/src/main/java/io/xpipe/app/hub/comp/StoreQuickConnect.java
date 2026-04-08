@@ -44,6 +44,10 @@ public class StoreQuickConnect {
         }
 
         var arguments = s.replaceFirst(provider.get().getName() + "\\s+", "").strip();
+        if (arguments.isEmpty()) {
+            return false;
+        }
+
         var newStore = provider.get().createStore(arguments, quickConnectStore);
         if (newStore == null) {
             return false;

@@ -25,6 +25,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.UnaryOperator;
@@ -92,13 +93,20 @@ public class MarkdownComp extends RegionBuilder<StackPane> {
         wv.setPageFill(Color.TRANSPARENT);
         wv.getEngine()
                 .setUserDataDirectory(AppCache.getBasePath().resolve("webview").toFile());
-        var theme = AppPrefs.get() != null
-                        && AppPrefs.get().theme().getValue() != null
-                        && AppPrefs.get().theme().getValue().isDark()
-                ? "misc/github-markdown-dark.css"
-                : "misc/github-markdown-light.css";
-        var url = AppResources.getResourceURL(AppResources.MAIN_MODULE, theme).orElseThrow();
-        wv.getEngine().setUserStyleSheetLocation(url.toString());
+
+        if (AppPrefs.get() != null) {
+            var ref = new WeakReference<>(wv);
+            AppPrefs.get().theme().subscribe((v) -> {
+                var refVal = ref.get();
+                if (refVal != null && v != null) {
+                    var theme = v.isDark()
+                            ? "misc/github-markdown-dark.css"
+                            : "misc/github-markdown-light.css";
+                    var url = AppResources.getResourceURL(AppResources.MAIN_MODULE, theme).orElseThrow();
+                    refVal.getEngine().setUserStyleSheetLocation(url.toString());
+                }
+            });
+        }
 
         markdown.subscribe(val -> {
             PlatformThread.runLaterIfNeeded(() -> {

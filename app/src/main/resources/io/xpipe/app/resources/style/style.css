@@ -262,7 +262,7 @@
 }
 
 .store-filter-state-comp .button {
-    -fx-padding: 5 10 5 10;
+    -fx-padding: 3 10 3 10;
 }
 
 .store-filter-state-comp .button:disabled {

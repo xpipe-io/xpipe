@@ -278,6 +278,12 @@ public class BrowserFileTransferOperation {
                     return false;
                 }
 
+                // Somehow we can move outside the base dir?
+                // Not able to reproduce this issue yet
+                if (!fileEntry.getPath().startsWith(baseRelative)) {
+                    return true;
+                }
+
                 var rel = fileEntry.getPath().relativize(baseRelative).toUnix();
                 flatFiles.put(fileEntry, rel);
                 if (fileEntry.getKind() == FileKind.FILE) {

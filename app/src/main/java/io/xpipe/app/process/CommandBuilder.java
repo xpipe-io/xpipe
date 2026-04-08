@@ -292,7 +292,7 @@ public class CommandBuilder {
 
         var s = buildBase(sc);
         Map<String, String> map = buildEnvironmentVariables(sc);
-        return sc.getShellDialect().assembleCommand(sc, s, map);
+        return sc.getShellDialect().assembleCommand(s, map);
     }
 
     public CommandControl build(ShellControl sc) {

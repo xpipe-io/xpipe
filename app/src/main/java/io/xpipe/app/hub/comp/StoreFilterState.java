@@ -34,6 +34,7 @@ public class StoreFilterState {
     @Getter
     private final StringProperty fieldText = new SimpleStringProperty();
 
+    @Getter
     private final StringProperty rawText = new SimpleStringProperty();
 
     @Getter
@@ -116,7 +117,7 @@ public class StoreFilterState {
                 Platform.runLater(() -> {
                     rawText.setValue(fieldText.getValue());
                 });
-            }, Duration.ofMillis(300));
+            }, Duration.ofMillis(350));
         });
     }
 
@@ -169,6 +170,8 @@ public class StoreFilterState {
     }
 
     private boolean apply(boolean force) {
+        rawText.setValue(fieldText.getValue());
+
         if (rawText.getValue() == null) {
             return false;
         }

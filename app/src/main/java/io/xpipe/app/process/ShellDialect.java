@@ -89,7 +89,7 @@ public interface ShellDialect {
 
     String getScriptFileEnding();
 
-    String assembleCommand(ShellControl sc, String command, Map<String, String> variables) throws Exception;
+    String assembleCommand(String command, Map<String, String> variables) throws Exception;
 
     Stream<FileEntry> listFiles(FileSystem fs, ShellControl control, String path, boolean sub) throws Exception;
 

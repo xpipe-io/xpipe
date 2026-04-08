@@ -182,7 +182,7 @@ def getJvmArgs() {
         jvmRunArgs += ["-Dprism.order=mtl,es2,sw"]
     }
 
-    // Use new metal pipeline on macOS
+    // Fix uncontrolled animation framerate issues on Linux, see https://bugs.openjdk.org/browse/JDK-8210547
     if (os.isLinux()) {
         jvmRunArgs += ["-Dquantum.multithreaded=false"]
     }

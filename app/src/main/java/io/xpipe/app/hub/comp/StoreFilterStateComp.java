@@ -6,7 +6,6 @@ import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
-import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.OptionsBuilder;
 
@@ -30,7 +29,6 @@ public class StoreFilterStateComp extends SimpleRegionBuilder {
         });
         button.disable(value == null);
         button.apply(r -> r.setAlignment(Pos.CENTER_LEFT));
-        button.apply(AppFontSizes::sm);
         button.style(Styles.FLAT);
         button.maxWidth(250);
         return button;

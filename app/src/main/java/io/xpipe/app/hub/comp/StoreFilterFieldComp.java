@@ -106,7 +106,7 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
                             return null;
                         },
                         field.focusedProperty(),
-                        state.getFieldText()));
+                        state.getRawText()));
         RegionDescriptor.builder().nameKey("search").showTooltips(false).build().apply(field);
 
         field.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
