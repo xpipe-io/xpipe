@@ -4,12 +4,14 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.Validator;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.DocumentationLink;
+import io.xpipe.app.util.Validators;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
@@ -94,6 +96,11 @@ public class CustomAgentStrategy implements SshIdentityAgentStrategy {
     }
 
     String publicKey;
+
+    @Override
+    public void checkComplete() throws ValidationException {
+        Validators.nonNull(AppPrefs.get().defaultSshAgentSocket().getValue());
+    }
 
     @Override
     public void prepareParent(ShellControl parent) throws Exception {

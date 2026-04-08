@@ -1,6 +1,7 @@
 package io.xpipe.app.cred;
 
 import io.xpipe.app.core.AppSystemInfo;
+import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
@@ -93,6 +94,11 @@ public class PageantStrategy implements SshIdentityAgentStrategy {
         }
 
         return null;
+    }
+
+    @Override
+    public void checkComplete() throws ValidationException {
+
     }
 
     @Override

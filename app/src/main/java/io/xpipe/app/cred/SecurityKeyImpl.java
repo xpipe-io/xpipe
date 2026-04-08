@@ -2,13 +2,31 @@ package io.xpipe.app.cred;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
+import io.xpipe.app.comp.base.HorizontalComp;
+import io.xpipe.app.comp.base.LabelComp;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ValidationException;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.DocumentationLink;
+import io.xpipe.app.util.Validators;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -134,11 +152,54 @@ public interface SecurityKeyImpl {
     @Builder
     class Custom implements SecurityKeyImpl {
 
+        @SuppressWarnings("unused")
+        public static OptionsBuilder createOptions(
+                Property<Custom> p, SshIdentityStrategyChoiceConfig config) {
+            var file = new SimpleObjectProperty<>(p.getValue().getFile());
+
+            return new OptionsBuilder()
+                    .nameAndDescription("pkcs11Library")
+                    .addComp(
+                            new ContextualFileReferenceChoiceComp(
+                                    config.getFileSystem() != null
+                                            ? config.getFileSystem()
+                                            : new ReadOnlyObjectWrapper<>(
+                                            DataStorage.get().local().ref()),
+                                    file,
+                                    null,
+                                    List.of(),
+                                    e -> {
+                                        if (config.getFileSystem() == null) {
+                                            return e.equals(DataStorage.get().local());
+                                        }
+
+                                        var fs = config.getFileSystem().getValue();
+                                        if (fs == null) {
+                                            return e.equals(DataStorage.get().local());
+                                        } else {
+                                            return e.equals(fs.get());
+                                        }
+                                    },
+                                    false),
+                            file)
+                    .nonNull()
+                    .bind(
+                            () -> {
+                                return new Custom(file.get());
+                            },
+                            p);
+        }
+
         FilePath file;
 
         @Override
         public FilePath determineLibraryPath(ShellControl sc) {
             return file;
+        }
+
+        @Override
+        public void checkComplete() throws ValidationException {
+            Validators.nonNull(file);
         }
     }
 }

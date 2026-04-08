@@ -49,7 +49,6 @@ public interface SshIdentityStrategy {
         l.add(KeyFileStrategy.class);
         l.add(OpenSshAgentStrategy.class);
         l.add(PasswordManagerAgentStrategy.class);
-        l.add(PasswordManagerInPlaceKeyStrategy.class);
         l.add(CustomAgentStrategy.class);
         l.add(GpgAgentStrategy.class);
         l.add(PageantStrategy.class);

@@ -1,6 +1,7 @@
 package io.xpipe.app.cred;
 
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
@@ -55,6 +56,11 @@ public class OpenSshAgentStrategy implements SshIdentityAgentStrategy {
             SshIdentityStateManager.prepareLocalOpenSshAgent(
                     parent, AppPrefs.get().defaultSshAgentSocket().getValue());
         }
+    }
+
+    @Override
+    public void checkComplete() throws ValidationException {
+
     }
 
     @Override

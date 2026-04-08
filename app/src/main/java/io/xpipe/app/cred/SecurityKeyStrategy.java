@@ -41,7 +41,7 @@ public class SecurityKeyStrategy implements SshIdentityKeyListStrategy {
         var publicKey = new SimpleStringProperty(p.getValue().getPublicKey());
         var securityKey = new SimpleObjectProperty<>(p.getValue().getSecurityKey());
 
-        var choice = OptionsChoiceBuilder.builder().property(securityKey).available(SecurityKeyImpl.getAvailable()).build().build();
+        var choice = OptionsChoiceBuilder.builder().property(securityKey).available(SecurityKeyImpl.getAvailable()).customConfiguration(config).build().build();
 
         return new OptionsBuilder()
                 .nameAndDescription("pkcs11Library")

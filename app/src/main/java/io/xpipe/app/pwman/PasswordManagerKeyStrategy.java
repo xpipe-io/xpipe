@@ -3,6 +3,7 @@ package io.xpipe.app.pwman;
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.cred.*;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
@@ -197,6 +198,9 @@ public interface PasswordManagerKeyStrategy {
         var socket = pwman != null ? FilePath.of(pwman.getKeyConfiguration().getDefaultSocketLocation()) : null;
 
         return new SshIdentityAgentStrategy() {
+            @Override
+            public void checkComplete() throws ValidationException {}
+
             @Override
             public void prepareParent(ShellControl parent) throws Exception {
                 if (parent.isLocal()) {
