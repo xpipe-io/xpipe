@@ -103,10 +103,11 @@ public class SecurityKeyStrategy implements SshIdentityKeyListStrategy {
     @Override
     public List<KeyValue> configOptions(ShellControl sc) throws Exception {
         var file = securityKey.determineLibraryPath(sc);
+        var key = SshIdentityStrategy.getPublicKeyPath(sc, publicKey);
         return List.of(
-                new KeyValue("IdentitiesOnly", "no"),
                 new KeyValue("PKCS11Provider", "\"" + file.toString() + "\""),
-                new KeyValue("IdentityFile", "none"),
+                new KeyValue("IdentitiesOnly", key.isPresent() ? "yes" : "no"),
+                new KeyValue("IdentityFile", key.isPresent() ? key.get().toString() : "none"),
                 new KeyValue("IdentityAgent", "none"));
     }
 

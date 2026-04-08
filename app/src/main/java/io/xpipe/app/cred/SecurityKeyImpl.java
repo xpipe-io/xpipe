@@ -37,8 +37,8 @@ public interface SecurityKeyImpl {
 
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();
-        l.add(YubikeyPiv.class);
         l.add(OpenSc.class);
+        l.add(YubikeyPiv.class);
         l.add(MacOsKeychain.class);
         l.add(Custom.class);
         return l;
@@ -46,8 +46,8 @@ public interface SecurityKeyImpl {
 
     static List<Class<?>> getAvailable() {
         var l = new ArrayList<Class<?>>();
-        l.add(YubikeyPiv.class);
         l.add(OpenSc.class);
+        l.add(YubikeyPiv.class);
         if (OsType.ofLocal() == OsType.MACOS) {
             l.add(MacOsKeychain.class);
         }
@@ -147,7 +147,7 @@ public interface SecurityKeyImpl {
     }
 
 
-    @JsonTypeName("custom")
+    @JsonTypeName("customLibrary")
     @Value
     @Jacksonized
     @Builder
