@@ -18,6 +18,7 @@ import javafx.beans.property.Property;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.UUID;
 
 public abstract class ProcessControlProvider {
 
@@ -79,4 +80,6 @@ public abstract class ProcessControlProvider {
     public abstract void cloneRepository(String url, Path target) throws Exception;
 
     public abstract void pullRepository(Path target) throws Exception;
+
+    public abstract void addAskpassEnvironment(CommandBuilder b, String prefix, UUID requestId, UUID secretId, String... askpassName);
 }

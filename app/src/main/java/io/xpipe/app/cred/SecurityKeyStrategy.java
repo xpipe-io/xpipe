@@ -2,6 +2,8 @@ package io.xpipe.app.cred;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
+import io.xpipe.app.core.AppInstallation;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -44,7 +46,7 @@ public class SecurityKeyStrategy implements SshIdentityKeyListStrategy {
         var choice = OptionsChoiceBuilder.builder().property(securityKey).available(SecurityKeyImpl.getAvailable()).customConfiguration(config).build().build();
 
         return new OptionsBuilder()
-                .nameAndDescription("pkcs11Library")
+                .nameAndDescription("pkcs11Impl")
                 .sub(choice, securityKey)
                 .nonNull()
                 .nameAndDescription("publicKey")
@@ -78,7 +80,12 @@ public class SecurityKeyStrategy implements SshIdentityKeyListStrategy {
 
     @Override
     public CommandBuilder createListCommand() {
-        return CommandBuilder.of().add("ssh-keygen", "-D").addFile(sc -> securityKey.determineLibraryPath(sc).toUnix()).add("-e");
+        var cmd = CommandBuilder.of().add("ssh-keygen", "-D")
+                .addFile(sc -> securityKey.determineLibraryPath(sc).toUnix()).add("-e")
+                .fixedEnvironment("SSH_ASKPASS", AppInstallation.ofCurrent().getCliExecutablePath().toString())
+                .fixedEnvironment("SSH_ASKPASS_REQUIRE", "force");
+        ProcessControlProvider.get().addAskpassEnvironment(cmd, "[ssh-keygen]", null, null);
+        return cmd;
     }
 
     @Override
@@ -103,7 +110,8 @@ public class SecurityKeyStrategy implements SshIdentityKeyListStrategy {
                 new KeyValue("IdentityAgent", "none"));
     }
 
+    @Override
     public PublicKeyStrategy getPublicKeyStrategy() {
-        return null;
+        return PublicKeyStrategy.Fixed.of(publicKey);
     }
 }
