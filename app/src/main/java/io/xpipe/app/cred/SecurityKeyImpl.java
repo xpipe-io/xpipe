@@ -8,6 +8,7 @@ import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ValidationException;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.ShellControl;
@@ -139,7 +140,7 @@ public interface SecurityKeyImpl {
             var file =
                     switch (sc.getOsType()) {
                         case OsType.MacOs ignored -> FilePath.of("/usr/lib/ssh-keychain.dylib");
-                        default -> throw new UnsupportedOperationException();
+                        default -> throw ErrorEventFactory.expected(new UnsupportedOperationException("macOS keychain is not supported on other operating systems"));
                     };
             return file;
         }
