@@ -120,7 +120,10 @@ public final class FilePath {
     public FilePath getBaseName() {
         var name = getFileName();
         var lastDot = name.lastIndexOf(".");
-        if (lastDot <= 0) {
+        if (lastDot == 0) {
+            throw new IllegalStateException("getBaseName() called on a dotfile: " + value);
+        }
+        if (lastDot < 0) {
             return this;
         }
 
