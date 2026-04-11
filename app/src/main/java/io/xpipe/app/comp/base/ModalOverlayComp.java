@@ -10,6 +10,7 @@ import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.core.OsType;
 
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -69,6 +70,11 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
                         mouseHandler.handle(event);
                     }
                 });
+            }
+
+            @Override
+            protected Timeline createCloseBlockedAnimation() {
+                return new Timeline();
             }
         });
         modal.setInTransitionFactory(
