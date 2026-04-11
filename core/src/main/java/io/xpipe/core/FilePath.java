@@ -118,7 +118,9 @@ public final class FilePath {
     }
 
     public FilePath getBaseName() {
-        if (!getFileName().contains(".")) {
+        var name = getFileName();
+        var lastDot = name.lastIndexOf(".");
+        if (lastDot <= 0) {
             return this;
         }
 
