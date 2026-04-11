@@ -72,7 +72,9 @@ public class DeveloperCategory extends AppPrefsCategory {
                 .nameAndDescription("developerPrintInitFiles")
                 .addToggle(prefs.developerPrintInitFiles)
                 .nameAndDescription("developerShowSensitiveCommands")
-                .addToggle(prefs.developerShowSensitiveCommands);
+                .addToggle(prefs.developerShowSensitiveCommands)
+                .pref(prefs.useExternalNetcatForProxies)
+                .addToggle(prefs.useExternalNetcatForProxies);
         if (AppProperties.get().isDevelopmentEnvironment()) {
             sub.nameAndDescription("developerForceSshTty").addToggle(prefs.developerForceSshTty);
             sub.nameAndDescription("developerDisableSshTunnelGateways")

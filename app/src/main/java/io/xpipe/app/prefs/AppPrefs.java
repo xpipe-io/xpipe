@@ -99,6 +99,12 @@ public final class AppPrefs {
             .valueClass(Boolean.class)
             .requiresRestart(false)
             .build());
+    final BooleanProperty useExternalNetcatForProxies = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(false))
+            .key("useExternalNetcatForProxies")
+            .valueClass(Boolean.class)
+            .requiresRestart(false)
+            .build());
     final BooleanProperty pinLocalMachineOnStartup = map(Mapping.builder()
             .property(new GlobalBooleanProperty(false))
             .key("pinLocalMachineOnStartup")
@@ -462,6 +468,10 @@ public final class AppPrefs {
 
     public boolean canSaveLocal() {
         return globalStorageHandler.isInitialized();
+    }
+
+    public ObservableBooleanValue useExternalNetcatForProxies() {
+        return useExternalNetcatForProxies;
     }
 
     public ObservableValue<Boolean> disableHttpsTlsCheck() {
