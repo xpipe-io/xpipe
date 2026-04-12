@@ -1,5 +1,7 @@
 package io.xpipe.app.pwman;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
@@ -13,13 +15,9 @@ import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
-
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -31,13 +29,14 @@ import java.util.Optional;
 @Builder
 @ToString
 @Jacksonized
-@JsonTypeName("psono")
-public class PsonoPasswordManager implements PasswordManager {
+@JsonTypeName("passwork")
+public class PassworkPasswordManager implements PasswordManager {
 
     private static ShellControl SHELL;
-    private final InPlaceSecretValue apiKey;
-    private final InPlaceSecretValue apiSecretKey;
+
     private final String serverUrl;
+    private final InPlaceSecretValue token;
+    private final InPlaceSecretValue masterKey;
 
     @Override
     public boolean supportsKeyConfiguration() {
@@ -46,7 +45,7 @@ public class PsonoPasswordManager implements PasswordManager {
 
     @Override
     public boolean selectInitial() throws Exception {
-        return LocalShell.getShell().view().findProgram("psonoci").isPresent();
+        return LocalShell.getShell().view().findProgram("passwork-cli").isPresent();
     }
 
     @Override
@@ -55,33 +54,33 @@ public class PsonoPasswordManager implements PasswordManager {
     }
 
     @SuppressWarnings("unused")
-    public static OptionsBuilder createOptions(Property<PsonoPasswordManager> p) {
-        var apiKey = new SimpleObjectProperty<>(p.getValue().getApiKey());
-        var apiSecretKey = new SimpleObjectProperty<>(p.getValue().getApiSecretKey());
+    public static OptionsBuilder createOptions(Property<PassworkPasswordManager> p) {
         var serverUrl = new SimpleStringProperty(p.getValue().getServerUrl());
+        var token = new SimpleObjectProperty<>(p.getValue().getToken());
+        var masterKey = new SimpleObjectProperty<>(p.getValue().getMasterKey());
         return new OptionsBuilder()
-                .nameAndDescription("psonoServerUrl")
+                .nameAndDescription("passworkServerUrl")
                 .addComp(
                         new TextFieldComp(serverUrl)
                                 .apply(struc -> {
-                                    struc.setPromptText("https://www.psono.pw/server");
+                                    struc.setPromptText("https://myorg.passwork.io");
                                 })
                                 .maxWidth(600),
                         serverUrl)
                 .nonNull()
-                .nameAndDescription("psonoApiKey")
-                .addComp(new SecretFieldComp(apiKey, false).maxWidth(600), apiKey)
+                .nameAndDescription("passworkAccessToken")
+                .addComp(new SecretFieldComp(token, false).maxWidth(600), token)
                 .nonNull()
-                .nameAndDescription("psonoApiSecretKey")
-                .addComp(new SecretFieldComp(apiSecretKey, false).maxWidth(600), apiSecretKey)
+                .nameAndDescription("passworkMasterKey")
+                .addComp(new SecretFieldComp(masterKey, false).maxWidth(600), masterKey)
                 .nonNull()
                 .nameAndDescription("passwordManagerTest")
                 .addComp(new PasswordManagerTestComp(true))
                 .bind(
                         () -> {
-                            return PsonoPasswordManager.builder()
-                                    .apiKey(apiKey.get())
-                                    .apiSecretKey(apiSecretKey.get())
+                            return PassworkPasswordManager.builder()
+                                    .token(token.get())
+                                    .masterKey(masterKey.get())
                                     .serverUrl(serverUrl.get())
                                     .build();
                         },
@@ -98,44 +97,54 @@ public class PsonoPasswordManager implements PasswordManager {
 
     @Override
     public synchronized Result query(String key) {
-        if (serverUrl == null || apiKey == null || apiSecretKey == null) {
+        if (serverUrl == null || token == null || masterKey == null) {
             return null;
         }
 
         try {
-            CommandSupport.isInLocalPathOrThrow("Psono CLI", "psonoci");
+            CommandSupport.isInLocalPathOrThrow("Passwork CLI", "passwork-cli");
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e)
                     .expected()
-                    .link("https://doc.psono.com/user/psonoci/install.html")
+                    .link("https://passwork.pro/user-guides/api-and-integrations/passwork-cli/")
                     .handle();
             return null;
         }
 
         try {
-            getOrStartShell().view().setSensitiveEnvironmentVariable("PSONO_CI_API_KEY_ID", apiKey.getSecretValue());
+            var fixedServerUrl = serverUrl.startsWith("http") ? serverUrl : "https://" + serverUrl;
+            getOrStartShell().view().setSensitiveEnvironmentVariable("PASSWORK_HOST", fixedServerUrl);
+            getOrStartShell().view().setSensitiveEnvironmentVariable("PASSWORK_TOKEN", token.getSecretValue());
             getOrStartShell()
                     .view()
-                    .setSensitiveEnvironmentVariable("PSONO_CI_API_SECRET_KEY_HEX", apiSecretKey.getSecretValue());
-            var cmd = getOrStartShell()
+                    .setSensitiveEnvironmentVariable("PASSWORK_MASTER_KEY", masterKey.getSecretValue());
+            var user = getOrStartShell()
                     .command(CommandBuilder.of()
-                            .add("psonoci")
-                            .add("--server-url")
-                            .addLiteral(serverUrl)
-                            .add("secret", "get")
-                            .addLiteral(key)
-                            .add("json"))
-                    .sensitive();
-            var r = JacksonMapper.getDefault().readTree(cmd.readStdoutOrThrow());
-            var username = Optional.of(r.required("username"))
-                    .filter(n -> !n.isNull())
-                    .map(JsonNode::textValue)
-                    .orElse(null);
-            var password = Optional.of(r.required("password"))
-                    .filter(n -> !n.isNull())
-                    .map(JsonNode::textValue)
-                    .orElse(null);
-            return Result.of(Credentials.of(username, password), null);
+                            .add("passwork-cli")
+                            .add("get")
+                            .add("--password-id")
+                            .addQuoted(key)
+                            .add("--field", "login"))
+                    .sensitive()
+                    .readStdoutOrThrow();
+            if ("None".equals(user)) {
+                user = null;
+            }
+
+            var pass = getOrStartShell()
+                    .command(CommandBuilder.of()
+                            .add("passwork-cli")
+                            .add("get")
+                            .add("--password-id")
+                            .addQuoted(key)
+                            .add("--field", "password"))
+                    .sensitive()
+                    .readStdoutOrThrow();
+            if ("None".equals(pass)) {
+                pass = null;
+            }
+
+            return Result.of(Credentials.of(user, pass), null);
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
             return null;
@@ -144,11 +153,11 @@ public class PsonoPasswordManager implements PasswordManager {
 
     @Override
     public String getKeyPlaceholder() {
-        return AppI18n.get("psonoPlaceholder");
+        return AppI18n.get("passworkPlaceholder");
     }
 
     @Override
     public String getWebsite() {
-        return "https://psono.com/";
+        return "https://passwork.pro/";
     }
 }

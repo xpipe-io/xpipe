@@ -78,6 +78,7 @@ public interface PasswordManager {
             l.add(EnpassPasswordManager.class);
         }
         l.add(DashlanePasswordManager.class);
+        l.add(PassworkPasswordManager.class);
         l.add(PsonoPasswordManager.class);
         l.add(PassboltPasswordManager.class);
         if (OsType.ofLocal() == OsType.WINDOWS) {
