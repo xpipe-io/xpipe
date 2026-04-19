@@ -10,10 +10,7 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreColor;
-import io.xpipe.app.terminal.TerminalDockBrowserComp;
-import io.xpipe.app.terminal.TerminalDockView;
-import io.xpipe.app.terminal.TerminalView;
-import io.xpipe.app.terminal.WindowsTerminalType;
+import io.xpipe.app.terminal.*;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -76,11 +73,10 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
                     ThreadHelper.sleep(250);
                 }
 
-                var controllable = session.getTerminal().controllable();
-                if (controllable.isEmpty()) {
+                if (!(session.getTerminal() instanceof TerminalView.ControllableTerminalSession t)) {
                     return;
                 }
-                dockModel.trackTerminal(controllable.get(), true);
+                dockModel.trackTerminal(t, true);
             }
 
             @Override
@@ -96,9 +92,9 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
                             .filter(shellSession -> shellSession.getTerminal().equals(session.getTerminal()))
                             .count();
                     if (others == 0) {
-                        session.getTerminal().controllable().ifPresent(controllableTerminalSession -> {
-                            controllableTerminalSession.close();
-                        });
+                        if (session.getTerminal() instanceof TerminalView.ControllableTerminalSession t) {
+                            t.getControllable().close();
+                        }
                     }
                 }
             }

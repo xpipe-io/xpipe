@@ -1,7 +1,4 @@
-package io.xpipe.app.terminal;
-
-import io.xpipe.app.platform.NativeWinWindowControl;
-import io.xpipe.app.util.Rect;
+package io.xpipe.app.util;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -11,19 +8,18 @@ import java.util.Objects;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Getter
-public final class WindowsTerminalSession extends ControllableTerminalSession {
+public final class ControllableWindowsProcess extends ControllableWindowProcess {
 
     NativeWinWindowControl control;
 
-    public WindowsTerminalSession(
-            ProcessHandle terminal, ExternalTerminalType terminalType, NativeWinWindowControl control) {
-        super(terminal, terminalType);
+    public ControllableWindowsProcess(ProcessHandle p, NativeWinWindowControl control) {
+        super(p);
         this.control = control;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof WindowsTerminalSession that)) {
+        if (!(o instanceof ControllableWindowsProcess that)) {
             return false;
         }
         if (!super.equals(o)) {
@@ -39,12 +35,12 @@ public final class WindowsTerminalSession extends ControllableTerminalSession {
 
     @Override
     public boolean isRunning() {
-        return super.isRunning() && control.isVisible();
+        return process.isAlive();
     }
 
     @Override
-    public void own() {
-        control.takeOwnership(NativeWinWindowControl.MAIN_WINDOW.getWindowHandle());
+    public void own(NativeWinWindowControl window) {
+        control.takeOwnership(window.getWindowHandle());
     }
 
     @Override
@@ -58,33 +54,34 @@ public final class WindowsTerminalSession extends ControllableTerminalSession {
     }
 
     @Override
+    public void hide() {
+        control.hide();
+    }
+
+    @Override
     public void restoreIcon() {
         control.restoreIcon();
     }
 
     @Override
-    public void removeStyle() {
+    public void removeStyle(boolean borders) {
         control.setWindowsTransitionsEnabled(false);
-        if (terminalType != null
-                && terminalType instanceof TrackableTerminalType t
-                && t.getDockMode() == TerminalDockMode.BORDERLESS) {
+        if (borders) {
             control.removeBorders();
         }
     }
 
     @Override
-    public void restoreStyle() {
+    public void restoreStyle(boolean borders) {
         control.setWindowsTransitionsEnabled(true);
-        if (terminalType != null
-                && terminalType instanceof TrackableTerminalType t
-                && t.getDockMode() == TerminalDockMode.BORDERLESS) {
+        if (borders) {
             control.restoreBorders();
         }
     }
 
     @Override
     public void show() {
-        this.control.show();
+        this.control.restore();
     }
 
     @Override
@@ -93,12 +90,12 @@ public final class WindowsTerminalSession extends ControllableTerminalSession {
     }
 
     @Override
-    public void backOfMainWindow() {
-        getControl().orderRelative(NativeWinWindowControl.MAIN_WINDOW.getWindowHandle());
+    public void backOfWindow(NativeWinWindowControl window) {
+        getControl().orderRelative(window.getWindowHandle());
     }
 
     @Override
-    public void frontOfMainWindow() {
+    public void moveToFront() {
         this.control.moveToFront();
     }
 
@@ -109,6 +106,8 @@ public final class WindowsTerminalSession extends ControllableTerminalSession {
 
     @Override
     public void updatePosition(Rect bounds) {
+        // In case it is maximized, make it normal again
+        control.restore();
         control.move(bounds);
         this.lastBounds = queryBounds();
         this.customBounds = false;

@@ -1,7 +1,4 @@
-package io.xpipe.app.platform;
-
-import io.xpipe.app.util.Rect;
-import io.xpipe.app.util.User32Ex;
+package io.xpipe.app.util;
 
 import javafx.stage.Window;
 
@@ -18,19 +15,21 @@ import lombok.SneakyThrows;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @EqualsAndHashCode
 public class NativeWinWindowControl {
 
     private static final int WS_EX_APPWINDOW = 0x00040000;
+    private static final int WS_EX_NOACTIVATE = 0x08000000;
 
     public static NativeWinWindowControl MAIN_WINDOW;
     private final WinDef.HWND windowHandle;
 
     @SneakyThrows
     public NativeWinWindowControl(Window stage) {
-        this.windowHandle = byWindow(stage);
+        this.windowHandle = byWindow(stage).orElseThrow();
     }
 
     public NativeWinWindowControl(WinDef.HWND windowHandle) {
@@ -38,10 +37,14 @@ public class NativeWinWindowControl {
     }
 
     @SneakyThrows
-    public static WinDef.HWND byWindow(Window window) {
+    public static Optional<WinDef.HWND> byWindow(Window window) {
         Method tkStageGetter = Window.class.getDeclaredMethod("getPeer");
         tkStageGetter.setAccessible(true);
         Object tkStage = tkStageGetter.invoke(window);
+        if (tkStage == null) {
+            return Optional.empty();
+        }
+
         Method getPlatformWindow = tkStage.getClass().getDeclaredMethod("getPlatformWindow");
         getPlatformWindow.setAccessible(true);
         Object platformWindow = getPlatformWindow.invoke(tkStage);
@@ -49,7 +52,7 @@ public class NativeWinWindowControl {
         getNativeHandle.setAccessible(true);
         Object nativeHandle = getNativeHandle.invoke(platformWindow);
         var hwnd = new WinDef.HWND(new Pointer((long) nativeHandle));
-        return hwnd;
+        return Optional.of(hwnd);
     }
 
     public static List<NativeWinWindowControl> byPid(long pid) {
@@ -159,7 +162,7 @@ public class NativeWinWindowControl {
                 windowHandle, predecessor, 0, 0, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOMOVE | User32.SWP_NOSIZE);
     }
 
-    public void show() {
+    public void restore() {
         User32.INSTANCE.ShowWindow(windowHandle, User32.SW_RESTORE);
     }
 
@@ -169,6 +172,10 @@ public class NativeWinWindowControl {
 
     public void minimize() {
         User32.INSTANCE.ShowWindow(windowHandle, User32.SW_MINIMIZE);
+    }
+
+    public void hide() {
+        User32.INSTANCE.ShowWindow(windowHandle, User32.SW_HIDE);
     }
 
     public void move(Rect bounds) {

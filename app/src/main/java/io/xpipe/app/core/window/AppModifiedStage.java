@@ -1,10 +1,11 @@
 package io.xpipe.app.core.window;
 
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.platform.NativeMacOsWindowControl;
-import io.xpipe.app.platform.NativeWinWindowControl;
+import io.xpipe.app.util.NativeMacOsWindowControl;
+import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.RemoteDesktopWindow;
 import io.xpipe.core.OsType;
 
 import javafx.animation.PauseTransition;
@@ -126,7 +127,7 @@ public class AppModifiedStage extends Stage {
                     if (AppPrefs.get().performanceMode().get()
                             || !mergeFrame()
                             || AppMainWindow.get() == null
-                            || stage != AppMainWindow.get().getStage()) {
+                            || (stage != AppMainWindow.get().getStage() && stage != RemoteDesktopWindow.get().getStage())) {
                         seamlessFrame = false;
                     } else {
                         // This is not available on Windows 10

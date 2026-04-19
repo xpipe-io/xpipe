@@ -2,6 +2,7 @@ package io.xpipe.app.core.mode;
 
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.action.ActionProvider;
+import io.xpipe.app.util.RemoteDesktopWindow;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BlobManager;
 import io.xpipe.app.beacon.mcp.AppMcpServer;
@@ -157,6 +158,7 @@ public class AppBaseMode extends AppOperationMode {
                     TerminalView.init();
                     TerminalLauncherManager.init();
                     TerminalDockHubManager.init();
+                    RemoteDesktopWindow.init();
                     TrackEvent.info("File/Terminal initialization thread completed");
                 },
                 () -> {
@@ -206,6 +208,7 @@ public class AppBaseMode extends AppOperationMode {
         AbstractAction.reset();
         AppMcpServer.reset();
         WorkspaceManager.reset();
+        RemoteDesktopWindow.reset();
         AppPrefs.reset();
         DataStorage.reset();
         DataStorageSyncHandler.getInstance().reset();

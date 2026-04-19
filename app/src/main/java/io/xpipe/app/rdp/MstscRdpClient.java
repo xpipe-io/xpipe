@@ -2,6 +2,7 @@ package io.xpipe.app.rdp;
 
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
+import io.xpipe.app.util.RemoteDesktopWindow;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -9,7 +10,9 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.GlobalTimer;
+import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.RdpConfig;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.WindowsRegistry;
@@ -139,14 +142,29 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
             AppCache.update("rdpWindowsSecurityWarningDialog", true);
         }
 
-        var adaptedRdpConfig = getAdaptedConfig(configuration);
-
+        var adaptedRdpConfig = configuration.isRemoteApp() ? getAdaptedConfig(configuration) : getRemoteDesktopWindowConfig(getAdaptedConfig(configuration));
+        var window = RemoteDesktopWindow.get();
+        String width = null;
+        String height = null;
+        if (!configuration.isRemoteApp() && window != null) {
+            window.show();
+            if (window.getLocked().get()) {
+                width = "/w:" + window.getDockBounds().getW();
+                height = "/h:" + window.getDockBounds().getH();
+            }
+        }
         var setCache = prepareLocalhostRegistryCache(configuration);
 
         var file = writeRdpConfigFile(configuration.getTitle(), adaptedRdpConfig);
-        LocalShell.getShell()
-                .command(CommandBuilder.of().add(getExecutable()).addFile(file.toString()))
-                .execute();
+        var process = LocalExec.executeAsync(getExecutable(), file.toString(), width, height);
+        if (process != null && window != null && !configuration.isRemoteApp()) {
+            window.show();
+            var entry = configuration.getEntry();
+            window.trackExternal(configuration.getTitle(), entry.getEffectiveIconFile(), DataStorage.get().getEffectiveColor(entry), process, Duration.ofSeconds(30), p -> {
+                var bounds = p.queryBounds();
+                return bounds.getW() > 500 && bounds.getH() > 500;
+            });
+        }
 
         GlobalTimer.delay(
                 () -> {
@@ -175,6 +193,27 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
     @Override
     public String getWebsite() {
         return "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/mstsc";
+    }
+
+    private RdpConfig getRemoteDesktopWindowConfig(RdpConfig input) {
+        var window = RemoteDesktopWindow.get();
+        if (window != null) {
+            window.show();
+            var s = window.getDockBounds();
+            if (s != null) {
+                var pos = "0,1," + s.getX() + "," + s.getY() + "," + (s.getX() + s.getW()) + "," + (s.getY() + s.getH());
+                var adapted = input.overlay(Map.of(
+                        "winposstr", new RdpConfig.TypedValue("s", pos),
+                        "pinconnectionbar", new RdpConfig.TypedValue("i", "0"),
+                        "displayconnectionbar", new RdpConfig.TypedValue("i", "0"),
+                        "screen mode id", new RdpConfig.TypedValue("i", "1"),
+                        "use multimon", new RdpConfig.TypedValue("i", "0"),
+                        "smart sizing", new RdpConfig.TypedValue("i", "1")));
+                return adapted;
+            }
+        }
+
+        return input;
     }
 
     private RdpConfig getAdaptedConfig(RdpLaunchConfig configuration) throws Exception {

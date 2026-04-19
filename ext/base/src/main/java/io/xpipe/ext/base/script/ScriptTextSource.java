@@ -344,7 +344,7 @@ public interface ScriptTextSource {
 
         @Override
         public String toSummary() {
-            return AppI18n.get("sourcedFrom", ref.get().getName());
+            return AppI18n.get("sourcedFrom", ref.get().getName() + "/" + name);
         }
 
         @Override

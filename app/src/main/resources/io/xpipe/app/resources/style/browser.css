@@ -2,15 +2,6 @@
     -fx-font-family: "Inter";
 }
 
-.browser .visual-display {
-    -fx-border-color: -color-border-default;
-    -fx-border-width: 2 1 1 1;
-}
-
-.browser .visual-display:focused {
-    -fx-border-color: -color-accent-emphasis;
-}
-
 .download-background {
     -fx-padding: 1em;
 }

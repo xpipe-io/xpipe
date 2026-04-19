@@ -60,11 +60,11 @@ public class LocalShell {
             return Optional.of(local);
         }
 
-        if (powershellInitialized) {
-            return Optional.ofNullable(localPowershell);
-        }
-
         try {
+            if (powershellInitialized) {
+                return Optional.ofNullable(localPowershell.start());
+            }
+
             powershellInitialized = true;
             localPowershell = ProcessControlProvider.get()
                     .createLocalProcessControl(false)

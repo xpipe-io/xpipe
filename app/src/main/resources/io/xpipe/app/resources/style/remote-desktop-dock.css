@@ -1,0 +1,61 @@
+.remote-desktop-dock .tab-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-border-width: 1;
+    -fx-padding: 3 7 3 7;
+    -fx-background-insets: 0;
+    -fx-opacity: 0.8;
+}
+
+.remote-desktop-dock .lock-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-border-width: 1;
+    -fx-padding: 3 7 3 7;
+}
+
+.remote-desktop-dock .tab-button .graphic {
+    -fx-opacity: 0.3;
+}
+
+.root:nord .remote-desktop-dock .tab-button {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+
+.remote-desktop-dock .tab-button:hover, .root:key-navigation .remote-desktop-dock .tab-button:focused {
+    -fx-background-color: -color-bg-default-transparent;
+}
+
+.remote-desktop-dock .tab-button:selected, .remote-desktop-dock .tab-button:hover {
+    -fx-opacity: 1.0;
+}
+
+.remote-desktop-dock .tab-button:selected .graphic, .remote-desktop-dock .tab-button:hover .graphic {
+    -fx-opacity: 1.0;
+}
+
+.remote-desktop-dock .dock {
+    -fx-background-color: -color-bg-default-transparent;
+}
+
+.remote-desktop-dock .close-button {
+    -fx-padding: 3 3 1 3;
+}
+
+.remote-desktop-dock .tool-bar {
+    -fx-border-width: 1 0 1 0;
+    -fx-border-color: -color-border-default;
+    -fx-background-color: -color-bg-default-transparent;
+}
+
+/*.remote-desktop-dock .internal-content {*/
+/*    -fx-border-color: -color-border-default;*/
+/*    -fx-border-width: 1 1 1 1;*/
+/*}*/
+
+/*.remote-desktop-dock .internal-content:focused {*/
+/*    -fx-border-color: -color-accent-emphasis;*/
+/*}*/
