@@ -167,10 +167,10 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
     @Override
     public List<KeyValue> configOptions(ShellControl sc) {
         return List.of(
-                new KeyValue("IdentitiesOnly", "yes"),
-                new KeyValue("IdentityAgent", "none"),
-                new KeyValue("IdentityFile", "\"" + getTargetFilePath(sc) + "\""),
-                new KeyValue("PKCS11Provider", "none"));
+                KeyValue.raw("IdentitiesOnly", "yes"),
+                KeyValue.raw("IdentityAgent", "none"),
+                KeyValue.escape("IdentityFile", getTargetFilePath(sc)),
+                KeyValue.raw("PKCS11Provider", "none"));
     }
 
     @Override

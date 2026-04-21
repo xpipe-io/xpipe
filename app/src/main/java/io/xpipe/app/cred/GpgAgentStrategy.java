@@ -96,13 +96,13 @@ public class GpgAgentStrategy implements SshIdentityAgentStrategy {
     public List<KeyValue> configOptions(ShellControl sc) throws Exception {
         var file = SshIdentityStrategy.getPublicKeyPath(sc, publicKey);
         var l = new ArrayList<>(List.of(
-                new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
-                new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
-                new KeyValue("PKCS11Provider", "none")));
+                KeyValue.raw("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
+                KeyValue.escape("IdentityFile", file.isPresent() ? file.get() : "none"),
+                KeyValue.raw("PKCS11Provider", "none")));
 
         var agent = determinetAgentSocketLocation(sc);
         if (agent != null) {
-            l.add(new KeyValue("IdentityAgent", "\"" + agent + "\""));
+            l.add(KeyValue.escape("IdentityAgent", agent));
         }
 
         return l;

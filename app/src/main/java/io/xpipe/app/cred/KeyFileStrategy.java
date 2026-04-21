@@ -249,10 +249,10 @@ public class KeyFileStrategy implements SshIdentityStrategy {
     @Override
     public List<KeyValue> configOptions(ShellControl sc) {
         return List.of(
-                new KeyValue("IdentitiesOnly", "yes"),
-                new KeyValue("IdentityAgent", "none"),
-                new KeyValue("IdentityFile", "\"" + resolveFilePath(sc).toString() + "\""),
-                new KeyValue("PKCS11Provider", "none"));
+                KeyValue.raw("IdentitiesOnly", "yes"),
+                KeyValue.raw("IdentityAgent", "none"),
+                KeyValue.escape("IdentityFile", resolveFilePath(sc)),
+                KeyValue.raw("PKCS11Provider", "none"));
     }
 
     @Override

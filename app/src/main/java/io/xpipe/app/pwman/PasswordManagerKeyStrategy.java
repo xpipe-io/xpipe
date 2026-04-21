@@ -216,13 +216,12 @@ public interface PasswordManagerKeyStrategy {
             public List<KeyValue> configOptions(ShellControl sc) throws Exception {
                 var file = SshIdentityStrategy.getPublicKeyPath(sc, publicKey);
                 var l = new ArrayList<>(List.of(
-                        new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
-                        new KeyValue("ForwardAgent", forward ? "yes" : "no"),
-                        new KeyValue(
-                                "IdentityFile", file.isPresent() ? file.get().toString() : "none"),
-                        new KeyValue("PKCS11Provider", "none")));
+                        KeyValue.raw("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
+                        KeyValue.raw("ForwardAgent", forward ? "yes" : "no"),
+                        KeyValue.escape("IdentityFile", file.isPresent() ? file.get() : "none"),
+                        KeyValue.raw("PKCS11Provider", "none")));
                 if (socket != null) {
-                    l.add(new KeyValue("IdentityAgent", "\"" + socket + "\""));
+                    l.add(KeyValue.escape("IdentityAgent", socket));
                 }
                 return l;
             }

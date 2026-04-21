@@ -23,10 +23,10 @@ public class NoIdentityStrategy implements SshIdentityStrategy {
     public List<KeyValue> configOptions(ShellControl sc) {
         // Don't use any agent keys to prevent too many authentication failures
         return List.of(
-                new KeyValue("IdentitiesOnly", "yes"),
-                new KeyValue("IdentityAgent", "none"),
-                new KeyValue("IdentityFile", "none"),
-                new KeyValue("PKCS11Provider", "none"));
+                KeyValue.raw("IdentitiesOnly", "yes"),
+                KeyValue.raw("IdentityAgent", "none"),
+                KeyValue.raw("IdentityFile", "none"),
+                KeyValue.raw("PKCS11Provider", "none"));
     }
 
     @Override
