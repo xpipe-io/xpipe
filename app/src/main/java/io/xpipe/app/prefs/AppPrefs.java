@@ -100,6 +100,12 @@ public final class AppPrefs {
             .valueClass(Boolean.class)
             .requiresRestart(false)
             .build());
+    final BooleanProperty useExternalNetcatForProxies = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(false))
+            .key("useExternalNetcatForProxies")
+            .valueClass(Boolean.class)
+            .requiresRestart(false)
+            .build());
     final BooleanProperty pinLocalMachineOnStartup = map(Mapping.builder()
             .property(new GlobalBooleanProperty(false))
             .key("pinLocalMachineOnStartup")
@@ -275,6 +281,12 @@ public final class AppPrefs {
             .valueClass(ShellScript.class)
             .log(false)
             .build());
+    final Property<UUID> httpProxy = map(Mapping.builder()
+            .property(new GlobalObjectProperty<>())
+            .key("httpProxy")
+            .valueClass(UUID.class)
+            .requiresRestart(false)
+            .build());
     final Property<UUID> terminalProxy = map(Mapping.builder()
             .property(new GlobalObjectProperty<>())
             .key("terminalProxy")
@@ -443,6 +455,7 @@ public final class AppPrefs {
             new ApiCategory(),
             new McpCategory(),
             new UpdatesCategory(),
+            new HttpProxyCategory(),
             new SecurityCategory(),
             new WorkspacesCategory(),
             new DeveloperCategory(),
@@ -463,6 +476,10 @@ public final class AppPrefs {
 
     public boolean canSaveLocal() {
         return globalStorageHandler.isInitialized();
+    }
+
+    public ObservableBooleanValue useExternalNetcatForProxies() {
+        return useExternalNetcatForProxies;
     }
 
     public ObservableValue<Boolean> disableHttpsTlsCheck() {
@@ -583,6 +600,10 @@ public final class AppPrefs {
 
     public ObservableStringValue apiKey() {
         return apiKey;
+    }
+
+    public ObservableValue<UUID> httpProxy() {
+        return httpProxy;
     }
 
     public ObservableBooleanValue disableApiAuthentication() {

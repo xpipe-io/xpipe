@@ -190,9 +190,7 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
                 }
 
                 var res = HttpHelper.client().send(req.build(), HttpResponse.BodyHandlers.ofString());
-                if (res.statusCode() >= 400) {
-                    throw new IOException(res.body());
-                }
+                HttpHelper.checkOrThrow(res);
 
                 var resJson = JacksonMapper.getDefault().readTree(res.body());
                 if (!resJson.isObject()) {

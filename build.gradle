@@ -168,8 +168,13 @@ def getJvmArgs() {
 
     // Why is this not on by default? ...
     // https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/doc-files/net-properties.html
+    // https://stackoverflow.com/questions/53333556/proxy-authentication-with-jdk-11-httpclient
+    // https://stackoverflow.com/questions/75150081/ioexception-too-many-authentication-attempts-limit-3-when-using-jdk-httpcli
     jvmRunArgs += [
-            '-Djava.net.useSystemProxies=true'
+            '-Djava.net.useSystemProxies=true',
+            '-Djdk.http.auth.proxying.disabledSchemes=""',
+            '-Djdk.http.auth.tunneling.disabledSchemes=""',
+            '-Djdk.httpclient.auth.retrylimit=1'
     ]
 
     // Fix platform theme detection on macOS

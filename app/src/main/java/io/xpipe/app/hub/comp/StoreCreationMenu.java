@@ -101,7 +101,7 @@ public class StoreCreationMenu {
         menu.getItems()
                 .add(categoryMenu(
                         "addOther",
-                        "mdi2f-folder-plus-outline", null, DataStoreCreationCategory.CLUSTER, DataStoreCreationCategory.FILE_SYSTEM, DataStoreCreationCategory.SERIAL));
+                        "mdi2f-folder-plus-outline", null, DataStoreCreationCategory.NETWORK, DataStoreCreationCategory.CLUSTER, DataStoreCreationCategory.FILE_SYSTEM, DataStoreCreationCategory.SERIAL));
 
         menu.getItems().add(new SeparatorMenuItem());
 

@@ -177,9 +177,7 @@ public interface ScriptTextSource {
 
             var req = HttpRequest.newBuilder().GET().uri(URI.create(url)).build();
             var r = HttpHelper.client().send(req, HttpResponse.BodyHandlers.ofString());
-            if (r.statusCode() >= 400) {
-                throw ErrorEventFactory.expected(new IOException(r.body()));
-            }
+            HttpHelper.checkOrThrow(r);
 
             Files.createDirectories(path.getParent());
             Files.writeString(path, r.body());

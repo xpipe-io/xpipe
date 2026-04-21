@@ -265,9 +265,7 @@ public interface DataStorageGroupStrategy {
                     .POST(java.net.http.HttpRequest.BodyPublishers.noBody())
                     .build();
             var result = HttpHelper.client().send(request, HttpResponse.BodyHandlers.ofString());
-            if (result.statusCode() >= 400) {
-                throw ErrorEventFactory.expected(new IOException(result.body()));
-            }
+            HttpHelper.checkOrThrow(result);
             var body = result.body();
             if (body.length() == 0) {
                 throw ErrorEventFactory.expected(new IllegalArgumentException("Http response body is empty"));

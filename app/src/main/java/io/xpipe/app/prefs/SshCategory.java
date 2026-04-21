@@ -34,6 +34,11 @@ public class SshCategory extends AppPrefsCategory {
             options.addComp(prefs.getCustomOptions("x11WslInstance").buildComp());
         }
 
+        options.sub(new OptionsBuilder()
+                .pref(prefs.useExternalNetcatForProxies)
+                .addToggle(prefs.useExternalNetcatForProxies)
+        );
+
         var agentTest = new SshAgentTestComp(
                 () -> {},
                 new SimpleObjectProperty<>(CustomAgentStrategy.builder().build()));
