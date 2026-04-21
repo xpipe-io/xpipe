@@ -9,7 +9,9 @@ import io.xpipe.app.process.CommandControl;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.HttpProxy;
 import io.xpipe.app.vnc.VncBaseStore;
 import io.xpipe.core.SecretValue;
 
@@ -17,6 +19,7 @@ import javafx.beans.property.Property;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.ServiceLoader;
 
 public abstract class ProcessControlProvider {
@@ -79,4 +82,6 @@ public abstract class ProcessControlProvider {
     public abstract void cloneRepository(String url, Path target) throws Exception;
 
     public abstract void pullRepository(Path target) throws Exception;
+
+    public abstract Optional<HttpProxy> getHttpProxy(DataStoreEntryRef<?> store) throws Exception;
 }

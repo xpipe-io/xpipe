@@ -31,9 +31,7 @@ public class AppDownloads {
             var httpRequest = builder.uri(URI.create(release.getUrl())).GET().build();
             var client = HttpHelper.client();
             var response = client.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
-            if (response.statusCode() >= 400) {
-                throw new IOException(new String(response.body(), StandardCharsets.UTF_8));
-            }
+            HttpHelper.checkOrThrow(response);
 
             var downloadFile = AppCache.getBasePath().resolve(release.getFile());
             Files.write(downloadFile, response.body());
@@ -64,10 +62,7 @@ public class AppDownloads {
             var httpRequest = builder.uri(uri).GET().build();
             var client = HttpHelper.client();
             var response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() >= 400) {
-                var s = response.body();
-                throw new IOException("Changelog not found" + (s != null && !s.isEmpty() ? ": " + s : ""));
-            }
+            HttpHelper.checkOrThrow(response);
             var json = JacksonMapper.getDefault().readTree(response.body());
             var changelog = json.required("changelog").asText();
             return changelog;
@@ -104,9 +99,7 @@ public class AppDownloads {
                     .build();
             var client = HttpHelper.client();
             var response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() >= 400) {
-                throw new IOException(response.body());
-            }
+            HttpHelper.checkOrThrow(response);
 
             var dateEntry = response.headers().firstValue("Date");
             if (dateEntry.isPresent()) {

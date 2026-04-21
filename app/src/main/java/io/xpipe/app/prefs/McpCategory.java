@@ -138,7 +138,7 @@ public class McpCategory extends AppPrefsCategory {
                         .pref(prefs.enableMcpServer)
                         .addToggle(prefs.enableMcpServer)
                         .nameAndDescription("mcpClientConfigurationDetails")
-                        .addComp(tabComp)
+                        .addComp(tabComp.maxWidth(getCompWidth()))
                         .pref(prefs.enableMcpMutationTools)
                         .addToggle(prefs.enableMcpMutationTools)
                         .hide(prefs.enableMcpServer.not())
@@ -150,7 +150,7 @@ public class McpCategory extends AppPrefsCategory {
                                             .getTextArea()
                                             .promptTextProperty()
                                             .bind(AppI18n.observable("mcpAdditionalContextSample"));
-                                }))
+                                }).maxWidth(getCompWidth()))
                         .hide(prefs.enableMcpServer.not()))
                 .buildComp();
     }
