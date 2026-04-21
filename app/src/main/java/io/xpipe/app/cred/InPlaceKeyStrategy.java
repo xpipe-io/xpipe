@@ -104,8 +104,7 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                         }),
                         key)
                 .nonNull()
-                .name("keyPassword")
-                .description("sshConfigHost.identityPassphraseDescription")
+                .nameAndDescription("keyPassphrase")
                 .sub(passwordChoice, keyPasswordProperty)
                 .nonNull()
                 .nameAndDescription("inPlacePublicKey")

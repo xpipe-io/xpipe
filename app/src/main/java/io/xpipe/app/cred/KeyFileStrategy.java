@@ -167,8 +167,7 @@ public class KeyFileStrategy implements SshIdentityStrategy {
                                 false),
                         keyPath)
                 .nonNull()
-                .name("keyPassword")
-                .description("sshConfigHost.identityPassphraseDescription")
+                .nameAndDescription("keyPassphrase")
                 .sub(passwordChoice, keyPasswordProperty)
                 .nonNull()
                 .nameAndDescription("inPlacePublicKey")

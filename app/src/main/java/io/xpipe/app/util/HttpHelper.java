@@ -54,6 +54,7 @@ public class HttpHelper {
         if (proxy != null) {
             builder.proxy(ProxySelector.of(new InetSocketAddress(proxy.getHost(), proxy.getPort())));
             builder.authenticator(new Authenticator() {
+
                 @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
                     if (proxy.getUser() != null && proxy.getPassword() != null) {
