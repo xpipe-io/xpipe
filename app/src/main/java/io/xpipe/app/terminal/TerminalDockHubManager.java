@@ -169,9 +169,20 @@ public class TerminalDockHubManager {
             true);
 
     private void addDialogListeners() {
+        var wasShowing = new SimpleBooleanProperty();
+        var wasAttached = new SimpleBooleanProperty();
         AppDialog.getModalOverlays().addListener((ListChangeListener<? super ModalOverlay>) c -> {
-            if (c.getList().size() > 0) {
-                INSTANCE.hideDock();
+            if (c.getList().isEmpty()) {
+                if (wasShowing.get()) {
+                    showDock();
+                }
+                if (wasAttached.get()) {
+                    attach();
+                }
+            } else {
+                wasAttached.set(!minimized.get() && !detached.get() && showing.get());
+                wasShowing.set(showing.get());
+                hideDock();
             }
         });
     }
@@ -182,15 +193,15 @@ public class TerminalDockHubManager {
         AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
             if (AppLayoutModel.get().getEntries().indexOf(newValue) == 0) {
                 if (wasShowing.get()) {
-                    INSTANCE.showDock();
+                    showDock();
                 }
                 if (wasAttached.get()) {
-                    INSTANCE.attach();
+                    attach();
                 }
             } else if (AppLayoutModel.get().getEntries().indexOf(oldValue) == 0) {
-                wasAttached.set(!INSTANCE.minimized.get() && !INSTANCE.detached.get() && INSTANCE.showing.get());
-                wasShowing.set(INSTANCE.showing.get());
-                INSTANCE.hideDock();
+                wasAttached.set(!minimized.get() && !detached.get() && showing.get());
+                wasShowing.set(showing.get());
+                hideDock();
             }
         });
     }
