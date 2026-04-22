@@ -208,7 +208,7 @@ public class TerminalView {
         }
 
         for (TerminalSession terminalInstance : new ArrayList<>(terminalInstances)) {
-            var alive = terminalInstance.isRunning();
+            var alive = terminalInstance.isRunning() && sessions.stream().anyMatch(shellSession -> shellSession.getTerminal().equals(terminalInstance));
             if (!alive) {
                 terminalInstances.remove(terminalInstance);
                 TrackEvent.withTrace("Terminal session is dead")

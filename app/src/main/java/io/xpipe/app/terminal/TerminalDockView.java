@@ -27,9 +27,9 @@ public class TerminalDockView implements WindowDockListener {
         this.windowBoundsFunction = windowBoundsFunction;
     }
 
-    public synchronized void clearDeadTerminals() {
+    public synchronized void removeTerminal(TerminalView.TerminalSession s) {
         terminalInstances.removeIf(controllableTerminalSession ->
-                !controllableTerminalSession.getTerminalProcess().isAlive());
+                controllableTerminalSession.getTerminalProcess().equals(s.getTerminalProcess()));
     }
 
     public synchronized boolean isActive() {
@@ -38,11 +38,11 @@ public class TerminalDockView implements WindowDockListener {
     }
 
     public synchronized boolean isRunning() {
-        return terminalInstances.stream().anyMatch(terminal -> terminal.isRunning());
+        return !terminalInstances.isEmpty() && terminalInstances.stream().anyMatch(terminal -> terminal.isRunning());
     }
 
     public synchronized boolean isCustomBounds() {
-        return terminalInstances.stream().anyMatch(terminal -> terminal.getControllable().isCustomBounds());
+        return !terminalInstances.isEmpty() && terminalInstances.stream().anyMatch(terminal -> terminal.getControllable().isCustomBounds());
     }
 
     public synchronized boolean isMinimized() {

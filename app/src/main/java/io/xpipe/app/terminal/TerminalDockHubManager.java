@@ -234,21 +234,14 @@ public class TerminalDockHubManager {
 
             @Override
             public void onTerminalClosed(TerminalView.TerminalSession instance) {
-                var sessions = TerminalView.get().getSessions();
-                var remaining = sessions.stream()
-                        .filter(s -> hubRequests.contains(s.getRequest())
-                                && s.getTerminal().isRunning())
-                        .toList();
-                if (remaining.isEmpty()) {
-                    disableDock();
-                }
+                dockModel.removeTerminal(instance);
+                refreshDockStatus();
             }
         };
         return listener;
     }
 
     public void refreshDockStatus() {
-        dockModel.clearDeadTerminals();
         dockModel.updateCustomBounds();
 
         var running = dockModel.isRunning();

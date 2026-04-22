@@ -101,6 +101,7 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
 
             @Override
             public void onTerminalClosed(TerminalView.TerminalSession instance) {
+                dockModel.removeTerminal(instance);
                 refreshShowingState();
             }
         };
@@ -149,7 +150,6 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
 
         GlobalTimer.scheduleUntil(Duration.ofMillis(300), false, () -> {
             if (viewActive.get()) {
-                dockModel.clearDeadTerminals();
                 dockModel.updateCustomBounds();
             }
             return closed;
