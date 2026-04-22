@@ -15,6 +15,8 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Value
@@ -50,8 +52,8 @@ public class HttpProxy {
     }
 
     public String toUrl() {
-        return URI.create((socks5 ? "socks5" : "https") + "://" +
-                (user != null && password != null ? user + ":" + password.getSecretValue() + "@" : "") + host + ":" + port).toString();
+        return (socks5 ? "socks5" : "https") + "://" +
+                (user != null && password != null ? user + ":" + password.getSecretValue() + "@" : "") + host + ":" + port;
     }
 
     String host;

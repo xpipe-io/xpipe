@@ -21,7 +21,6 @@ import lombok.Value;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Value
 public class AppMcpServer {
@@ -30,8 +29,7 @@ public class AppMcpServer {
 
     McpSyncServer mcpSyncServer;
     HttpStreamableServerTransportProvider transportProvider;
-    List<McpServerFeatures.SyncToolSpecification> readOnlyTools;
-    List<McpServerFeatures.SyncToolSpecification> mutationTools;
+    List<McpServerFeatures.SyncToolSpecification> tools;
 
     public static AppMcpServer get() {
         return INSTANCE;
@@ -61,44 +59,27 @@ public class AppMcpServer {
                 .instructions(effectivePrompt)
                 .build();
 
-        var readOnlyTools = new ArrayList<McpServerFeatures.SyncToolSpecification>();
-        readOnlyTools.add(McpTools.help());
-        readOnlyTools.add(McpTools.listSystems());
-        readOnlyTools.add(McpTools.readFile());
-        readOnlyTools.add(McpTools.listFiles());
-        readOnlyTools.add(McpTools.findFile());
-        readOnlyTools.add(McpTools.getFileInfo());
+        var tools = new ArrayList<McpServerFeatures.SyncToolSpecification>();
+        tools.add(McpTools.help());
+        tools.add(McpTools.listSystems());
+        tools.add(McpTools.readFile());
+        tools.add(McpTools.listFiles());
+        tools.add(McpTools.findFile());
+        tools.add(McpTools.getFileInfo());
+        tools.add(McpTools.openTerminal());
+        tools.add(McpTools.createFile());
+        tools.add(McpTools.writeFile());
+        tools.add(McpTools.createDirectory());
+        tools.add(McpTools.runCommand());
+        tools.add(McpTools.runScript());
+        tools.add(McpTools.toggleState());
+        tools.add(McpTools.callApi());
 
-        var mutationTools = new ArrayList<McpServerFeatures.SyncToolSpecification>();
-        mutationTools.add(McpTools.openTerminal());
-        mutationTools.add(McpTools.createFile());
-        mutationTools.add(McpTools.writeFile());
-        mutationTools.add(McpTools.createDirectory());
-        mutationTools.add(McpTools.runCommand());
-        mutationTools.add(McpTools.runScript());
-        mutationTools.add(McpTools.toggleState());
-        mutationTools.add(McpTools.callApi());
-
-        for (McpServerFeatures.SyncToolSpecification readOnlyTool : readOnlyTools) {
+        for (McpServerFeatures.SyncToolSpecification readOnlyTool : tools) {
             syncServer.addTool(readOnlyTool);
         }
 
-        var toolsAdded = new AtomicBoolean();
-        AppPrefs.get().enableMcpMutationTools().subscribe(value -> {
-            for (var mutationTool : mutationTools) {
-                if (value) {
-                    syncServer.addTool(mutationTool);
-                } else if (toolsAdded.get()) {
-                    syncServer.removeTool(mutationTool.tool().name());
-                }
-            }
-            if (value) {
-                toolsAdded.set(true);
-            }
-            syncServer.notifyToolsListChanged();
-        });
-
-        INSTANCE = new AppMcpServer(syncServer, transportProvider, readOnlyTools, mutationTools);
+        INSTANCE = new AppMcpServer(syncServer, transportProvider, tools);
     }
 
     public static void reset() {

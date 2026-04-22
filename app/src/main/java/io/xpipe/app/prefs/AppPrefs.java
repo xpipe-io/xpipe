@@ -133,11 +133,6 @@ public final class AppPrefs {
             .requiresRestart(false)
             .documentationLink(DocumentationLink.MCP)
             .build());
-    final BooleanProperty enableMcpMutationTools = map(Mapping.builder()
-            .property(new GlobalBooleanProperty(false))
-            .key("enableMcpMutationTools")
-            .valueClass(Boolean.class)
-            .build());
     final StringProperty mcpAdditionalContext = map(Mapping.builder()
             .property(new GlobalStringProperty(null))
             .key("mcpAdditionalContext")
@@ -616,10 +611,6 @@ public final class AppPrefs {
 
     public ObservableBooleanValue enableMcpServer() {
         return enableMcpServer;
-    }
-
-    public ObservableBooleanValue enableMcpMutationTools() {
-        return enableMcpMutationTools;
     }
 
     public ObservableValue<String> mcpAdditionalContext() {

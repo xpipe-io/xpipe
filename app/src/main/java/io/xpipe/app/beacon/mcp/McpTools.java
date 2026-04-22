@@ -8,8 +8,6 @@ import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.process.TerminalInitScriptConfig;
-import io.xpipe.app.process.WorkingDirectoryFunction;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageQuery;
 import io.xpipe.app.terminal.TerminalLaunch;
@@ -46,36 +44,19 @@ public final class McpTools {
         return McpServerFeatures.SyncToolSpecification.builder()
                 .tool(tool)
                 .callHandler(McpToolHandler.of((req) -> {
-                    var ro = AppMcpServer.get().getReadOnlyTools().stream()
+                    var tools = AppMcpServer.get().getTools().stream()
                             .filter(syncToolSpecification ->
                                     !syncToolSpecification.tool().name().equals("help"))
                             .toList();
-                    var mu = AppMcpServer.get().getMutationTools();
-
-                    var roList = ro.stream()
+                    var toolsList = tools.stream()
                             .map(syncToolSpecification ->
                                     "- " + syncToolSpecification.tool().name() + ": "
                                             + syncToolSpecification.tool().description())
                             .collect(Collectors.joining("\n"));
-                    var muList = mu.stream()
-                            .map(syncToolSpecification ->
-                                    "- " + syncToolSpecification.tool().name() + ": "
-                                            + syncToolSpecification.tool().description())
-                            .collect(Collectors.joining("\n"));
-
-                    var muEnabled = AppPrefs.get().enableMcpMutationTools().get();
-                    var muStatus = muEnabled ? "Right now, the mutation tools are enabled." : "Right now, the mutation tools are disabled. When you enable them in the settings menu, the MCP client might need a reconnect to see the changes.";
-
                     var text = """
-                               The XPipe MCP server offers the following read-only tools:
+                               The XPipe MCP server offers the following tools:
                                %s
-                               These tools will not modify anything on your system and are safe to use.
-
-                               You can also enable the following potentially destructive tools in the settings menu:
-                               %s
-                               These tools can perform write operations and other actions that might be potentially destructive.
-                               %s
-                               """.formatted(roList, muList, muStatus);
+                               """.formatted(toolsList);
 
                     return McpSchema.CallToolResult.builder()
                             .addTextContent(text)

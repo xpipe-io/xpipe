@@ -139,9 +139,6 @@ public class McpCategory extends AppPrefsCategory {
                         .addToggle(prefs.enableMcpServer)
                         .nameAndDescription("mcpClientConfigurationDetails")
                         .addComp(tabComp.maxWidth(getCompWidth()))
-                        .pref(prefs.enableMcpMutationTools)
-                        .addToggle(prefs.enableMcpMutationTools)
-                        .hide(prefs.enableMcpServer.not())
                         .pref(prefs.mcpAdditionalContext)
                         .addComp(new IntegratedTextAreaComp(
                                         prefs.mcpAdditionalContext, false, "prompt", new SimpleStringProperty("txt"))
