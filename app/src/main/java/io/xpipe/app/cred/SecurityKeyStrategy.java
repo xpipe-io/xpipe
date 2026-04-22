@@ -105,10 +105,10 @@ public class SecurityKeyStrategy implements SshIdentityKeyListStrategy {
         var file = securityKey.determineLibraryPath(sc);
         var key = SshIdentityStrategy.getPublicKeyPath(sc, publicKey);
         return List.of(
-                new KeyValue("PKCS11Provider", "\"" + file.toString() + "\""),
-                new KeyValue("IdentitiesOnly", key.isPresent() ? "yes" : "no"),
-                new KeyValue("IdentityFile", key.isPresent() ? key.get().toString() : "none"),
-                new KeyValue("IdentityAgent", "none"));
+                KeyValue.escape("PKCS11Provider", file.toString()),
+                KeyValue.raw("IdentitiesOnly", key.isPresent() ? "yes" : "no"),
+                KeyValue.escape("IdentityFile", key.isPresent() ? key.get().toString() : "none"),
+                KeyValue.raw("IdentityAgent", "none"));
     }
 
     @Override
