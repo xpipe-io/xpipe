@@ -15,6 +15,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.List;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -52,7 +53,17 @@ public class HttpHelper {
         }
 
         if (proxy != null) {
-            builder.proxy(ProxySelector.of(new InetSocketAddress(proxy.getHost(), proxy.getPort())));
+            builder.proxy(new ProxySelector() {
+                @Override
+                public List<Proxy> select(URI uri) {
+                    return List.of(new Proxy(proxy.isSocks5() ? Proxy.Type.SOCKS : Proxy.Type.HTTP,
+                            new InetSocketAddress(proxy.getHost(), proxy.getPort())));
+                }
+                @Override
+                public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
+                     ErrorEventFactory.fromThrowable(ioe).handle();
+                }
+            });
             builder.authenticator(new Authenticator() {
 
                 @Override

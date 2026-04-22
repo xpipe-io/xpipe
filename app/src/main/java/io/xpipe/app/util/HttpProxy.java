@@ -7,12 +7,20 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.SecretValue;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
+import java.net.URI;
 import java.util.Optional;
 
 @Value
+@Builder
+@Jacksonized
+@AllArgsConstructor
 public class HttpProxy {
 
     public static Optional<HttpProxy> getActiveProxy() {
@@ -25,18 +33,7 @@ public class HttpProxy {
             return Optional.empty();
         }
 
-        var found = DataStorage.get().getStoreEntryIfPresent(current);
-        if (found.isEmpty()) {
-            return Optional.empty();
-        }
-
-        try {
-            var proxy = ProcessControlProvider.get().getHttpProxy(found.get().ref());
-            return proxy;
-        } catch (Exception e) {
-            ErrorEventFactory.fromThrowable(e).handle();
-            return Optional.empty();
-        }
+        return Optional.of(current);
     }
 
     public static boolean canUseAsProxy(DataStoreEntryRef<DataStore> ref) {
@@ -52,8 +49,14 @@ public class HttpProxy {
         }
     }
 
+    public String toUrl() {
+        return URI.create((socks5 ? "socks5" : "https") + "://" +
+                (user != null && password != null ? user + ":" + password.getSecretValue() + "@" : "") + host + ":" + port).toString();
+    }
+
     String host;
     int port;
     String user;
-    SecretValue password;
+    InPlaceSecretValue password;
+    boolean socks5;
 }

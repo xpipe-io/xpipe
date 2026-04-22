@@ -281,10 +281,10 @@ public final class AppPrefs {
             .valueClass(ShellScript.class)
             .log(false)
             .build());
-    final Property<UUID> httpProxy = map(Mapping.builder()
+    final Property<HttpProxy> httpProxy = map(Mapping.builder()
             .property(new GlobalObjectProperty<>())
             .key("httpProxy")
-            .valueClass(UUID.class)
+            .valueClass(HttpProxy.class)
             .requiresRestart(false)
             .build());
     final Property<UUID> terminalProxy = map(Mapping.builder()
@@ -602,7 +602,7 @@ public final class AppPrefs {
         return apiKey;
     }
 
-    public ObservableValue<UUID> httpProxy() {
+    public ObservableValue<HttpProxy> httpProxy() {
         return httpProxy;
     }
 

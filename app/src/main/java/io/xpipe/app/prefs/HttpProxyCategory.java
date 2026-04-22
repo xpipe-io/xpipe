@@ -4,10 +4,7 @@ import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.DataStoreCreationCategory;
-import io.xpipe.app.ext.DataStoreProviders;
-import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreCreationDialog;
 import io.xpipe.app.hub.comp.StoreCreationModel;
@@ -50,25 +47,26 @@ public class HttpProxyCategory extends AppPrefsCategory {
 
     private OptionsBuilder proxy() {
         var prefs = AppPrefs.get();
-        var initial = prefs.httpProxy.getValue();
-        var initialRef = initial != null ? DataStorage.get().getStoreEntryIfPresent(initial)
-                                           .map(e -> e.ref())
-                                           .filter(e -> HttpProxy.canUseAsProxy(e))
-                                           .orElse(null) : null;
-        var ref = new SimpleObjectProperty<>(initialRef);
-        ref.addListener((observable, oldValue, newValue) -> {
-            prefs.httpProxy.setValue(
-                    newValue != null
-                            ? newValue.get().getUuid()
-                            : null);
-        });
+        var ref = new SimpleObjectProperty<DataStoreEntryRef<DataStore>>();
         var proxyChoice = new DelayedInitComp(
                 RegionBuilder.of(() -> {
+                    var initial = prefs.httpProxy.getValue();
+                    var initialRef = initial != null ? DataStorage.get().getStoreEntries().stream().filter(e -> {
+                        return initial.equals(ProcessControlProvider.get().getHttpProxy(e.ref().asNeeded()).orElse(null));
+                    }).map(DataStoreEntry::ref).findFirst().orElse(null) : null;
+                    ref.set(initialRef);
+                    ref.addListener((observable, oldValue, newValue) -> {
+                        prefs.httpProxy.setValue(
+                                newValue != null
+                                        ? ProcessControlProvider.get().getHttpProxy(newValue).orElse(null)
+                                        : null);
+                    });
+
                     var comp = new StoreChoiceComp<>(
                             null,
                             ref,
                             DataStore.class,
-                            r -> HttpProxy.canUseAsProxy(r),
+                            r -> HttpProxy.canUseAsProxy(r.asNeeded()),
                             StoreViewState.get().getAllConnectionsCategory()) {
                         @Override
                         protected String toName(DataStoreEntry entry) {

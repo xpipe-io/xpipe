@@ -86,5 +86,5 @@ public abstract class ProcessControlProvider {
 
     public abstract void pullRepository(Path target) throws Exception;
 
-    public abstract Optional<HttpProxy> getHttpProxy(DataStoreEntryRef<?> store) throws Exception;
+    public abstract Optional<HttpProxy> getHttpProxy(DataStoreEntryRef<?> store);
 }
