@@ -1,6 +1,7 @@
 package io.xpipe.app.cred;
 
 import io.xpipe.app.core.AppSystemInfo;
+import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
@@ -87,12 +88,17 @@ public class PageantStrategy implements SshIdentityAgentStrategy {
     }
 
     @Override
-    public FilePath determinetAgentSocketLocation(ShellControl sc) {
+    public FilePath determineAgentSocketLocation(ShellControl sc) {
         if (sc.isLocal() && sc.getOsType() == OsType.WINDOWS) {
             return FilePath.of(getPageantWindowsPipe());
         }
 
         return null;
+    }
+
+    @Override
+    public void checkComplete() throws ValidationException {
+
     }
 
     @Override
@@ -106,7 +112,7 @@ public class PageantStrategy implements SshIdentityAgentStrategy {
                 KeyValue.escape("IdentityFile", file.isPresent() ? file.get() : "none"),
                 KeyValue.raw("PKCS11Provider", "none")));
 
-        var agent = determinetAgentSocketLocation(sc);
+        var agent = determineAgentSocketLocation(sc);
         if (agent != null) {
             l.add(KeyValue.escape("IdentityAgent", agent));
         }

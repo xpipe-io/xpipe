@@ -3,6 +3,7 @@ package io.xpipe.app.pwman;
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.cred.*;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
@@ -47,7 +48,7 @@ public interface PasswordManagerKeyStrategy {
         }
 
         @Override
-        public SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
+        public SshIdentityKeyListStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
             return null;
         }
     }
@@ -113,7 +114,7 @@ public interface PasswordManagerKeyStrategy {
         }
 
         @Override
-        public SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
+        public SshIdentityKeyListStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
             return PasswordManagerKeyStrategy.getAgentSshIdentityStrategy(
                     publicKey, forward, (socket) -> SshIdentityStateManager.prepareLocalExternalAgent(socket));
         }
@@ -175,7 +176,7 @@ public interface PasswordManagerKeyStrategy {
         }
 
         @Override
-        public SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
+        public SshIdentityKeyListStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
             return PasswordManagerKeyStrategy.getAgentSshIdentityStrategy(publicKey, forward, (socket) -> {
                 try {
                     SshIdentityStateManager.prepareLocalExternalAgent(socket);
@@ -191,12 +192,15 @@ public interface PasswordManagerKeyStrategy {
         }
     }
 
-    private static SshIdentityAgentStrategy getAgentSshIdentityStrategy(
+    private static SshIdentityKeyListStrategy getAgentSshIdentityStrategy(
             String publicKey, boolean forward, FailableConsumer<FilePath, Exception> con) {
         var pwman = AppPrefs.get().passwordManager().getValue();
         var socket = pwman != null ? FilePath.of(pwman.getKeyConfiguration().getDefaultSocketLocation()) : null;
 
         return new SshIdentityAgentStrategy() {
+            @Override
+            public void checkComplete() throws ValidationException {}
+
             @Override
             public void prepareParent(ShellControl parent) throws Exception {
                 if (parent.isLocal()) {
@@ -205,7 +209,7 @@ public interface PasswordManagerKeyStrategy {
             }
 
             @Override
-            public FilePath determinetAgentSocketLocation(ShellControl parent) throws Exception {
+            public FilePath determineAgentSocketLocation(ShellControl parent) throws Exception {
                 return socket != null ? socket.resolveTildeHome(parent.view().userHome()) : null;
             }
 
@@ -258,7 +262,7 @@ public interface PasswordManagerKeyStrategy {
         }
 
         @Override
-        public SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
+        public SshIdentityKeyListStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
             return OpenSshAgentStrategy.builder().build();
         }
     }
@@ -288,14 +292,14 @@ public interface PasswordManagerKeyStrategy {
         }
 
         @Override
-        public SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
+        public SshIdentityKeyListStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
             return PageantStrategy.builder().build();
         }
     }
 
     boolean useAgent();
 
-    SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward);
+    SshIdentityKeyListStrategy getSshIdentityStrategy(String publicKey, boolean forward);
 
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();

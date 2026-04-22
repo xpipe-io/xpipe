@@ -2,6 +2,7 @@ package io.xpipe.app.cred;
 
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppSystemInfo;
+import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
@@ -68,6 +69,11 @@ public class GpgAgentStrategy implements SshIdentityAgentStrategy {
     String publicKey;
 
     @Override
+    public void checkComplete() throws ValidationException {
+
+    }
+
+    @Override
     public void prepareParent(ShellControl parent) throws Exception {
         parent.requireLicensedFeature(LicenseProvider.get().getFeature("gpgAgent"));
         if (parent.isLocal()) {
@@ -76,7 +82,7 @@ public class GpgAgentStrategy implements SshIdentityAgentStrategy {
     }
 
     @Override
-    public FilePath determinetAgentSocketLocation(ShellControl sc) throws Exception {
+    public FilePath determineAgentSocketLocation(ShellControl sc) throws Exception {
         if (sc.getOsType() == OsType.WINDOWS) {
             return null;
         }
@@ -100,7 +106,7 @@ public class GpgAgentStrategy implements SshIdentityAgentStrategy {
                 KeyValue.escape("IdentityFile", file.isPresent() ? file.get() : "none"),
                 KeyValue.raw("PKCS11Provider", "none")));
 
-        var agent = determinetAgentSocketLocation(sc);
+        var agent = determineAgentSocketLocation(sc);
         if (agent != null) {
             l.add(KeyValue.escape("IdentityAgent", agent));
         }

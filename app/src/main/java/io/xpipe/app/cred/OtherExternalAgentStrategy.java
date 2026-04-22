@@ -1,5 +1,6 @@
 package io.xpipe.app.cred;
 
+import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
@@ -49,7 +50,12 @@ public class OtherExternalAgentStrategy implements SshIdentityAgentStrategy {
     }
 
     @Override
-    public FilePath determinetAgentSocketLocation(ShellControl parent) {
+    public void checkComplete() throws ValidationException {
+
+    }
+
+    @Override
+    public FilePath determineAgentSocketLocation(ShellControl parent) {
         return null;
     }
 

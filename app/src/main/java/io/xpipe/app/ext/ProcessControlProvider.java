@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
+import java.util.UUID;
 
 public abstract class ProcessControlProvider {
 
@@ -87,4 +88,5 @@ public abstract class ProcessControlProvider {
     public abstract void pullRepository(Path target) throws Exception;
 
     public abstract Optional<HttpProxy> getHttpProxy(DataStoreEntryRef<?> store);
+    public abstract void addAskpassEnvironment(CommandBuilder b, String prefix, UUID requestId, UUID secretId, String... askpassName);
 }

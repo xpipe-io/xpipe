@@ -12,6 +12,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -29,13 +30,13 @@ import java.util.List;
 public class SshAgentKeyListComp extends SimpleRegionBuilder {
 
     private final ObservableValue<DataStoreEntryRef<ShellStore>> ref;
-    private final ObservableValue<? extends SshIdentityAgentStrategy> sshIdentityStrategy;
+    private final ObservableValue<? extends SshIdentityKeyListStrategy> sshIdentityStrategy;
     private final StringProperty value;
     private final boolean useKeyNames;
 
     public SshAgentKeyListComp(
             ObservableValue<DataStoreEntryRef<ShellStore>> ref,
-            ObservableValue<? extends SshIdentityAgentStrategy> sshIdentityStrategy,
+            ObservableValue<? extends SshIdentityKeyListStrategy> sshIdentityStrategy,
             StringProperty value,
             boolean useKeyNames) {
         this.ref = ref;
@@ -50,6 +51,14 @@ public class SshAgentKeyListComp extends SimpleRegionBuilder {
         field.apply(struc -> struc.setPromptText(
                 useKeyNames ? "<name>" : "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== <key comment>"));
         var button = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2m-magnify-scan"), null);
+        button.disable(Bindings.createBooleanBinding(() -> {
+            try {
+                sshIdentityStrategy.getValue().checkComplete();
+                return false;
+            } catch (Exception e) {
+                return true;
+            }
+        }, sshIdentityStrategy));
         button.apply(struc -> {
             struc.setOnAction(event -> {
                 DataStoreEntryRef<ShellStore> refToUse = ref != null && ref.getValue() != null
