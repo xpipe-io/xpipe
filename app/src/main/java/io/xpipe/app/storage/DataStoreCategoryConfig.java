@@ -23,9 +23,10 @@ public class DataStoreCategoryConfig {
 
     Boolean freezeConfigurations;
     UUID defaultIdentityStore;
+    UUID defaultGatewayStore;
 
     public static DataStoreCategoryConfig empty() {
-        return new DataStoreCategoryConfig(null, null, null, null, null, null);
+        return new DataStoreCategoryConfig(null, null, null, null, null, null, null);
     }
 
     public static DataStoreCategoryConfig merge(List<DataStoreCategoryConfig> configs) {
@@ -35,6 +36,7 @@ public class DataStoreCategoryConfig {
         Boolean sync = null;
         Boolean readOnly = null;
         UUID defaultIdentityStore = null;
+        UUID defaultGatewayStore = null;
         for (int i = configs.size() - 1; i >= 0; i--) {
             var config = configs.get(i);
             if (color == null) {
@@ -49,6 +51,9 @@ public class DataStoreCategoryConfig {
             if (defaultIdentityStore == null) {
                 defaultIdentityStore = config.defaultIdentityStore;
             }
+            if (defaultGatewayStore == null) {
+                defaultGatewayStore = config.defaultGatewayStore;
+            }
             if (sync == null) {
                 sync = config.sync;
             }
@@ -57,6 +62,6 @@ public class DataStoreCategoryConfig {
             }
         }
         return new DataStoreCategoryConfig(
-                color, dontAllowScripts, warnOnAllModifications, sync, readOnly, defaultIdentityStore);
+                color, dontAllowScripts, warnOnAllModifications, sync, readOnly, defaultIdentityStore, defaultGatewayStore);
     }
 }

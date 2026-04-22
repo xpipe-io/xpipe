@@ -64,12 +64,19 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
         var confirm = new SimpleObjectProperty<>(c.getConfirmAllModifications());
         var sync = new SimpleObjectProperty<>(c.getSync());
         var freeze = new SimpleObjectProperty<>(c.getFreezeConfigurations());
-        var ref = new SimpleObjectProperty<>(
+        var identityRef = new SimpleObjectProperty<>(
                 c.getDefaultIdentityStore() != null
                         ? DataStorage.get()
                                 .getStoreEntryIfPresent(c.getDefaultIdentityStore())
                                 .map(DataStoreEntry::ref)
                                 .orElse(null)
+                        : null);
+        var gatewayRef = new SimpleObjectProperty<>(
+                c.getDefaultGatewayStore() != null
+                        ? DataStorage.get()
+                          .getStoreEntryIfPresent(c.getDefaultGatewayStore())
+                          .map(DataStoreEntry::ref)
+                          .orElse(null)
                         : null);
         var connectionsCategory = wrapper.getRoot().equals(StoreViewState.get().getAllConnectionsCategory());
 
@@ -100,11 +107,21 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
                 .addComp(
                         new StoreChoiceComp<>(
                                 null,
-                                ref,
+                                identityRef,
                                 DataStore.class,
                                 null,
                                 StoreViewState.get().getAllIdentitiesCategory()),
-                        ref)
+                        identityRef)
+                .hide(!connectionsCategory)
+                .nameAndDescription("categoryDefaultGateway")
+                .addComp(
+                        new StoreChoiceComp<>(
+                                null,
+                                gatewayRef,
+                                DataStore.class,
+                                null,
+                                StoreViewState.get().getAllConnectionsCategory()),
+                        gatewayRef)
                 .hide(!connectionsCategory)
                 .bind(
                         () -> {
@@ -114,7 +131,8 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
                                     confirm.get(),
                                     sync.get(),
                                     freeze.get(),
-                                    ref.get() != null ? ref.get().get().getUuid() : null);
+                                    identityRef.get() != null ? identityRef.get().get().getUuid() : null,
+                                    gatewayRef.get() != null ? gatewayRef.get().get().getUuid() : null);
                         },
                         config);
         var r = options.build();
