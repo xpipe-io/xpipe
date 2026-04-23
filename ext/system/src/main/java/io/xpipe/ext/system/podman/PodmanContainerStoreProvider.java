@@ -55,14 +55,13 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
     }
 
     @Override
-    public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
+    public GuiDialog guiDialog(StoreCreationModel model, Property<DataStore> store) {
         PodmanContainerStore st = (PodmanContainerStore) store.getValue();
 
         return new OptionsBuilder()
                 .name("host")
                 .description("podmanHostDescription")
-                .addComp(new StoreChoiceComp<>(
-                        entry,
+                .addComp(new StoreChoiceComp<>(model.getExistingEntry(),
                         new ReadOnlyObjectWrapper<>(
                                 st.getCmd() != null ? st.getCmd().getStore().getHost() : null),
                         ShellStore.class,

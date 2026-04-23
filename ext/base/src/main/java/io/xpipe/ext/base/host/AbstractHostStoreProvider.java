@@ -6,7 +6,6 @@ import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStoreCategory;
-import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DocumentationLink;
 
 import javafx.beans.binding.Bindings;
@@ -69,7 +68,7 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
 
     @SneakyThrows
     @Override
-    public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
+    public GuiDialog guiDialog(StoreCreationModel model, Property<DataStore> store) {
         AbstractHostStore st = store.getValue().asNeeded();
 
         var host = new SimpleObjectProperty<>(st.getHost());
@@ -81,8 +80,7 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
                 .nonNull()
                 .nameAndDescription("abstractHostGateway")
                 .addComp(
-                        new StoreChoiceComp<>(
-                                entry,
+                        new StoreChoiceComp<>(model.getExistingEntry(),
                                 gateway,
                                 NetworkTunnelStore.class,
                                 null,

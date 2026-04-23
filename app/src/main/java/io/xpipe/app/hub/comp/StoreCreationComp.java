@@ -72,7 +72,7 @@ public class StoreCreationComp extends ModalOverlayContentComp {
         var activeDialog = new SimpleObjectProperty<GuiDialog>();
         model.getProvider().subscribe(n -> {
             if (n != null) {
-                var d = n.guiDialog(model.getExistingEntry(), model.getStore());
+                var d = n.guiDialog(model, model.getStore());
                 activeDialog.set(d);
                 if (d == null) {
                     return;

@@ -3,7 +3,10 @@ package io.xpipe.ext.base.identity;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.InputGroupComp;
+import io.xpipe.app.comp.base.ModalButton;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.cred.SshIdentityStrategy;
 import io.xpipe.app.cred.SshIdentityStrategyChoiceConfig;
 import io.xpipe.app.ext.ProcessControlProvider;
@@ -11,16 +14,20 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageUserHandler;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 
 import lombok.AllArgsConstructor;
@@ -35,6 +42,7 @@ import java.util.List;
 public class IdentityChoiceBuilder {
 
     ObjectProperty<IdentityValue> identity;
+    ObservableBooleanValue syncedBase;
     boolean allowCustomUserInput;
     boolean requireUserInput;
     boolean requirePassword;
@@ -45,7 +53,7 @@ public class IdentityChoiceBuilder {
     ObservableValue<DataStoreEntryRef<ShellStore>> fileSystem;
 
     public IdentityChoiceBuilder(
-            ObjectProperty<IdentityValue> identity,
+            ObjectProperty<IdentityValue> identity, ObservableBooleanValue syncedBase,
             boolean allowCustomUserInput,
             boolean requireUserInput,
             boolean requirePassword,
@@ -53,6 +61,7 @@ public class IdentityChoiceBuilder {
             boolean requireKeyInput,
             String userChoiceTranslationKey,
             String passwordChoiceTranslationKey) {
+        this.syncedBase = syncedBase;
         this.identity = identity;
         this.allowCustomUserInput = allowCustomUserInput;
         this.requireUserInput = requireUserInput;
@@ -62,17 +71,46 @@ public class IdentityChoiceBuilder {
         this.userChoiceTranslationKey = userChoiceTranslationKey;
         this.passwordChoiceTranslationKey = new ReadOnlyStringWrapper(passwordChoiceTranslationKey);
         this.fileSystem = new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref());
+
+        addSyncCheckListener();
     }
 
-    public static OptionsBuilder ssh(ObjectProperty<IdentityValue> identity, boolean requireUser) {
-        var i = new IdentityChoiceBuilder(
-                identity, true, requireUser, true, true, true, "identityChoice", "passwordAuthentication");
+    private void addSyncCheckListener() {
+        identity.addListener((observable, oldValue, newValue) -> {
+            if (DataStorage.get().supportsSync() && syncedBase.getValue() && newValue instanceof IdentityValue.Ref r && r.unwrap() instanceof LocalIdentityStore) {
+                var modal = ModalOverlay.of("unsyncedIdentityTitle", AppDialog.dialogTextKey("unsyncedIdentityContent").prefWidth(600));
+                modal.addButton(new ModalButton("documentation", () -> {
+                    DocumentationLink.IDENTITIES.open();
+                }, false, false));
+                modal.addButtonBarComp(RegionBuilder.hspacer());
+                modal.addButton(new ModalButton("syncIdentity", () -> {
+                    IdentityConvert.syncLocal(r.getRef().asNeeded(), false, updated -> {
+                        Platform.runLater(() -> {
+                            identity.set(null);
+                            identity.set(IdentityValue.Ref.builder().ref(updated.asNeeded()).build());
+                        });
+                    });
+                }, true, false));
+                modal.addButton(new ModalButton("convertToMulti", () -> {
+                    IdentityConvert.createMulti(r, true, created -> {
+                        Platform.runLater(() -> {
+                            identity.set(IdentityValue.Ref.builder().ref(created.asNeeded()).build());
+                        });
+                    });
+                }, true, false));
+                modal.addButton(new ModalButton("ignore", null, true, false));
+                modal.show();
+            }
+        });
+    }
+
+    public static OptionsBuilder ssh(ObjectProperty<IdentityValue> identity, ObservableBooleanValue syncedBase, boolean requireUser) {
+        var i = new IdentityChoiceBuilder(identity, syncedBase, true, requireUser, true, true, true, "identityChoice", "passwordAuthentication");
         return i.build();
     }
 
-    public static OptionsBuilder container(ObjectProperty<IdentityValue> identity) {
-        var i = new IdentityChoiceBuilder(
-                identity, true, false, false, false, false, "customUsername", "customUsernamePassword");
+    public static OptionsBuilder container(ObjectProperty<IdentityValue> identity, ObservableBooleanValue syncedBase) {
+        var i = new IdentityChoiceBuilder(identity, syncedBase, true, false, false, false, false, "customUsername", "customUsernamePassword");
         return i.build();
     }
 
@@ -98,22 +136,26 @@ public class IdentityChoiceBuilder {
     }
 
     public OptionsBuilder build() {
-        var existing = identity.getValue();
-        var user = new SimpleStringProperty(
-                existing instanceof IdentityValue.InPlace inPlace && inPlace.unwrap() != null
-                        ? inPlace.unwrap().getUsername().get()
-                        : null);
-        var pass = new SimpleObjectProperty<>(
-                existing instanceof IdentityValue.InPlace inPlace && inPlace.unwrap() != null
-                        ? inPlace.unwrap().getPassword()
-                        : null);
-        var identityStrategy = new SimpleObjectProperty<>(
-                existing instanceof IdentityValue.InPlace inPlace && inPlace.unwrap() != null
-                        ? inPlace.unwrap().getSshIdentity()
-                        : null);
-        var ref = new SimpleObjectProperty<>(existing instanceof IdentityValue.Ref r ? r.getRef() : null);
+        var user = new SimpleStringProperty();
+        var pass = new SimpleObjectProperty<SecretRetrievalStrategy>();
+        var identityStrategy = new SimpleObjectProperty<SshIdentityStrategy>();
+        var ref = new SimpleObjectProperty<DataStoreEntryRef<IdentityStore>>();
         var inPlaceSelected = ref.isNull();
         var refSelected = ref.isNotNull();
+
+        identity.subscribe(existing -> {
+            user.set(existing instanceof IdentityValue.InPlace inPlace && inPlace.unwrap() != null
+                            ? inPlace.unwrap().getUsername().get()
+                            : null);
+            pass.set(existing instanceof IdentityValue.InPlace inPlace && inPlace.unwrap() != null
+                            ? inPlace.unwrap().getPassword()
+                            : null);
+            identityStrategy.set(
+                    existing instanceof IdentityValue.InPlace inPlace && inPlace.unwrap() != null
+                            ? inPlace.unwrap().getSshIdentity()
+                            : null);
+            ref.set(existing instanceof IdentityValue.Ref r ? r.getRef() : null);
+        });
 
         var passwordChoice = OptionsChoiceBuilder.builder()
                 .allowNull(false)

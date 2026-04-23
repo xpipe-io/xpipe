@@ -5,6 +5,7 @@ import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppImages;
+import io.xpipe.app.hub.comp.StoreCreationModel;
 import io.xpipe.app.hub.comp.StoreEntryComp;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.hub.comp.StoreSection;
@@ -160,7 +161,7 @@ public interface DataStoreProvider {
         return null;
     }
 
-    default GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
+    default GuiDialog guiDialog(StoreCreationModel model, Property<DataStore> store) {
         return null;
     }
 

@@ -71,7 +71,7 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
     }
 
     @Override
-    public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
+    public GuiDialog guiDialog(StoreCreationModel model, Property<DataStore> store) {
         IncusContainerStore st = (IncusContainerStore) store.getValue();
         var identity = new SimpleObjectProperty<>(st.getIdentity());
 
@@ -79,7 +79,7 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
                 .name("container")
                 .description("containerDescription")
                 .addStaticString((st.getProjectName() != null ? st.getProjectName() + "/" : "") + st.getContainerName())
-                .sub(IdentityChoiceBuilder.container(identity), identity)
+                .sub(IdentityChoiceBuilder.container(identity, model.getSyncable()), identity)
                 .bind(
                         () -> {
                             return IncusContainerStore.builder()

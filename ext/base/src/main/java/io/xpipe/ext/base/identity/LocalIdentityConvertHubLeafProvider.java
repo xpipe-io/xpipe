@@ -67,27 +67,7 @@ public class LocalIdentityConvertHubLeafProvider implements HubLeafProvider<Loca
 
         @Override
         public void executeImpl() {
-            var st = ref.getStore();
-            var synced = SyncedIdentityStore.builder()
-                    .username(st.getUsername().get())
-                    .password(EncryptedValue.VaultKey.of(st.getPassword()))
-                    .sshIdentity(EncryptedValue.VaultKey.of(st.getSshIdentity()))
-                    .perUser(false)
-                    .build();
-            StoreCreationDialog.showEdit(ref.get(), synced, true, ignored -> {});
-
-            // Ugly solution to sync key file if needed
-            Platform.runLater(() -> {
-                var found = AppMainWindow.get().getStage().getScene().getRoot().lookupAll(".git-sync-file-button");
-                if (found.size() != 1) {
-                    return;
-                }
-
-                var first = found.iterator().next();
-                if (first instanceof Button b) {
-                    b.fire();
-                }
-            });
+            IdentityConvert.syncLocal(ref, true, ignored -> {});
         }
     }
 }

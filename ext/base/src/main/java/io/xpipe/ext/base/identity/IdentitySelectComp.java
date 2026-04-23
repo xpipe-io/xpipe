@@ -200,15 +200,23 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
             }
         }
 
+        Runnable updateMap = () -> {
+            map.clear();
+            for (DataStoreEntry storeEntry : DataStorage.get().getStoreEntries()) {
+                if (storeEntry.getValidity().isUsable() && storeEntry.getStore() instanceof IdentityStore) {
+                    map.put(formatName(storeEntry), storeEntry.ref());
+                }
+            }
+        };
+
         StoreViewState.get().getAllEntries().getList().addListener((ListChangeListener<? super StoreEntryWrapper>)
                 c -> {
-                    map.clear();
-                    for (DataStoreEntry storeEntry : DataStorage.get().getStoreEntries()) {
-                        if (storeEntry.getValidity().isUsable() && storeEntry.getStore() instanceof IdentityStore) {
-                            map.put(formatName(storeEntry), storeEntry.ref());
-                        }
-                    }
+                    updateMap.run();
                 });
+
+        selectedReference.addListener((observable, oldValue, newValue) -> {
+            updateMap.run();
+        });
 
         var prop = new SimpleStringProperty();
         if (inPlaceUser.getValue() != null) {

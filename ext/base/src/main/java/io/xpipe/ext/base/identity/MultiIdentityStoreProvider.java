@@ -1,9 +1,9 @@
 package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.hub.comp.StoreCreationModel;
 import io.xpipe.app.hub.comp.StoreListChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -15,14 +15,13 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
 
 public class MultiIdentityStoreProvider extends IdentityStoreProvider {
 
     @Override
-    public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
+    public GuiDialog guiDialog(StoreCreationModel model, Property<DataStore> store) {
         MultiIdentityStore st = (MultiIdentityStore) store.getValue();
 
         var initialAvailableIdentities = st.getAvailableIdentities();

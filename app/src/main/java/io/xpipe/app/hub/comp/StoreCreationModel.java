@@ -46,6 +46,7 @@ public class StoreCreationModel {
     DataStoreEntry existingEntry;
     boolean staticDisplay;
     StoreCreationConsumer consumer;
+    ObservableBooleanValue syncable;
 
     public StoreCreationModel(
             Property<DataStoreProvider> provider,
@@ -67,7 +68,7 @@ public class StoreCreationModel {
             store.unbind();
             store.setValue(null);
             if (n != null) {
-                store.setValue(n.defaultStore(getTargetCategory(existingEntry)));
+                store.setValue(n.defaultStore(getTargetCategory(existingEntry != null ? existingEntry.getCategoryUuid() : null)));
             }
         });
 
@@ -82,6 +83,7 @@ public class StoreCreationModel {
                 newValue.validate();
             });
         });
+
         this.entry = Bindings.createObjectBinding(
                 () -> {
                     if (name.getValue() == null
@@ -98,12 +100,20 @@ public class StoreCreationModel {
                     var entryRef = existingEntry != null
                             ? existingEntry
                             : DataStorage.get().getDefaultDisplayParent(initial).orElse(initial);
-                    var targetCategory = getTargetCategory(entryRef);
+                    var targetCategory = getTargetCategory(entryRef.getCategoryUuid());
                     return DataStoreEntry.createNew(
                             UUID.randomUUID(), targetCategory.getUuid(), name.getValue(), store.getValue());
                 },
                 name,
                 store);
+
+        this.syncable = Bindings.createBooleanBinding(() -> {
+            var targetCategory = getTargetCategory(existingEntry != null ? existingEntry.getCategoryUuid() :
+                    StoreViewState.get().getActiveCategory().getValue().getCategory().getUuid());
+            var entry = DataStoreEntry.createNew(
+                    UUID.randomUUID(), targetCategory.getUuid(), "Temp", store.getValue());
+            return DataStorage.get().shouldSync(entry);
+        }, store, StoreViewState.get().getActiveCategory());
 
         skippable.bind(Bindings.createBooleanBinding(
                 () -> {
@@ -124,9 +134,9 @@ public class StoreCreationModel {
                 name));
     }
 
-    private DataStoreCategory getTargetCategory(DataStoreEntry base) {
-        var targetCategory = base != null
-                ? base.getCategoryUuid()
+    private DataStoreCategory getTargetCategory(UUID baseCategory) {
+        var targetCategory = baseCategory != null
+                ? baseCategory
                 : DataStorage.get().getSelectedCategory().getUuid();
         var rootCategory = DataStorage.get()
                 .getRootCategory(DataStorage.get()

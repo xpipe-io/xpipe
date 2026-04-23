@@ -4,6 +4,7 @@ import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
+import io.xpipe.app.hub.comp.StoreCreationModel;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStorage;
@@ -36,7 +37,7 @@ public class MappedServiceStoreProvider extends FixedServiceStoreProvider {
     }
 
     @Override
-    public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
+    public GuiDialog guiDialog(StoreCreationModel model, Property<DataStore> store) {
         MappedServiceStore st = store.getValue().asNeeded();
 
         var host = new SimpleObjectProperty<>(st.getHost());
@@ -62,8 +63,7 @@ public class MappedServiceStoreProvider extends FixedServiceStoreProvider {
         var q = new OptionsBuilder()
                 .nameAndDescription("serviceHost")
                 .addComp(
-                        new StoreChoiceComp<>(
-                                entry,
+                        new StoreChoiceComp<>(model.getExistingEntry(),
                                 host,
                                 DataStore.class,
                                 null,

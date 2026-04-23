@@ -83,7 +83,7 @@ public class ScriptStoreProvider implements DataStoreProvider {
 
     @SneakyThrows
     @Override
-    public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
+    public GuiDialog guiDialog(StoreCreationModel model, Property<DataStore> store) {
         ScriptStore st = store.getValue().asNeeded();
 
         var textSource = new SimpleObjectProperty<>(
@@ -155,7 +155,7 @@ public class ScriptStoreProvider implements DataStoreProvider {
                         new StoreListChoiceComp<>(
                                 others,
                                 ScriptStore.class,
-                                scriptStore -> !scriptStore.get().equals(entry) && !others.contains(scriptStore),
+                                scriptStore -> !scriptStore.get().equals(model.getExistingEntry()) && !others.contains(scriptStore),
                                 StoreViewState.get().getAllScriptsCategory()),
                         others)
                 .bind(

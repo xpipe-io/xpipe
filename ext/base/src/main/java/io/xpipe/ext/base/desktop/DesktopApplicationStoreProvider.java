@@ -3,10 +3,7 @@ package io.xpipe.ext.base.desktop;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.ext.*;
-import io.xpipe.app.hub.comp.StoreChoiceComp;
-import io.xpipe.app.hub.comp.StoreEntryWrapper;
-import io.xpipe.app.hub.comp.StoreViewState;
-import io.xpipe.app.hub.comp.SystemStateComp;
+import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -63,7 +60,7 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
+    public GuiDialog guiDialog(StoreCreationModel model, Property<DataStore> store) {
         DesktopApplicationStore st = (DesktopApplicationStore) store.getValue();
         var host = new SimpleObjectProperty<>(st.getDesktop());
         var path = new SimpleStringProperty(st.getPath());
@@ -71,8 +68,7 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
         return new OptionsBuilder()
                 .nameAndDescription("desktopBase")
                 .addComp(
-                        new StoreChoiceComp<>(
-                                entry,
+                        new StoreChoiceComp<>(model.getExistingEntry(),
                                 host,
                                 DesktopBaseStore.class,
                                 desktopStoreDataStoreEntryRef ->
