@@ -171,7 +171,7 @@ public class ScriptStoreProvider implements DataStoreProvider {
                                     .build();
                         },
                         store), (finished) -> {
-            if (entry == null) {
+            if (model.getExistingEntry() == null) {
                 finished.setStorePersistentState(EnabledStoreState.builder().enabled(true).build());
             }
 

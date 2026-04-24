@@ -25,6 +25,7 @@ public class InternalVncClient implements ExternalVncClient {
         w.trackInternal(DataStorage.get().getStoreEntryDisplayName(configuration.getEntry().get()),
                 configuration.getEntry().get().getEffectiveIconFile(),
                 DataStorage.get().getEffectiveColor(configuration.getEntry().get()),
+                configuration.getEntry().get(),
                 session);
     }
 

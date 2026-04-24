@@ -2,14 +2,17 @@ package io.xpipe.app.util;
 
 import atlantafx.base.controls.Spacer;
 import io.xpipe.app.comp.SimpleRegionBuilder;
+import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppFontSizes;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
@@ -18,6 +21,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.*;
 
+import java.lang.ref.WeakReference;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,9 +51,8 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
             });
         });
 
-
-        var bar = createBar();
         var content = createContent(regionMap);
+        var bar = createBar(content);
         var vbox = new VBox(bar, content);
         VBox.setVgrow(content, Priority.ALWAYS);
         vbox.getStyleClass().add("remote-desktop-dock");
@@ -75,7 +79,7 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
         return vbox;
     }
 
-    private void fillToolbar(ToolBar bar, List<? extends RemoteDesktopDockEntry> list) {
+    private void fillToolbar(Region content, ToolBar bar, List<? extends RemoteDesktopDockEntry> list) {
         var w = RemoteDesktopWindow.get();
         bar.getItems().clear();
         for (var entry : list) {
@@ -111,14 +115,53 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
         }
 
         bar.getItems().add(new Spacer());
-        var lockIcon = Bindings.createObjectBinding(() -> {
+
+        var buttons = new HBox();
+        buttons.getStyleClass().add("buttons");
+        buttons.setSpacing(6);
+        bar.getItems().add(buttons);
+
+        var requiresRestart = new SimpleBooleanProperty();
+        var restartButton = new ButtonComp(AppI18n.observable("reloadSizes"), new LabelGraphic.IconGraphic("mdi2r-restart"), () -> {
+            w.getRestartTriggered().set(true);
+            GlobalTimer.delay(() -> {
+                w.getRestartTriggered().set(false);
+            }, Duration.ofSeconds(15));
+
+            var rect = w.getDockBounds();
+            var toRestart = w.getProcesses().stream().filter(e -> e.requiresRestart(rect.getW(), rect.getH())).toList();
+
+            for (RemoteDesktopDockEntry e : toRestart) {
+            ThreadHelper.runFailableAsync(() -> {
+                    w.close(e);
+                    e.getEntry().getProvider().launch(e.getEntry()).run();
+            });
+            }
+        });
+        var ref = new WeakReference<>(content);
+        GlobalTimer.scheduleUntil(Duration.ofMillis(200), false, () -> {
+            if (ref.get() == null) {
+                return true;
+            }
+
+            var rect = w.getDockBounds();
+            requiresRestart.set(w.getProcesses().stream().anyMatch(e -> e.requiresRestart(rect.getW(), rect.getH())));
+            return false;
+        });
+        restartButton.show(requiresRestart);
+        buttons.getChildren().add(restartButton.build());
+
+        var lockText = Bindings.createStringBinding(() -> {
+            return w.getLocked().get() ? AppI18n.get("sizeLocked") : AppI18n.get("sizeUnlocked");
+        }, w.getLocked(), AppI18n.activeLanguage());
+        var lockIcon = Bindings.<LabelGraphic>createObjectBinding(() -> {
             return new LabelGraphic.IconGraphic(w.getLocked().get() ? "mdi2l-lock-outline" : "mdi2l-lock-open-variant-outline");
         }, w.getLocked());
-        var lock = new IconButtonComp(lockIcon, () -> {
+        var lock = new ButtonComp(lockText, lockIcon, () -> {
             w.toggleLock();
             w.focus();
         }).describe(d -> d.nameKey("toggleSizeLock").showTooltips(true)).style("lock-button").build();
-        bar.getItems().add(lock);
+        buttons.getChildren().add(lock);
     }
 
     private void updateSelection(ToolBar bar, RemoteDesktopDockEntry entry) {
@@ -133,14 +176,14 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
         }
     }
 
-    private Region createBar() {
+    private Region createBar(Region content) {
         var w = RemoteDesktopWindow.get();
         var bar = new ToolBar();
 
-        fillToolbar(bar, w.getProcesses());
+        fillToolbar(content, bar, w.getProcesses());
         w.getProcesses().addListener((ListChangeListener<? super RemoteDesktopDockEntry>) c -> {
             PlatformThread.runLaterIfNeeded(() -> {
-                fillToolbar(bar, c.getList());
+                fillToolbar(content, bar, c.getList());
                 updateSelection(bar, w.getSelected().get());
             });
         });

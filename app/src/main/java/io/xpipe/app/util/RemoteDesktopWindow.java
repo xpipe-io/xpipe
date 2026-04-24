@@ -7,6 +7,7 @@ import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreColor;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.OsType;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -73,6 +74,9 @@ public class RemoteDesktopWindow {
 
     @Getter
     private final BooleanProperty locked = new SimpleBooleanProperty(true);
+
+    @Getter
+    private final BooleanProperty restartTriggered = new SimpleBooleanProperty();
 
     public boolean supportsDocking() {
         return OsType.ofLocal() == OsType.WINDOWS;
@@ -154,10 +158,12 @@ public class RemoteDesktopWindow {
             }
         });
 
-        // Wait one more pulse
+        // Wait two more pulses for window to take correct size
         var latch = new CountDownLatch(1);
         Platform.runLater(() -> {
-            latch.countDown();
+            Platform.runLater(() -> {
+                latch.countDown();
+            });
         });
         latch.await();
     }
@@ -182,12 +188,12 @@ public class RemoteDesktopWindow {
         state = state.toBuilder().locked(locked.get()).build();
     }
 
-    public void trackInternal(String name, String icon, DataStoreColor color, RemoteDesktopDockContentEntry entry) {
-        var toTrack = new RemoteDesktopDockEntry(name, icon, color, null, entry);
+    public void trackInternal(String name, String icon, DataStoreColor color, DataStoreEntry e, RemoteDesktopDockContentEntry entry) {
+        var toTrack = new RemoteDesktopDockEntry(name, icon, color, e, null, entry, locked.get(), null, null);
         model.track(toTrack);
     }
 
-    public void trackExternal(String name, String icon, DataStoreColor color, Process process, Duration maxWait, Predicate<ControllableWindowProcess> filter) {
+    public void trackExternal(String name, String icon, DataStoreColor color, DataStoreEntry e, int w, int h, Process process, Duration maxWait, Predicate<ControllableWindowProcess> filter) {
         var start = process.info().startInstant().orElseThrow();
         GlobalTimer.scheduleUntil(Duration.ofMillis(200), false, () -> {
             if (Duration.between(start, Instant.now()).compareTo(maxWait) > 0) {
@@ -232,7 +238,7 @@ public class RemoteDesktopWindow {
                     continue;
                 }
 
-                var entry = new RemoteDesktopDockEntry(name, icon, color, c, null);
+                var entry = new RemoteDesktopDockEntry(name, icon, color, e, c, null, locked.get(), w, h);
                 model.track(entry);
                 return true;
             }
@@ -265,6 +271,13 @@ public class RemoteDesktopWindow {
     }
 
     private void updateState() {
+        if (restartTriggered.get()) {
+            model.clearDead();
+            DerivedObservableList.wrap(processes, true).setContent(model.getEntries());
+            selected.set(model.getSelected());
+            return;
+        }
+
         var oldSize = processes.size();
         model.clearDead();
         DerivedObservableList.wrap(processes, true).setContent(model.getEntries());

@@ -1,3 +1,9 @@
+.remote-desktop-dock .tool-bar {
+    -fx-min-height: 2.6em;
+    -fx-pref-height: 2.6em;
+    -fx-max-height: 2.6em;
+}
+
 .remote-desktop-dock .tab-button {
     -fx-background-color: transparent;
     -fx-background-radius: 4px;
@@ -8,12 +14,12 @@
     -fx-opacity: 0.8;
 }
 
-.remote-desktop-dock .lock-button {
-    -fx-background-color: transparent;
-    -fx-background-radius: 4px;
-    -fx-border-radius: 4px;
-    -fx-border-width: 1;
-    -fx-padding: 3 7 3 7;
+.remote-desktop-dock .buttons {
+    -fx-padding: 4;
+}
+
+.remote-desktop-dock .button {
+    -fx-padding: 4;
 }
 
 .remote-desktop-dock .tab-button .graphic {

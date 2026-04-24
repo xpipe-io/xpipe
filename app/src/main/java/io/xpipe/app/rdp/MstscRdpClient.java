@@ -96,6 +96,7 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
 
     @SuppressWarnings("unused")
     static OptionsBuilder createOptions(Property<MstscRdpClient> property) {
+        var dock = new SimpleObjectProperty<>(property.getValue().isDock());
         var smartSizing = new SimpleObjectProperty<>(property.getValue().isSmartSizing());
 
         var rdpSecurityValueHide = new SimpleBooleanProperty();
@@ -115,18 +116,23 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
         });
 
         return new OptionsBuilder()
+                .nameAndDescription("rdpDock")
+                .addToggle(dock)
                 .nameAndDescription("rdpSmartSizing")
                 .addToggle(smartSizing)
+                .hide(dock)
                 .nameAndDescription("disableRdpWindowsSecurityWarning")
                 .addToggle(rdpSecurityValue)
                 .hide(rdpSecurityValueHide)
                 .bind(
                         () -> MstscRdpClient.builder()
+                                .dock(dock.get())
                                 .smartSizing(smartSizing.get())
                                 .build(),
                         property);
     }
 
+    boolean dock;
     boolean smartSizing;
 
     @Override
@@ -146,7 +152,7 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
         var window = RemoteDesktopWindow.get();
         String width = null;
         String height = null;
-        if (!configuration.isRemoteApp() && window != null) {
+        if (!configuration.isRemoteApp() && dock && window != null) {
             window.show();
             if (window.getLocked().get()) {
                 width = "/w:" + window.getDockBounds().getW();
@@ -155,12 +161,21 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
         }
         var setCache = prepareLocalhostRegistryCache(configuration);
 
+        var fullAddress = configuration
+                .getConfig()
+                .get("full address");
+        if (fullAddress.isPresent()) {
+            disableSignatureWarning(fullAddress.get().getValue());
+        }
+
         var file = writeRdpConfigFile(configuration.getTitle(), adaptedRdpConfig);
         var process = LocalExec.executeAsync(getExecutable(), file.toString(), width, height);
-        if (process != null && window != null && !configuration.isRemoteApp()) {
+        if (process != null && window != null && !configuration.isRemoteApp() && dock) {
             window.show();
             var entry = configuration.getEntry();
-            window.trackExternal(configuration.getTitle(), entry.getEffectiveIconFile(), DataStorage.get().getEffectiveColor(entry), process, Duration.ofSeconds(30), p -> {
+            window.trackExternal(configuration.getTitle(), entry.getEffectiveIconFile(), DataStorage.get().getEffectiveColor(entry), entry,
+                    window.getDockBounds().getW(), window.getDockBounds().getH(),
+                    process, Duration.ofSeconds(60), p -> {
                 var bounds = p.queryBounds();
                 return bounds.getW() > 500 && bounds.getH() > 500;
             });
@@ -197,7 +212,7 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
 
     private RdpConfig getRemoteDesktopWindowConfig(RdpConfig input) {
         var window = RemoteDesktopWindow.get();
-        if (window != null) {
+        if (dock && window != null) {
             window.show();
             var s = window.getDockBounds();
             if (s != null) {
@@ -231,6 +246,16 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
                 "smart sizing",
                 new RdpConfig.TypedValue("i", smartSizing ? "1" : "0")));
         return adapted;
+    }
+
+    private void disableSignatureWarning(String fullAddress) {
+        var hostname = fullAddress.split(":")[0];
+        WindowsRegistry.local()
+                .setIntegerValue(
+                        WindowsRegistry.HKEY_CURRENT_USER,
+                        "Software\\Microsoft\\Terminal Server Client\\LocalDevices",
+                        hostname,
+                        0x4c);
     }
 
     private void saveLocalhostRegistryCache(UUID entry) {
