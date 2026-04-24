@@ -73,6 +73,7 @@ public interface PasswordManager {
         l.add(KeeperPasswordManager.class);
         l.add(ProtonPasswordManager.class);
         l.add(HashicorpVaultPasswordManager.class);
+        l.add(OpenBaoPasswordManager.class);
         if (OsType.ofLocal() != OsType.WINDOWS) {
             l.add(LastpassPasswordManager.class);
             l.add(EnpassPasswordManager.class);

@@ -3,6 +3,7 @@ package io.xpipe.ext.base.identity;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.cred.KeyFileStrategy;
 import io.xpipe.app.cred.NoIdentityStrategy;
+import io.xpipe.app.cred.SshIdentityStrategy;
 import io.xpipe.app.cred.SshIdentityStrategyChoiceConfig;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.GuiDialog;
@@ -19,6 +20,7 @@ import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
 
+import io.xpipe.core.FilePath;
 import javafx.beans.property.*;
 
 import java.nio.file.Files;
@@ -63,10 +65,10 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                     .resolve("keys", f.getFile().toAbsoluteFilePath(null).getFileName());
             DataStorageSyncHandler.getInstance().addDataFile(source, target, newValue);
 
-            var pub = Path.of(source + ".pub");
+            var pub = SshIdentityStrategy.getPublicKeyPath(FilePath.of(source)).asLocalPath();
             var pubTarget = DataStorage.get()
                     .getDataDir()
-                    .resolve("keys", f.getFile().toAbsoluteFilePath(null).getFileName() + ".pub");
+                    .resolve("keys", pub.getFileName().toString());
             if (Files.exists(pub)) {
                 DataStorageSyncHandler.getInstance().addDataFile(pub, pubTarget, newValue);
             }

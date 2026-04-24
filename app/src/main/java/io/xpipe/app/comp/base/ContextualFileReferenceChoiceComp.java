@@ -5,6 +5,7 @@ import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.cred.SshIdentityStrategy;
 import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -126,9 +127,9 @@ public class ContextualFileReferenceChoiceComp extends RegionBuilder<HBox> {
                                 source.toString().substring(0, source.toString().length() - 4))
                         : source;
 
-                var pubSource = Path.of(sourceBase + ".pub");
+                var pubSource = SshIdentityStrategy.getPublicKeyPath(FilePath.of(source)).asLocalPath();
                 if (Files.exists(pubSource)) {
-                    var pubTarget = Path.of(target.toString() + ".pub");
+                    var pubTarget = sync.getTargetLocation().apply(pubSource);
                     handler.addDataFile(pubSource, pubTarget, sync.getPerUser().get());
                 }
 
