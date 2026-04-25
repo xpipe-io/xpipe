@@ -88,7 +88,7 @@ public class OpenBaoPasswordManager implements PasswordManager {
                         sc.getShellDialect().getEchoCommand("", false),
                         sc.getShellDialect()
                                 .getEchoCommand(
-                                        "bao login --method=<auth_method> [optional auth method specific parameters]",
+                                        "bao login -method=<auth_method> [optional auth method specific parameters]",
                                         false));
                 var scriptFile = ScriptHelper.createExecScript(sc, script.toString());
                 TerminalLaunch.builder()
@@ -275,7 +275,7 @@ public class OpenBaoPasswordManager implements PasswordManager {
 
     private boolean isLoginValid() throws Exception {
         var sc = getOrStartShell();
-        var b = CommandBuilder.of().add("bao", "token", "lookup", "-non-interactive", "--format=json");
+        var b = CommandBuilder.of().add("bao", "token", "lookup", "-non-interactive", "-format=json");
         if (getVaultNamespace() != null) {
             b.fixedEnvironment("VAULT_NAMESPACE", getVaultNamespace());
         }
@@ -338,7 +338,7 @@ public class OpenBaoPasswordManager implements PasswordManager {
                 throw ErrorEventFactory.expected(new IllegalArgumentException("Invalid secret reference format"));
             }
 
-            var b = CommandBuilder.of().add("bao", "read", "--format=json", "-non-interactive");
+            var b = CommandBuilder.of().add("bao", "read", "-format=json", "-non-interactive");
             if (vaultNamespace != null) {
                 b.fixedEnvironment("VAULT_NAMESPACE", vaultNamespace);
             }

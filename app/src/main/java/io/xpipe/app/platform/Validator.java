@@ -2,6 +2,7 @@ package io.xpipe.app.platform;
 
 import io.xpipe.app.core.AppI18n;
 
+import io.xpipe.app.util.Checkable;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyListProperty;
@@ -59,6 +60,25 @@ public interface Validator {
                 .withMethod(c -> {
                     if (!p.test(c.get("val"))) {
                         c.error(message.getValue());
+                    }
+                })
+                .immediate();
+    }
+
+    static Check create(Validator v, ObservableValue<? extends Checkable> c) {
+        return v.createCheck()
+                .dependsOn("val", c)
+                .withMethod(ctx -> {
+                    try {
+                        if (ctx.get("val") instanceof Checkable ch) {
+                            ch.checkComplete();
+                        }
+                    } catch (Exception e) {
+                        if (e.getMessage() != null) {
+                            ctx.error(e.getMessage());
+                        } else {
+                            ctx.error("An " + e.getClass().getSimpleName() + " was thrown");
+                        }
                     }
                 })
                 .immediate();

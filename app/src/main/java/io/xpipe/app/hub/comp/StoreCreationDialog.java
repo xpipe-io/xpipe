@@ -49,12 +49,14 @@ public class StoreCreationDialog {
                     DataStorage.get().addStoreEntryIfNotPresent(newE);
                 } else {
                     // We didn't change anything
-                    if (e.getStore().equals(newE.getStore())) {
-                        e.setName(newE.getName());
-                    } else {
+
+                    // However, we might still have changed some auxiliary config value
+                    // So, always force an update
+                    DataStorage.get().updateEntry(e, newE);
+
+                    if (!e.getStore().equals(newE.getStore())) {
                         var madeValid = !e.getValidity().isUsable()
                                 && newE.getValidity().isUsable();
-                        DataStorage.get().updateEntry(e, newE);
                         if (madeValid
                                 && validated
                                 && e.getProvider().shouldShowScan()

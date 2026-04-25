@@ -2,24 +2,21 @@ package io.xpipe.app.cred;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.TextAreaComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.util.Validators;
+import io.xpipe.app.util.*;
 import io.xpipe.core.FilePath;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import lombok.Builder;
 import lombok.Value;
@@ -32,36 +29,40 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Matcher;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-public interface CertificateImpl {
+public interface CertificateImpl extends Checkable {
 
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();
         l.add(OpenBao.class);
-        l.add(Other.class);
         return l;
     }
 
-    static void showDialog(ShellControl sc, FilePath privateKey, FilePath certificate, CertificateImpl impl) throws Exception {
-        var text = new TextAreaComp(new ReadOnlyObjectWrapper<>(queryCertificateSummary(sc, certificate)));
+    static void showDialogAndWait(FilePath privateKey, FilePath certificate, CertificateImpl impl) throws Exception {
+        var summary = queryCertificateSummary(LocalShell.getShell(), certificate);
+        var text = new TextAreaComp(new ReadOnlyObjectWrapper<>(summary));
         text.prefWidth(600);
         text.prefHeight(350);
-        var modal = ModalOverlay.of(AppI18n.observable("certificateDialogTitle", certificate.getFileName()), text, null);
+        var modal = ModalOverlay.of(AppI18n.observable(!checkValid(summary) ? "certificateDialogExpiredTitle" : "certificateDialogTitle", certificate.getFileName()), text, null);
         var canRenew = impl != null && impl.supportsRenew();
+        var renew = new SimpleBooleanProperty();
         if (canRenew) {
+            modal.addButton(ModalButton.cancel());
             modal.addButton(new ModalButton("renew", () -> {
-                ThreadHelper.runFailableAsync(() -> {
-                    impl.renew(sc, privateKey, certificate);
-                });
+                renew.set(true);
             }, true, true));
         } else {
             modal.addButton(ModalButton.ok());
         }
-        modal.show();
+        modal.showAndWait();
+
+        if (impl != null && renew.get()) {
+            impl.renew(privateKey, certificate);
+        }
     }
 
     static boolean checkValid(String text) {
@@ -71,7 +72,7 @@ public interface CertificateImpl {
         }
 
         try {
-            var parser = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.US);
+            var parser = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss", Locale.US);
             var from = parser.parse(matcher.group(1)).toInstant();
             var to = parser.parse(matcher.group(2)).toInstant();
             return from.isBefore(Instant.now()) && to.isAfter(Instant.now());
@@ -97,7 +98,11 @@ public interface CertificateImpl {
 
     default void checkComplete() throws ValidationException {}
 
-    void renew(ShellControl sc, FilePath privateKey, FilePath certificate) throws Exception;
+    void renew(FilePath privateKey, FilePath certificate) throws Exception;
+
+    void configure();
+
+    CacheableConfiguration<?> getCacheableConfiguration();
 
     @JsonTypeName("openBao")
     @Value
@@ -125,31 +130,22 @@ public interface CertificateImpl {
         @Override
         public void checkComplete() throws ValidationException {
             Validators.nonNull(role);
+            OpenBaoConfig.get().get().checkComplete();
         }
 
         @Override
-        public void renew(ShellControl sc, FilePath privateKey, FilePath certificate) throws Exception {
-            var publicKey = SshIdentityStrategy.getPublicKeyPath(privateKey);
-            sc.command(CommandBuilder.of().add("bao", "write", "ssh-client-signer/sign/" + role).addQuotedKeyValue("public_key", publicKey.toString())).execute();
-            var signedContent = sc.command(CommandBuilder.of().add(
-                    "bao", "write", "-field=signed_key", "ssh-client-signer/sign/" + role).addQuotedKeyValue("public_key", publicKey.toString())).readStdoutOrThrow();
-            sc.view().writeRawFile(certificate, signedContent.getBytes(StandardCharsets.UTF_8));
-        }
-    }
-
-
-    @JsonTypeName("other")
-    @Value
-    @Jacksonized
-    @Builder
-    class Other implements CertificateImpl {
-
-        @Override
-        public boolean supportsRenew() {
-            return false;
+        public void renew(FilePath privateKey, FilePath certificate) throws Exception {
+            OpenBaoConfig.get().get().renew(role, privateKey, certificate);
         }
 
         @Override
-        public void renew(ShellControl sc, FilePath privateKey, FilePath certificate) throws Exception {}
+        public void configure() {
+            OpenBaoConfig.showDialog();
+        }
+
+        @Override
+        public CacheableConfiguration<?> getCacheableConfiguration() {
+            return OpenBaoConfig.get();
+        }
     }
 }

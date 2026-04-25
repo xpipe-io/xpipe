@@ -7,6 +7,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
+import io.xpipe.app.util.Checkable;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.core.InPlaceSecretValue;
@@ -66,7 +67,7 @@ public class OptionsBuilder {
     private final List<Validator> allValidators = new ArrayList<>();
     private final List<Check> allChecks = new ArrayList<>();
     private final List<OptionsComp.Entry> entries = new ArrayList<>();
-    private final List<Property<?>> props = new ArrayList<>();
+    private final List<ObservableValue<?>> props = new ArrayList<>();
 
     private ObservableValue<String> name;
     private ObservableValue<String> description;
@@ -304,6 +305,12 @@ public class OptionsBuilder {
         return check(Validator.nonNull(ownValidator, e, p));
     }
 
+    @SuppressWarnings("unchecked")
+    public OptionsBuilder checkComplete() {
+        var p = props.getLast();
+        return check(Validator.create(ownValidator, (ObservableValue<? extends Checkable>) p));
+    }
+
     public OptionsBuilder nonNullIf(ObservableValue<Boolean> b) {
         var e = lastNameReference;
         var p = props.getLast();
@@ -408,7 +415,7 @@ public class OptionsBuilder {
         return this;
     }
 
-    public OptionsBuilder addProperty(Property<?> prop) {
+    public OptionsBuilder addProperty(ObservableValue<?> prop) {
         props.add(prop);
         return this;
     }

@@ -87,7 +87,7 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
                         sc.getShellDialect().getEchoCommand("", false),
                         sc.getShellDialect()
                                 .getEchoCommand(
-                                        "vault login --method=<auth_method> [optional auth method specific parameters]",
+                                        "vault login -method=<auth_method> [optional auth method specific parameters]",
                                         false));
                 var scriptFile = ScriptHelper.createExecScript(sc, script.toString());
                 TerminalLaunch.builder()
@@ -274,7 +274,7 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
 
     private boolean isLoginValid() throws Exception {
         var sc = getOrStartShell();
-        var b = CommandBuilder.of().add("vault", "token", "lookup", "-non-interactive", "--format=json");
+        var b = CommandBuilder.of().add("vault", "token", "lookup", "-non-interactive", "-format=json");
         if (getVaultNamespace() != null) {
             b.fixedEnvironment("VAULT_NAMESPACE", getVaultNamespace());
         }
@@ -337,7 +337,7 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
                 throw ErrorEventFactory.expected(new IllegalArgumentException("Invalid secret reference format"));
             }
 
-            var b = CommandBuilder.of().add("vault", "read", "--format=json", "-non-interactive");
+            var b = CommandBuilder.of().add("vault", "read", "-format=json", "-non-interactive");
             if (vaultNamespace != null) {
                 b.fixedEnvironment("VAULT_NAMESPACE", vaultNamespace);
             }
