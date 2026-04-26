@@ -38,6 +38,7 @@ public interface CertificateImpl extends Checkable {
 
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();
+        l.add(HashicorpVault.class);
         l.add(OpenBao.class);
         return l;
     }
@@ -146,6 +147,51 @@ public interface CertificateImpl extends Checkable {
         @Override
         public CacheableConfiguration<?> getCacheableConfiguration() {
             return OpenBaoConfig.get();
+        }
+    }
+
+    @JsonTypeName("hashicorpVault")
+    @Value
+    @Jacksonized
+    @Builder
+    class HashicorpVault implements CertificateImpl {
+
+        @SuppressWarnings("unused")
+        public static OptionsBuilder createOptions(Property<HashicorpVault> p) {
+            var role = new SimpleStringProperty(p.getValue().getRole());
+
+            return new OptionsBuilder()
+                    .nameAndDescription("certificateRole")
+                    .addString(role)
+                    .nonNull()
+                    .bind(
+                            () -> {
+                                return HashicorpVault.builder().role(role.get()).build();
+                            },
+                            p);
+        }
+
+        String role;
+
+        @Override
+        public void checkComplete() throws ValidationException {
+            Validators.nonNull(role);
+            HashicorpVaultConfig.get().get().checkComplete();
+        }
+
+        @Override
+        public void renew(FilePath privateKey, FilePath certificate) throws Exception {
+            HashicorpVaultConfig.get().get().renew(role, privateKey, certificate);
+        }
+
+        @Override
+        public void configure() {
+            HashicorpVaultConfig.showDialog();
+        }
+
+        @Override
+        public CacheableConfiguration<?> getCacheableConfiguration() {
+            return HashicorpVaultConfig.get();
         }
     }
 }

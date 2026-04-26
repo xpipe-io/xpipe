@@ -91,7 +91,6 @@ public class AppJacksonModule extends SimpleModule {
         context.registerSubtypes(SecretRetrievalStrategy.getClasses());
         context.registerSubtypes(DataStorageGroupStrategy.getClasses());
         context.registerSubtypes(KeeperPasswordManager.KeeperAuth.getClasses());
-        context.registerSubtypes(HashicorpVaultPasswordManager.VaultAuth.getClasses());
 
         super.setupModule(context);
     }

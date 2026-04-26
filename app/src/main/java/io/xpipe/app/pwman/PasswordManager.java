@@ -2,6 +2,8 @@ package io.xpipe.app.pwman;
 
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.process.ShellControl;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.OsType;
 import io.xpipe.core.SecretValue;
@@ -103,6 +105,10 @@ public interface PasswordManager {
 
     default Duration getCacheDuration() {
         return Duration.ofSeconds(30);
+    }
+
+    default ShellControl getShell() throws Exception {
+        return LocalShell.get(getClass());
     }
 
     @Getter

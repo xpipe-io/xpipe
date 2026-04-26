@@ -106,6 +106,9 @@ public class AppMainWindow {
                         },
                         stage.focusedProperty()));
         var scene = new Scene(content, -1, -1, false);
+        scene.focusOwnerProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println(newValue);
+        });
         content.prefWidthProperty().bind(scene.widthProperty());
         content.prefHeightProperty().bind(scene.heightProperty());
         scene.setFill(Color.TRANSPARENT);
