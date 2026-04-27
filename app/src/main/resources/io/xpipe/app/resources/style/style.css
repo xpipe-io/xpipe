@@ -126,7 +126,7 @@
     -fx-opacity: 0.9;
 }
 
-.root:light .store-creator-busy {
+.root:light .busy-loading-icon {
     -fx-text-fill: -color-bg-default;
 }
 

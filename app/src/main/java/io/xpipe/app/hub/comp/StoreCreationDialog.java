@@ -247,7 +247,7 @@ public class StoreCreationDialog {
                                     () -> {
                                         return model.getBusy().get()
                                                 ? new LoadingIconComp(model.getBusy(), AppFontSizes::base)
-                                                        .style("store-creator-busy")
+                                                        .style("busy-loading-icon")
                                                         .build()
                                                 : null;
                                     },
