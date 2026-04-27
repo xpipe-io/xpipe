@@ -27,6 +27,7 @@ import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.control.Button;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -149,10 +150,12 @@ public class CertificateKeyFileStrategy implements SshIdentityStrategy {
 
         var implChoice = OptionsChoiceBuilder.builder().property(shortLivedCertImpl).allowNull(true).available(ShortLivedCertificateImpl.getClasses())
                 .transformer(entryComboBox -> {
-                    var hbox = new InputGroupComp(List.of(RegionBuilder.of(() -> entryComboBox), new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2w-wrench-outline"), () -> {
+                    var button = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2w-wrench-outline"), () -> {
                         shortLivedCertImpl.get().configure();
-                    })
-                            .describe(d -> d.nameKey("configure")).disable(shortLivedCertImpl.isNull()))).setMainReference(0).build();
+                    });
+                    button.describe(d -> d.nameKey("configure"));
+                    button.disable(BindingsHelper.mapBoolean(shortLivedCertImpl, v -> v == null || !v.supportsConfigure()));
+                    var hbox = new InputGroupComp(List.of(RegionBuilder.of(() -> entryComboBox), button)).setMainReference(0).build();
                     return hbox;
                 }).build();
 
@@ -222,7 +225,7 @@ public class CertificateKeyFileStrategy implements SshIdentityStrategy {
     @Override
     public void prepareParent(ShellControl parent) throws Exception {
         preparePrivateKey(parent);
-        prepareCertificateKey(parent);
+        prepareCertificateKey(parent, false);
     }
 
     private void preparePrivateKey(ShellControl parent) throws Exception {
@@ -258,7 +261,7 @@ public class CertificateKeyFileStrategy implements SshIdentityStrategy {
         }
     }
 
-    private void prepareCertificateKey(ShellControl parent) throws Exception {
+    private void prepareCertificateKey(ShellControl parent, boolean alreadyRenewed) throws Exception {
         if (certificate == null) {
             return;
         }
@@ -291,16 +294,18 @@ public class CertificateKeyFileStrategy implements SshIdentityStrategy {
                     throw ErrorEventFactory.expected(new IllegalArgumentException(msg));
                 }
 
-                if (parent.isLocal() && shortLivedCertImpl != null && shortLivedCertImpl.isComplete() && shortLivedCertImpl.supportsRenew()) {
+                if (!alreadyRenewed && parent.isLocal() && shortLivedCertImpl != null && shortLivedCertImpl.isComplete() && shortLivedCertImpl.supportsRenew()) {
                     ShortLivedCertificateImpl.showDialogAndWait(file.toAbsoluteFilePath(parent).resolveTildeHome(parent.view().userHome()), s,
                             shortLivedCertImpl);
+                    prepareCertificateKey(parent, true);
                 } else {
-                    throw ErrorEventFactory.expected(new IllegalStateException("Certificate " + s.getFileName() + " is expired"));
+                    throw ErrorEventFactory.expected(new IllegalStateException("Certificate " + s.getFileName() + " is expired" + (alreadyRenewed ? " and failed to renew" : "")));
                 }
             }
         } else {
-            if (parent.isLocal() && shortLivedCertImpl != null && shortLivedCertImpl.isComplete() && shortLivedCertImpl.supportsRenew()) {
+            if (!alreadyRenewed && parent.isLocal() && shortLivedCertImpl != null && shortLivedCertImpl.isComplete() && shortLivedCertImpl.supportsRenew()) {
                 shortLivedCertImpl.renew(file.toAbsoluteFilePath(parent).resolveTildeHome(parent.view().userHome()), s);
+                prepareCertificateKey(parent, true);
             } else {
                 throw ErrorEventFactory.expected(new IllegalStateException("Certificate file " + s + " does not exist"));
             }

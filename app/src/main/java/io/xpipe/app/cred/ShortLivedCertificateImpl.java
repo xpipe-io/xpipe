@@ -2,22 +2,23 @@ package io.xpipe.app.cred;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.TextAreaComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
 import io.xpipe.core.FilePath;
-import javafx.beans.property.Property;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.*;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -25,9 +26,11 @@ import lombok.extern.jackson.Jacksonized;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -38,6 +41,7 @@ public interface ShortLivedCertificateImpl extends Checkable {
         var l = new ArrayList<Class<?>>();
         l.add(HashicorpVault.class);
         l.add(OpenBao.class);
+        l.add(Custom.class);
         return l;
     }
 
@@ -65,13 +69,14 @@ public interface ShortLivedCertificateImpl extends Checkable {
     }
 
     static boolean checkValid(String text) {
-        var matcher = Pattern.compile("Valid: from ([^ ]+) to ([^ ]+)").matcher(text);
+        var matcher = Pattern.compile("Valid: from (\\S+) to (\\S+)").matcher(text);
         if (!matcher.find()) {
             return true;
         }
 
         try {
-            var parser = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss", Locale.US);
+            var parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+            parser.setTimeZone(TimeZone.getTimeZone("UTC"));
             var from = parser.parse(matcher.group(1)).toInstant();
             var to = parser.parse(matcher.group(2)).toInstant();
             return from.isBefore(Instant.now()) && to.isAfter(Instant.now());
@@ -92,6 +97,10 @@ public interface ShortLivedCertificateImpl extends Checkable {
     }
 
     default boolean supportsRenew() {
+        return true;
+    }
+
+    default boolean supportsConfigure() {
         return true;
     }
 
@@ -186,6 +195,54 @@ public interface ShortLivedCertificateImpl extends Checkable {
         public void configure() {
             HashicorpVaultConfig.showDialog();
         }
+
+        @Override
+        public CacheableConfiguration<?> getCacheableConfiguration() {
+            return HashicorpVaultConfig.get();
+        }
+    }
+
+    @JsonTypeName("custom")
+    @Value
+    @Jacksonized
+    @Builder
+    class Custom implements ShortLivedCertificateImpl {
+
+        @SuppressWarnings("unused")
+        public static OptionsBuilder createOptions(Property<Custom> p) {
+            var command = new SimpleObjectProperty<>(p.getValue().getCommand());
+
+            return new OptionsBuilder()
+                    .nameAndDescription("certificateRenewCommand")
+                    .addComp(IntegratedTextAreaComp.script(new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()), command), command)
+                    .nonNull()
+                    .bind(
+                            () -> {
+                                return Custom.builder().command(command.get()).build();
+                            },
+                            p);
+        }
+
+        ShellScript command;
+
+        @Override
+        public void checkComplete() throws ValidationException {
+            Validators.nonNull(command);
+        }
+
+        @Override
+        public void renew(FilePath privateKey, FilePath certificate) throws Exception {
+            var sc = LocalShell.get(Custom.class);
+            sc.command(command.getValue()).execute();
+        }
+
+        @Override
+        public boolean supportsConfigure() {
+            return false;
+        }
+
+        @Override
+        public void configure() {}
 
         @Override
         public CacheableConfiguration<?> getCacheableConfiguration() {

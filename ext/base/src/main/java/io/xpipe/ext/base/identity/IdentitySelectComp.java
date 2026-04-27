@@ -139,7 +139,7 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
             return;
         }
 
-        StoreCreationDialog.showEdit(id.get());
+        StoreCreationDialog.showEdit(id.get(), id.get().getStore(), true, false, ignored -> {});
     }
 
     @Override
