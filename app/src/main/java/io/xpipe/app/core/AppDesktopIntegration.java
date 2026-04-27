@@ -61,6 +61,21 @@ public class AppDesktopIntegration {
                     }
                 });
 
+                Desktop.getDesktop().setAboutHandler(e -> {
+                    if (PlatformState.getCurrent() != PlatformState.RUNNING) {
+                        return;
+                    }
+
+                    if (AppLayoutModel.get() != null) {
+                        AppLayoutModel.get().selectSettings();
+                    }
+                });
+
+                Desktop.getDesktop().setQuitHandler((e, response) -> {
+                    response.cancelQuit();
+                    AppOperationMode.externalShutdown();
+                });
+
                 // URL open operations have to be handled in a special way on macOS!
                 Desktop.getDesktop().setOpenURIHandler(e -> {
                     AppOpenArguments.handle(List.of(e.getURI().toString()));
