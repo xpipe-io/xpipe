@@ -67,7 +67,8 @@ public class NativeWinWindowControl {
                     var wpid = new IntByReference();
                     User32.INSTANCE.GetWindowThreadProcessId(hWnd, wpid);
                     if (wpid.getValue() == pid) {
-                        refs.add(new NativeWinWindowControl(hWnd));
+                        var c = new NativeWinWindowControl(hWnd);
+                        refs.add(c);
                     }
                     return true;
                 },
@@ -151,6 +152,10 @@ public class NativeWinWindowControl {
 
     public boolean isVisible() {
         return User32.INSTANCE.IsWindowVisible(windowHandle);
+    }
+
+    public boolean isDestroyed() {
+        return !User32.INSTANCE.IsWindow(windowHandle);
     }
 
     public void moveToFront() {

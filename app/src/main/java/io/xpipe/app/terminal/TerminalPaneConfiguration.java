@@ -86,9 +86,9 @@ public class TerminalPaneConfiguration {
             var content = """
                           %s
                           echo 'Transcript started, output file is "sessions\\%s"'
-                          Start-Transcript -Force -LiteralPath "%s" > $Out-Null
+                          Start-Transcript -Force -LiteralPath "%s" | Out-Null
                           & "%s"
-                          Stop-Transcript > $Out-Null
+                          Stop-Transcript | Out-Null
                           echo 'Transcript stopped, output file is "sessions\\%s"'
                           """.formatted(
                             TerminalLauncher.getTerminalRegisterCommand(

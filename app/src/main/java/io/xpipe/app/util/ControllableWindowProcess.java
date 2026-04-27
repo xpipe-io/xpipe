@@ -45,6 +45,8 @@ public abstract class ControllableWindowProcess {
 
     public abstract boolean isActive();
 
+    public abstract boolean isDestroyed();
+
     public abstract Rect queryBounds();
 
     public void updateBoundsState() {

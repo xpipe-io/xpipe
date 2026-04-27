@@ -137,6 +137,11 @@ public final class ControllableWindowsProcess extends ControllableWindowProcess 
     }
 
     @Override
+    public boolean isDestroyed() {
+        return control.isDestroyed();
+    }
+
+    @Override
     public Rect queryBounds() {
         return control.getBounds();
     }

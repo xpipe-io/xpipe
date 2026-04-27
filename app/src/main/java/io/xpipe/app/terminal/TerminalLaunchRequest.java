@@ -41,6 +41,14 @@ public class TerminalLaunchRequest {
     @NonFinal
     CountDownLatch latch;
 
+    public TerminalLaunchRequest(UUID request, ProcessControl processControl, TerminalInitScriptConfig config, FilePath workingDirectory) {
+        this.request = request;
+        this.processControl = processControl;
+        this.config = config;
+        this.workingDirectory = workingDirectory;
+        this.shellPid = -1;
+    }
+
     public Path waitForCompletion() throws BeaconServerException {
         while (true) {
             if (latch.getCount() > 0) {

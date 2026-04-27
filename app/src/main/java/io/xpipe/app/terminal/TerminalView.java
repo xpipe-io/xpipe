@@ -276,6 +276,11 @@ public class TerminalView {
             this.controllable = controllable;
         }
 
+        @Override
+        public boolean isRunning() {
+            return super.isRunning() && !controllable.isDestroyed();
+        }
+
         public boolean manageBorders() {
             return terminalType != null
                     && terminalType instanceof TrackableTerminalType t

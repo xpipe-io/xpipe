@@ -111,7 +111,7 @@ public class TerminalLauncher {
                     true);
             var singlePane = new TerminalPaneConfiguration(UUID.randomUUID(), title, 0, script, sc.getShellDialect());
             var config = new TerminalLaunchConfiguration(null, title, title, true, List.of(singlePane));
-            launch(type, config, new CountDownLatch(0));
+            launch(type, config);
         }
     }
 
@@ -127,7 +127,6 @@ public class TerminalLauncher {
     }
 
     public static void open(List<Config> configs, boolean preferTabs, ExternalTerminalType type) throws Exception {
-        var latch = new CountDownLatch(configs.size());
         var paneList = new ArrayList<TerminalPaneConfiguration>();
         for (Config config : configs) {
             var entry = config.getEntry();
@@ -149,7 +148,7 @@ public class TerminalLauncher {
                             ? type.additionalInitCommands()
                             : TerminalInitFunction.none());
             TerminalLauncherManager.submitAsync(
-                    config.getRequest(), config.getProcessControl(), terminalConfig, config.getDirectory(), latch);
+                    config.getRequest(), config.getProcessControl(), terminalConfig, config.getDirectory());
 
             var paneIndex = configs.indexOf(config);
             var paneConfig = TerminalPaneConfiguration.create(
@@ -199,27 +198,26 @@ public class TerminalLauncher {
             TerminalMultiplexerManager.registerSessionLaunch(launchConfig);
 
             if (launchMultiplexerTabInExistingTerminal(launchConfig)) {
-                latch.await();
                 return;
             }
 
             var multiplexerConfig = launchMultiplexerTabInNewTerminal(launchConfig);
             if (multiplexerConfig.isPresent()) {
-                launch(type, multiplexerConfig.get(), latch);
+                launch(type, multiplexerConfig.get());
                 return;
             }
         }
 
         var proxyConfig = launchProxy(launchConfig);
         if (proxyConfig.isPresent()) {
-            launch(type, proxyConfig.get(), latch);
+            launch(type, proxyConfig.get());
             return;
         }
 
-        launch(type, launchConfig, latch);
+        launch(type, launchConfig);
     }
 
-    private static void launch(ExternalTerminalType type, TerminalLaunchConfiguration config, CountDownLatch latch)
+    private static void launch(ExternalTerminalType type, TerminalLaunchConfiguration config)
             throws Exception {
         if (type == null) {
             return;
@@ -227,7 +225,6 @@ public class TerminalLauncher {
 
         try {
             type.launch(config);
-            latch.await();
         } catch (Exception ex) {
             var modMsg = ex.getMessage() != null && ex.getMessage().contains("Unable to find application named")
                     ? ex.getMessage() + " in installed /Applications on this system"
