@@ -22,19 +22,17 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-public interface CertificateImpl extends Checkable {
+public interface ShortLivedCertificateImpl extends Checkable {
 
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();
@@ -43,7 +41,7 @@ public interface CertificateImpl extends Checkable {
         return l;
     }
 
-    static void showDialogAndWait(FilePath privateKey, FilePath certificate, CertificateImpl impl) throws Exception {
+    static void showDialogAndWait(FilePath privateKey, FilePath certificate, ShortLivedCertificateImpl impl) throws Exception {
         var summary = queryCertificateSummary(LocalShell.getShell(), certificate);
         var text = new TextAreaComp(new ReadOnlyObjectWrapper<>(summary));
         text.prefWidth(600);
@@ -109,7 +107,7 @@ public interface CertificateImpl extends Checkable {
     @Value
     @Jacksonized
     @Builder
-    class OpenBao implements CertificateImpl {
+    class OpenBao implements ShortLivedCertificateImpl {
 
         @SuppressWarnings("unused")
         public static OptionsBuilder createOptions(Property<OpenBao> p) {
@@ -154,7 +152,7 @@ public interface CertificateImpl extends Checkable {
     @Value
     @Jacksonized
     @Builder
-    class HashicorpVault implements CertificateImpl {
+    class HashicorpVault implements ShortLivedCertificateImpl {
 
         @SuppressWarnings("unused")
         public static OptionsBuilder createOptions(Property<HashicorpVault> p) {

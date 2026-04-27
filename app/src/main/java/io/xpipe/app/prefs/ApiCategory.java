@@ -28,8 +28,11 @@ public class ApiCategory extends AppPrefsCategory {
                         .addToggle(prefs.enableHttpApi)
                         .pref(prefs.apiKey)
                         .addComp(new TextFieldComp(prefs.apiKey).maxWidth(getCompWidth()), prefs.apiKey)
+                        .pref(prefs.allowExternalApiRequests)
+                        .addToggle(prefs.allowExternalApiRequests)
                         .pref(prefs.disableApiAuthentication)
-                        .addToggle(prefs.disableApiAuthentication))
+                        .addToggle(prefs.disableApiAuthentication)
+                )
                 .buildComp();
     }
 }

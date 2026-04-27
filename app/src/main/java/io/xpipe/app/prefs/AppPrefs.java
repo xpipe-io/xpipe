@@ -425,6 +425,8 @@ public final class AppPrefs {
             mapVaultShared(new GlobalStringProperty(UUID.randomUUID().toString()), "apiKey", String.class, true);
     final BooleanProperty disableApiAuthentication =
             mapLocal(new GlobalBooleanProperty(false), "disableApiAuthentication", Boolean.class, false);
+    final BooleanProperty allowExternalApiRequests =
+            mapLocal(new GlobalBooleanProperty(false), "allowExternalApiRequests", Boolean.class, false);
 
     @Getter
     private final StringProperty lockCrypt =
@@ -603,6 +605,10 @@ public final class AppPrefs {
 
     public ObservableBooleanValue disableApiAuthentication() {
         return disableApiAuthentication;
+    }
+
+    public ObservableBooleanValue allowExternalApiRequests() {
+        return allowExternalApiRequests;
     }
 
     public ObservableBooleanValue enableHttpApi() {
@@ -852,6 +858,10 @@ public final class AppPrefs {
 
         if (sshVerboseOutput.get()) {
             sshVerboseOutput.set(false);
+        }
+
+        if (enableMcpServer.get()) {
+            enableHttpApi.set(true);
         }
 
         PrefsProvider.getAll().forEach(prov -> prov.fixLocalValues());

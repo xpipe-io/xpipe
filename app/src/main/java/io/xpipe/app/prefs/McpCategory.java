@@ -132,6 +132,12 @@ public class McpCategory extends AppPrefsCategory {
             return tabPane;
         });
 
+        prefs.enableMcpServer.addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                prefs.enableHttpApi.set(true);
+            }
+        });
+
         return new OptionsBuilder()
                 .title("mcpServer")
                 .sub(new OptionsBuilder()

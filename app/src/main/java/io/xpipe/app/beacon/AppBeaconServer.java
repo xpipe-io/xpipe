@@ -17,6 +17,7 @@ import lombok.Getter;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -139,8 +140,10 @@ public class AppBeaconServer {
             });
             return t;
         });
+        var addr = AppPrefs.get().allowExternalApiRequests().get() ? Inet4Address.getByAddress(new byte[]{0, 0, 0, 0}) :
+                Inet4Address.getByAddress(new byte[]{0x7f, 0x00, 0x00, 0x01});
         server = HttpServer.create(
-                new InetSocketAddress(Inet4Address.getByAddress(new byte[] {0x7f, 0x00, 0x00, 0x01}), port), 10);
+                new InetSocketAddress(addr, port), 10);
         BeaconInterface.getAll().forEach(beaconInterface -> {
             var handler = new BeaconRequestHandler<>(beaconInterface);
             server.createContext(beaconInterface.getPath(), exchange -> {

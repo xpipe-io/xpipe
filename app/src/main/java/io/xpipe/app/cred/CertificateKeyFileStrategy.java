@@ -61,8 +61,8 @@ public class CertificateKeyFileStrategy implements SshIdentityStrategy {
                                 ? p.getValue().getCertificate().toAbsoluteFilePath(null)
                                 : null);
 
-        var impl = new SimpleObjectProperty<>(p.getValue().getImpl());
-        var implConfig = BindingsHelper.flatMap(impl, implValue -> implValue != null ?
+        var shortLivedCertImpl = new SimpleObjectProperty<>(p.getValue().getShortLivedCertImpl());
+        var shortLivedCertImplConfig = BindingsHelper.flatMap(shortLivedCertImpl, implValue -> implValue != null ?
                 implValue.getCacheableConfiguration().getValue() : new ReadOnlyObjectWrapper<>());
 
         p.addListener((observable, oldValue, newValue) -> {
@@ -138,7 +138,7 @@ public class CertificateKeyFileStrategy implements SshIdentityStrategy {
                 var fs = config.getFileSystem() != null && config.getFileSystem().getValue() != null ?
                         config.getFileSystem().getValue().getStore() :
                         new LocalStore();
-                CertificateImpl.showDialogAndWait(keyPath.get(), certificate.get(), impl.get());
+                ShortLivedCertificateImpl.showDialogAndWait(keyPath.get(), certificate.get(), shortLivedCertImpl.get());
             });
                 })
                 .describe(d -> d.nameKey("checkValidity"))
@@ -147,12 +147,12 @@ public class CertificateKeyFileStrategy implements SshIdentityStrategy {
         var certificateBox = new InputGroupComp(List.of(certificateField, checkButton));
         certificateBox.setMainReference(certificateField);
 
-        var implChoice = OptionsChoiceBuilder.builder().property(impl).allowNull(true).available(CertificateImpl.getClasses())
+        var implChoice = OptionsChoiceBuilder.builder().property(shortLivedCertImpl).allowNull(true).available(ShortLivedCertificateImpl.getClasses())
                 .transformer(entryComboBox -> {
                     var hbox = new InputGroupComp(List.of(RegionBuilder.of(() -> entryComboBox), new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2w-wrench-outline"), () -> {
-                        impl.get().configure();
+                        shortLivedCertImpl.get().configure();
                     })
-                            .describe(d -> d.nameKey("configure")).disable(impl.isNull()))).setMainReference(0).build();
+                            .describe(d -> d.nameKey("configure")).disable(shortLivedCertImpl.isNull()))).setMainReference(0).build();
                     return hbox;
                 }).build();
 
@@ -189,9 +189,9 @@ public class CertificateKeyFileStrategy implements SshIdentityStrategy {
                 .nameAndDescription("certificatePublicKey")
                 .addComp(certificateBox, certificate)
                 .nonNull()
-                .nameAndDescription("certificateImpl")
-                .sub(implChoice.build(), impl)
-                .addProperty(implConfig)
+                .nameAndDescription("shortLivedCertImpl")
+                .sub(implChoice.build(), shortLivedCertImpl)
+                .addProperty(shortLivedCertImplConfig)
                 .checkComplete()
                 .bind(
                         () -> {
@@ -199,7 +199,7 @@ public class CertificateKeyFileStrategy implements SshIdentityStrategy {
                                     ContextualFileReference.of(keyPath.get()),
                                     keyPasswordProperty.get(),
                                     ContextualFileReference.of(certificate.get()),
-                                    impl.get()
+                                    shortLivedCertImpl.get()
                             );
                         },
                         p);
@@ -208,14 +208,15 @@ public class CertificateKeyFileStrategy implements SshIdentityStrategy {
     ContextualFileReference file;
     SecretRetrievalStrategy password;
     ContextualFileReference certificate;
-    CertificateImpl impl;
+    ShortLivedCertificateImpl shortLivedCertImpl;
 
     public void checkComplete() throws ValidationException {
         Validators.nonNull(file);
         Validators.nonNull(password);
         Validators.nonNull(certificate);
-        Validators.nonNull(impl);
-        impl.checkComplete();
+        if (shortLivedCertImpl != null) {
+            shortLivedCertImpl.checkComplete();
+        }
     }
 
     @Override
@@ -276,8 +277,8 @@ public class CertificateKeyFileStrategy implements SshIdentityStrategy {
                         .executeAndCheck();
             }
 
-            var summary = CertificateImpl.queryCertificateSummary(parent, s);
-            var valid = CertificateImpl.checkValid(summary);
+            var summary = ShortLivedCertificateImpl.queryCertificateSummary(parent, s);
+            var valid = ShortLivedCertificateImpl.checkValid(summary);
 
             if (!valid) {
                 var pubKey = SshIdentityStrategy.getPublicKeyPath(file.toAbsoluteFilePath(parent).resolveTildeHome(parent.view().userHome()));
@@ -290,15 +291,16 @@ public class CertificateKeyFileStrategy implements SshIdentityStrategy {
                     throw ErrorEventFactory.expected(new IllegalArgumentException(msg));
                 }
 
-                if (parent.isLocal() && impl != null && impl.isComplete() && impl.supportsRenew()) {
-                    CertificateImpl.showDialogAndWait(file.toAbsoluteFilePath(parent).resolveTildeHome(parent.view().userHome()), s, impl);
+                if (parent.isLocal() && shortLivedCertImpl != null && shortLivedCertImpl.isComplete() && shortLivedCertImpl.supportsRenew()) {
+                    ShortLivedCertificateImpl.showDialogAndWait(file.toAbsoluteFilePath(parent).resolveTildeHome(parent.view().userHome()), s,
+                            shortLivedCertImpl);
                 } else {
                     throw ErrorEventFactory.expected(new IllegalStateException("Certificate " + s.getFileName() + " is expired"));
                 }
             }
         } else {
-            if (parent.isLocal() && impl != null && impl.isComplete() && impl.supportsRenew()) {
-                impl.renew(file.toAbsoluteFilePath(parent).resolveTildeHome(parent.view().userHome()), s);
+            if (parent.isLocal() && shortLivedCertImpl != null && shortLivedCertImpl.isComplete() && shortLivedCertImpl.supportsRenew()) {
+                shortLivedCertImpl.renew(file.toAbsoluteFilePath(parent).resolveTildeHome(parent.view().userHome()), s);
             } else {
                 throw ErrorEventFactory.expected(new IllegalStateException("Certificate file " + s + " does not exist"));
             }
