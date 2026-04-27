@@ -51,6 +51,10 @@ public class AppDesktopIntegration {
             // This will initialize the toolkit on macOS and create the dock icon
             // macOS does not like applications that run fully in the background, so always do it
             if (OsType.ofLocal() == OsType.MACOS && Desktop.isDesktopSupported()) {
+
+                // TODO: These don't show up in macOS 26 any more
+                // Are the JDK methods broken?
+
                 Desktop.getDesktop().setPreferencesHandler(e -> {
                     if (PlatformState.getCurrent() != PlatformState.RUNNING) {
                         return;
@@ -69,11 +73,6 @@ public class AppDesktopIntegration {
                     if (AppLayoutModel.get() != null) {
                         AppLayoutModel.get().selectSettings();
                     }
-                });
-
-                Desktop.getDesktop().setQuitHandler((e, response) -> {
-                    response.cancelQuit();
-                    AppOperationMode.externalShutdown();
                 });
 
                 // URL open operations have to be handled in a special way on macOS!
