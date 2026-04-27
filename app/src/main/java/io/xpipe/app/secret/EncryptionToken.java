@@ -94,7 +94,7 @@ public class EncryptionToken {
             return false;
         }
 
-        if (userToken == EncryptionToken.ofUser() && isUser != null) {
+        if (usedUserToken == EncryptionToken.ofUser() && isUser != null) {
             return isUser;
         }
 
