@@ -10,6 +10,7 @@ import io.xpipe.app.platform.PlatformState;
 import io.xpipe.app.platform.PlatformThreadWatcher;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviour;
+import io.xpipe.app.prefs.CloseBehaviourDialog;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.update.AppDistributionType;
@@ -281,7 +282,7 @@ public abstract class AppOperationMode {
 
     public static void onWindowClose() {
         CloseBehaviour action;
-        if (AppPrefs.get() != null && !isInStartup() && !isInShutdown()) {
+        if (AppPrefs.get() != null && !isInStartup() && !isInShutdown() && !CloseBehaviourDialog.showIfNeeded()) {
             action = AppPrefs.get().closeBehaviour().getValue();
         } else {
             action = CloseBehaviour.QUIT;

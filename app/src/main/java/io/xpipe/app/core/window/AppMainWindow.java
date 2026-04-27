@@ -297,23 +297,8 @@ public class AppMainWindow {
         });
 
         stage.setOnCloseRequest(e -> {
-            if (!AppOperationMode.isInStartup()
-                    && !AppOperationMode.isInShutdown()
-                    && !CloseBehaviourDialog.showIfNeeded()) {
-                e.consume();
-                return;
-            }
-
-            // Close dialogs
-            AppDialog.getModalOverlays().clear();
-
-            // Close other windows
-            Stage.getWindows().stream().filter(w -> !w.equals(stage)).toList().forEach(w -> w.fireEvent(e));
-
-            // Close self
-            stage.close();
-            AppOperationMode.onWindowClose();
             e.consume();
+            AppOperationMode.onWindowClose();
         });
 
         stage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
