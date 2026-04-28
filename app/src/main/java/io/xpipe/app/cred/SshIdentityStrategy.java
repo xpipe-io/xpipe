@@ -110,5 +110,9 @@ public interface SshIdentityStrategy {
         return new SecretNoneStrategy();
     }
 
+    default boolean supportsIdentityApply() {
+        return true;
+    }
+
     PublicKeyStrategy getPublicKeyStrategy();
 }

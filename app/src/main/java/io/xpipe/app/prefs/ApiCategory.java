@@ -30,6 +30,7 @@ public class ApiCategory extends AppPrefsCategory {
                         .addComp(new TextFieldComp(prefs.apiKey).maxWidth(getCompWidth()), prefs.apiKey)
                         .pref(prefs.allowExternalApiRequests)
                         .addToggle(prefs.allowExternalApiRequests)
+                        .hide(Boolean.getBoolean("XPIPE_API_SERVER"))
                         .pref(prefs.disableApiAuthentication)
                         .addToggle(prefs.disableApiAuthentication)
                 )

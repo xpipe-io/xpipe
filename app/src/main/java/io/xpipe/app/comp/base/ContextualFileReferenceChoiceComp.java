@@ -217,20 +217,30 @@ public class ContextualFileReferenceChoiceComp extends RegionBuilder<HBox> {
         filePath.subscribe(s -> PlatformThread.runLaterIfNeeded(() -> {
             prop.set(s != null ? s.toString() : null);
         }));
-        prop.addListener((observable, oldValue, newValue) -> {
-            filePath.setValue(newValue != null && !newValue.isBlank() ? FilePath.of(newValue.strip()) : null);
-        });
         var fileNameComp = new TextFieldComp(prop).apply(struc -> HBox.setHgrow(struc, Priority.ALWAYS));
 
-        if (prompt != null) {
-            fileNameComp.apply(struc -> {
-                prompt.subscribe(filePath -> {
-                    PlatformThread.runLaterIfNeeded(() -> {
-                        struc.setPromptText(filePath != null ? filePath.toString() : null);
-                    });
+        fileNameComp.apply(struc -> {
+            if (prompt != null) {
+            prompt.subscribe(filePath -> {
+                PlatformThread.runLaterIfNeeded(() -> {
+                    struc.setPromptText(filePath != null ? filePath.toString() : null);
                 });
             });
-        }
+            }
+
+            prop.addListener((observable, oldValue, newValue) -> {
+                if (!struc.isFocused()) {
+                    filePath.setValue(newValue != null && !newValue.isBlank() ? FilePath.of(newValue.strip()) : null);
+                }
+            });
+
+            struc.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue) {
+                    var v = prop.getValue();
+                    filePath.setValue(v != null && !v.isBlank() ? FilePath.of(v.strip()) : null);
+                }
+            });
+        });
 
         return fileNameComp;
     }

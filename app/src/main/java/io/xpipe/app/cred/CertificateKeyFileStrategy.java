@@ -6,6 +6,7 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.LocalStore;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.BindingsHelper;
@@ -79,15 +80,20 @@ public class CertificateKeyFileStrategy implements SshIdentityStrategy {
                             : null);
         });
         keyPath.addListener((observable, oldValue, newValue) -> {
-            if (newValue == null || newValue.equals(certificate.get())) {
+            if (certificate.get() != null) {
+                return;
+            }
+
+            if (newValue == null) {
                 return;
             }
 
             ThreadHelper.runFailableAsync(() -> {
-                var pubCert = FilePath.of(newValue + "-cert.pub");
+                var baseName = newValue.getExtension().isPresent() ? newValue.getBaseName() : newValue;
+                var pubCert = FilePath.of(baseName + "-cert.pub");
                 var fs = config.getFileSystem() != null && config.getFileSystem().getValue() != null
                         ? config.getFileSystem().getValue().getStore()
-                        : new LocalStore();
+                        : (ShellStore) DataStorage.get().local().getStore();
                 var ex = fs.getOrStartSession().view().fileExists(pubCert);
                 if (ex) {
                     Platform.runLater(() -> {
@@ -138,7 +144,7 @@ public class CertificateKeyFileStrategy implements SshIdentityStrategy {
             ThreadHelper.runFailableAsync(() -> {
                 var fs = config.getFileSystem() != null && config.getFileSystem().getValue() != null ?
                         config.getFileSystem().getValue().getStore() :
-                        new LocalStore();
+                        (ShellStore) DataStorage.get().local().getStore();
                 ShortLivedCertificateImpl.showDialogAndWait(keyPath.get(), certificate.get(), shortLivedCertImpl.get());
             });
                 })
@@ -337,6 +343,12 @@ public class CertificateKeyFileStrategy implements SshIdentityStrategy {
             s = s.resolveTildeHome(FilePath.of(AppSystemInfo.ofCurrent().getUserHome()));
         }
         return s;
+    }
+
+    @Override
+    public boolean supportsIdentityApply() {
+        // This is managed by the server in the trusted user ca keys
+        return false;
     }
 
     public PublicKeyStrategy getPublicKeyStrategy() {

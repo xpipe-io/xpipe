@@ -140,7 +140,8 @@ public class AppBeaconServer {
             });
             return t;
         });
-        var addr = AppPrefs.get().allowExternalApiRequests().get() ? Inet4Address.getByAddress(new byte[]{0, 0, 0, 0}) :
+        var external = AppPrefs.get().allowExternalApiRequests().get() || Boolean.getBoolean("XPIPE_API_SERVER");
+        var addr = external ? Inet4Address.getByAddress(new byte[]{0, 0, 0, 0}) :
                 Inet4Address.getByAddress(new byte[]{0x7f, 0x00, 0x00, 0x01});
         server = HttpServer.create(
                 new InetSocketAddress(addr, port), 10);
