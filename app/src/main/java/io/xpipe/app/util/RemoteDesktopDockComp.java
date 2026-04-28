@@ -138,16 +138,18 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
             });
             }
         });
-        var ref = new WeakReference<>(content);
-        GlobalTimer.scheduleUntil(Duration.ofMillis(200), false, () -> {
-            if (ref.get() == null) {
-                return true;
-            }
+        if (RemoteDesktopWindow.get().supportsDocking()) {
+            var ref = new WeakReference<>(content);
+            GlobalTimer.scheduleUntil(Duration.ofMillis(200), false, () -> {
+                if (ref.get() == null) {
+                    return true;
+                }
 
-            var rect = w.getDockBounds();
-            requiresRestart.set(w.getProcesses().stream().anyMatch(e -> e.requiresRestart(rect.getW(), rect.getH())));
-            return false;
-        });
+                var rect = w.getDockBounds();
+                requiresRestart.set(rect != null && w.getProcesses().stream().anyMatch(e -> e.requiresRestart(rect.getW(), rect.getH())));
+                return false;
+            });
+        }
         restartButton.show(requiresRestart);
         buttons.getChildren().add(restartButton.build());
     }
