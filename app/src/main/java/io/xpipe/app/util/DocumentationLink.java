@@ -71,6 +71,7 @@ public enum DocumentationLink {
     SSH_CONNECTION_RESET("troubleshoot/ssh#connection-reset"),
     SSH_CONNECTION_CLOSED("troubleshoot/ssh#connection-closed-by-remote-host"),
     SSH_KEY_PERMISSIONS("troubleshoot/ssh#key-permissions-too-open"),
+    SSH_MACOS_FIDO2("troubleshoot/ssh#macos-fido2"),
     SSH_NO_ROUTE("troubleshoot/ssh#no-route-to-host"),
     SSH_AGENT_REFUSAL("troubleshoot/ssh#agent-refused-operation"),
     SSH_CONNECTION_TIMEOUT("troubleshoot/ssh#connection-timeout"),

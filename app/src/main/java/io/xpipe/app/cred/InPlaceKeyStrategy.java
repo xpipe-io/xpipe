@@ -8,10 +8,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ValidationException;
-import io.xpipe.app.platform.ClipboardHelper;
-import io.xpipe.app.platform.LabelGraphic;
-import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.platform.OptionsChoiceBuilder;
+import io.xpipe.app.platform.*;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
@@ -26,6 +23,8 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -71,17 +70,22 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                             AppI18n.activeLanguage()));
             struc.setEditable(false);
         });
+        var generatedKeyBase = new SimpleObjectProperty<>(key.get());
+        var generateButtonDisabled = Bindings.createBooleanBinding(() -> {
+            return key.get() == null || (publicKey.get() != null && key.get().equals(generatedKeyBase.get()));
+        }, key, publicKey);
         var generateButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2c-cog-refresh-outline"), () -> {
                     ThreadHelper.runAsync(() -> {
                         var generated = ProcessControlProvider.get()
                                 .generatePublicSshKey(InPlaceSecretValue.of(key.get()), keyPasswordProperty.get());
                         if (generated != null) {
                             publicKey.set(generated);
+                            generatedKeyBase.set(key.getValue());
                         }
                     });
                 })
                 .describe(d -> d.nameKey("generatePublicKey"))
-                .disable(key.isNull().or(publicKey.isNotNull()).or(keyPasswordProperty.isNull()));
+                .disable(generateButtonDisabled);
         var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
                     ClipboardHelper.copyText(publicKey.get());
                 })
