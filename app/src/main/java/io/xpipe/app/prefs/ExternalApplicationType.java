@@ -134,8 +134,8 @@ public interface ExternalApplicationType extends PrefsValue {
             var app = FlatpakCache.getApp(getFlatpakId());
             if (app.isEmpty()) {
                 throw ErrorEventFactory.expected(new IOException(
-                        "Executable " + getExecutable() + " not found in PATH nor as a flatkpak " + getFlatpakId()
-                                + " not installed. Install it and refresh the environment by restarting XPipe"));
+                        "Executable " + getExecutable() + " not found in PATH and flatpak package " + getFlatpakId()
+                                + " not installed."));
             }
 
             return FlatpakCache.getRunCommand(getFlatpakId());

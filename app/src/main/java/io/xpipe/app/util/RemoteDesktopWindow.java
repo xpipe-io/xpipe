@@ -139,6 +139,7 @@ public class RemoteDesktopWindow {
         PlatformThread.runLaterIfNeededBlocking(() -> {
             if (stage != null && stage.isShowing()) {
                 stage.setIconified(false);
+                stage.requestFocus();
                 return;
             }
 

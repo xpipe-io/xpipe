@@ -16,6 +16,7 @@ import javafx.util.StringConverter;
 
 import lombok.Setter;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 
@@ -69,13 +70,15 @@ public class ChoicePaneComp extends RegionBuilder<VBox> {
         });
 
         cb.prefWidthProperty().bind(vbox.widthProperty());
+
+        var regionMap = new HashMap<Entry, Region>();
         cb.valueProperty().subscribe(n -> {
             if (n == null) {
                 if (vbox.getChildren().size() > 1) {
                     vbox.getChildren().remove(1);
                 }
             } else {
-                var region = n.comp().build();
+                var region = regionMap.computeIfAbsent(n, entry -> entry.comp().build());
                 if (vbox.getChildren().size() == 1) {
                     vbox.getChildren().add(region);
                 } else {

@@ -57,7 +57,7 @@ public class RemoteDesktopDockView implements WindowDockListener {
     }
 
     public synchronized void select(RemoteDesktopDockEntry p) {
-        if (!entries.contains(p)) {
+        if (p != null && !entries.contains(p)) {
             return;
         }
 
