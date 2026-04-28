@@ -39,9 +39,6 @@ public class RemoteDesktopWindow {
     private RemoteDesktopWindow(State state, RemoteDesktopDockView model) {
         this.state = state;
         this.model = model;
-        if (state != null) {
-            locked.set(state.locked);
-        }
     }
 
     public static void init() {
@@ -71,9 +68,6 @@ public class RemoteDesktopWindow {
 
     @Getter
     private final ObservableList<RemoteDesktopDockEntry> processes = FXCollections.observableArrayList();
-
-    @Getter
-    private final BooleanProperty locked = new SimpleBooleanProperty(true);
 
     @Getter
     private final BooleanProperty restartTriggered = new SimpleBooleanProperty();
@@ -183,13 +177,8 @@ public class RemoteDesktopWindow {
         model.closeWindow(entry);
     }
 
-    public void toggleLock() {
-        locked.set(!locked.get());
-        state = state.toBuilder().locked(locked.get()).build();
-    }
-
     public void trackInternal(String name, String icon, DataStoreColor color, DataStoreEntry e, RemoteDesktopDockContentEntry entry) {
-        var toTrack = new RemoteDesktopDockEntry(name, icon, color, e, null, entry, locked.get(), null, null);
+        var toTrack = new RemoteDesktopDockEntry(name, icon, color, e, null, entry, null, null);
         model.track(toTrack);
     }
 
@@ -238,7 +227,7 @@ public class RemoteDesktopWindow {
                     continue;
                 }
 
-                var entry = new RemoteDesktopDockEntry(name, icon, color, e, c, null, locked.get(), w, h);
+                var entry = new RemoteDesktopDockEntry(name, icon, color, e, c, null, w, h);
                 model.track(entry);
                 return true;
             }
@@ -299,7 +288,7 @@ public class RemoteDesktopWindow {
             return;
         }
 
-        state = new State(state != null && state.locked, false, stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight());
+        state = new State(false, stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight());
     }
 
     private void setupWindowListeners() {
@@ -334,7 +323,6 @@ public class RemoteDesktopWindow {
     @Jacksonized
     @Value
     public static class State {
-        boolean locked;
         boolean maximized;
         double windowX;
         double windowY;

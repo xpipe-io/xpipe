@@ -154,10 +154,8 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
         String height = null;
         if (!configuration.isRemoteApp() && dock && window != null) {
             window.show();
-            if (window.getLocked().get()) {
-                width = "/w:" + window.getDockBounds().getW();
-                height = "/h:" + window.getDockBounds().getH();
-            }
+            width = "/w:" + window.getDockBounds().getW();
+            height = "/h:" + window.getDockBounds().getH();
         }
         var setCache = prepareLocalhostRegistryCache(configuration);
 
@@ -177,7 +175,7 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
                     window.getDockBounds().getW(), window.getDockBounds().getH(),
                     process, Duration.ofSeconds(60), p -> {
                 var bounds = p.queryBounds();
-                return bounds.getW() > 500 && bounds.getH() > 500;
+                return !p.isDialog() && bounds.getW() > 500 && bounds.getH() > 500;
             });
         }
 

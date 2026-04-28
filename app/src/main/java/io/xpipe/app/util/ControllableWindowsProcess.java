@@ -142,6 +142,11 @@ public final class ControllableWindowsProcess extends ControllableWindowProcess 
     }
 
     @Override
+    public boolean isDialog() {
+        return control.isDialog();
+    }
+
+    @Override
     public Rect queryBounds() {
         return control.getBounds();
     }

@@ -101,6 +101,11 @@ public class NativeWinWindowControl {
                 User32.SWP_NOACTIVATE | User32.SWP_NOMOVE | User32.SWP_NOZORDER);
     }
 
+    public boolean isDialog() {
+        var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_STYLE);
+        return (style & User32.WS_POPUP) != 0;
+    }
+
     public void restoreBorders() {
         var rect = getBounds();
 

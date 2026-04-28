@@ -150,18 +150,6 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
         });
         restartButton.show(requiresRestart);
         buttons.getChildren().add(restartButton.build());
-
-        var lockText = Bindings.createStringBinding(() -> {
-            return w.getLocked().get() ? AppI18n.get("sizeLocked") : AppI18n.get("sizeUnlocked");
-        }, w.getLocked(), AppI18n.activeLanguage());
-        var lockIcon = Bindings.<LabelGraphic>createObjectBinding(() -> {
-            return new LabelGraphic.IconGraphic(w.getLocked().get() ? "mdi2l-lock-outline" : "mdi2l-lock-open-variant-outline");
-        }, w.getLocked());
-        var lock = new ButtonComp(lockText, lockIcon, () -> {
-            w.toggleLock();
-            w.focus();
-        }).describe(d -> d.nameKey("toggleSizeLock").showTooltips(true)).style("lock-button").build();
-        buttons.getChildren().add(lock);
     }
 
     private void updateSelection(ToolBar bar, RemoteDesktopDockEntry entry) {

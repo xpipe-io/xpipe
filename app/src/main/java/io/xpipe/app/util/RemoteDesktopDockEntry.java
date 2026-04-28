@@ -15,13 +15,11 @@ public class RemoteDesktopDockEntry {
     ControllableWindowProcess process;
     RemoteDesktopDockContentEntry internal;
 
-    boolean lockedSize;
     Integer initialWidth;
     Integer initialHeight;
 
     public boolean requiresRestart(int w, int h) {
-        return isExternal() &&
-                isLockedSize() && (w != getInitialWidth() || h != getInitialHeight());
+        return isExternal() && (w != getInitialWidth() || h != getInitialHeight());
     }
 
     public boolean isInternal() {

@@ -9,6 +9,7 @@ import io.xpipe.app.util.DocumentationLink;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.util.RemoteDesktopWindow;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -21,7 +22,7 @@ public class InternalVncClient implements ExternalVncClient {
     public void launch(VncLaunchConfig configuration) throws Exception {
         var w = RemoteDesktopWindow.get();
         w.show();
-        var session = ProcessControlProvider.get().createVncSession(configuration.getEntry(), w.getLocked());
+        var session = ProcessControlProvider.get().createVncSession(configuration.getEntry(), new ReadOnlyBooleanWrapper(true));
         w.trackInternal(DataStorage.get().getStoreEntryDisplayName(configuration.getEntry().get()),
                 configuration.getEntry().get().getEffectiveIconFile(),
                 DataStorage.get().getEffectiveColor(configuration.getEntry().get()),

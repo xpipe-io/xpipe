@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
@@ -164,7 +165,7 @@ public class StoreCategoryWrapper {
 
     public synchronized void update() {
         // We are probably in shutdown then
-        if (StoreViewState.get() == null) {
+        if (AppOperationMode.isInShutdown() || StoreViewState.get() == null) {
             return;
         }
 
