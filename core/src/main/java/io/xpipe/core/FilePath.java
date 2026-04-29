@@ -118,7 +118,12 @@ public final class FilePath {
     }
 
     public FilePath getBaseName() {
-        if (!getFileName().contains(".")) {
+        var name = getFileName();
+        var lastDot = name.lastIndexOf(".");
+        if (lastDot == 0) {
+            throw new IllegalStateException("getBaseName() called on a dotfile: " + value);
+        }
+        if (lastDot < 0) {
             return this;
         }
 
