@@ -34,7 +34,7 @@ public class RemoteDesktopAppRdpClient implements ExternalApplicationType.MacApp
     }
 
     @Override
-    public boolean supportsPasswordPassing() {
+    public boolean supportsPasswordPassing(RdpLaunchConfig config) {
         return false;
     }
 

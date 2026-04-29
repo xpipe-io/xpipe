@@ -199,7 +199,7 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
     }
 
     @Override
-    public boolean supportsPasswordPassing() {
+    public boolean supportsPasswordPassing(RdpLaunchConfig config) {
         return LocalShell.getLocalPowershell().isPresent();
     }
 
@@ -232,7 +232,7 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
     private RdpConfig getAdaptedConfig(RdpLaunchConfig configuration) throws Exception {
         var input = configuration.getConfig();
         var pass = configuration.getPassword();
-        if (input.get("password 51").isPresent() || !supportsPasswordPassing() || pass == null) {
+        if (input.get("password 51").isPresent() || !supportsPasswordPassing(configuration) || pass == null) {
             return input.overlay(Map.of("smart sizing", new RdpConfig.TypedValue("i", smartSizing ? "1" : "0")));
         }
 

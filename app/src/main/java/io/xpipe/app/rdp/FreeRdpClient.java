@@ -66,7 +66,7 @@ public class FreeRdpClient implements ExternalRdpClient {
     }
 
     @Override
-    public boolean supportsPasswordPassing() {
+    public boolean supportsPasswordPassing(RdpLaunchConfig config) {
         return true;
     }
 
