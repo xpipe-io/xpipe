@@ -84,10 +84,9 @@ public class RemoteDesktopWindow {
 
         stage = new Stage();
         stage.initStyle(StageStyle.UNIFIED);
-        var scene = new Scene(new Region());
+        var scene = new Scene(new RemoteDesktopDockComp().build());
         AppWindowStyle.setSceneFill(scene);
         stage.setScene(scene);
-        stage.getScene().setRoot(new RemoteDesktopDockComp().build());
         stage.setWidth(AppMainWindow.get() != null ? AppMainWindow.get().getStage().getWidth() : 1280);
         stage.setHeight(AppMainWindow.get() != null ? AppMainWindow.get().getStage().getHeight() : 780);
         stage.titleProperty().bind(PlatformThread.sync(createTitle()));
