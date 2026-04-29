@@ -208,7 +208,9 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
             dock.style("dock");
             stack.getChildren().add(dock.build());
         } else {
-            stack.getChildren().add(new Region());
+            var r = new Region();
+            r.getStyleClass().add("dock");
+            stack.getChildren().add(r);
         }
 
         w.getSelected().subscribe(entry -> {
