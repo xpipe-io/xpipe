@@ -22,7 +22,7 @@ public class InternalVncClient implements ExternalVncClient {
     public void launch(VncLaunchConfig configuration) throws Exception {
         var w = RemoteDesktopWindow.get();
         w.show();
-        var session = ProcessControlProvider.get().createVncSession(configuration.getEntry(), new ReadOnlyBooleanWrapper(true));
+        var session = ProcessControlProvider.get().createVncSession(configuration.getEntry());
         w.trackInternal(DataStorage.get().getStoreEntryDisplayName(configuration.getEntry().get()),
                 configuration.getEntry().get().getEffectiveIconFile(),
                 DataStorage.get().getEffectiveColor(configuration.getEntry().get()),
