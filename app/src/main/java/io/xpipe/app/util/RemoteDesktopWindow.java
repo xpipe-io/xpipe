@@ -115,7 +115,8 @@ public class RemoteDesktopWindow {
         AppWindowStyle.addStylesheets(stage.getScene());
         AppWindowStyle.addClickShield(stage);
         AppWindowStyle.addMaximizedPseudoClass(stage);
-        AppWindowStyle.addFontSize(stage);
+        AppWindowStyle.addFontSize(scene);
+        AppWindowStyle.addNavigationPseudoClasses(scene);
         AppTheme.initThemeHandlers(stage);
 
         setupWindowListeners();
@@ -179,9 +180,10 @@ public class RemoteDesktopWindow {
         model.closeWindow(entry);
     }
 
-    public void trackInternal(String name, String icon, DataStoreColor color, DataStoreEntry e, RemoteDesktopDockContentEntry entry) {
+    public RemoteDesktopDockEntry trackInternal(String name, String icon, DataStoreColor color, DataStoreEntry e, RemoteDesktopDockContentEntry entry) {
         var toTrack = new RemoteDesktopDockEntry(name, icon, color, e, null, entry, null, null);
         model.track(toTrack);
+        return toTrack;
     }
 
     public void trackExternal(String name, String icon, DataStoreColor color, DataStoreEntry e, int w, int h, Process process, Duration maxWait, Predicate<ControllableWindowProcess> filter) {

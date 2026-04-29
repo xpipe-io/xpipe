@@ -8,10 +8,13 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DocumentationLink;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.util.RemoteDesktopDockEntry;
 import io.xpipe.app.util.RemoteDesktopWindow;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 @Builder
 @Jacksonized
@@ -22,12 +25,16 @@ public class InternalVncClient implements ExternalVncClient {
     public void launch(VncLaunchConfig configuration) throws Exception {
         var w = RemoteDesktopWindow.get();
         w.show();
-        var session = ProcessControlProvider.get().createVncSession(configuration.getEntry());
-        w.trackInternal(DataStorage.get().getStoreEntryDisplayName(configuration.getEntry().get()),
+        var ref = new AtomicReference<RemoteDesktopDockEntry>();
+        var session = ProcessControlProvider.get().createVncSession(configuration.getEntry(), () -> {
+            w.close(ref.get());
+        });
+        ref.set(w.trackInternal(
+                DataStorage.get().getStoreEntryDisplayName(configuration.getEntry().get()),
                 configuration.getEntry().get().getEffectiveIconFile(),
                 DataStorage.get().getEffectiveColor(configuration.getEntry().get()),
                 configuration.getEntry().get(),
-                session);
+                session));
     }
 
     @Override

@@ -58,13 +58,18 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
                     value.setValue(e);
                 }
             });
-            b.describe(d -> d.name(e.name()));
 
             var stack = createStyle(e, b);
             var shortcut = e.combination();
             if (shortcut != null) {
                 stack.apply(struc -> struc.getProperties().put("shortcut", shortcut));
             }
+            b.describe(d -> {
+                d.name(e.name());
+                if (shortcut != null) {
+                    d.shortcut(shortcut);
+                }
+            });
             vbox.getChildren().add(stack.build());
         }
 

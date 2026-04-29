@@ -118,7 +118,7 @@ public class AppMainWindow {
         AppWindowStyle.addStylesheets(stage.getScene());
         AppWindowStyle.addClickShield(stage);
         AppWindowStyle.addMaximizedPseudoClass(stage);
-        AppWindowStyle.addFontSize(stage);
+        AppWindowStyle.addFontSize(scene);
         AppTheme.initThemeHandlers(stage);
 
         AppWindowTitle.getTitle().subscribe(s -> {

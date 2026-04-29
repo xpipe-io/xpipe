@@ -81,15 +81,20 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
 
     private void fillToolbar(Region content, ToolBar bar, List<? extends RemoteDesktopDockEntry> list) {
         var w = RemoteDesktopWindow.get();
+        bar.getItems().forEach(node -> node.getProperties().clear());
         bar.getItems().clear();
         for (var entry : list) {
+            var entryRef = new WeakReference<>(entry);
             var graphic = PrettyImageHelper.ofFixedSizeSquare(entry.getIcon(), 16).style("graphic").build();
 
             var label = new LabelComp(entry.getName()).build();
             label.setGraphic(graphic);
 
             var close = new IconButtonComp("mdi2c-close", () -> {
-                w.close(entry);
+                var v = entryRef.get();
+                if (v != null) {
+                    w.close(v);
+                }
             }).style("close-button")
                     .describe(d -> d.nameKey("close")).build();
             AppFontSizes.sm(close);
@@ -108,7 +113,10 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
             b.getStyleClass().add("tab-button");
             b.getProperties().put("entry", entry);
             b.setOnAction(event -> {
-                w.select(entry);
+                var v = entryRef.get();
+                if (v != null) {
+                    w.select(v);
+                }
                 event.consume();
             });
             bar.getItems().add(b);

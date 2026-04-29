@@ -39,7 +39,7 @@ public class AppSideWindow {
                 event.consume();
             });
             AppWindowBounds.fixInvalidStagePosition(s);
-            AppWindowStyle.addFontSize(s);
+            AppWindowStyle.addFontSize(s.getScene());
             a.getDialogPane().getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
                 if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
                     s.close();

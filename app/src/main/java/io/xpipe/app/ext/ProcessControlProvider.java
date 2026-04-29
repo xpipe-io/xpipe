@@ -47,7 +47,8 @@ public abstract class ProcessControlProvider {
     public abstract ShellStore subShellEnvironment(DataStoreEntryRef<ShellStore> s, ShellDialect dialect);
 
     public abstract RemoteDesktopDockContentEntry createVncSession(
-            DataStoreEntryRef<VncBaseStore> ref
+            DataStoreEntryRef<VncBaseStore> ref,
+            Runnable onKill
             );
 
     public abstract DataStoreEntryRef<ShellStore> elevated(DataStoreEntryRef<ShellStore> e);

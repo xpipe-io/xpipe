@@ -27,8 +27,8 @@ public class AppWindowStyle {
         });
     }
 
-    public static void addFontSize(Stage stage) {
-        stage.getScene().rootProperty().subscribe(root -> {
+    public static void addFontSize(Scene scene) {
+        scene.rootProperty().subscribe(root -> {
             AppFontSizes.base(root);
         });
     }
