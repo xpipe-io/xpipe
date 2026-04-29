@@ -2,6 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.window.AppMainWindow;
+import io.xpipe.app.core.window.AppModifiedStage;
 import io.xpipe.app.core.window.AppWindowStyle;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.PlatformThread;
@@ -111,6 +112,7 @@ public class RemoteDesktopWindow {
         if (AppPrefs.get() != null) {
             stage.opacityProperty().bind(PlatformThread.sync(AppPrefs.get().windowOpacity()));
         }
+        AppModifiedStage.prepareStage(stage);
         AppWindowStyle.addIcons(stage);
         AppWindowStyle.addStylesheets(stage.getScene());
         AppWindowStyle.addClickShield(stage);
