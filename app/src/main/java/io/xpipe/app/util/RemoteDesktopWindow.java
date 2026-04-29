@@ -85,7 +85,7 @@ public class RemoteDesktopWindow {
         stage = new Stage();
         stage.initStyle(StageStyle.UNIFIED);
         var scene = new Scene(new Region());
-        scene.setFill(Color.TRANSPARENT);
+        AppWindowStyle.setSceneFill(scene);
         stage.setScene(scene);
         stage.getScene().setRoot(new RemoteDesktopDockComp().build());
         stage.setWidth(AppMainWindow.get() != null ? AppMainWindow.get().getStage().getWidth() : 1280);

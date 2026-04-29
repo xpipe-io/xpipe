@@ -108,7 +108,7 @@ public class AppMainWindow {
         var scene = new Scene(content, -1, -1, false);
         content.prefWidthProperty().bind(scene.widthProperty());
         content.prefHeightProperty().bind(scene.heightProperty());
-        scene.setFill(Color.TRANSPARENT);
+        AppWindowStyle.setSceneFill(scene);
 
         stage.setScene(scene);
         if (AppPrefs.get() != null) {

@@ -86,7 +86,7 @@ public class AppSideWindow {
         if (AppMainWindow.get() != null && AppMainWindow.get().getStage().isShowing() && !AppMainWindow.get().getStage().isIconified()) {
             alert.initOwner(AppMainWindow.get().getStage());
         }
-        alert.getDialogPane().getScene().setFill(Color.TRANSPARENT);
+        AppWindowStyle.setSceneFill(alert.getDialogPane().getScene());
         var stage = (Stage) alert.getDialogPane().getScene().getWindow();
         AppModifiedStage.prepareStage(stage);
         AppWindowStyle.addIcons(stage);

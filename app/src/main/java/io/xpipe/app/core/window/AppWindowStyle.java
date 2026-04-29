@@ -2,15 +2,18 @@ package io.xpipe.app.core.window;
 
 import io.xpipe.app.core.*;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.css.PseudoClass;
 import javafx.scene.Scene;
 import javafx.scene.input.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.time.Duration;
@@ -18,6 +21,17 @@ import java.time.Instant;
 import java.util.List;
 
 public class AppWindowStyle {
+
+    public static void setSceneFill(Scene scene) {
+        if (OsType.ofLocal() != OsType.LINUX) {
+            scene.setFill(Color.TRANSPARENT);
+            return;
+        }
+
+        scene.fillProperty().bind(Bindings.createObjectBinding(() -> {
+            return AppPrefs.get() != null && AppPrefs.get().theme().getValue().isDark() ? Color.BLACK : Color.WHITE;
+        }, AppPrefs.get().theme()));
+    }
 
     public static void addMaximizedPseudoClass(Stage stage) {
         stage.getScene().rootProperty().subscribe(root -> {
