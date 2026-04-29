@@ -13,6 +13,7 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LocalFileTracker;
 import io.xpipe.app.util.ThreadHelper;
@@ -32,8 +33,8 @@ import lombok.extern.jackson.Jacksonized;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Value
@@ -42,6 +43,12 @@ import java.util.stream.Collectors;
 @JsonTypeName("inPlaceKey")
 @AllArgsConstructor
 public class InPlaceKeyStrategy implements SshIdentityStrategy {
+
+    private static final Set<String> KEYS = new HashSet<>();
+
+    public static boolean isInPlaceKey(String keyName) {
+        return KEYS.contains(keyName);
+    }
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<InPlaceKeyStrategy> p, SshIdentityStrategyChoiceConfig config) {
@@ -182,9 +189,11 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
     }
 
     private FilePath getTargetFilePath(ShellControl sc) {
+        var hash = Math.abs(Objects.hash(this, AppSystemInfo.ofCurrent().getUser()));
         var temp = sc.getSystemTemporaryDirectory()
                 .join("xpipe-"
-                        + Math.abs(Objects.hash(this, AppSystemInfo.ofCurrent().getUser())) + ".key");
+                        + hash + ".key");
+        KEYS.add(temp.getFileName());
         return temp;
     }
 

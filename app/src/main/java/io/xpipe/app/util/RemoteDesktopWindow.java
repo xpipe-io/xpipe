@@ -113,6 +113,7 @@ public class RemoteDesktopWindow {
         }
         AppWindowStyle.addIcons(stage);
         AppWindowStyle.addStylesheets(stage.getScene());
+        AppWindowStyle.addClickShield(stage);
         AppWindowStyle.addMaximizedPseudoClass(stage);
         AppWindowStyle.addFontSize(stage);
         AppTheme.initThemeHandlers(stage);
