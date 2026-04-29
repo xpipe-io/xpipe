@@ -32,7 +32,7 @@ public class NativeMacOsWindowControl {
     }
 
     public boolean setAppearance(boolean seamlessFrame, boolean darkMode) {
-        if (!AppProperties.get().isImage() || !AppProperties.get().isFullVersion()) {
+        if (!AppProperties.get().isFullVersion()) {
             return false;
         }
 

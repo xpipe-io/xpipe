@@ -13,6 +13,7 @@ import io.xpipe.app.platform.PlatformThread;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.ListChangeListener;
 import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
@@ -79,7 +80,7 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
         return vbox;
     }
 
-    private void fillToolbar(Region content, ToolBar bar, List<? extends RemoteDesktopDockEntry> list) {
+    private void fillToolbar(ToolBar bar, List<? extends RemoteDesktopDockEntry> list, ObservableBooleanValue requiresRestart) {
         var w = RemoteDesktopWindow.get();
         bar.getItems().forEach(node -> node.getProperties().clear());
         bar.getItems().clear();
@@ -129,7 +130,6 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
         buttons.setSpacing(6);
         bar.getItems().add(buttons);
 
-        var requiresRestart = new SimpleBooleanProperty();
         var restartButton = new ButtonComp(AppI18n.observable("reloadSizes"), new LabelGraphic.IconGraphic("mdi2r-restart"), () -> {
             w.getRestartTriggered().set(true);
             GlobalTimer.delay(() -> {
@@ -146,18 +146,6 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
             });
             }
         });
-        if (RemoteDesktopWindow.get().supportsDocking()) {
-            var ref = new WeakReference<>(content);
-            GlobalTimer.scheduleUntil(Duration.ofMillis(200), false, () -> {
-                if (ref.get() == null) {
-                    return true;
-                }
-
-                var rect = w.getDockBounds();
-                requiresRestart.set(rect != null && w.getProcesses().stream().anyMatch(e -> e.requiresRestart(rect.getW(), rect.getH())));
-                return false;
-            });
-        }
         restartButton.show(requiresRestart);
         buttons.getChildren().add(restartButton.build());
     }
@@ -178,10 +166,24 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
         var w = RemoteDesktopWindow.get();
         var bar = new ToolBar();
 
-        fillToolbar(content, bar, w.getProcesses());
+        var requiresRestart = new SimpleBooleanProperty();
+        if (RemoteDesktopWindow.get().supportsDocking()) {
+            var ref = new WeakReference<>(content);
+            GlobalTimer.scheduleUntil(Duration.ofMillis(200), false, () -> {
+                if (ref.get() == null) {
+                    return true;
+                }
+
+                var rect = w.getDockBounds();
+                requiresRestart.set(rect != null && w.getProcesses().stream().anyMatch(e -> e.requiresRestart(rect.getW(), rect.getH())));
+                return false;
+            });
+        }
+
+        fillToolbar(bar, w.getProcesses(), requiresRestart);
         w.getProcesses().addListener((ListChangeListener<? super RemoteDesktopDockEntry>) c -> {
             PlatformThread.runLaterIfNeeded(() -> {
-                fillToolbar(content, bar, c.getList());
+                fillToolbar(bar, c.getList(), requiresRestart);
                 updateSelection(bar, w.getSelected().get());
             });
         });
