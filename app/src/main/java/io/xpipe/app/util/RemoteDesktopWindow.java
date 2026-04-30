@@ -153,7 +153,7 @@ public class RemoteDesktopWindow {
             }
         });
 
-        if (!wasShowing) {
+        if (supportsDocking() && !wasShowing) {
             while (true) {
                 var bounds = getDockBounds();
                 if (bounds == null || bounds.getW() < 200 || bounds.getH() < 200) {

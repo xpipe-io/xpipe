@@ -25,6 +25,10 @@
     -fx-padding: 0 6 0 6;
 }
 
+.options-comp .long-description:hover .ikonli-font-icon.graphic, .options-comp .long-description:focused .ikonli-font-icon.graphic {
+    -fx-icon-color: white;
+}
+
 .options-comp .simple-titled-pane-comp > .content {
     -fx-padding: 0 9 6 9;
 }

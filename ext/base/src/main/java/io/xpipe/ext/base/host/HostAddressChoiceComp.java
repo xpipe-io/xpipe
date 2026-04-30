@@ -3,6 +3,8 @@ package io.xpipe.ext.base.host;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.platform.MenuHelper;
 
 import javafx.application.Platform;
@@ -127,6 +129,7 @@ public class HostAddressChoiceComp extends RegionBuilder<HBox> {
                 }
             };
         });
+        combo.setPrompt(AppI18n.observable("hostAddressPrompt"));
         combo.apply(struc -> {
             var skin = new ComboBoxListViewSkin<>(struc);
             MenuHelper.fixComboBoxSkin(skin);

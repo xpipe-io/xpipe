@@ -230,7 +230,7 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
                 var adapted = input.overlay(Map.of(
                         "winposstr", new RdpConfig.TypedValue("s", pos),
                         "pinconnectionbar", new RdpConfig.TypedValue("i", "0"),
-                        "displayconnectionbar", new RdpConfig.TypedValue("i", "1"),
+                        "displayconnectionbar", new RdpConfig.TypedValue("i", "0"),
                         "screen mode id", new RdpConfig.TypedValue("i", "1"),
                         "use multimon", new RdpConfig.TypedValue("i", "0"),
                         "smart sizing", new RdpConfig.TypedValue("i", "1")));

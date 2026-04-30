@@ -29,7 +29,7 @@ public class AppPrefsComp extends SimpleRegionBuilder {
         boxComp.apply(struc -> {
             struc.getStyleClass().add("prefs-box");
         });
-        boxComp.maxWidth(850);
+        boxComp.maxWidth(950);
         var box = boxComp.build();
 
         var pane = new GraphicDecorationStackPane();

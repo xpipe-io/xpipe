@@ -168,7 +168,7 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
                 }
 
                 var rect = w.getDockBounds();
-                requiresRestart.set(rect != null && w.getProcesses().stream().anyMatch(e -> e.requiresRestart(rect.getW(), rect.getH())));
+                requiresRestart.set(rect != null && w.getSelected().get() != null && w.getSelected().get().requiresRestart(rect.getW(), rect.getH()));
                 return false;
             });
         }

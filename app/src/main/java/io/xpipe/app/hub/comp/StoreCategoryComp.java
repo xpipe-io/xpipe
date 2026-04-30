@@ -155,7 +155,7 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
                 count,
                 RegionBuilder.hspacer(9),
                 statusButton.hide(showStatus.not())));
-        h.padding(new Insets(0, 10, 0, (category.getDepth() * 10)));
+        h.padding(new Insets(0, 10, 0, (category.getDepth() * 8)));
 
         var categoryButton = new ButtonComp(
                         null, new SimpleObjectProperty<>(new LabelGraphic.CompGraphic(h)), category::select)
