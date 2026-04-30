@@ -2,6 +2,7 @@ package io.xpipe.app.rdp;
 
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
+import io.xpipe.app.core.AppDisplayScale;
 import io.xpipe.app.util.RemoteDesktopWindow;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.window.AppDialog;
@@ -98,6 +99,7 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
     static OptionsBuilder createOptions(Property<MstscRdpClient> property) {
         var dock = new SimpleObjectProperty<>(property.getValue().isDock());
         var smartSizing = new SimpleObjectProperty<>(property.getValue().isSmartSizing());
+        var useSystemDisplayScale = new SimpleBooleanProperty(property.getValue().isUseSystemDisplayScale());
 
         var rdpSecurityValueHide = new SimpleBooleanProperty();
         var rdpSecurityValue = new SimpleBooleanProperty();
@@ -121,6 +123,9 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
                 .nameAndDescription("rdpSmartSizing")
                 .addToggle(smartSizing)
                 .hide(dock)
+                .nameAndDescription("rdpUseSystemDisplayScale")
+                .addToggle(useSystemDisplayScale)
+                .hide(AppDisplayScale.hasOnlyDefaultDisplayScale())
                 .nameAndDescription("disableRdpWindowsSecurityWarning")
                 .addToggle(rdpSecurityValue)
                 .hide(rdpSecurityValueHide)
@@ -128,12 +133,14 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
                         () -> MstscRdpClient.builder()
                                 .dock(dock.get())
                                 .smartSizing(smartSizing.get())
+                                .useSystemDisplayScale(useSystemDisplayScale.get())
                                 .build(),
                         property);
     }
 
     boolean dock;
     boolean smartSizing;
+    boolean useSystemDisplayScale;
 
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
@@ -154,8 +161,10 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
         String height = null;
         if (!configuration.isRemoteApp() && dock && window != null) {
             window.show();
-            width = "/w:" + window.getDockBounds().getW();
-            height = "/h:" + window.getDockBounds().getH();
+
+            var factor = useSystemDisplayScale ? AppDisplayScale.getEffectiveDisplayScale() : 1.0;
+            width = "/w:" + Math.round(window.getDockBounds().getW() / factor);
+            height = "/h:" + Math.round(window.getDockBounds().getH() / factor);
         }
         var setCache = prepareLocalhostRegistryCache(configuration);
 
@@ -174,8 +183,7 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
             window.trackExternal(configuration.getTitle(), entry.getEffectiveIconFile(), DataStorage.get().getEffectiveColor(entry), entry,
                     window.getDockBounds().getW(), window.getDockBounds().getH(),
                     process, Duration.ofSeconds(60), p -> {
-                var bounds = p.queryBounds();
-                return !p.isDialog() && bounds.getW() > 500 && bounds.getH() > 500;
+                return !p.isDialog();
             });
         }
 
@@ -209,6 +217,10 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
     }
 
     private RdpConfig getRemoteDesktopWindowConfig(RdpConfig input) {
+        if (useSystemDisplayScale) {
+            input = input.overlay(Map.of("desktopscalefactor", new RdpConfig.TypedValue("i", "200")));
+        }
+
         var window = RemoteDesktopWindow.get();
         if (dock && window != null) {
             window.show();
@@ -218,7 +230,7 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
                 var adapted = input.overlay(Map.of(
                         "winposstr", new RdpConfig.TypedValue("s", pos),
                         "pinconnectionbar", new RdpConfig.TypedValue("i", "0"),
-                        "displayconnectionbar", new RdpConfig.TypedValue("i", "0"),
+                        "displayconnectionbar", new RdpConfig.TypedValue("i", "1"),
                         "screen mode id", new RdpConfig.TypedValue("i", "1"),
                         "use multimon", new RdpConfig.TypedValue("i", "0"),
                         "smart sizing", new RdpConfig.TypedValue("i", "1")));

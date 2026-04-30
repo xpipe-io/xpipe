@@ -22,6 +22,7 @@ public interface ExternalRdpClient extends PrefsValue {
             case OsType.Linux ignored -> {
                 l.add(RemminaRdpClient.class);
                 l.add(FreeRdpClient.class);
+                l.add(KrdcRdpClient.class);
             }
             case OsType.MacOs ignored -> {
                 l.add(RemoteDesktopAppRdpClient.class);
@@ -55,7 +56,8 @@ public interface ExternalRdpClient extends PrefsValue {
             case OsType.Linux ignored -> {
                 var freeRdp = new FreeRdpClient();
                 var remmina = new RemminaRdpClient();
-                yield remmina.isAvailable() ? remmina : freeRdp.isAvailable() ? freeRdp : remmina;
+                var krdc = new KrdcRdpClient();
+                yield remmina.isAvailable() ? remmina : freeRdp.isAvailable() ? freeRdp : krdc.isAvailable() ? krdc : remmina;
             }
             case OsType.MacOs ignored -> {
                 var remoteDesktopApp = new RemoteDesktopAppRdpClient();

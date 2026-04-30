@@ -27,7 +27,7 @@ public class InternalVncClient implements ExternalVncClient {
         w.show();
         var ref = new AtomicReference<RemoteDesktopDockEntry>();
         var session = ProcessControlProvider.get().createVncSession(configuration.getEntry(), () -> {
-            w.close(ref.get());
+            w.close(ref.get(), false);
         });
         ref.set(w.trackInternal(
                 DataStorage.get().getStoreEntryDisplayName(configuration.getEntry().get()),

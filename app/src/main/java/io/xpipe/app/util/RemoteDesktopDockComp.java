@@ -12,6 +12,7 @@ import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.ListChangeListener;
@@ -89,19 +90,23 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
             var graphic = PrettyImageHelper.ofFixedSizeSquare(entry.getIcon(), 16).style("graphic").build();
 
             var label = new LabelComp(entry.getName()).build();
+            label.setAlignment(Pos.CENTER_LEFT);
             label.setGraphic(graphic);
+            label.setGraphicTextGap(6);
 
             var close = new IconButtonComp("mdi2c-close", () -> {
                 var v = entryRef.get();
                 if (v != null) {
-                    w.close(v);
+                    ThreadHelper.runAsync(() -> {
+                        w.close(v, true);
+                    });
                 }
             }).style("close-button")
                     .describe(d -> d.nameKey("close")).build();
-            AppFontSizes.sm(close);
+            AppFontSizes.xs(close);
 
-            var hbox = new HBox(label, close);
-            hbox.setSpacing(6);
+            var hbox = new HBox(label, new Spacer(), close);
+            hbox.setSpacing(4);
             hbox.setAlignment(Pos.CENTER_LEFT);
 
             var b = new Button(null, hbox);
@@ -126,27 +131,15 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
         bar.getItems().add(new Spacer());
 
         var buttons = new HBox();
-        buttons.getStyleClass().add("buttons");
+        buttons.setFillHeight(true);
+        buttons.getStyleClass().add("control-buttons");
         buttons.setSpacing(6);
         bar.getItems().add(buttons);
 
         var restartButton = new ButtonComp(AppI18n.observable("reloadSizes"), new LabelGraphic.IconGraphic("mdi2r-restart"), () -> {
-            w.getRestartTriggered().set(true);
-            GlobalTimer.delay(() -> {
-                w.getRestartTriggered().set(false);
-            }, Duration.ofSeconds(15));
-
-            var rect = w.getDockBounds();
-            var toRestart = w.getProcesses().stream().filter(e -> e.requiresRestart(rect.getW(), rect.getH())).toList();
-
-            for (RemoteDesktopDockEntry e : toRestart) {
-            ThreadHelper.runFailableAsync(() -> {
-                    w.close(e);
-                    e.getEntry().getProvider().launch(e.getEntry()).run();
-            });
-            }
+            w.reconnectResize();
         });
-        restartButton.show(requiresRestart);
+        restartButton.visible(requiresRestart);
         buttons.getChildren().add(restartButton.build());
     }
 

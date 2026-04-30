@@ -70,9 +70,6 @@ public class RemoteDesktopWindow {
     @Getter
     private final ObservableList<RemoteDesktopDockEntry> processes = FXCollections.observableArrayList();
 
-    @Getter
-    private final BooleanProperty restartTriggered = new SimpleBooleanProperty();
-
     public boolean supportsDocking() {
         return OsType.ofLocal() == OsType.WINDOWS;
     }
@@ -84,28 +81,27 @@ public class RemoteDesktopWindow {
 
         stage = new Stage();
         stage.initStyle(StageStyle.UNIFIED);
-        var scene = new Scene(new RemoteDesktopDockComp().build());
+        var scene = new Scene(new Region());
         AppWindowStyle.setSceneFill(scene);
         stage.setScene(scene);
+        scene.setRoot(new RemoteDesktopDockComp().build());
         stage.setWidth(AppMainWindow.get() != null ? AppMainWindow.get().getStage().getWidth() : 1280);
         stage.setHeight(AppMainWindow.get() != null ? AppMainWindow.get().getStage().getHeight() : 780);
         stage.titleProperty().bind(PlatformThread.sync(createTitle()));
 
-        // We close this automatically after all children are gone
         stage.setOnCloseRequest(event -> {
-            // Allow to close stuck window if somehow it is still showing with no tabs
             if (processes.isEmpty()) {
                 return;
             }
 
-            AppCache.update("remoteDesktopWindowState", state);
-            // The dock handles the closing of the tabs
-            if (supportsDocking()) {
-                event.consume();
-            } else {
+            event.consume();
+
+            ThreadHelper.runAsync(() -> {
+                AppCache.update("remoteDesktopWindowState", state);
                 model.onClose();
-                event.consume();
-            }
+                updateState();
+                closeIfNecessary();
+            });
         });
 
         if (AppPrefs.get() != null) {
@@ -138,9 +134,10 @@ public class RemoteDesktopWindow {
     }
 
     @SneakyThrows
-    public void show() {
+    public synchronized void show() {
+        var wasShowing = stage != null && stage.isShowing();
         PlatformThread.runLaterIfNeededBlocking(() -> {
-            if (stage != null && stage.isShowing()) {
+            if (wasShowing) {
                 stage.setIconified(false);
                 stage.requestFocus();
                 return;
@@ -156,14 +153,17 @@ public class RemoteDesktopWindow {
             }
         });
 
-        // Wait two more pulses for window to take correct size
-        var latch = new CountDownLatch(1);
-        Platform.runLater(() -> {
-            Platform.runLater(() -> {
-                latch.countDown();
-            });
-        });
-        latch.await();
+        if (!wasShowing) {
+            while (true) {
+                var bounds = getDockBounds();
+                if (bounds == null || bounds.getW() < 200 || bounds.getH() < 200) {
+                    ThreadHelper.sleep(10);
+                    continue;
+                }
+
+                break;
+            }
+        }
     }
 
     public void focus() {
@@ -177,8 +177,22 @@ public class RemoteDesktopWindow {
         selected.set(entry);
     }
 
-    public void close(RemoteDesktopDockEntry entry) {
+    public void close(RemoteDesktopDockEntry entry, boolean closeWindowIfNeeded) {
         model.closeWindow(entry);
+        if (closeWindowIfNeeded) {
+            closeIfNecessary();
+        }
+    }
+
+    public void reconnectResize() {
+        var rect = getDockBounds();
+        var toRestart = getProcesses().stream().filter(e -> e.requiresRestart(rect.getW(), rect.getH())).toList();
+        for (var e : toRestart) {
+            ThreadHelper.runFailableAsync(() -> {
+                close(e, false);
+                e.getEntry().getProvider().launch(e.getEntry()).run();
+            });
+        }
     }
 
     public RemoteDesktopDockEntry trackInternal(String name, String icon, DataStoreColor color, DataStoreEntry e, RemoteDesktopDockContentEntry entry) {
@@ -265,18 +279,13 @@ public class RemoteDesktopWindow {
     }
 
     private void updateState() {
-        if (restartTriggered.get()) {
-            model.clearDead();
-            DerivedObservableList.wrap(processes, true).setContent(model.getEntries());
-            selected.set(model.getSelected());
-            return;
-        }
-
-        var oldSize = processes.size();
         model.clearDead();
         DerivedObservableList.wrap(processes, true).setContent(model.getEntries());
         selected.set(model.getSelected());
-        if (oldSize > 0 && processes.isEmpty()) {
+    }
+
+    private void closeIfNecessary() {
+        if (processes.isEmpty()) {
             PlatformThread.runLaterIfNeededBlocking(() -> {
                 stage.hide();
             });
