@@ -38,6 +38,7 @@ public interface ExternalVncClient extends PrefsValue {
                 l.add(TigerVncClient.Linux.class);
                 l.add(RemoteViewerVncClient.Linux.class);
                 l.add(RealVncClient.Linux.class);
+                l.add(KrdcVncClient.class);
             }
             case OsType.MacOs ignored -> {
                 l.add(ScreenSharingVncClient.class);
