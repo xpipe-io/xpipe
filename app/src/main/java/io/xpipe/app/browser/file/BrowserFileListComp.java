@@ -162,11 +162,16 @@ public final class BrowserFileListComp extends SimpleRegionBuilder {
                         return null;
                     }
 
+                    if (fileList.getFileSystemModel().getFilter().getValue() != null) {
+                        return AppI18n.get("emptyFilteredDirectory");
+                    }
+
                     return AppI18n.get("emptyDirectory");
                 },
                 AppI18n.activeLanguage(),
                 fileList.getFileSystemModel().getBusy(),
-                fileList.getFileSystemModel().getCurrentPath());
+                fileList.getFileSystemModel().getCurrentPath(),
+                fileList.getFileSystemModel().getFilter());
         placeholder.textProperty().bind(PlatformThread.sync(placeholderText));
         table.setPlaceholder(placeholder);
         AppFontSizes.base(placeholder);
