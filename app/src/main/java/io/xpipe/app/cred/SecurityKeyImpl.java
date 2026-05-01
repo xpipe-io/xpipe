@@ -1,7 +1,5 @@
 package io.xpipe.app.cred;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -11,9 +9,13 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -82,7 +84,6 @@ public interface SecurityKeyImpl {
         }
     }
 
-
     @JsonTypeName("openSc")
     @Value
     @Jacksonized
@@ -117,7 +118,6 @@ public interface SecurityKeyImpl {
         }
     }
 
-
     @JsonTypeName("macOsKeychain")
     @Value
     @Jacksonized
@@ -129,12 +129,13 @@ public interface SecurityKeyImpl {
             var file =
                     switch (sc.getOsType()) {
                         case OsType.MacOs ignored -> FilePath.of("/usr/lib/ssh-keychain.dylib");
-                        default -> throw ErrorEventFactory.expected(new UnsupportedOperationException("macOS keychain is not supported on other operating systems"));
+                        default ->
+                            throw ErrorEventFactory.expected(new UnsupportedOperationException(
+                                    "macOS keychain is not supported on other operating systems"));
                     };
             return file;
         }
     }
-
 
     @JsonTypeName("customLibrary")
     @Value
@@ -143,8 +144,7 @@ public interface SecurityKeyImpl {
     class Custom implements SecurityKeyImpl {
 
         @SuppressWarnings("unused")
-        public static OptionsBuilder createOptions(
-                Property<Custom> p, SshIdentityStrategyChoiceConfig config) {
+        public static OptionsBuilder createOptions(Property<Custom> p, SshIdentityStrategyChoiceConfig config) {
             var file = new SimpleObjectProperty<>(p.getValue().getFile());
 
             return new OptionsBuilder()
@@ -154,7 +154,7 @@ public interface SecurityKeyImpl {
                                     config.getFileSystem() != null
                                             ? config.getFileSystem()
                                             : new ReadOnlyObjectWrapper<>(
-                                            DataStorage.get().local().ref()),
+                                                    DataStorage.get().local().ref()),
                                     file,
                                     null,
                                     List.of(),

@@ -1,6 +1,5 @@
 package io.xpipe.app.cred;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ValidationException;
@@ -14,9 +13,12 @@ import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -32,14 +34,18 @@ import java.util.List;
 @AllArgsConstructor
 public class SecurityKeyStrategy implements SshIdentityKeyListStrategy {
 
-
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(
             Property<SecurityKeyStrategy> p, SshIdentityStrategyChoiceConfig config) {
         var publicKey = new SimpleStringProperty(p.getValue().getPublicKey());
         var securityKey = new SimpleObjectProperty<>(p.getValue().getSecurityKey());
 
-        var choice = OptionsChoiceBuilder.builder().property(securityKey).available(SecurityKeyImpl.getAvailable()).customConfiguration(config).build().build();
+        var choice = OptionsChoiceBuilder.builder()
+                .property(securityKey)
+                .available(SecurityKeyImpl.getAvailable())
+                .customConfiguration(config)
+                .build()
+                .build();
 
         return new OptionsBuilder()
                 .nameAndDescription("pkcs11Impl")
@@ -50,7 +56,10 @@ public class SecurityKeyStrategy implements SshIdentityKeyListStrategy {
                 .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false), publicKey)
                 .bind(
                         () -> {
-                            return SecurityKeyStrategy.builder().securityKey(securityKey.get()).publicKey(publicKey.get()).build();
+                            return SecurityKeyStrategy.builder()
+                                    .securityKey(securityKey.get())
+                                    .publicKey(publicKey.get())
+                                    .build();
                         },
                         p);
     }
@@ -76,9 +85,13 @@ public class SecurityKeyStrategy implements SshIdentityKeyListStrategy {
 
     @Override
     public CommandBuilder createListCommand() {
-        var cmd = CommandBuilder.of().add("ssh-keygen", "-D")
-                .addFile(sc -> securityKey.determineLibraryPath(sc).toUnix()).add("-e")
-                .fixedEnvironment("SSH_ASKPASS", AppInstallation.ofCurrent().getCliExecutablePath().toString())
+        var cmd = CommandBuilder.of()
+                .add("ssh-keygen", "-D")
+                .addFile(sc -> securityKey.determineLibraryPath(sc).toUnix())
+                .add("-e")
+                .fixedEnvironment(
+                        "SSH_ASKPASS",
+                        AppInstallation.ofCurrent().getCliExecutablePath().toString())
                 .fixedEnvironment("SSH_ASKPASS_REQUIRE", "force");
         ProcessControlProvider.get().addAskpassEnvironment(cmd, "[ssh-keygen]", null, null);
         return cmd;

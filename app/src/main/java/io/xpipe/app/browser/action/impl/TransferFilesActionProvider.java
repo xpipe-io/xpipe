@@ -52,12 +52,16 @@ public class TransferFilesActionProvider implements ActionProvider {
             }
 
             var sourceFs = operation.getFiles().getFirst().getFileSystem();
-            var sourceAccess = sourceFs.getShell().map(ShellControl::getLocalSystemAccess).orElse(null);
-            var sourceSlowRemote = sourceAccess != null && ParentSystemAccess.isEquivalent(sourceAccess, ParentSystemAccess.none());
+            var sourceAccess =
+                    sourceFs.getShell().map(ShellControl::getLocalSystemAccess).orElse(null);
+            var sourceSlowRemote =
+                    sourceAccess != null && ParentSystemAccess.isEquivalent(sourceAccess, ParentSystemAccess.none());
 
             var targetFs = operation.getTarget().getFileSystem();
-            var targetAccess = targetFs.getShell().map(ShellControl::getLocalSystemAccess).orElse(null);
-            var targetSlowRemote = targetAccess != null && ParentSystemAccess.isEquivalent(targetAccess, ParentSystemAccess.none());
+            var targetAccess =
+                    targetFs.getShell().map(ShellControl::getLocalSystemAccess).orElse(null);
+            var targetSlowRemote =
+                    targetAccess != null && ParentSystemAccess.isEquivalent(targetAccess, ParentSystemAccess.none());
 
             if (!sourceSlowRemote && !targetSlowRemote) {
                 return true;

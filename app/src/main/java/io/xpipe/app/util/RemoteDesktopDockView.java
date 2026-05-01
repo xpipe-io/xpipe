@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.issue.ErrorEventFactory;
+
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ public class RemoteDesktopDockView implements WindowDockListener {
 
     @Getter
     private final List<RemoteDesktopDockEntry> entries = new ArrayList<>();
+
     @Getter
     private RemoteDesktopDockEntry selected;
 

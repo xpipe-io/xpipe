@@ -1,7 +1,5 @@
 package io.xpipe.app.cred;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
@@ -17,7 +15,11 @@ import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
 import io.xpipe.core.FilePath;
+
 import javafx.beans.property.*;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -43,19 +45,29 @@ public interface ShortLivedCertificateImpl extends Checkable {
         return l;
     }
 
-    static void showDialogAndWait(FilePath privateKey, FilePath certificate, ShortLivedCertificateImpl impl) throws Exception {
+    static void showDialogAndWait(FilePath privateKey, FilePath certificate, ShortLivedCertificateImpl impl)
+            throws Exception {
         var summary = queryCertificateSummary(LocalShell.getShell(), certificate);
         var text = new TextAreaComp(new ReadOnlyObjectWrapper<>(summary));
         text.prefWidth(600);
         text.prefHeight(350);
-        var modal = ModalOverlay.of(AppI18n.observable(!checkValid(summary) ? "certificateDialogExpiredTitle" : "certificateDialogTitle", certificate.getFileName()), text, null);
+        var modal = ModalOverlay.of(
+                AppI18n.observable(
+                        !checkValid(summary) ? "certificateDialogExpiredTitle" : "certificateDialogTitle",
+                        certificate.getFileName()),
+                text,
+                null);
         var canRenew = impl != null && impl.supportsRenew();
         var renew = new SimpleBooleanProperty();
         if (canRenew) {
             modal.addButton(ModalButton.cancel());
-            modal.addButton(new ModalButton("renew", () -> {
-                renew.set(true);
-            }, true, true));
+            modal.addButton(new ModalButton(
+                    "renew",
+                    () -> {
+                        renew.set(true);
+                    },
+                    true,
+                    true));
         } else {
             modal.addButton(ModalButton.ok());
         }
@@ -85,11 +97,17 @@ public interface ShortLivedCertificateImpl extends Checkable {
     }
 
     static String queryCertificateSummary(ShellControl sc, FilePath f) throws Exception {
-        var out = sc.command(CommandBuilder.of().add("ssh-keygen").add("-L", "-f").addFile(f)).readStdoutOrThrow();
-        var minIndent = out.lines().skip(1).mapToInt(s -> {
-            var m = Pattern.compile("^ *").matcher(s);
-            return m.find() ? m.group().length() : 0;
-        }).min().orElse(0);
+        var out = sc.command(
+                        CommandBuilder.of().add("ssh-keygen").add("-L", "-f").addFile(f))
+                .readStdoutOrThrow();
+        var minIndent = out.lines()
+                .skip(1)
+                .mapToInt(s -> {
+                    var m = Pattern.compile("^ *").matcher(s);
+                    return m.find() ? m.group().length() : 0;
+                })
+                .min()
+                .orElse(0);
         var text = out.lines().skip(1).map(s -> s.substring(minIndent)).collect(Collectors.joining("\n"));
         return text;
     }
@@ -212,7 +230,12 @@ public interface ShortLivedCertificateImpl extends Checkable {
 
             return new OptionsBuilder()
                     .nameAndDescription("certificateRenewCommand")
-                    .addComp(IntegratedTextAreaComp.script(new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()), command), command)
+                    .addComp(
+                            IntegratedTextAreaComp.script(
+                                    new ReadOnlyObjectWrapper<>(
+                                            DataStorage.get().local().ref()),
+                                    command),
+                            command)
                     .nonNull()
                     .bind(
                             () -> {

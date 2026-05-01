@@ -32,7 +32,8 @@ public class IdentityApplyHubLeafProvider implements HubLeafProvider<IdentitySto
 
     @Override
     public boolean isApplicable(DataStoreEntryRef<IdentityStore> o) {
-        if (o.getStore().getSshIdentity() != null && !o.getStore().getSshIdentity().supportsIdentityApply()) {
+        if (o.getStore().getSshIdentity() != null
+                && !o.getStore().getSshIdentity().supportsIdentityApply()) {
             return false;
         }
 

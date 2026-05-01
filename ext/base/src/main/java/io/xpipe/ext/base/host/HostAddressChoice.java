@@ -11,9 +11,9 @@ import io.xpipe.app.platform.OptionsBuilder;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+
 import lombok.Builder;
 import lombok.Value;
 
@@ -39,10 +39,10 @@ public class HostAddressChoice {
         });
         var options = new OptionsBuilder();
         var addressField = new HostAddressChoiceComp(val, list, allowMutation).hgrow();
-        var sepLabel = new LabelComp(":")
-                .apply(label -> AppFontSizes.xxl(label))
-                .padding(new Insets(0, 0, 3, 0));
-        var portField = new IntFieldComp(portProperty).maxWidth(63)
+        var sepLabel =
+                new LabelComp(":").apply(label -> AppFontSizes.xxl(label)).padding(new Insets(0, 0, 3, 0));
+        var portField = new IntFieldComp(portProperty)
+                .maxWidth(63)
                 .apply(textField -> textField.setAlignment(Pos.BASELINE_CENTER));
         var box = new HorizontalComp(List.of(addressField, sepLabel, portField)).spacing(5);
         options.nameAndDescription("connectionInformation");
@@ -65,7 +65,8 @@ public class HostAddressChoice {
                             .handle();
 
                     return HostAddress.of(val.getValue(), fullList);
-                }, addressProperty);
+                },
+                addressProperty);
         return options;
     }
 }

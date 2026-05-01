@@ -47,7 +47,6 @@ public class IncusContainerActionProviderMenu implements HubBranchProvider<Incus
                 new CopyIpActionProvider(),
                 new IncusContainerConsoleActionProvider(),
                 new IncusContainerEditConfigActionProvider(),
-                new IncusContainerEditRunConfigActionProvider()
-        );
+                new IncusContainerEditRunConfigActionProvider());
     }
 }

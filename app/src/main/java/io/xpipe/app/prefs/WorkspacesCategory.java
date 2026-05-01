@@ -29,7 +29,10 @@ public class WorkspacesCategory extends AppPrefsCategory {
                         .licenseRequirement("workspaces")
                         // For some reason, creating this comp in AOT train mode causes freezes
                         // at least when the AOT cache is generated
-                        .addComp(AppProperties.get().isAotTrainMode() ? RegionBuilder.empty() : new WorkspaceOverviewComp().maxWidth(getCompWidth())))
+                        .addComp(
+                                AppProperties.get().isAotTrainMode()
+                                        ? RegionBuilder.empty()
+                                        : new WorkspaceOverviewComp().maxWidth(getCompWidth())))
                 .buildComp();
     }
 }

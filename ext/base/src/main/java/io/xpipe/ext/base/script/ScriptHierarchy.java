@@ -40,8 +40,9 @@ public class ScriptHierarchy {
                 var toAdd = new ScriptHierarchy(cat.getName(), cat, null, new ArrayList<>());
 
                 if (cat.getParentCategory().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID)) {
-                    if (hierarchy.getChildren().stream().noneMatch(scriptHierarchy ->
-                            scriptHierarchy.getCategory() != null && scriptHierarchy.getCategory().getUuid().equals(cat.getUuid()))) {
+                    if (hierarchy.getChildren().stream()
+                            .noneMatch(scriptHierarchy -> scriptHierarchy.getCategory() != null
+                                    && scriptHierarchy.getCategory().getUuid().equals(cat.getUuid()))) {
                         hierarchy.getChildren().add(toAdd);
                         changed = true;
                     }
@@ -53,8 +54,10 @@ public class ScriptHierarchy {
                     continue;
                 }
 
-                var alreadyAdded = parentHierarchy.get().getChildren().stream().anyMatch(scriptHierarchy ->
-                        scriptHierarchy.getCategory() != null && cat.getUuid().equals(scriptHierarchy.getCategory().getUuid()));
+                var alreadyAdded = parentHierarchy.get().getChildren().stream()
+                        .anyMatch(scriptHierarchy -> scriptHierarchy.getCategory() != null
+                                && cat.getUuid()
+                                        .equals(scriptHierarchy.getCategory().getUuid()));
                 if (alreadyAdded) {
                     continue;
                 }
@@ -92,7 +95,8 @@ public class ScriptHierarchy {
     }
 
     private static Optional<ScriptHierarchy> findParent(ScriptHierarchy hierarchy, DataStoreCategory category) {
-        if (hierarchy.getCategory() != null && category.getParentCategory().equals(hierarchy.getCategory().getUuid())) {
+        if (hierarchy.getCategory() != null
+                && category.getParentCategory().equals(hierarchy.getCategory().getUuid())) {
             return Optional.of(hierarchy);
         }
 

@@ -6,6 +6,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.InPlaceSecretValue;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -46,8 +47,9 @@ public class HttpProxy {
     }
 
     public String toUrl() {
-        return (socks5 ? "socks5" : "https") + "://" +
-                (user != null && password != null ? user + ":" + password.getSecretValue() + "@" : "") + host + ":" + port;
+        return (socks5 ? "socks5" : "https") + "://"
+                + (user != null && password != null ? user + ":" + password.getSecretValue() + "@" : "") + host + ":"
+                + port;
     }
 
     String host;

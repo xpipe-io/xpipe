@@ -648,18 +648,26 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                             .getList()
                             .stream()
                             .filter(w -> {
-                                var isSource = DataStorage.get().getCategoryParentHierarchy(DataStorage.get().getStoreCategory(getWrapper().getEntry()))
-                                        .stream().anyMatch(h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
+                                var isSource = DataStorage.get()
+                                        .getCategoryParentHierarchy(DataStorage.get()
+                                                .getStoreCategory(getWrapper().getEntry()))
+                                        .stream()
+                                        .anyMatch(h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
                                 if (isSource) {
                                     return DataStorage.get().getCategoryParentHierarchy(w.getCategory()).stream()
-                                            .anyMatch(h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
+                                            .anyMatch(
+                                                    h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
                                 }
 
-                                var isScript = DataStorage.get().getCategoryParentHierarchy(DataStorage.get().getStoreCategory(getWrapper().getEntry()))
-                                        .stream().anyMatch(h -> h.getUuid().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID));
+                                var isScript = DataStorage.get()
+                                        .getCategoryParentHierarchy(DataStorage.get()
+                                                .getStoreCategory(getWrapper().getEntry()))
+                                        .stream()
+                                        .anyMatch(h -> h.getUuid().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID));
                                 if (isScript) {
                                     return DataStorage.get().getCategoryParentHierarchy(w.getCategory()).stream()
-                                            .noneMatch(h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
+                                            .noneMatch(
+                                                    h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
                                 }
 
                                 return true;
@@ -685,7 +693,9 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                                     getWrapper().moveTo(storeCategoryWrapper.getCategory());
                                     event.consume();
                                 });
-                                if (storeCategoryWrapper.getParent() == null || storeCategoryWrapper.equals(getWrapper().getCategory().getValue())) {
+                                if (storeCategoryWrapper.getParent() == null
+                                        || storeCategoryWrapper.equals(
+                                                getWrapper().getCategory().getValue())) {
                                     m.setDisable(true);
                                 }
 

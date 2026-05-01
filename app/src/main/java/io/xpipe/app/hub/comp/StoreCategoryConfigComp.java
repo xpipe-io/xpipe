@@ -74,9 +74,9 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
         var gatewayRef = new SimpleObjectProperty<>(
                 c.getDefaultGatewayStore() != null
                         ? DataStorage.get()
-                          .getStoreEntryIfPresent(c.getDefaultGatewayStore())
-                          .map(DataStoreEntry::ref)
-                          .orElse(null)
+                                .getStoreEntryIfPresent(c.getDefaultGatewayStore())
+                                .map(DataStoreEntry::ref)
+                                .orElse(null)
                         : null);
         var connectionsCategory = wrapper.getRoot().equals(StoreViewState.get().getAllConnectionsCategory());
 
@@ -131,8 +131,12 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
                                     confirm.get(),
                                     sync.get(),
                                     freeze.get(),
-                                    identityRef.get() != null ? identityRef.get().get().getUuid() : null,
-                                    gatewayRef.get() != null ? gatewayRef.get().get().getUuid() : null);
+                                    identityRef.get() != null
+                                            ? identityRef.get().get().getUuid()
+                                            : null,
+                                    gatewayRef.get() != null
+                                            ? gatewayRef.get().get().getUuid()
+                                            : null);
                         },
                         config);
         var r = options.build();

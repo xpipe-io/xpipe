@@ -34,14 +34,14 @@ public class TerminalDockHubComp extends WindowDockComp<TerminalDockView> {
                     return;
                 }
 
-               if (focus) {
-                   var target = scene.getRoot().lookup(".icon-button-comp:hover");
-                   if (target == null) {
-                       Platform.runLater(() -> {
-                           model.focus();
-                       });
-                   }
-               }
+                if (focus) {
+                    var target = scene.getRoot().lookup(".icon-button-comp:hover");
+                    if (target == null) {
+                        Platform.runLater(() -> {
+                            model.focus();
+                        });
+                    }
+                }
             });
         });
         return stack;

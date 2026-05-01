@@ -85,21 +85,24 @@ public enum PlatformState {
                 "java.lang.InternalError: Error loading stock shader",
                 "java.lang.RuntimeException: Error creating vertex shader",
                 "java.lang.RuntimeException: Error creating fragment shader",
-                "java.lang.RuntimeException: Error creating shader program"
-        );
-        if (AppPrefs.get() != null && AppPrefs.get().canSaveLocal() &&
-                !AppPrefs.get().disableHardwareAcceleration().get() && l.stream().anyMatch(msg::contains)) {
+                "java.lang.RuntimeException: Error creating shader program");
+        if (AppPrefs.get() != null
+                && AppPrefs.get().canSaveLocal()
+                && !AppPrefs.get().disableHardwareAcceleration().get()
+                && l.stream().anyMatch(msg::contains)) {
             restartQueued = true;
             AppCache.update("hardwareAccelerationDisabled", true);
             // Delay this to guarantee that the application starts up as much as possible
             // This is to ensure that any initialization on initial startup is run
             // It will get stuck at the first dialog if the graphics pipeline does not work
-            GlobalTimer.delay(() -> {
-                teardown();
-                AppPrefs.get().disableHardwareAcceleration().set(true);
-                AppPrefs.get().save();
-                AppRestart.restart();
-            }, Duration.ofSeconds(5));
+            GlobalTimer.delay(
+                    () -> {
+                        teardown();
+                        AppPrefs.get().disableHardwareAcceleration().set(true);
+                        AppPrefs.get().save();
+                        AppRestart.restart();
+                    },
+                    Duration.ofSeconds(5));
         }
     }
 
@@ -162,8 +165,11 @@ public enum PlatformState {
         }
 
         // Assume that someone who has set this env variable wants to use the software renderer
-        var overrideDisableHardwareAcceleration = OsType.ofLocal() == OsType.LINUX && "1".equals(System.getenv("LIBGL_ALWAYS_SOFTWARE"));
-        if (overrideDisableHardwareAcceleration || (AppPrefs.get() != null && AppPrefs.get().disableHardwareAcceleration().get())) {
+        var overrideDisableHardwareAcceleration =
+                OsType.ofLocal() == OsType.LINUX && "1".equals(System.getenv("LIBGL_ALWAYS_SOFTWARE"));
+        if (overrideDisableHardwareAcceleration
+                || (AppPrefs.get() != null
+                        && AppPrefs.get().disableHardwareAcceleration().get())) {
             System.setProperty("prism.order", "sw");
         }
 

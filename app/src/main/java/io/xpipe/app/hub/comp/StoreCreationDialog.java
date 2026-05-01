@@ -35,7 +35,11 @@ public class StoreCreationDialog {
     }
 
     public static StoreCreationModel showEdit(
-            DataStoreEntry e, DataStore base, boolean addToStorage, boolean switchCategory, Consumer<DataStoreEntry> c) {
+            DataStoreEntry e,
+            DataStore base,
+            boolean addToStorage,
+            boolean switchCategory,
+            Consumer<DataStoreEntry> c) {
         StoreCreationConsumer consumer = (newE, validated) -> {
             ThreadHelper.runAsync(() -> {
                 if (!addToStorage) {
@@ -70,9 +74,13 @@ public class StoreCreationDialog {
 
                 if (switchCategory) {
                     // Select new category if needed
-                    var cat = DataStorage.get().getStoreCategoryIfPresent(e.getCategoryUuid()).orElseThrow();
+                    var cat = DataStorage.get()
+                            .getStoreCategoryIfPresent(e.getCategoryUuid())
+                            .orElseThrow();
                     PlatformThread.runLaterIfNeeded(() -> {
-                        StoreViewState.get().selectCategoryIntoViewIfNeeded(StoreViewState.get().getCategoryWrapper(cat));
+                        StoreViewState.get()
+                                .selectCategoryIntoViewIfNeeded(
+                                        StoreViewState.get().getCategoryWrapper(cat));
                     });
                 }
 

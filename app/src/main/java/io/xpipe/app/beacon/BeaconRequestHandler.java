@@ -142,10 +142,13 @@ public class BeaconRequestHandler<T> implements HttpHandler {
         try {
             var emptyResponseClass = beaconInterface.getResponseClass().getDeclaredFields().length == 0;
             if (!emptyResponseClass && response != null) {
-                var redact = AppPrefs.get() == null || !AppPrefs.get().developerMode().getValue() || !AppPrefs.get().developerShowSensitiveCommands().get();
+                var redact = AppPrefs.get() == null
+                        || !AppPrefs.get().developerMode().getValue()
+                        || !AppPrefs.get().developerShowSensitiveCommands().get();
                 var mapper = redact ? JacksonMapper.getRedactedSecretMapper() : JacksonMapper.getUnredactSecretMapper();
                 TrackEvent.trace("Sending response:\n" + response);
-                TrackEvent.trace("Sending raw response:\n" + mapper.valueToTree(response).toPrettyString());
+                TrackEvent.trace(
+                        "Sending raw response:\n" + mapper.valueToTree(response).toPrettyString());
                 var bytes = JacksonMapper.getDefault()
                         .valueToTree(response)
                         .toPrettyString()

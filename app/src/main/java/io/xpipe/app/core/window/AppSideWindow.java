@@ -1,8 +1,8 @@
 package io.xpipe.app.core.window;
 
 import io.xpipe.app.platform.PlatformInit;
-
 import io.xpipe.app.util.RemoteDesktopWindow;
+
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -85,8 +85,11 @@ public class AppSideWindow {
     public static Alert createEmptyAlert() {
         Alert alert = new Alert(Alert.AlertType.NONE);
         alert.initModality(Modality.NONE);
-        if (AppMainWindow.get() != null && AppMainWindow.get().getStage().isShowing() && !AppMainWindow.get().getStage().isIconified() &&
-                (RemoteDesktopWindow.get().getStage() == null || !RemoteDesktopWindow.get().getStage().isShowing())) {
+        if (AppMainWindow.get() != null
+                && AppMainWindow.get().getStage().isShowing()
+                && !AppMainWindow.get().getStage().isIconified()
+                && (RemoteDesktopWindow.get().getStage() == null
+                        || !RemoteDesktopWindow.get().getStage().isShowing())) {
             alert.initOwner(AppMainWindow.get().getStage());
         }
         AppWindowStyle.setSceneFill(alert.getDialogPane().getScene());

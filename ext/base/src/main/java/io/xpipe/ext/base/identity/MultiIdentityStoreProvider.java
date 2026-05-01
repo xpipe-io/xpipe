@@ -27,11 +27,14 @@ public class MultiIdentityStoreProvider extends IdentityStoreProvider {
         var initialAvailableIdentities = st.getAvailableIdentities();
         var identities = new SimpleListProperty<DataStoreEntryRef<IdentityStore>>(FXCollections.observableArrayList());
         for (UUID uuid : st.getIdentities()) {
-            var available = initialAvailableIdentities.stream().filter(id -> id.get().getUuid().equals(uuid)).findFirst();
+            var available = initialAvailableIdentities.stream()
+                    .filter(id -> id.get().getUuid().equals(uuid))
+                    .findFirst();
             if (available.isPresent()) {
                 identities.add(available.get());
             } else {
-                identities.add(new DataStoreEntryRef<>(DataStoreEntry.createNew(uuid, DataStorage.DEFAULT_CATEGORY_UUID, AppI18n.get("unknown"), null)));
+                identities.add(new DataStoreEntryRef<>(DataStoreEntry.createNew(
+                        uuid, DataStorage.DEFAULT_CATEGORY_UUID, AppI18n.get("unknown"), null)));
             }
         }
         var perUser = new SimpleBooleanProperty(st.isPerUser());
@@ -54,7 +57,9 @@ public class MultiIdentityStoreProvider extends IdentityStoreProvider {
                 .bind(
                         () -> {
                             // User made no changes in GUI
-                            if (identities.getValue().stream().map(ref -> ref.get().getUuid()).toList()
+                            if (identities.getValue().stream()
+                                    .map(ref -> ref.get().getUuid())
+                                    .toList()
                                     .equals(st.getIdentities())) {
                                 return MultiIdentityStore.builder()
                                         .identities(st.getIdentities())

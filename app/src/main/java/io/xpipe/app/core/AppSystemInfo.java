@@ -215,7 +215,7 @@ public abstract class AppSystemInfo {
                 var r = Shell32Util.getKnownFolderPath(KnownFolders.FOLDERID_Downloads);
                 // Replace 8.3 filename
                 return (downloads = Path.of(r).toRealPath());
-            }  catch (Throwable e) {
+            } catch (Throwable e) {
                 if (!(e instanceof Win32Exception)) {
                     ErrorEventFactory.fromThrowable(e).handle();
                 }

@@ -6,11 +6,11 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.GlobalTimer;
+import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.core.OsType;
 
 import javafx.application.Platform;

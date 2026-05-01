@@ -76,7 +76,8 @@ public class TerminalPaneConfiguration {
 
         if (sc.getOsType() == OsType.WINDOWS) {
             if (LocalShell.getLocalPowershell().isEmpty()) {
-                throw ErrorEventFactory.expected(new IllegalStateException("PowerShell is required for terminal logging but it failed to start"));
+                throw ErrorEventFactory.expected(new IllegalStateException(
+                        "PowerShell is required for terminal logging but it failed to start"));
             }
 
             var launcherScript = ScriptHelper.createExecScript(

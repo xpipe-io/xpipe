@@ -3,10 +3,10 @@ package io.xpipe.app.vnc;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DocumentationLink;
-
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.util.RemoteDesktopDockEntry;
 import io.xpipe.app.util.RemoteDesktopWindow;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -26,7 +26,8 @@ public class InternalVncClient implements ExternalVncClient {
             w.close(ref.get(), false);
         });
         ref.set(w.trackInternal(
-                DataStorage.get().getStoreEntryDisplayName(configuration.getEntry().get()),
+                DataStorage.get()
+                        .getStoreEntryDisplayName(configuration.getEntry().get()),
                 configuration.getEntry().get().getEffectiveIconFile(),
                 DataStorage.get().getEffectiveColor(configuration.getEntry().get()),
                 configuration.getEntry().get(),

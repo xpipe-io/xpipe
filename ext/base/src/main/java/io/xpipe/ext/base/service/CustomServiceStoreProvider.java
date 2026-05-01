@@ -92,13 +92,15 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
                 hostStore -> {
                     HostAddress addr = hostStore.getHostAddress();
                     return addr != null && !addr.isEmpty() ? addr.get() : null;
-                }, model.getExistingEntry(),
+                },
+                model.getExistingEntry(),
                 comboHost,
                 HostAddressStore.class,
                 n -> true,
                 StoreViewState.get().getAllConnectionsCategory(),
                 false);
-        var gatewayChoice = new StoreChoiceComp<>(model.getExistingEntry(),
+        var gatewayChoice = new StoreChoiceComp<>(
+                model.getExistingEntry(),
                 gateway,
                 NetworkTunnelStore.class,
                 ref -> !ref.get().equals(DataStorage.get().local()),

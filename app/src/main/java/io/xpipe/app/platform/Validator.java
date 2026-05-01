@@ -1,8 +1,8 @@
 package io.xpipe.app.platform;
 
 import io.xpipe.app.core.AppI18n;
-
 import io.xpipe.app.util.Checkable;
+
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyListProperty;

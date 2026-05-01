@@ -127,7 +127,8 @@ public class ContextualFileReferenceChoiceComp extends RegionBuilder<HBox> {
                                 source.toString().substring(0, source.toString().length() - 4))
                         : source;
 
-                var pubSource = SshIdentityStrategy.getPublicKeyPath(FilePath.of(source)).asLocalPath();
+                var pubSource = SshIdentityStrategy.getPublicKeyPath(FilePath.of(source))
+                        .asLocalPath();
                 if (Files.exists(pubSource)) {
                     var pubTarget = sync.getTargetLocation().apply(pubSource);
                     handler.addDataFile(pubSource, pubTarget, sync.getPerUser().get());
@@ -221,11 +222,11 @@ public class ContextualFileReferenceChoiceComp extends RegionBuilder<HBox> {
 
         fileNameComp.apply(struc -> {
             if (prompt != null) {
-            prompt.subscribe(filePath -> {
-                PlatformThread.runLaterIfNeeded(() -> {
-                    struc.setPromptText(filePath != null ? filePath.toString() : null);
+                prompt.subscribe(filePath -> {
+                    PlatformThread.runLaterIfNeeded(() -> {
+                        struc.setPromptText(filePath != null ? filePath.toString() : null);
+                    });
                 });
-            });
             }
 
             prop.addListener((observable, oldValue, newValue) -> {

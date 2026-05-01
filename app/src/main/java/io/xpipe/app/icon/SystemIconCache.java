@@ -126,7 +126,6 @@ public class SystemIconCache {
                                     .expected()
                                     .handle();
                         }
-
                     }
                 }
 

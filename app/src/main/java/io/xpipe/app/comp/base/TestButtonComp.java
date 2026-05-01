@@ -1,16 +1,16 @@
 package io.xpipe.app.comp.base;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppI18n;
-
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.FailableSupplier;
+
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
-
 import javafx.scene.layout.Region;
+
+import atlantafx.base.theme.Styles;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.kordamp.ikonli.javafx.FontIcon;

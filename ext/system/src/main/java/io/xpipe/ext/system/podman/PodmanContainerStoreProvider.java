@@ -61,7 +61,8 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
         return new OptionsBuilder()
                 .name("host")
                 .description("podmanHostDescription")
-                .addComp(new StoreChoiceComp<>(model.getExistingEntry(),
+                .addComp(new StoreChoiceComp<>(
+                        model.getExistingEntry(),
                         new ReadOnlyObjectWrapper<>(
                                 st.getCmd() != null ? st.getCmd().getStore().getHost() : null),
                         ShellStore.class,

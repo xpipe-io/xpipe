@@ -68,7 +68,8 @@ public class StoreCreationModel {
             store.unbind();
             store.setValue(null);
             if (n != null) {
-                store.setValue(n.defaultStore(getTargetCategory(existingEntry != null ? existingEntry.getCategoryUuid() : null)));
+                store.setValue(n.defaultStore(
+                        getTargetCategory(existingEntry != null ? existingEntry.getCategoryUuid() : null)));
             }
         });
 
@@ -107,13 +108,22 @@ public class StoreCreationModel {
                 name,
                 store);
 
-        this.syncable = Bindings.createBooleanBinding(() -> {
-            var targetCategory = getTargetCategory(existingEntry != null ? existingEntry.getCategoryUuid() :
-                    StoreViewState.get().getActiveCategory().getValue().getCategory().getUuid());
-            var entry = DataStoreEntry.createNew(
-                    UUID.randomUUID(), targetCategory.getUuid(), "Temp", store.getValue());
-            return DataStorage.get().shouldSync(entry);
-        }, store, StoreViewState.get().getActiveCategory());
+        this.syncable = Bindings.createBooleanBinding(
+                () -> {
+                    var targetCategory = getTargetCategory(
+                            existingEntry != null
+                                    ? existingEntry.getCategoryUuid()
+                                    : StoreViewState.get()
+                                            .getActiveCategory()
+                                            .getValue()
+                                            .getCategory()
+                                            .getUuid());
+                    var entry = DataStoreEntry.createNew(
+                            UUID.randomUUID(), targetCategory.getUuid(), "Temp", store.getValue());
+                    return DataStorage.get().shouldSync(entry);
+                },
+                store,
+                StoreViewState.get().getActiveCategory());
 
         skippable.bind(Bindings.createBooleanBinding(
                 () -> {

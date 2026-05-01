@@ -3,11 +3,13 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
+
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
+
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 

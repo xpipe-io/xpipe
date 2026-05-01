@@ -7,10 +7,10 @@ import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.platform.LabelGraphic;
-import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
+import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.util.Rect;
 import io.xpipe.core.OsType;
 

@@ -51,14 +51,16 @@ public class SshAgentKeyListComp extends SimpleRegionBuilder {
         field.apply(struc -> struc.setPromptText(
                 useKeyNames ? "<name>" : "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== <key comment>"));
         var button = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2m-magnify-scan"), null);
-        button.disable(Bindings.createBooleanBinding(() -> {
-            try {
-                sshIdentityStrategy.getValue().checkComplete();
-                return false;
-            } catch (Exception e) {
-                return true;
-            }
-        }, sshIdentityStrategy));
+        button.disable(Bindings.createBooleanBinding(
+                () -> {
+                    try {
+                        sshIdentityStrategy.getValue().checkComplete();
+                        return false;
+                    } catch (Exception e) {
+                        return true;
+                    }
+                },
+                sshIdentityStrategy));
         button.apply(struc -> {
             struc.setOnAction(event -> {
                 DataStoreEntryRef<ShellStore> refToUse = ref != null && ref.getValue() != null

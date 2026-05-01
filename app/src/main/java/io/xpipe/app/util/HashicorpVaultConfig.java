@@ -1,6 +1,5 @@
 package io.xpipe.app.util;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.TestButtonComp;
@@ -14,8 +13,11 @@ import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.JacksonMapper;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -28,7 +30,6 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
 @Getter
 @Builder
 @ToString
@@ -36,7 +37,9 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 public class HashicorpVaultConfig implements Checkable {
 
-    private static final CacheableConfiguration<HashicorpVaultConfig> INSTANCE = new CacheableConfiguration<>(HashicorpVaultConfig.class, "hashicorpVaultConfig", () -> HashicorpVaultConfig.builder().build());
+    private static final CacheableConfiguration<HashicorpVaultConfig> INSTANCE = new CacheableConfiguration<>(
+            HashicorpVaultConfig.class, "hashicorpVaultConfig", () -> HashicorpVaultConfig.builder()
+                    .build());
 
     private final String vaultAddress;
     private final String vaultNamespace;
@@ -46,7 +49,8 @@ public class HashicorpVaultConfig implements Checkable {
     }
 
     public static void showDialog() {
-        var modal = ModalOverlay.of("hashicorpVault", createOptions(INSTANCE.getValue()).buildComp().prefWidth(500));
+        var modal = ModalOverlay.of(
+                "hashicorpVault", createOptions(INSTANCE.getValue()).buildComp().prefWidth(500));
         modal.addButton(ModalButton.ok());
         modal.show();
     }
@@ -98,12 +102,14 @@ public class HashicorpVaultConfig implements Checkable {
     public void renew(String role, FilePath privateKey, FilePath certificate) throws Exception {
         var sc = LocalShell.get(HashicorpVaultConfig.class);
         var publicKey = SshIdentityStrategy.getPublicKeyPath(privateKey);
-        var b = CommandBuilder.of().add("vault", "write", "ssh-client-signer/sign/" + role).addQuotedKeyValue("public_key",
-                "@" + publicKey.toUnix().toString());
+        var b = CommandBuilder.of()
+                .add("vault", "write", "ssh-client-signer/sign/" + role)
+                .addQuotedKeyValue("public_key", "@" + publicKey.toUnix().toString());
         addEnvironment(b);
         sc.command(b).execute();
-        var signedB = CommandBuilder.of().add("vault", "write", "-field=signed_key", "ssh-client-signer/sign/" + role).addQuotedKeyValue(
-                "public_key", "@" + publicKey.toUnix().toString());
+        var signedB = CommandBuilder.of()
+                .add("vault", "write", "-field=signed_key", "ssh-client-signer/sign/" + role)
+                .addQuotedKeyValue("public_key", "@" + publicKey.toUnix().toString());
         addEnvironment(signedB);
         var signedContent = sc.command(signedB).readStdoutOrThrow();
         sc.view().writeRawFile(certificate, signedContent.getBytes(StandardCharsets.UTF_8));
@@ -120,7 +126,9 @@ public class HashicorpVaultConfig implements Checkable {
         try {
             CommandSupport.isInLocalPathOrThrow("Hashicorp Vault CLI", "vault");
         } catch (Exception e) {
-            ErrorEventFactory.preconfigure(ErrorEventFactory.fromThrowable(e).expected().link("https://developer.hashicorp.com/vault/docs/commands"));
+            ErrorEventFactory.preconfigure(ErrorEventFactory.fromThrowable(e)
+                    .expected()
+                    .link("https://developer.hashicorp.com/vault/docs/commands"));
             throw e;
         }
     }
@@ -149,8 +157,7 @@ public class HashicorpVaultConfig implements Checkable {
         var script = ShellScript.lines(
                 sc.getShellDialect().getSetEnvironmentVariableCommand("VAULT_ADDR", getVaultAddress()),
                 getVaultNamespace() != null
-                        ? sc.getShellDialect()
-                          .getSetEnvironmentVariableCommand("VAULT_NAMESPACE", getVaultNamespace())
+                        ? sc.getShellDialect().getSetEnvironmentVariableCommand("VAULT_NAMESPACE", getVaultNamespace())
                         : null,
                 sc.getShellDialect()
                         .getEchoCommand(
@@ -161,16 +168,11 @@ public class HashicorpVaultConfig implements Checkable {
                         .getEchoCommand(
                                 "vault login [-method=<auth_method>] [optional auth method specific parameters]",
                                 false),
-                sc.getShellDialect()
-                        .getEchoCommand(
-                                "For a list of available auth methods, run vault auth list",
-                                false),
-                sc.getShellDialect().getEchoCommand("", false)
-        );
+                sc.getShellDialect().getEchoCommand("For a list of available auth methods, run vault auth list", false),
+                sc.getShellDialect().getEchoCommand("", false));
         var scriptFile = ScriptHelper.createExecScript(sc, script.toString());
         TerminalLaunch.builder()
-                .localScript(ShellScript.of(
-                        sc.getShellDialect().terminalInitCommand(sc, scriptFile.toString(), false)))
+                .localScript(ShellScript.of(sc.getShellDialect().terminalInitCommand(sc, scriptFile.toString(), false)))
                 .title("Hashicorp Vault login")
                 .pauseOnExit(false)
                 .logIfEnabled(false)
@@ -255,8 +257,8 @@ public class HashicorpVaultConfig implements Checkable {
 
                 var l = new ArrayList<String>();
                 subData.fieldNames().forEachRemaining(l::add);
-                throw ErrorEventFactory.expected(
-                        new IllegalArgumentException("Found no data for specified fields, but only found the following unmapped fields: " + l));
+                throw ErrorEventFactory.expected(new IllegalArgumentException(
+                        "Found no data for specified fields, but only found the following unmapped fields: " + l));
             }
             return r;
         } catch (Exception e) {
@@ -264,5 +266,4 @@ public class HashicorpVaultConfig implements Checkable {
             return null;
         }
     }
-
 }

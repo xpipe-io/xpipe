@@ -99,10 +99,9 @@ public class MarkdownComp extends RegionBuilder<StackPane> {
             AppPrefs.get().theme().subscribe((v) -> {
                 var refVal = ref.get();
                 if (refVal != null && v != null) {
-                    var theme = v.isDark()
-                            ? "misc/github-markdown-dark.css"
-                            : "misc/github-markdown-light.css";
-                    var url = AppResources.getResourceURL(AppResources.MAIN_MODULE, theme).orElseThrow();
+                    var theme = v.isDark() ? "misc/github-markdown-dark.css" : "misc/github-markdown-light.css";
+                    var url = AppResources.getResourceURL(AppResources.MAIN_MODULE, theme)
+                            .orElseThrow();
                     refVal.getEngine().setUserStyleSheetLocation(url.toString());
                 }
             });

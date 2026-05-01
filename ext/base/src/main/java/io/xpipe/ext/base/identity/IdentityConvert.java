@@ -6,6 +6,7 @@ import io.xpipe.app.hub.comp.StoreCreationDialog;
 import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
+
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 
@@ -14,7 +15,10 @@ import java.util.function.Consumer;
 
 public class IdentityConvert {
 
-    public static void syncLocal(DataStoreEntryRef<LocalIdentityStore> ref, boolean selectCategory, Consumer<DataStoreEntryRef<SyncedIdentityStore>> consumer) {
+    public static void syncLocal(
+            DataStoreEntryRef<LocalIdentityStore> ref,
+            boolean selectCategory,
+            Consumer<DataStoreEntryRef<SyncedIdentityStore>> consumer) {
         var st = ref.getStore();
         var synced = SyncedIdentityStore.builder()
                 .username(st.getUsername().get())
@@ -42,7 +46,8 @@ public class IdentityConvert {
         });
     }
 
-    public static void createMulti(IdentityValue val, boolean moveToSync, Consumer<DataStoreEntryRef<MultiIdentityStore>> consumer) {
+    public static void createMulti(
+            IdentityValue val, boolean moveToSync, Consumer<DataStoreEntryRef<MultiIdentityStore>> consumer) {
         if (!(val instanceof IdentityValue.Ref ref)) {
             throw new IllegalArgumentException("Not a identity reference");
         }
@@ -51,18 +56,31 @@ public class IdentityConvert {
                 .identities(List.of(ref.getRef().get().getUuid()))
                 .perUser(val.isPerUser())
                 .build();
-        StoreCreationDialog.showCreation(ref.getRef().get().getName() + "-multi", synced, DataStoreCreationCategory.IDENTITY, created -> {
-            if (created.getStore() instanceof MultiIdentityStore) {
-                if (moveToSync) {
-                    var cat = DataStorage.get().getStoreCategoryIfPresent(created.getCategoryUuid()).orElseThrow();
-                    var inSynced = DataStorage.get().getCategoryParentHierarchy(cat).stream().anyMatch(
-                            dataStoreCategory -> dataStoreCategory.getUuid().equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID));
-                    var targetCategory = DataStorage.get().getStoreCategoryIfPresent(
-                            inSynced ? created.getCategoryUuid() : DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID).orElseThrow();
-                    DataStorage.get().moveEntryToCategory(created, targetCategory);
-                }
-                consumer.accept(created.ref());
-            }
-        }, false);
+        StoreCreationDialog.showCreation(
+                ref.getRef().get().getName() + "-multi",
+                synced,
+                DataStoreCreationCategory.IDENTITY,
+                created -> {
+                    if (created.getStore() instanceof MultiIdentityStore) {
+                        if (moveToSync) {
+                            var cat = DataStorage.get()
+                                    .getStoreCategoryIfPresent(created.getCategoryUuid())
+                                    .orElseThrow();
+                            var inSynced = DataStorage.get().getCategoryParentHierarchy(cat).stream()
+                                    .anyMatch(dataStoreCategory -> dataStoreCategory
+                                            .getUuid()
+                                            .equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID));
+                            var targetCategory = DataStorage.get()
+                                    .getStoreCategoryIfPresent(
+                                            inSynced
+                                                    ? created.getCategoryUuid()
+                                                    : DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID)
+                                    .orElseThrow();
+                            DataStorage.get().moveEntryToCategory(created, targetCategory);
+                        }
+                        consumer.accept(created.ref());
+                    }
+                },
+                false);
     }
 }

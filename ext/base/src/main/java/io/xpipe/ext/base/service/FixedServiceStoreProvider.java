@@ -61,7 +61,8 @@ public class FixedServiceStoreProvider extends AbstractServiceStoreProvider {
         var q = new OptionsBuilder()
                 .nameAndDescription("serviceHost")
                 .addComp(
-                        new StoreChoiceComp<>(model.getExistingEntry(),
+                        new StoreChoiceComp<>(
+                                model.getExistingEntry(),
                                 host,
                                 DataStore.class,
                                 null,

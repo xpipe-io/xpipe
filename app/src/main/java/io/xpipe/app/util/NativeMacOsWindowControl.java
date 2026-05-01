@@ -2,8 +2,8 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
-
 import io.xpipe.app.platform.NativeBridge;
+
 import javafx.stage.Window;
 
 import com.sun.jna.NativeLong;

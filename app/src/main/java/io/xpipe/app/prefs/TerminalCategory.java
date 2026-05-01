@@ -313,39 +313,42 @@ public class TerminalCategory extends AppPrefsCategory {
         var choice = choiceBuilder.build().buildComp();
         choice.maxWidth(600);
 
-
         var testDisabled = new SimpleBooleanProperty();
         var test = new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
-            testDisabled.set(true);
-            ThreadHelper.runFailableAsync(() -> {
-                try {
-                    var term = AppPrefs.get().terminalType().getValue();
-                    if (term != null) {
-                        TerminalLaunch.builder()
-                                .title("Tab 1 test")
-                                .localScript(new ShellScript(ProcessControlProvider.get()
-                                        .getEffectiveLocalDialect()
-                                        .getEchoCommand("If you can read this, the terminal multiplexer integration works", false)))
-                                .preferTabs(true)
-                                .logIfEnabled(false)
-                                .pauseOnExit(true)
-                                .launch();
+                    testDisabled.set(true);
+                    ThreadHelper.runFailableAsync(() -> {
+                        try {
+                            var term = AppPrefs.get().terminalType().getValue();
+                            if (term != null) {
+                                TerminalLaunch.builder()
+                                        .title("Tab 1 test")
+                                        .localScript(new ShellScript(ProcessControlProvider.get()
+                                                .getEffectiveLocalDialect()
+                                                .getEchoCommand(
+                                                        "If you can read this, the terminal multiplexer integration works",
+                                                        false)))
+                                        .preferTabs(true)
+                                        .logIfEnabled(false)
+                                        .pauseOnExit(true)
+                                        .launch();
 
-                        TerminalLaunch.builder()
-                                .title("Tab 2 test")
-                                .localScript(new ShellScript(ProcessControlProvider.get()
-                                        .getEffectiveLocalDialect()
-                                        .getEchoCommand("If you can read this, the tabbed terminal multiplexer integration works", false)))
-                                .preferTabs(true)
-                                .logIfEnabled(false)
-                                .pauseOnExit(true)
-                                .launch();
-                    }
-                } finally {
-                    testDisabled.set(false);
-                }
-            });
-        })
+                                TerminalLaunch.builder()
+                                        .title("Tab 2 test")
+                                        .localScript(new ShellScript(ProcessControlProvider.get()
+                                                .getEffectiveLocalDialect()
+                                                .getEchoCommand(
+                                                        "If you can read this, the tabbed terminal multiplexer integration works",
+                                                        false)))
+                                        .preferTabs(true)
+                                        .logIfEnabled(false)
+                                        .pauseOnExit(true)
+                                        .launch();
+                            }
+                        } finally {
+                            testDisabled.set(false);
+                        }
+                    });
+                })
                 .disable(testDisabled)
                 .padding(new Insets(6, 11, 6, 5))
                 .apply(struc -> struc.setAlignment(Pos.CENTER_LEFT));
@@ -361,8 +364,7 @@ public class TerminalCategory extends AppPrefsCategory {
         if (OsType.ofLocal() == OsType.WINDOWS) {
             options.disable(BindingsHelper.map(prefs.terminalProxy(), uuid -> uuid == null));
         }
-        options.addComp(test)
-                .hide(prefs.terminalMultiplexer.isNull());
+        options.addComp(test).hide(prefs.terminalMultiplexer.isNull());
         if (OsType.ofLocal() == OsType.WINDOWS) {
             options.disable(BindingsHelper.map(prefs.terminalProxy(), uuid -> uuid == null));
         }

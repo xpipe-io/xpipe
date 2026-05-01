@@ -34,8 +34,9 @@ public class ServiceRefreshHubProvider
 
     @Override
     public boolean isApplicable(DataStoreEntryRef<FixedServiceCreatorStore> o) {
-        return o.getStore().allowManualServicesRefresh() && DataStorage.get().getStoreChildren(o.get()).stream()
-                .noneMatch(e -> e.getStore() instanceof AbstractServiceGroupStore<?>);
+        return o.getStore().allowManualServicesRefresh()
+                && DataStorage.get().getStoreChildren(o.get()).stream()
+                        .noneMatch(e -> e.getStore() instanceof AbstractServiceGroupStore<?>);
     }
 
     @Override

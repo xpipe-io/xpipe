@@ -131,7 +131,9 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
                         });
                     });
                     var stack = createStyle(null, b);
-                    (item.isTop() ? topQueueButtons : bottomQueueButtons).getChildren().add(stack.build());
+                    (item.isTop() ? topQueueButtons : bottomQueueButtons)
+                            .getChildren()
+                            .add(stack.build());
                 }
             });
         });

@@ -1,14 +1,16 @@
 package io.xpipe.app.pwman;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.*;
 import io.xpipe.app.util.OpenBaoConfig;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -70,7 +72,10 @@ public class OpenBaoPasswordManager implements PasswordManager {
 
     @Override
     public synchronized Result query(String key) {
-        var config = OpenBaoConfig.builder().vaultAddress(vaultAddress).vaultNamespace(vaultNamespace).build();
+        var config = OpenBaoConfig.builder()
+                .vaultAddress(vaultAddress)
+                .vaultNamespace(vaultNamespace)
+                .build();
         return config.querySecret(key);
     }
 

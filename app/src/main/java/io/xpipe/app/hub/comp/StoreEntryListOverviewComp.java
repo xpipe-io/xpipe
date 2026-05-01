@@ -168,10 +168,17 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
                             sortMode));
         });
         button.describe(d -> d.nameKey("sortIndexed"));
-        button.show(Bindings.createBooleanBinding(() -> {
-            var hasIndex = StoreViewState.get().getAllEntries().getList().stream().anyMatch(w -> w.getOrderIndex().get() != 0);
-            return hasIndex;
-        }, StoreViewState.get().getAllEntries().getList(), StoreViewState.get().getCurrentTopLevelSection().getAllChildren().getList()));
+        button.show(Bindings.createBooleanBinding(
+                () -> {
+                    var hasIndex = StoreViewState.get().getAllEntries().getList().stream()
+                            .anyMatch(w -> w.getOrderIndex().get() != 0);
+                    return hasIndex;
+                },
+                StoreViewState.get().getAllEntries().getList(),
+                StoreViewState.get()
+                        .getCurrentTopLevelSection()
+                        .getAllChildren()
+                        .getList()));
         return button;
     }
 

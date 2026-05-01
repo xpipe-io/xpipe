@@ -36,10 +36,7 @@ public class TerminalLauncherManager {
     }
 
     public static void submitAsync(
-            UUID request,
-            ProcessControl processControl,
-            TerminalInitScriptConfig config,
-            FilePath directory) {
+            UUID request, ProcessControl processControl, TerminalInitScriptConfig config, FilePath directory) {
         synchronized (entries) {
             var req = entries.get(request);
             if (req == null) {

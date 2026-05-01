@@ -67,7 +67,10 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
 
     @Override
     public synchronized Result query(String key) {
-        var config = HashicorpVaultConfig.builder().vaultAddress(vaultAddress).vaultNamespace(vaultNamespace).build();
+        var config = HashicorpVaultConfig.builder()
+                .vaultAddress(vaultAddress)
+                .vaultNamespace(vaultNamespace)
+                .build();
         return config.querySecret(key);
     }
 

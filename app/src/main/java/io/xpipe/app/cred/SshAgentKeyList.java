@@ -29,7 +29,8 @@ public class SshAgentKeyList {
     }
 
     public static Entry findAgentIdentity(
-            DataStoreEntryRef<ShellStore> ref, SshIdentityKeyListStrategy strategy, String identifier) throws Exception {
+            DataStoreEntryRef<ShellStore> ref, SshIdentityKeyListStrategy strategy, String identifier)
+            throws Exception {
         var all = listAgentIdentities(ref, strategy);
         var list = all.stream()
                 .filter(entry -> {
@@ -72,8 +73,8 @@ public class SshAgentKeyList {
         return list.getFirst();
     }
 
-    public static List<Entry> listAgentIdentities(DataStoreEntryRef<ShellStore> ref, SshIdentityKeyListStrategy strategy)
-            throws Exception {
+    public static List<Entry> listAgentIdentities(
+            DataStoreEntryRef<ShellStore> ref, SshIdentityKeyListStrategy strategy) throws Exception {
         var session = ref != null ? ref.getStore().getOrStartSession() : LocalShell.getShell();
         strategy.prepareParent(session);
 

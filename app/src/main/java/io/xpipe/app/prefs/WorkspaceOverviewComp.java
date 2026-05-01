@@ -7,6 +7,7 @@ import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.LicenseProvider;
+
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.scene.layout.Region;
 

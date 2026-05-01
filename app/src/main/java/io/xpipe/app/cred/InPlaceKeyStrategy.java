@@ -21,9 +21,9 @@ import io.xpipe.core.*;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javafx.beans.property.SimpleObjectProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -75,9 +75,13 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
             struc.setEditable(false);
         });
         var generatedKeyBase = new SimpleObjectProperty<>(key.get());
-        var generateButtonDisabled = Bindings.createBooleanBinding(() -> {
-            return key.get() == null || (publicKey.get() != null && key.get().equals(generatedKeyBase.get()));
-        }, key, publicKey);
+        var generateButtonDisabled = Bindings.createBooleanBinding(
+                () -> {
+                    return key.get() == null
+                            || (publicKey.get() != null && key.get().equals(generatedKeyBase.get()));
+                },
+                key,
+                publicKey);
         var generateButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2c-cog-refresh-outline"), () -> {
                     ThreadHelper.runAsync(() -> {
                         var generated = ProcessControlProvider.get()
@@ -187,9 +191,7 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
 
     private FilePath getTargetFilePath(ShellControl sc) {
         var hash = Math.abs(Objects.hash(this, AppSystemInfo.ofCurrent().getUser()));
-        var temp = sc.getSystemTemporaryDirectory()
-                .join("xpipe-"
-                        + hash + ".key");
+        var temp = sc.getSystemTemporaryDirectory().join("xpipe-" + hash + ".key");
         KEYS.add(temp.getFileName());
         return temp;
     }

@@ -1,6 +1,5 @@
 package io.xpipe.app.util;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.cred.SshIdentityStrategy;
 import io.xpipe.app.ext.ValidationException;
@@ -11,8 +10,11 @@ import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.JacksonMapper;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -25,7 +27,6 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
 @Getter
 @Builder
 @ToString
@@ -33,7 +34,8 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 public class OpenBaoConfig implements Checkable {
 
-    private static final CacheableConfiguration<OpenBaoConfig> INSTANCE = new CacheableConfiguration<>(OpenBaoConfig.class, "openBaoConfig", () -> OpenBaoConfig.builder().build());
+    private static final CacheableConfiguration<OpenBaoConfig> INSTANCE = new CacheableConfiguration<>(
+            OpenBaoConfig.class, "openBaoConfig", () -> OpenBaoConfig.builder().build());
 
     private final String vaultAddress;
     private final String vaultNamespace;
@@ -43,7 +45,8 @@ public class OpenBaoConfig implements Checkable {
     }
 
     public static void showDialog() {
-        var modal = ModalOverlay.of("openBao", createOptions(INSTANCE.getValue()).buildComp().prefWidth(500));
+        var modal = ModalOverlay.of(
+                "openBao", createOptions(INSTANCE.getValue()).buildComp().prefWidth(500));
         modal.addButton(ModalButton.ok());
         modal.show();
     }
@@ -95,12 +98,14 @@ public class OpenBaoConfig implements Checkable {
     public void renew(String role, FilePath privateKey, FilePath certificate) throws Exception {
         var sc = LocalShell.get(OpenBaoConfig.class);
         var publicKey = SshIdentityStrategy.getPublicKeyPath(privateKey);
-        var b = CommandBuilder.of().add("bao", "write", "ssh-client-signer/sign/" + role).addQuotedKeyValue("public_key",
-                "@" + publicKey.toUnix().toString());
+        var b = CommandBuilder.of()
+                .add("bao", "write", "ssh-client-signer/sign/" + role)
+                .addQuotedKeyValue("public_key", "@" + publicKey.toUnix().toString());
         addEnvironment(b);
         sc.command(b).execute();
-        var signedB = CommandBuilder.of().add("bao", "write", "-field=signed_key", "ssh-client-signer/sign/" + role).addQuotedKeyValue(
-                "public_key", "@" + publicKey.toUnix().toString());
+        var signedB = CommandBuilder.of()
+                .add("bao", "write", "-field=signed_key", "ssh-client-signer/sign/" + role)
+                .addQuotedKeyValue("public_key", "@" + publicKey.toUnix().toString());
         addEnvironment(signedB);
         var signedContent = sc.command(signedB).readStdoutOrThrow();
         sc.view().writeRawFile(certificate, signedContent.getBytes(StandardCharsets.UTF_8));
@@ -117,7 +122,8 @@ public class OpenBaoConfig implements Checkable {
         try {
             CommandSupport.isInLocalPathOrThrow("OpenBao CLI", "bao");
         } catch (Exception e) {
-            ErrorEventFactory.preconfigure(ErrorEventFactory.fromThrowable(e).expected().link("https://openbao.org/docs/install/"));
+            ErrorEventFactory.preconfigure(
+                    ErrorEventFactory.fromThrowable(e).expected().link("https://openbao.org/docs/install/"));
             throw e;
         }
     }
@@ -146,8 +152,7 @@ public class OpenBaoConfig implements Checkable {
         var script = ShellScript.lines(
                 sc.getShellDialect().getSetEnvironmentVariableCommand("VAULT_ADDR", getVaultAddress()),
                 getVaultNamespace() != null
-                        ? sc.getShellDialect()
-                          .getSetEnvironmentVariableCommand("VAULT_NAMESPACE", getVaultNamespace())
+                        ? sc.getShellDialect().getSetEnvironmentVariableCommand("VAULT_NAMESPACE", getVaultNamespace())
                         : null,
                 sc.getShellDialect()
                         .getEchoCommand(
@@ -156,18 +161,12 @@ public class OpenBaoConfig implements Checkable {
                 sc.getShellDialect().getEchoCommand("", false),
                 sc.getShellDialect()
                         .getEchoCommand(
-                                "bao login [-method=<auth_method>] [optional auth method specific parameters]",
-                                false),
-                sc.getShellDialect()
-                        .getEchoCommand(
-                                "For a list of available auth methods, run bao auth list",
-                                false),
-                sc.getShellDialect().getEchoCommand("", false)
-        );
+                                "bao login [-method=<auth_method>] [optional auth method specific parameters]", false),
+                sc.getShellDialect().getEchoCommand("For a list of available auth methods, run bao auth list", false),
+                sc.getShellDialect().getEchoCommand("", false));
         var scriptFile = ScriptHelper.createExecScript(sc, script.toString());
         TerminalLaunch.builder()
-                .localScript(ShellScript.of(
-                        sc.getShellDialect().terminalInitCommand(sc, scriptFile.toString(), false)))
+                .localScript(ShellScript.of(sc.getShellDialect().terminalInitCommand(sc, scriptFile.toString(), false)))
                 .title("OpenBao login")
                 .pauseOnExit(false)
                 .logIfEnabled(false)
@@ -252,8 +251,8 @@ public class OpenBaoConfig implements Checkable {
 
                 var l = new ArrayList<String>();
                 subData.fieldNames().forEachRemaining(l::add);
-                throw ErrorEventFactory.expected(
-                        new IllegalArgumentException("Found no data for specified fields, but only found the following unmapped fields: " + l));
+                throw ErrorEventFactory.expected(new IllegalArgumentException(
+                        "Found no data for specified fields, but only found the following unmapped fields: " + l));
             }
             return r;
         } catch (Exception e) {
@@ -261,5 +260,4 @@ public class OpenBaoConfig implements Checkable {
             return null;
         }
     }
-
 }

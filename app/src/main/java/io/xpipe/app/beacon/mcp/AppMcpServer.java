@@ -45,9 +45,10 @@ public class AppMcpServer {
                 null);
 
         var prompt = McpSchemaFiles.load("prompt.md");
-        var effectivePrompt = AppPrefs.get().mcpAdditionalContext().getValue() != null ?
-                prompt.replace("__CUSTOM__", AppPrefs.get().mcpAdditionalContext().getValue()) :
-                prompt.replace("__CUSTOM__", "");
+        var effectivePrompt = AppPrefs.get().mcpAdditionalContext().getValue() != null
+                ? prompt.replace(
+                        "__CUSTOM__", AppPrefs.get().mcpAdditionalContext().getValue())
+                : prompt.replace("__CUSTOM__", "");
 
         McpSyncServer syncServer = io.modelcontextprotocol.server.McpServer.sync(transportProvider)
                 .serverInfo(AppNames.ofCurrent().getName(), AppProperties.get().getVersion())

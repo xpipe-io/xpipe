@@ -19,8 +19,8 @@ import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
-
 import io.xpipe.core.FilePath;
+
 import javafx.beans.property.*;
 
 import java.nio.file.Files;

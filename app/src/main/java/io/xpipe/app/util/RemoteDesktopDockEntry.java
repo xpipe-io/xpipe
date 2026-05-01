@@ -2,6 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
+
 import lombok.Value;
 
 @Value

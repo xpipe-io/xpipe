@@ -53,7 +53,8 @@ public class ShellTemp {
             // This is quite inefficient but there is no way to synchronize access on a
             // specific system when multiple shell controls access it
             synchronized (ShellTemp.class) {
-                var sessionFile = systemTemp.join("xpipe-session-" + AppProperties.get().getSessionId().toString().substring(0, 8));
+                var sessionFile = systemTemp.join("xpipe-session-"
+                        + AppProperties.get().getSessionId().toString().substring(0, 8));
                 var newSession = !sc.view().fileExists(sessionFile);
                 if (newSession) {
                     clearTemp(sc);

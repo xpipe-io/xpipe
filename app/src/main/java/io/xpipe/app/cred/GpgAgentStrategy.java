@@ -2,7 +2,6 @@ package io.xpipe.app.cred;
 
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppSystemInfo;
-import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
@@ -69,9 +68,7 @@ public class GpgAgentStrategy implements SshIdentityAgentStrategy {
     String publicKey;
 
     @Override
-    public void checkComplete() {
-
-    }
+    public void checkComplete() {}
 
     @Override
     public void prepareParent(ShellControl parent) throws Exception {

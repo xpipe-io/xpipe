@@ -10,6 +10,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.OsType;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -20,6 +21,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -52,8 +54,10 @@ public class RemoteDesktopWindow {
     }
 
     private State state;
+
     @Getter
     private Stage stage;
+
     private NativeWinWindowControl nativeWinWindowControl;
 
     @Getter
@@ -80,8 +84,10 @@ public class RemoteDesktopWindow {
         AppWindowStyle.setSceneFill(scene);
         stage.setScene(scene);
         scene.setRoot(new RemoteDesktopDockComp().build());
-        stage.setWidth(AppMainWindow.get() != null ? AppMainWindow.get().getStage().getWidth() : 1280);
-        stage.setHeight(AppMainWindow.get() != null ? AppMainWindow.get().getStage().getHeight() : 780);
+        stage.setWidth(
+                AppMainWindow.get() != null ? AppMainWindow.get().getStage().getWidth() : 1280);
+        stage.setHeight(
+                AppMainWindow.get() != null ? AppMainWindow.get().getStage().getHeight() : 780);
         stage.titleProperty().bind(PlatformThread.sync(createTitle()));
 
         stage.setOnCloseRequest(event -> {
@@ -181,7 +187,9 @@ public class RemoteDesktopWindow {
 
     public void reconnectResize() {
         var rect = getDockBounds();
-        var toRestart = getProcesses().stream().filter(e -> e.requiresRestart(rect.getW(), rect.getH())).toList();
+        var toRestart = getProcesses().stream()
+                .filter(e -> e.requiresRestart(rect.getW(), rect.getH()))
+                .toList();
         for (var e : toRestart) {
             ThreadHelper.runFailableAsync(() -> {
                 close(e, false);
@@ -190,13 +198,23 @@ public class RemoteDesktopWindow {
         }
     }
 
-    public RemoteDesktopDockEntry trackInternal(String name, String icon, DataStoreColor color, DataStoreEntry e, RemoteDesktopDockContentEntry entry) {
+    public RemoteDesktopDockEntry trackInternal(
+            String name, String icon, DataStoreColor color, DataStoreEntry e, RemoteDesktopDockContentEntry entry) {
         var toTrack = new RemoteDesktopDockEntry(name, icon, color, e, null, entry, null, null);
         model.track(toTrack);
         return toTrack;
     }
 
-    public void trackExternal(String name, String icon, DataStoreColor color, DataStoreEntry e, int w, int h, Process process, Duration maxWait, Predicate<ControllableWindowProcess> filter) {
+    public void trackExternal(
+            String name,
+            String icon,
+            DataStoreColor color,
+            DataStoreEntry e,
+            int w,
+            int h,
+            Process process,
+            Duration maxWait,
+            Predicate<ControllableWindowProcess> filter) {
         var start = process.info().startInstant().orElseThrow();
         GlobalTimer.scheduleUntil(Duration.ofMillis(200), false, () -> {
             if (Duration.between(start, Instant.now()).compareTo(maxWait) > 0) {
@@ -211,24 +229,25 @@ public class RemoteDesktopWindow {
                 return true;
             }
 
-//            var after = ProcessHandle.allProcesses().map(processHandle -> {
-//                var spawnedAfter = processHandle.info().startInstant().map(instant -> instant.equals(start) || instant.isAfter(start)).orElse(false);
-//                if (!spawnedAfter) {
-//                    return null;
-//                }
-//
-//                var windows = NativeWinWindowControl.byPid(processHandle.pid());
-//                if (windows.isEmpty()) {
-//                    return null;
-//                }
-//
-//                var c = new ControllableWindowsProcess(processHandle, windows.getFirst());
-//                if (!filter.test(c)) {
-//                    return null;
-//                }
-//
-//                return c;
-//            }).filter(Objects::nonNull).findFirst();
+            //            var after = ProcessHandle.allProcesses().map(processHandle -> {
+            //                var spawnedAfter = processHandle.info().startInstant().map(instant ->
+            // instant.equals(start) || instant.isAfter(start)).orElse(false);
+            //                if (!spawnedAfter) {
+            //                    return null;
+            //                }
+            //
+            //                var windows = NativeWinWindowControl.byPid(processHandle.pid());
+            //                if (windows.isEmpty()) {
+            //                    return null;
+            //                }
+            //
+            //                var c = new ControllableWindowsProcess(processHandle, windows.getFirst());
+            //                if (!filter.test(c)) {
+            //                    return null;
+            //                }
+            //
+            //                return c;
+            //            }).filter(Objects::nonNull).findFirst();
 
             var windows = NativeWinWindowControl.byPid(process.pid());
             if (windows.isEmpty()) {
@@ -251,15 +270,17 @@ public class RemoteDesktopWindow {
     }
 
     private ObservableStringValue createTitle() {
-        return Bindings.createStringBinding(() -> {
-            var selected = this.selected.get();
-            if (selected == null) {
-                return "Remote Desktop Dock";
-            }
+        return Bindings.createStringBinding(
+                () -> {
+                    var selected = this.selected.get();
+                    if (selected == null) {
+                        return "Remote Desktop Dock";
+                    }
 
-            var name = selected.getName();
-            return name + " - Remote Desktop Connection";
-        }, selected);
+                    var name = selected.getName();
+                    return name + " - Remote Desktop Connection";
+                },
+                selected);
     }
 
     private void startStateListener() {

@@ -1,7 +1,5 @@
 package io.xpipe.app.prefs;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
@@ -15,9 +13,13 @@ import io.xpipe.app.util.DesktopShortcuts;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.JacksonMapper;
+
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import lombok.Getter;
 
 import java.nio.file.Files;
@@ -39,7 +41,9 @@ public class WorkspaceManager {
                 var type = TypeFactory.defaultInstance().constructType(new TypeReference<List<WorkspaceEntry>>() {});
                 List<WorkspaceEntry> parsed = JacksonMapper.getDefault().readValue(file.toFile(), type);
                 for (WorkspaceEntry workspace : parsed) {
-                    if (workspace.getName() == null || workspace.getDir() == null || !Files.exists(workspace.getDir())) {
+                    if (workspace.getName() == null
+                            || workspace.getDir() == null
+                            || !Files.exists(workspace.getDir())) {
                         continue;
                     }
                     workspaces.add(workspace);
@@ -50,9 +54,15 @@ public class WorkspaceManager {
         }
 
         var d = AppProperties.get().getDataDir();
-        var existing = workspaces.stream().filter(workspace -> workspace.getDir().equals(d)).findFirst();
+        var existing = workspaces.stream()
+                .filter(workspace -> workspace.getDir().equals(d))
+                .findFirst();
         if (existing.isEmpty()) {
-            var name = d.getFileName().toString().equals(".xpipe") ? "Default" : d.getFileName().toString().equals(".xpipe-ptb") ? "PTB": d.getFileName().toString();
+            var name = d.getFileName().toString().equals(".xpipe")
+                    ? "Default"
+                    : d.getFileName().toString().equals(".xpipe-ptb")
+                            ? "PTB"
+                            : d.getFileName().toString();
             current = new WorkspaceEntry(name, d);
             workspaces.addFirst(current);
         } else {
@@ -61,7 +71,10 @@ public class WorkspaceManager {
     }
 
     private void save() {
-        if (AppProperties.get().isAotTrainMode() ||AppProperties.get().isTest() || workspaces.isEmpty() || !Files.exists(AppProperties.get().getDefaultReleaseDataDir())) {
+        if (AppProperties.get().isAotTrainMode()
+                || AppProperties.get().isTest()
+                || workspaces.isEmpty()
+                || !Files.exists(AppProperties.get().getDefaultReleaseDataDir())) {
             return;
         }
 
@@ -78,7 +91,9 @@ public class WorkspaceManager {
         save();
 
         try {
-            var file = DesktopShortcuts.createOpen(name, "open -d \"" + dir + "\" --accept-eula",
+            var file = DesktopShortcuts.createOpen(
+                    name,
+                    "open -d \"" + dir + "\" --accept-eula",
                     "-Dio.xpipe.app.dataDir=\"" + dir + "\" -Dio.xpipe.app.acceptEula=true");
             showConfirmModal(file, dir);
         } catch (Exception e) {

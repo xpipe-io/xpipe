@@ -1069,7 +1069,8 @@ public abstract class DataStorage {
         }
 
         // There is no proper fallback for these cases
-        if (cat.getParentCategory().equals(ALL_SCRIPTS_CATEGORY_UUID) || cat.getParentCategory().equals(ALL_IDENTITIES_CATEGORY_UUID)) {
+        if (cat.getParentCategory().equals(ALL_SCRIPTS_CATEGORY_UUID)
+                || cat.getParentCategory().equals(ALL_IDENTITIES_CATEGORY_UUID)) {
             deleteEntries = true;
         }
 

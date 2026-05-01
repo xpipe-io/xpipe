@@ -66,12 +66,19 @@ public interface GhosttyTerminalType extends ExternalTerminalType, TrackableTerm
         public boolean isRecommended() {
             return true;
         }
+
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-            CommandBuilder b = configuration.isPreferTabs() ?
-                    CommandBuilder.of().add("open", "-a").addQuoted(getApplicationName()).addFile(configuration.single().getScriptFile()) :
-                    CommandBuilder.of().add("open", "-n", "-a").addQuoted(getApplicationName()).add("--args", "-e").add(
-                    configuration.single().getDialectLaunchCommand());
+            CommandBuilder b = configuration.isPreferTabs()
+                    ? CommandBuilder.of()
+                            .add("open", "-a")
+                            .addQuoted(getApplicationName())
+                            .addFile(configuration.single().getScriptFile())
+                    : CommandBuilder.of()
+                            .add("open", "-n", "-a")
+                            .addQuoted(getApplicationName())
+                            .add("--args", "-e")
+                            .add(configuration.single().getDialectLaunchCommand());
             LocalShell.getShell().command(b).execute();
         }
 

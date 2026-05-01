@@ -1,7 +1,6 @@
 package io.xpipe.app.cred;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
@@ -59,9 +58,7 @@ public class OpenSshAgentStrategy implements SshIdentityAgentStrategy {
     }
 
     @Override
-    public void checkComplete() {
-
-    }
+    public void checkComplete() {}
 
     @Override
     public FilePath determineAgentSocketLocation(ShellControl sc) throws Exception {

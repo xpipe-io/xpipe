@@ -57,7 +57,9 @@ public interface ExternalRdpClient extends PrefsValue {
                 var freeRdp = new FreeRdpClient();
                 var remmina = new RemminaRdpClient();
                 var krdc = new KrdcRdpClient();
-                yield remmina.isAvailable() ? remmina : freeRdp.isAvailable() ? freeRdp : krdc.isAvailable() ? krdc : remmina;
+                yield remmina.isAvailable()
+                        ? remmina
+                        : freeRdp.isAvailable() ? freeRdp : krdc.isAvailable() ? krdc : remmina;
             }
             case OsType.MacOs ignored -> {
                 var remoteDesktopApp = new RemoteDesktopAppRdpClient();

@@ -25,7 +25,9 @@ public class HttpHelper {
     @SneakyThrows
     public static HttpClient client() {
         var proxy = HttpProxy.getActiveProxy();
-        return client(proxy.orElse(null), AppPrefs.get() != null && AppPrefs.get().disableHttpsTlsCheck().getValue());
+        return client(
+                proxy.orElse(null),
+                AppPrefs.get() != null && AppPrefs.get().disableHttpsTlsCheck().getValue());
     }
 
     @SneakyThrows
@@ -56,12 +58,14 @@ public class HttpHelper {
             builder.proxy(new ProxySelector() {
                 @Override
                 public List<Proxy> select(URI uri) {
-                    return List.of(new Proxy(proxy.isSocks5() ? Proxy.Type.SOCKS : Proxy.Type.HTTP,
+                    return List.of(new Proxy(
+                            proxy.isSocks5() ? Proxy.Type.SOCKS : Proxy.Type.HTTP,
                             new InetSocketAddress(proxy.getHost(), proxy.getPort())));
                 }
+
                 @Override
                 public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
-                     ErrorEventFactory.fromThrowable(ioe).handle();
+                    ErrorEventFactory.fromThrowable(ioe).handle();
                 }
             });
             builder.authenticator(new Authenticator() {
@@ -69,7 +73,8 @@ public class HttpHelper {
                 @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
                     if (proxy.getUser() != null && proxy.getPassword() != null) {
-                        return new PasswordAuthentication(proxy.getUser(), proxy.getPassword().getSecret());
+                        return new PasswordAuthentication(
+                                proxy.getUser(), proxy.getPassword().getSecret());
                     } else {
                         return null;
                     }
@@ -83,38 +88,35 @@ public class HttpHelper {
     public static void checkOrThrow(HttpResponse<?> res) throws IOException {
         if (res.statusCode() == 407) {
             var ex = new IOException("HTTP proxy authentication required");
-            ErrorEventFactory.preconfigure(ErrorEventFactory.fromThrowable(ex)
-                            .expected()
-                    .customAction(new ErrorAction() {
-                @Override
-                public String getName() {
-                    return AppI18n.get("httpProxyError");
-                }
+            ErrorEventFactory.preconfigure(
+                    ErrorEventFactory.fromThrowable(ex).expected().customAction(new ErrorAction() {
+                        @Override
+                        public String getName() {
+                            return AppI18n.get("httpProxyError");
+                        }
 
-                @Override
-                public String getDescription() {
-                    return AppI18n.get("httpProxyErrorDescription");
-                }
+                        @Override
+                        public String getDescription() {
+                            return AppI18n.get("httpProxyErrorDescription");
+                        }
 
-                @Override
-                public boolean handle(ErrorEvent event) {
-                    AppPrefs.get().selectCategory("httpProxy");
-                    return true;
-                }
-            }));
+                        @Override
+                        public boolean handle(ErrorEvent event) {
+                            AppPrefs.get().selectCategory("httpProxy");
+                            return true;
+                        }
+                    }));
             throw ex;
         }
 
         if (res.statusCode() >= 400) {
             if (res.body() instanceof String s) {
-                var msg = !s.isEmpty() ?
-                        s :
-                        "Received HTTP " + res.statusCode() + " without further details";
+                var msg = !s.isEmpty() ? s : "Received HTTP " + res.statusCode() + " without further details";
                 throw new IOException(msg);
             } else if (res.body() instanceof byte[] b) {
-                var msg = b.length > 0 ?
-                        new String(b, StandardCharsets.UTF_8) :
-                        "Received HTTP " + res.statusCode() + " without further details";
+                var msg = b.length > 0
+                        ? new String(b, StandardCharsets.UTF_8)
+                        : "Received HTTP " + res.statusCode() + " without further details";
                 throw new IOException(msg);
             }
         }

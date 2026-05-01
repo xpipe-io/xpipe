@@ -138,42 +138,45 @@ public class ScriptStoreProvider implements DataStoreProvider {
         var selectorComp = new ListSelectorComp<>(
                 FXCollections.observableList(vals), name, ignored -> null, selectedExecTypes, v -> false, () -> false);
 
-        return new GuiDialog(new OptionsBuilder()
-                .nameAndDescription("scriptSourceType")
-                .sub(textSourceChoice.build(), textSource)
-                .nameAndDescription("executionType")
-                .documentationLink(DocumentationLink.SCRIPTING_TYPES)
-                .addComp(selectorComp, selectedExecTypes)
-                .check(validator ->
-                        Validator.nonEmpty(validator, AppI18n.observable("executionType"), selectedExecTypes))
-                .name("snippets")
-                .description("snippetsDescription")
-                .documentationLink(DocumentationLink.SCRIPTING_DEPENDENCIES)
-                .addComp(
-                        new StoreListChoiceComp<>(
-                                others,
-                                ScriptStore.class,
-                                scriptStore -> !scriptStore.get().equals(model.getExistingEntry()) && !others.contains(scriptStore),
-                                StoreViewState.get().getAllScriptsCategory()),
-                        others)
-                .bind(
-                        () -> {
-                            return ScriptStore.builder()
-                                    .textSource(textSource.get())
-                                    .scripts(new ArrayList<>(others.get()))
-                                    .description(st.getDescription())
-                                    .initScript(selectedExecTypes.contains(0))
-                                    .runnableScript(selectedExecTypes.contains(1))
-                                    .fileScript(selectedExecTypes.contains(2))
-                                    .shellScript(selectedExecTypes.contains(3))
-                                    .build();
-                        },
-                        store), (finished) -> {
-            if (model.getExistingEntry() == null) {
-                finished.setStorePersistentState(EnabledStoreState.builder().enabled(true).build());
-            }
-
-        });
+        return new GuiDialog(
+                new OptionsBuilder()
+                        .nameAndDescription("scriptSourceType")
+                        .sub(textSourceChoice.build(), textSource)
+                        .nameAndDescription("executionType")
+                        .documentationLink(DocumentationLink.SCRIPTING_TYPES)
+                        .addComp(selectorComp, selectedExecTypes)
+                        .check(validator ->
+                                Validator.nonEmpty(validator, AppI18n.observable("executionType"), selectedExecTypes))
+                        .name("snippets")
+                        .description("snippetsDescription")
+                        .documentationLink(DocumentationLink.SCRIPTING_DEPENDENCIES)
+                        .addComp(
+                                new StoreListChoiceComp<>(
+                                        others,
+                                        ScriptStore.class,
+                                        scriptStore -> !scriptStore.get().equals(model.getExistingEntry())
+                                                && !others.contains(scriptStore),
+                                        StoreViewState.get().getAllScriptsCategory()),
+                                others)
+                        .bind(
+                                () -> {
+                                    return ScriptStore.builder()
+                                            .textSource(textSource.get())
+                                            .scripts(new ArrayList<>(others.get()))
+                                            .description(st.getDescription())
+                                            .initScript(selectedExecTypes.contains(0))
+                                            .runnableScript(selectedExecTypes.contains(1))
+                                            .fileScript(selectedExecTypes.contains(2))
+                                            .shellScript(selectedExecTypes.contains(3))
+                                            .build();
+                                },
+                                store),
+                (finished) -> {
+                    if (model.getExistingEntry() == null) {
+                        finished.setStorePersistentState(
+                                EnabledStoreState.builder().enabled(true).build());
+                    }
+                });
     }
 
     @Override

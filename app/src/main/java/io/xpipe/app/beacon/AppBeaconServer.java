@@ -140,10 +140,10 @@ public class AppBeaconServer {
             return t;
         });
         var external = AppPrefs.get().allowExternalApiRequests().get() || Boolean.getBoolean("XPIPE_API_SERVER");
-        var addr = external ? Inet4Address.getByAddress(new byte[]{0, 0, 0, 0}) :
-                Inet4Address.getByAddress(new byte[]{0x7f, 0x00, 0x00, 0x01});
-        server = HttpServer.create(
-                new InetSocketAddress(addr, port), 10);
+        var addr = external
+                ? Inet4Address.getByAddress(new byte[] {0, 0, 0, 0})
+                : Inet4Address.getByAddress(new byte[] {0x7f, 0x00, 0x00, 0x01});
+        server = HttpServer.create(new InetSocketAddress(addr, port), 10);
         BeaconInterface.getAll().forEach(beaconInterface -> {
             var handler = new BeaconRequestHandler<>(beaconInterface);
             server.createContext(beaconInterface.getPath(), exchange -> {

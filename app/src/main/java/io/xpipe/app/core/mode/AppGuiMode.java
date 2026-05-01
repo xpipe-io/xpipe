@@ -32,7 +32,10 @@ public class AppGuiMode extends AppOperationMode {
             AppDialog.getModalOverlays().clear();
 
             // Close other windows
-            Stage.getWindows().stream().filter(w -> !w.equals(AppMainWindow.get().getStage())).toList().forEach(w -> w.hide());
+            Stage.getWindows().stream()
+                    .filter(w -> !w.equals(AppMainWindow.get().getStage()))
+                    .toList()
+                    .forEach(w -> w.hide());
 
             // If we are in an externally started shutdown hook, don't close the windows until the platform exits
             // That way, it is kept open to block for shutdowns on Windows systems

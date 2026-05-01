@@ -14,6 +14,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.HttpProxy;
+
 import javafx.beans.property.SimpleObjectProperty;
 
 public class HttpProxyCategory extends AppPrefsCategory {
@@ -34,10 +35,7 @@ public class HttpProxyCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .title("httpProxyConfiguration")
                 .sub(proxy())
-                .sub(new OptionsBuilder()
-                        .pref(prefs.disableHttpsTlsCheck)
-                        .addToggle(prefs.disableHttpsTlsCheck)
-                )
+                .sub(new OptionsBuilder().pref(prefs.disableHttpsTlsCheck).addToggle(prefs.disableHttpsTlsCheck))
                 .buildComp();
     }
 
@@ -47,41 +45,52 @@ public class HttpProxyCategory extends AppPrefsCategory {
         var proxyChoice = new DelayedInitComp(
                 RegionBuilder.of(() -> {
                     var initial = prefs.httpProxy.getValue();
-                    var initialRef = initial != null ? DataStorage.get().getStoreEntries().stream().filter(e -> {
-                        return initial.equals(ProcessControlProvider.get().getHttpProxy(e.ref().asNeeded()).orElse(null));
-                    }).map(DataStoreEntry::ref).findFirst().orElse(null) : null;
+                    var initialRef = initial != null
+                            ? DataStorage.get().getStoreEntries().stream()
+                                    .filter(e -> {
+                                        return initial.equals(ProcessControlProvider.get()
+                                                .getHttpProxy(e.ref().asNeeded())
+                                                .orElse(null));
+                                    })
+                                    .map(DataStoreEntry::ref)
+                                    .findFirst()
+                                    .orElse(null)
+                            : null;
                     ref.set(initialRef);
                     ref.addListener((observable, oldValue, newValue) -> {
                         prefs.httpProxy.setValue(
                                 newValue != null
-                                        ? ProcessControlProvider.get().getHttpProxy(newValue).orElse(null)
+                                        ? ProcessControlProvider.get()
+                                                .getHttpProxy(newValue)
+                                                .orElse(null)
                                         : null);
                     });
 
-                    var comp = new StoreChoiceComp<>(
-                            null,
-                            ref,
-                            DataStore.class,
-                            r -> HttpProxy.canUseAsProxy(r.asNeeded()),
-                            StoreViewState.get().getAllConnectionsCategory()) {
-                        @Override
-                        protected String toName(DataStoreEntry entry) {
-                            if (entry == null) {
-                                return AppI18n.get("systemDefault");
-                            }
+                    var comp =
+                            new StoreChoiceComp<>(
+                                    null,
+                                    ref,
+                                    DataStore.class,
+                                    r -> HttpProxy.canUseAsProxy(r.asNeeded()),
+                                    StoreViewState.get().getAllConnectionsCategory()) {
+                                @Override
+                                protected String toName(DataStoreEntry entry) {
+                                    if (entry == null) {
+                                        return AppI18n.get("systemDefault");
+                                    }
 
-                            return super.toName(entry);
-                        }
+                                    return super.toName(entry);
+                                }
 
-                        @Override
-                        protected String toGraphic(DataStoreEntry entry) {
-                            if (entry == null) {
-                                return "proc:networkProxy_icon.svg";
-                            }
+                                @Override
+                                protected String toGraphic(DataStoreEntry entry) {
+                                    if (entry == null) {
+                                        return "proc:networkProxy_icon.svg";
+                                    }
 
-                            return super.toGraphic(entry);
-                        }
-                    };
+                                    return super.toGraphic(entry);
+                                }
+                            };
                     return comp.build();
                 }),
                 () -> StoreViewState.get() != null && StoreViewState.get().isInitialized());
@@ -90,7 +99,8 @@ public class HttpProxyCategory extends AppPrefsCategory {
         var addButton = new ButtonComp(AppI18n.observable("addProxy"), () -> {
             var selected = DataStoreProviders.byId("networkProxy").orElseThrow();
             StoreCreationDialog.showCreation(
-                    null, selected.defaultStore(DataStorage.get().getSelectedCategory()),
+                    null,
+                    selected.defaultStore(DataStorage.get().getSelectedCategory()),
                     DataStoreCreationCategory.NETWORK,
                     ignored -> {},
                     false);

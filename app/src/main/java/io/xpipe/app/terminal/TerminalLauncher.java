@@ -216,8 +216,7 @@ public class TerminalLauncher {
         launch(type, launchConfig);
     }
 
-    private static void launch(ExternalTerminalType type, TerminalLaunchConfiguration config)
-            throws Exception {
+    private static void launch(ExternalTerminalType type, TerminalLaunchConfiguration config) throws Exception {
         if (type == null) {
             return;
         }

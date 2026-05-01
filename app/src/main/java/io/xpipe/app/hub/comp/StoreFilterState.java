@@ -5,8 +5,8 @@ import io.xpipe.app.action.QuickConnectProvider;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.DerivedObservableList;
-
 import io.xpipe.app.util.GlobalTimer;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -108,15 +108,17 @@ public class StoreFilterState {
             var index = updateCount.getValue() + 1;
             updateCount.setValue(index);
 
-            GlobalTimer.delay(() -> {
-                if (index != updateCount.get()) {
-                    return;
-                }
+            GlobalTimer.delay(
+                    () -> {
+                        if (index != updateCount.get()) {
+                            return;
+                        }
 
-                Platform.runLater(() -> {
-                    rawText.setValue(fieldText.getValue());
-                });
-            }, Duration.ofMillis(350));
+                        Platform.runLater(() -> {
+                            rawText.setValue(fieldText.getValue());
+                        });
+                    },
+                    Duration.ofMillis(350));
         });
     }
 

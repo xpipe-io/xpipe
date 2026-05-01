@@ -28,9 +28,15 @@ public class AppWindowStyle {
             return;
         }
 
-        scene.fillProperty().bind(Bindings.createObjectBinding(() -> {
-            return AppPrefs.get() != null && AppPrefs.get().theme().getValue().isDark() ? Color.BLACK : Color.WHITE;
-        }, AppPrefs.get().theme()));
+        scene.fillProperty()
+                .bind(Bindings.createObjectBinding(
+                        () -> {
+                            return AppPrefs.get() != null
+                                            && AppPrefs.get().theme().getValue().isDark()
+                                    ? Color.BLACK
+                                    : Color.WHITE;
+                        },
+                        AppPrefs.get().theme()));
     }
 
     public static void addMaximizedPseudoClass(Stage stage) {

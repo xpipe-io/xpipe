@@ -36,8 +36,7 @@ public class SshCategory extends AppPrefsCategory {
 
         options.sub(new OptionsBuilder()
                 .pref(prefs.useExternalNetcatForProxies)
-                .addToggle(prefs.useExternalNetcatForProxies)
-        );
+                .addToggle(prefs.useExternalNetcatForProxies));
 
         var agentTest = new SshAgentTestComp(
                 () -> {},

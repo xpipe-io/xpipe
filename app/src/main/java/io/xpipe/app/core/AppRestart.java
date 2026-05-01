@@ -52,7 +52,11 @@ public class AppRestart {
             return async.buildSimple();
         } else if (OsType.ofLocal() == OsType.MACOS) {
             var exec = loc.getDaemonExecutablePath();
-            var b = CommandBuilder.of().add("open").addFile(exec).addIf(!arguments.isEmpty(), "--args").addAll(arguments);
+            var b = CommandBuilder.of()
+                    .add("open")
+                    .addFile(exec)
+                    .addIf(!arguments.isEmpty(), "--args")
+                    .addAll(arguments);
             return b.buildSimple();
         } else {
             var exe = loc.getDaemonExecutablePath();

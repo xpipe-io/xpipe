@@ -1,11 +1,11 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.util.ControllableWindowProcess;
-import io.xpipe.app.util.ControllableWindowsProcess;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
+import io.xpipe.app.util.ControllableWindowProcess;
+import io.xpipe.app.util.ControllableWindowsProcess;
+import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.OsType;
 
@@ -160,7 +160,8 @@ public class TerminalView {
                     }
                 }
 
-                yield Optional.of(new ControllableTerminalSession(terminalProcess, type, new ControllableWindowsProcess(terminalProcess, controls.getFirst())));
+                yield Optional.of(new ControllableTerminalSession(
+                        terminalProcess, type, new ControllableWindowsProcess(terminalProcess, controls.getFirst())));
             }
         };
     }
@@ -208,7 +209,9 @@ public class TerminalView {
         }
 
         for (TerminalSession terminalInstance : new ArrayList<>(terminalInstances)) {
-            var alive = terminalInstance.isRunning() && sessions.stream().anyMatch(shellSession -> shellSession.getTerminal().equals(terminalInstance));
+            var alive = terminalInstance.isRunning()
+                    && sessions.stream()
+                            .anyMatch(shellSession -> shellSession.getTerminal().equals(terminalInstance));
             if (!alive) {
                 terminalInstances.remove(terminalInstance);
                 TrackEvent.withTrace("Terminal session is dead")
@@ -271,7 +274,10 @@ public class TerminalView {
 
         private final ControllableWindowProcess controllable;
 
-        protected ControllableTerminalSession(ProcessHandle terminalProcess, ExternalTerminalType terminalType, ControllableWindowProcess controllable) {
+        protected ControllableTerminalSession(
+                ProcessHandle terminalProcess,
+                ExternalTerminalType terminalType,
+                ControllableWindowProcess controllable) {
             super(terminalProcess, terminalType);
             this.controllable = controllable;
         }

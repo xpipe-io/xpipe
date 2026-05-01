@@ -1,8 +1,10 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppCache;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+
 import lombok.Getter;
 
 import java.util.function.Supplier;

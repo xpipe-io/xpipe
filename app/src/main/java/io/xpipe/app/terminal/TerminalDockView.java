@@ -1,12 +1,12 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.util.WindowDockListener;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
+import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.util.Rect;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.util.WindowDockListener;
 
 import java.time.Duration;
 import java.util.HashSet;
@@ -33,8 +33,11 @@ public class TerminalDockView implements WindowDockListener {
     }
 
     public synchronized boolean isActive() {
-        return viewActive && !terminalInstances.isEmpty() &&
-                terminalInstances.stream().anyMatch(s -> s.getControllable().isActive() && !s.getControllable().isCustomBounds());
+        return viewActive
+                && !terminalInstances.isEmpty()
+                && terminalInstances.stream()
+                        .anyMatch(s -> s.getControllable().isActive()
+                                && !s.getControllable().isCustomBounds());
     }
 
     public synchronized boolean isRunning() {
@@ -42,11 +45,14 @@ public class TerminalDockView implements WindowDockListener {
     }
 
     public synchronized boolean isCustomBounds() {
-        return !terminalInstances.isEmpty() && terminalInstances.stream().anyMatch(terminal -> terminal.getControllable().isCustomBounds());
+        return !terminalInstances.isEmpty()
+                && terminalInstances.stream()
+                        .anyMatch(terminal -> terminal.getControllable().isCustomBounds());
     }
 
     public synchronized boolean isMinimized() {
-        return terminalInstances.stream().noneMatch(terminal -> terminal.getControllable().isActive());
+        return terminalInstances.stream()
+                .noneMatch(terminal -> terminal.getControllable().isActive());
     }
 
     public synchronized void updateCustomBounds() {
@@ -156,7 +162,7 @@ public class TerminalDockView implements WindowDockListener {
             return;
         }
 
-        var controllable =  terminal.getControllable();
+        var controllable = terminal.getControllable();
 
         // Reset style in case close is blocked by terminal
         controllable.restoreIcon();

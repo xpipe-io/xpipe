@@ -33,13 +33,19 @@ public interface McpToolHandler
         } catch (BeaconClientException e) {
             ErrorEventFactory.fromThrowable(e).expected().omit().handle();
             return McpSchema.CallToolResult.builder()
-                    .addTextContent(e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName())
+                    .addTextContent(
+                            e.getMessage() != null
+                                    ? e.getMessage()
+                                    : e.getClass().getSimpleName())
                     .isError(true)
                     .build();
         } catch (Throwable e) {
             ErrorEventFactory.fromThrowable(e).omit().handle();
             return McpSchema.CallToolResult.builder()
-                    .addTextContent(e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName())
+                    .addTextContent(
+                            e.getMessage() != null
+                                    ? e.getMessage()
+                                    : e.getClass().getSimpleName())
                     .isError(true)
                     .build();
         }
@@ -130,7 +136,10 @@ public interface McpToolHandler
 
             if (found.size() > 1) {
                 throw new BeaconClientException("Multiple connections found: "
-                        + found.stream().map(entry -> DataStorage.get().getStorePath(entry).toString()).toList());
+                        + found.stream()
+                                .map(entry ->
+                                        DataStorage.get().getStorePath(entry).toString())
+                                .toList());
             }
 
             var e = found.getFirst();

@@ -83,9 +83,14 @@ public final class McpTools {
                         throw new BeaconClientException("No API endpoint found for path " + path);
                     }
 
-                    var httpReq = HttpRequest.newBuilder().uri(URI.create("http://localhost:" + AppBeaconServer.get().getPort() + path))
-                            .header("Authorization", "Bearer " + AppPrefs.get().apiKey().get())
-                            .POST(HttpRequest.BodyPublishers.ofString(payloadJson.toPrettyString())).build();
+                    var httpReq = HttpRequest.newBuilder()
+                            .uri(URI.create(
+                                    "http://localhost:" + AppBeaconServer.get().getPort() + path))
+                            .header(
+                                    "Authorization",
+                                    "Bearer " + AppPrefs.get().apiKey().get())
+                            .POST(HttpRequest.BodyPublishers.ofString(payloadJson.toPrettyString()))
+                            .build();
                     var httpRes = HttpHelper.client().send(httpReq, HttpResponse.BodyHandlers.ofString());
 
                     var resJson = JacksonMapper.getDefault().readTree(httpRes.body());

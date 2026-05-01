@@ -80,7 +80,8 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
                 .nonNull()
                 .nameAndDescription("abstractHostGateway")
                 .addComp(
-                        new StoreChoiceComp<>(model.getExistingEntry(),
+                        new StoreChoiceComp<>(
+                                model.getExistingEntry(),
                                 gateway,
                                 NetworkTunnelStore.class,
                                 null,

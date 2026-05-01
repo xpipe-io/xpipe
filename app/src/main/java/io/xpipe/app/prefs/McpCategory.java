@@ -153,7 +153,8 @@ public class McpCategory extends AppPrefsCategory {
                                             .getTextArea()
                                             .promptTextProperty()
                                             .bind(AppI18n.observable("mcpAdditionalContextSample"));
-                                }).maxWidth(getCompWidth()))
+                                })
+                                .maxWidth(getCompWidth()))
                         .hide(prefs.enableMcpServer.not()))
                 .buildComp();
     }

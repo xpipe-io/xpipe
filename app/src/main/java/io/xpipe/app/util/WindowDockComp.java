@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.comp.SimpleRegionBuilder;
+
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -128,8 +129,7 @@ public class WindowDockComp<T extends WindowDockListener> extends SimpleRegionBu
     }
 
     protected void update(Region region) {
-        if (region.getScene() == null
-                || region.getScene().getWindow() == null) {
+        if (region.getScene() == null || region.getScene().getWindow() == null) {
             return;
         }
 

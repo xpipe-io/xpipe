@@ -62,6 +62,12 @@ public class DataStoreCategoryConfig {
             }
         }
         return new DataStoreCategoryConfig(
-                color, dontAllowScripts, warnOnAllModifications, sync, readOnly, defaultIdentityStore, defaultGatewayStore);
+                color,
+                dontAllowScripts,
+                warnOnAllModifications,
+                sync,
+                readOnly,
+                defaultIdentityStore,
+                defaultGatewayStore);
     }
 }

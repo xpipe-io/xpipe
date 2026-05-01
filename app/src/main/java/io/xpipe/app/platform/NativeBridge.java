@@ -26,14 +26,14 @@ public class NativeBridge {
     }
 
     public static Optional<MacOsLibrary> getMacOsLibrary() {
-        if (!AppProperties.get().isFullVersion() || !AppProperties.get().getArch().equals("arm64")) {
+        if (!AppProperties.get().isFullVersion()
+                || !AppProperties.get().getArch().equals("arm64")) {
             return Optional.empty();
         }
 
         if (macOsLibrary == null && !loadingFailed) {
             var base = AppProperties.get().isImage() ? AppInstallation.ofCurrent() : AppInstallation.ofDefault();
-            var file = base
-                    .getBaseInstallationPath()
+            var file = base.getBaseInstallationPath()
                     .resolve("Contents")
                     .resolve("runtime")
                     .resolve("Contents")

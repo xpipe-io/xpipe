@@ -1,6 +1,5 @@
 package io.xpipe.ext.base.store;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppMainWindow;
@@ -11,9 +10,12 @@ import io.xpipe.app.hub.comp.StoreCreationDialog;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
+
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Button;
+
+import atlantafx.base.theme.Styles;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 

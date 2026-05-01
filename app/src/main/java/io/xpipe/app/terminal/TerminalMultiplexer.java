@@ -4,10 +4,10 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
-
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.core.OsType;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,9 @@ public interface TerminalMultiplexer {
     }
 
     static TerminalMultiplexer determineDefault(TerminalMultiplexer existing) {
-        if (!AppProperties.get().isInitialLaunch() || OsType.ofLocal() == OsType.WINDOWS || AppDistributionType.get() == AppDistributionType.WEBTOP) {
+        if (!AppProperties.get().isInitialLaunch()
+                || OsType.ofLocal() == OsType.WINDOWS
+                || AppDistributionType.get() == AppDistributionType.WEBTOP) {
             return existing;
         }
 

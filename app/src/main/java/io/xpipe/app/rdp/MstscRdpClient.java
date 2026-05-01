@@ -2,9 +2,8 @@ package io.xpipe.app.rdp;
 
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
-import io.xpipe.app.core.AppDisplayScale;
-import io.xpipe.app.util.RemoteDesktopWindow;
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppDisplayScale;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
@@ -15,6 +14,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.RdpConfig;
+import io.xpipe.app.util.RemoteDesktopWindow;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.OsType;
@@ -54,8 +54,11 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
             return (usesNewSecurityDialog = false);
         }
 
-        var build = WindowsRegistry.local().readStringValueIfPresent(WindowsRegistry.HKEY_LOCAL_MACHINE,
-                "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", "CurrentBuild");
+        var build = WindowsRegistry.local()
+                .readStringValueIfPresent(
+                        WindowsRegistry.HKEY_LOCAL_MACHINE,
+                        "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
+                        "CurrentBuild");
         if (build.isEmpty()) {
             return (usesNewSecurityDialog = false);
         }
@@ -64,8 +67,11 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
     }
 
     private static boolean isNewSecurityDialogEnabled() {
-        var version = WindowsRegistry.local().readIntegerValueIfPresent(WindowsRegistry.HKEY_LOCAL_MACHINE,
-                "SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services\\Client", "RedirectionWarningDialogVersion");
+        var version = WindowsRegistry.local()
+                .readIntegerValueIfPresent(
+                        WindowsRegistry.HKEY_LOCAL_MACHINE,
+                        "SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services\\Client",
+                        "RedirectionWarningDialogVersion");
         return version.isEmpty() || version.getAsInt() != 1;
     }
 
@@ -76,14 +82,17 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
         }
 
         if (val) {
-            sc.get().command("Start-Process reg -Wait -ArgumentList add, \"`\"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services\\Client`\"\", /t, REG_DWORD , /v, RedirectionWarningDialogVersion, /d, 1, /f -Verb runAs")
+            sc.get()
+                    .command(
+                            "Start-Process reg -Wait -ArgumentList add, \"`\"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services\\Client`\"\", /t, REG_DWORD , /v, RedirectionWarningDialogVersion, /d, 1, /f -Verb runAs")
                     .executeAndCheck();
         } else {
-            sc.get().command("Start-Process reg -Wait -ArgumentList delete, \"`\"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services\\Client`\"\", /v, RedirectionWarningDialogVersion, /f -Verb runAs")
+            sc.get()
+                    .command(
+                            "Start-Process reg -Wait -ArgumentList delete, \"`\"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services\\Client`\"\", /v, RedirectionWarningDialogVersion, /f -Verb runAs")
                     .executeAndCheck();
         }
     }
-
 
     @Value
     @Jacksonized
@@ -99,7 +108,8 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
     static OptionsBuilder createOptions(Property<MstscRdpClient> property) {
         var dock = new SimpleObjectProperty<>(property.getValue().isDock());
         var smartSizing = new SimpleObjectProperty<>(property.getValue().isSmartSizing());
-        var useSystemDisplayScale = new SimpleBooleanProperty(property.getValue().isUseSystemDisplayScale());
+        var useSystemDisplayScale =
+                new SimpleBooleanProperty(property.getValue().isUseSystemDisplayScale());
 
         var rdpSecurityValueHide = new SimpleBooleanProperty();
         var rdpSecurityValue = new SimpleBooleanProperty();
@@ -146,16 +156,24 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
     public void launch(RdpLaunchConfig configuration) throws Exception {
         var securityDialogShown = AppCache.getBoolean("rdpWindowsSecurityWarningDialog", false);
         if (!securityDialogShown && usesNewSecurityDialog() && isNewSecurityDialogEnabled()) {
-            var modal = ModalOverlay.of("rdpWindowsSecurityWarningDialogTitle", AppDialog.dialogTextKey("rdpWindowsSecurityWarningDialogContent"));
+            var modal = ModalOverlay.of(
+                    "rdpWindowsSecurityWarningDialogTitle",
+                    AppDialog.dialogTextKey("rdpWindowsSecurityWarningDialogContent"));
             modal.addButton(ModalButton.cancel());
-            modal.addButton(new ModalButton("openSettings", () -> {
-                AppPrefs.get().selectCategory("rdp");
-            }, true, true));
+            modal.addButton(new ModalButton(
+                    "openSettings",
+                    () -> {
+                        AppPrefs.get().selectCategory("rdp");
+                    },
+                    true,
+                    true));
             modal.show();
             AppCache.update("rdpWindowsSecurityWarningDialog", true);
         }
 
-        var adaptedRdpConfig = configuration.isRemoteApp() ? getAdaptedConfig(configuration) : getRemoteDesktopWindowConfig(getAdaptedConfig(configuration));
+        var adaptedRdpConfig = configuration.isRemoteApp()
+                ? getAdaptedConfig(configuration)
+                : getRemoteDesktopWindowConfig(getAdaptedConfig(configuration));
         var window = RemoteDesktopWindow.get();
         String width = null;
         String height = null;
@@ -168,9 +186,7 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
         }
         var setCache = prepareLocalhostRegistryCache(configuration);
 
-        var fullAddress = configuration
-                .getConfig()
-                .get("full address");
+        var fullAddress = configuration.getConfig().get("full address");
         if (fullAddress.isPresent()) {
             disableSignatureWarning(fullAddress.get().getValue());
         }
@@ -180,11 +196,18 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
         if (process != null && window != null && !configuration.isRemoteApp() && dock) {
             window.show();
             var entry = configuration.getEntry();
-            window.trackExternal(configuration.getTitle(), entry.getEffectiveIconFile(), DataStorage.get().getEffectiveColor(entry), entry,
-                    window.getDockBounds().getW(), window.getDockBounds().getH(),
-                    process, Duration.ofSeconds(60), p -> {
-                return !p.isDialog();
-            });
+            window.trackExternal(
+                    configuration.getTitle(),
+                    entry.getEffectiveIconFile(),
+                    DataStorage.get().getEffectiveColor(entry),
+                    entry,
+                    window.getDockBounds().getW(),
+                    window.getDockBounds().getH(),
+                    process,
+                    Duration.ofSeconds(60),
+                    p -> {
+                        return !p.isDialog();
+                    });
         }
 
         GlobalTimer.delay(
@@ -226,7 +249,8 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
             window.show();
             var s = window.getDockBounds();
             if (s != null) {
-                var pos = "0,1," + s.getX() + "," + s.getY() + "," + (s.getX() + s.getW()) + "," + (s.getY() + s.getH());
+                var pos =
+                        "0,1," + s.getX() + "," + s.getY() + "," + (s.getX() + s.getW()) + "," + (s.getY() + s.getH());
                 var adapted = input.overlay(Map.of(
                         "winposstr", new RdpConfig.TypedValue("s", pos),
                         "pinconnectionbar", new RdpConfig.TypedValue("i", "0"),
@@ -318,17 +342,12 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
                         WindowsRegistry.HKEY_CURRENT_USER,
                         "Software\\Microsoft\\Terminal Server Client\\Servers\\localhost");
 
-        var fullAddress = configuration
-                .getConfig()
-                .get("full address");
+        var fullAddress = configuration.getConfig().get("full address");
         if (fullAddress.isEmpty()) {
             return false;
         }
 
-        var localhost = fullAddress
-                .get()
-                .getValue()
-                .startsWith("localhost");
+        var localhost = fullAddress.get().getValue().startsWith("localhost");
         if (localhost) {
             var found = getLocalhostRegistryCache(configuration.getStoreId());
             if (found.isPresent()) {

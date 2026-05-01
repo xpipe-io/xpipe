@@ -41,7 +41,8 @@ public class TerminalLaunchRequest {
     @NonFinal
     CountDownLatch latch;
 
-    public TerminalLaunchRequest(UUID request, ProcessControl processControl, TerminalInitScriptConfig config, FilePath workingDirectory) {
+    public TerminalLaunchRequest(
+            UUID request, ProcessControl processControl, TerminalInitScriptConfig config, FilePath workingDirectory) {
         this.request = request;
         this.processControl = processControl;
         this.config = config;

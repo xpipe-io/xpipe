@@ -51,7 +51,8 @@ public class IdentityChoiceBuilder {
     ObservableValue<DataStoreEntryRef<ShellStore>> fileSystem;
 
     public IdentityChoiceBuilder(
-            ObjectProperty<IdentityValue> identity, ObservableBooleanValue syncedBase,
+            ObjectProperty<IdentityValue> identity,
+            ObservableBooleanValue syncedBase,
             boolean allowCustomUserInput,
             boolean requireUserInput,
             boolean requirePassword,
@@ -75,40 +76,64 @@ public class IdentityChoiceBuilder {
 
     private void addSyncCheckListener() {
         identity.addListener((observable, oldValue, newValue) -> {
-            if (DataStorage.get().supportsSync() && syncedBase.getValue() && newValue instanceof IdentityValue.Ref r && r.unwrap() instanceof LocalIdentityStore) {
-                var modal = ModalOverlay.of("unsyncedIdentityTitle", AppDialog.dialogTextKey("unsyncedIdentityContent").prefWidth(600));
-                modal.addButton(new ModalButton("documentation", () -> {
-                    DocumentationLink.IDENTITIES.open();
-                }, false, false));
+            if (DataStorage.get().supportsSync()
+                    && syncedBase.getValue()
+                    && newValue instanceof IdentityValue.Ref r
+                    && r.unwrap() instanceof LocalIdentityStore) {
+                var modal = ModalOverlay.of(
+                        "unsyncedIdentityTitle",
+                        AppDialog.dialogTextKey("unsyncedIdentityContent").prefWidth(600));
+                modal.addButton(new ModalButton(
+                        "documentation",
+                        () -> {
+                            DocumentationLink.IDENTITIES.open();
+                        },
+                        false,
+                        false));
                 modal.addButtonBarComp(RegionBuilder.hspacer());
-                modal.addButton(new ModalButton("syncIdentity", () -> {
-                    IdentityConvert.syncLocal(r.getRef().asNeeded(), false, updated -> {
-                        Platform.runLater(() -> {
-                            identity.set(null);
-                            identity.set(IdentityValue.Ref.builder().ref(updated.asNeeded()).build());
-                        });
-                    });
-                }, true, false));
-                modal.addButton(new ModalButton("convertToMulti", () -> {
-                    IdentityConvert.createMulti(r, true, created -> {
-                        Platform.runLater(() -> {
-                            identity.set(IdentityValue.Ref.builder().ref(created.asNeeded()).build());
-                        });
-                    });
-                }, true, false));
+                modal.addButton(new ModalButton(
+                        "syncIdentity",
+                        () -> {
+                            IdentityConvert.syncLocal(r.getRef().asNeeded(), false, updated -> {
+                                Platform.runLater(() -> {
+                                    identity.set(null);
+                                    identity.set(IdentityValue.Ref.builder()
+                                            .ref(updated.asNeeded())
+                                            .build());
+                                });
+                            });
+                        },
+                        true,
+                        false));
+                modal.addButton(new ModalButton(
+                        "convertToMulti",
+                        () -> {
+                            IdentityConvert.createMulti(r, true, created -> {
+                                Platform.runLater(() -> {
+                                    identity.set(IdentityValue.Ref.builder()
+                                            .ref(created.asNeeded())
+                                            .build());
+                                });
+                            });
+                        },
+                        true,
+                        false));
                 modal.addButton(new ModalButton("ignore", null, true, false));
                 modal.show();
             }
         });
     }
 
-    public static OptionsBuilder ssh(ObjectProperty<IdentityValue> identity, ObservableBooleanValue syncedBase, boolean requireUser) {
-        var i = new IdentityChoiceBuilder(identity, syncedBase, true, requireUser, true, true, true, "identityChoice", "passwordAuthentication");
+    public static OptionsBuilder ssh(
+            ObjectProperty<IdentityValue> identity, ObservableBooleanValue syncedBase, boolean requireUser) {
+        var i = new IdentityChoiceBuilder(
+                identity, syncedBase, true, requireUser, true, true, true, "identityChoice", "passwordAuthentication");
         return i.build();
     }
 
     public static OptionsBuilder container(ObjectProperty<IdentityValue> identity, ObservableBooleanValue syncedBase) {
-        var i = new IdentityChoiceBuilder(identity, syncedBase, true, false, false, false, false, "customUsername", "customUsernamePassword");
+        var i = new IdentityChoiceBuilder(
+                identity, syncedBase, true, false, false, false, false, "customUsername", "customUsernamePassword");
         return i.build();
     }
 
@@ -142,10 +167,12 @@ public class IdentityChoiceBuilder {
         var refSelected = ref.isNotNull();
 
         identity.subscribe(existing -> {
-            user.set(existing instanceof IdentityValue.InPlace inPlace && inPlace.unwrap() != null
+            user.set(
+                    existing instanceof IdentityValue.InPlace inPlace && inPlace.unwrap() != null
                             ? inPlace.unwrap().getUsername().get()
                             : null);
-            pass.set(existing instanceof IdentityValue.InPlace inPlace && inPlace.unwrap() != null
+            pass.set(
+                    existing instanceof IdentityValue.InPlace inPlace && inPlace.unwrap() != null
                             ? inPlace.unwrap().getPassword()
                             : null);
             identityStrategy.set(

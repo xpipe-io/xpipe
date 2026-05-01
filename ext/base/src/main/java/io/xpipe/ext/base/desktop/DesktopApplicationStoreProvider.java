@@ -68,7 +68,8 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
         return new OptionsBuilder()
                 .nameAndDescription("desktopBase")
                 .addComp(
-                        new StoreChoiceComp<>(model.getExistingEntry(),
+                        new StoreChoiceComp<>(
+                                model.getExistingEntry(),
                                 host,
                                 DesktopBaseStore.class,
                                 desktopStoreDataStoreEntryRef ->

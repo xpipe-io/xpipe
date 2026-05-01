@@ -217,16 +217,14 @@ public interface ScriptTextSource {
 
         @Override
         public String toSummary() {
-            var cleaned = url
-                    .replace("http://", "")
+            var cleaned = url.replace("http://", "")
                     .replace("https://", "")
                     .replace("file://", "")
                     .replace("ssh://", "")
                     .replace("raw.githubusercontent.com/", "")
                     .replace("github.com/", "")
                     .replace("refs/heads/", "");
-            return AppI18n.get(
-                    "sourcedFrom", cleaned);
+            return AppI18n.get("sourcedFrom", cleaned);
         }
 
         @Override

@@ -62,7 +62,9 @@ public class StoreCreationMenu {
         menu.getItems()
                 .add(categoryMenu(
                         "addIdentity",
-                        "mdi2a-account-multiple-plus", "localIdentity", DataStoreCreationCategory.IDENTITY));
+                        "mdi2a-account-multiple-plus",
+                        "localIdentity",
+                        DataStoreCreationCategory.IDENTITY));
 
         menu.getItems().add(new SeparatorMenuItem());
 
@@ -101,7 +103,12 @@ public class StoreCreationMenu {
         menu.getItems()
                 .add(categoryMenu(
                         "addOther",
-                        "mdi2f-folder-plus-outline", null, DataStoreCreationCategory.NETWORK, DataStoreCreationCategory.CLUSTER, DataStoreCreationCategory.FILE_SYSTEM, DataStoreCreationCategory.SERIAL));
+                        "mdi2f-folder-plus-outline",
+                        null,
+                        DataStoreCreationCategory.NETWORK,
+                        DataStoreCreationCategory.CLUSTER,
+                        DataStoreCreationCategory.FILE_SYSTEM,
+                        DataStoreCreationCategory.SERIAL));
 
         menu.getItems().add(new SeparatorMenuItem());
 
@@ -111,8 +118,10 @@ public class StoreCreationMenu {
     private static Menu categoryMenu(
             String name, String graphic, String defaultProvider, DataStoreCreationCategory... categories) {
         var providers = DataStoreProviders.getAll().stream()
-                .filter(dataStoreProvider -> Arrays.asList(categories).contains(dataStoreProvider.getCreationCategory()))
-                .sorted(Comparator.<DataStoreProvider>comparingInt(p -> Arrays.asList(categories).indexOf(p.getCreationCategory()))
+                .filter(dataStoreProvider ->
+                        Arrays.asList(categories).contains(dataStoreProvider.getCreationCategory()))
+                .sorted(Comparator.<DataStoreProvider>comparingInt(
+                                p -> Arrays.asList(categories).indexOf(p.getCreationCategory()))
                         .thenComparingInt(dataStoreProvider -> dataStoreProvider.getOrderPriority()))
                 .toList();
 
@@ -153,7 +162,8 @@ public class StoreCreationMenu {
         int lastOrder = providers.getFirst().getOrderPriority();
         DataStoreCreationCategory lastCategory = providers.getFirst().getCreationCategory();
         for (var dataStoreProvider : providers) {
-            if (dataStoreProvider.getOrderPriority() != lastOrder || dataStoreProvider.getCreationCategory() != lastCategory) {
+            if (dataStoreProvider.getOrderPriority() != lastOrder
+                    || dataStoreProvider.getCreationCategory() != lastCategory) {
                 menu.getItems().add(new SeparatorMenuItem());
                 lastOrder = dataStoreProvider.getOrderPriority();
             }

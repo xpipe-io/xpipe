@@ -26,7 +26,8 @@ public class PodmanCommandView extends CommandViewBase {
     private static <T extends Throwable> T convertException(T s) {
         if (s instanceof ProcessOutputException pex) {
             if (pex.getOutput().contains("OCI runtime exec failed")) {
-                ErrorEventFactory.preconfigure(ErrorEventFactory.fromThrowable(s).description("Container does not contain a usable shell"));
+                ErrorEventFactory.preconfigure(
+                        ErrorEventFactory.fromThrowable(s).description("Container does not contain a usable shell"));
             }
         }
 
@@ -138,7 +139,8 @@ public class PodmanCommandView extends CommandViewBase {
             return sub.withExceptionConverter(PodmanCommandView::convertException);
         }
 
-        private ShellOpenFunction createOpenFunction(String containerName, Function<ShellControl, ShellDialect> dialect, boolean terminal) {
+        private ShellOpenFunction createOpenFunction(
+                String containerName, Function<ShellControl, ShellDialect> dialect, boolean terminal) {
             return new ShellOpenFunction() {
                 @Override
                 public CommandBuilder prepareWithoutInitCommand() {

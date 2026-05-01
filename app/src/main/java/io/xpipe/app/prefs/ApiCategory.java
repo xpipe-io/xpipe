@@ -32,8 +32,7 @@ public class ApiCategory extends AppPrefsCategory {
                         .addToggle(prefs.allowExternalApiRequests)
                         .hide(Boolean.getBoolean("XPIPE_API_SERVER"))
                         .pref(prefs.disableApiAuthentication)
-                        .addToggle(prefs.disableApiAuthentication)
-                )
+                        .addToggle(prefs.disableApiAuthentication))
                 .buildComp();
     }
 }
