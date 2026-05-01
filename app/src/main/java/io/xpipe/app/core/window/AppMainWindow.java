@@ -11,6 +11,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.NativeWinWindowControl;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
@@ -48,6 +49,7 @@ public class AppMainWindow {
     @Getter
     private final Stage stage;
 
+    private boolean wasShown;
     private final BooleanProperty windowActive = new SimpleBooleanProperty(false);
     private volatile Instant lastUpdate;
 
@@ -165,7 +167,7 @@ public class AppMainWindow {
         return INSTANCE;
     }
 
-    public void show() {
+    public synchronized void show() {
         stage.show();
 
         if (OsType.ofLocal() == OsType.WINDOWS) {
@@ -186,6 +188,15 @@ public class AppMainWindow {
                 AppWindowsShutdown.registerHook(ctrl.getWindowHandle());
             }
         }
+
+        if (!wasShown) {
+            // This does not work on the platform thread
+            ThreadHelper.runAsync(() -> {
+                // Set menu bar entries after window is shown, otherwise they don't work
+                AppDesktopIntegration.initMenuBar();
+            });
+        }
+        wasShown = true;
     }
 
     public void hide() {

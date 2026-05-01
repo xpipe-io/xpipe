@@ -51,30 +51,6 @@ public class AppDesktopIntegration {
             // This will initialize the toolkit on macOS and create the dock icon
             // macOS does not like applications that run fully in the background, so always do it
             if (OsType.ofLocal() == OsType.MACOS && Desktop.isDesktopSupported()) {
-
-                // TODO: These don't show up in macOS 26 any more
-                // Are the JDK methods broken?
-
-                Desktop.getDesktop().setPreferencesHandler(e -> {
-                    if (PlatformState.getCurrent() != PlatformState.RUNNING) {
-                        return;
-                    }
-
-                    if (AppLayoutModel.get() != null) {
-                        AppLayoutModel.get().selectSettings();
-                    }
-                });
-
-                Desktop.getDesktop().setAboutHandler(e -> {
-                    if (PlatformState.getCurrent() != PlatformState.RUNNING) {
-                        return;
-                    }
-
-                    if (AppLayoutModel.get() != null) {
-                        AppLayoutModel.get().selectSettings();
-                    }
-                });
-
                 // URL open operations have to be handled in a special way on macOS!
                 Desktop.getDesktop().setOpenURIHandler(e -> {
                     AppOpenArguments.handle(List.of(e.getURI().toString()));
@@ -108,6 +84,30 @@ public class AppDesktopIntegration {
             }
         } catch (Throwable ex) {
             ErrorEventFactory.fromThrowable(ex).term().handle();
+        }
+    }
+
+    public static void initMenuBar() {
+        if (OsType.ofLocal() == OsType.MACOS && Desktop.isDesktopSupported()) {
+            Desktop.getDesktop().setPreferencesHandler(e -> {
+                if (PlatformState.getCurrent() != PlatformState.RUNNING) {
+                    return;
+                }
+
+                if (AppLayoutModel.get() != null) {
+                    AppLayoutModel.get().selectSettings();
+                }
+            });
+
+            Desktop.getDesktop().setAboutHandler(e -> {
+                if (PlatformState.getCurrent() != PlatformState.RUNNING) {
+                    return;
+                }
+
+                if (AppLayoutModel.get() != null) {
+                    AppLayoutModel.get().selectSettings();
+                }
+            });
         }
     }
 }
