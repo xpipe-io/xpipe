@@ -5,7 +5,6 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageQuery;
-import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.core.FilePath;

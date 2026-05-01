@@ -1,8 +1,6 @@
 package io.xpipe.app.pwman;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.core.AppFontSizes;

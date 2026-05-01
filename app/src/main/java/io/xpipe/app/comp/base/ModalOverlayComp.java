@@ -241,7 +241,7 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
                 var node = o instanceof ModalButton mb ? toButton(mb) : ((BaseRegionBuilder<?, ?>) o).build();
                 if (o instanceof ModalButton) {
                     node.widthProperty().addListener((observable, oldValue, n) -> {
-                        var d = Math.min(Math.max(n.doubleValue(), 70.0), 200.0);
+                        var d = Math.clamp(n.doubleValue(), 70.0, 200.0);
                         if (d > max.get()) {
                             max.set(d);
                         }

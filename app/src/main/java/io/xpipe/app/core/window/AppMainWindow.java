@@ -9,7 +9,6 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.prefs.CloseBehaviourDialog;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.core.OsType;
@@ -23,7 +22,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 

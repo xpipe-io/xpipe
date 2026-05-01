@@ -97,7 +97,7 @@ public class HttpHelper {
                 }
 
                 @Override
-                public boolean handle(ErrorEvent event) throws Exception {
+                public boolean handle(ErrorEvent event) {
                     AppPrefs.get().selectCategory("httpProxy");
                     return true;
                 }

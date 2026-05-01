@@ -2,32 +2,21 @@ package io.xpipe.app.cred;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
-import io.xpipe.app.comp.base.HorizontalComp;
-import io.xpipe.app.comp.base.LabelComp;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -136,7 +125,7 @@ public interface SecurityKeyImpl {
     class MacOsKeychain implements SecurityKeyImpl {
 
         @Override
-        public FilePath determineLibraryPath(ShellControl sc) throws Exception {
+        public FilePath determineLibraryPath(ShellControl sc) {
             var file =
                     switch (sc.getOsType()) {
                         case OsType.MacOs ignored -> FilePath.of("/usr/lib/ssh-keychain.dylib");

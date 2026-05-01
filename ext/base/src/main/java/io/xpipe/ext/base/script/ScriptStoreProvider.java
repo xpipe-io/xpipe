@@ -1,7 +1,6 @@
 package io.xpipe.ext.base.script;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
-import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.CheckBoxComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.core.AppI18n;
@@ -21,7 +20,6 @@ import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 
-import javafx.scene.control.CheckBox;
 import lombok.SneakyThrows;
 
 import java.util.ArrayList;

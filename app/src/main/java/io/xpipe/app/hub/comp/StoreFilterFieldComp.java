@@ -14,7 +14,6 @@ import io.xpipe.app.util.ObservableSubscriber;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
-import javafx.scene.control.skin.TextFieldSkin;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;

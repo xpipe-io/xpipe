@@ -1,41 +1,20 @@
 package io.xpipe.app.pwman;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.*;
-import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.HashicorpVaultConfig;
-import io.xpipe.app.util.HttpHelper;
-import io.xpipe.app.util.OpenBaoConfig;
-import io.xpipe.core.*;
 
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
-import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Getter
 @Builder

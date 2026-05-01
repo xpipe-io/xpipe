@@ -13,7 +13,6 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LocalFileTracker;
 import io.xpipe.app.util.ThreadHelper;
@@ -24,7 +23,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,7 +32,6 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Value

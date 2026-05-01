@@ -50,7 +50,7 @@ public class OtherExternalAgentStrategy implements SshIdentityAgentStrategy {
     }
 
     @Override
-    public void checkComplete() throws ValidationException {
+    public void checkComplete() {
 
     }
 

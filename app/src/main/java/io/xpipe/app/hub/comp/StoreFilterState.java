@@ -19,7 +19,6 @@ import lombok.Getter;
 
 import java.net.URI;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 
 public class StoreFilterState {

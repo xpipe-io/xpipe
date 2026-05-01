@@ -7,17 +7,13 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreCreationDialog;
-import io.xpipe.app.hub.comp.StoreCreationModel;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.terminal.*;
-import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.HttpProxy;
-import io.xpipe.core.OsType;
 import javafx.beans.property.SimpleObjectProperty;
 
 public class HttpProxyCategory extends AppPrefsCategory {

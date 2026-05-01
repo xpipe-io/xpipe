@@ -14,13 +14,11 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
-import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageUserHandler;
-import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
 

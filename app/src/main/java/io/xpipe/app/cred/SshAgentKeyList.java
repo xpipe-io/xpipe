@@ -2,7 +2,6 @@ package io.xpipe.app.cred;
 
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.storage.DataStoreEntryRef;
 

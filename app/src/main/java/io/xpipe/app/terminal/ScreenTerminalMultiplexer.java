@@ -24,7 +24,7 @@ public class ScreenTerminalMultiplexer implements TerminalMultiplexer {
     }
 
     @Override
-    public boolean shouldSelect() throws Exception {
+    public boolean shouldSelect() {
         return false;
     }
 

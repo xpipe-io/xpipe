@@ -1,9 +1,7 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
 

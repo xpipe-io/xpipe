@@ -2,7 +2,6 @@ package io.xpipe.app.core.mode;
 
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.action.ActionProvider;
-import io.xpipe.app.util.RemoteDesktopWindow;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BlobManager;
 import io.xpipe.app.beacon.mcp.AppMcpServer;

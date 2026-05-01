@@ -4,7 +4,6 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.check.AppSystemFontCheck;
-import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
@@ -139,7 +138,7 @@ public enum PlatformState {
         if (AppPrefs.get() != null) {
             var s = AppPrefs.get().uiScale().getValue();
             if (s != null) {
-                var i = Math.min(300, Math.max(25, s));
+                var i = Math.clamp(s, 25, 300);
                 var value = i + "%";
                 switch (OsType.ofLocal()) {
                     case OsType.Linux ignored -> {

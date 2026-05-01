@@ -81,7 +81,7 @@ public class ErrorHandlerComp extends SimpleRegionBuilder {
                 .sum();
 
         var descriptionField = new TextArea(desc);
-        descriptionField.setPrefRowCount(Math.max(5, Math.min(estimatedLineCount + 2, 14)));
+        descriptionField.setPrefRowCount(Math.clamp(estimatedLineCount + 2, 5, 14));
         descriptionField.setWrapText(true);
         descriptionField.setEditable(false);
         descriptionField.setPadding(Insets.EMPTY);

@@ -1,7 +1,6 @@
 package io.xpipe.app.cred;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ValidationException;
@@ -10,15 +9,12 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 import javafx.beans.property.Property;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import lombok.AllArgsConstructor;

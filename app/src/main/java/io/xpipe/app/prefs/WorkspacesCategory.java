@@ -2,13 +2,10 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.LicenseProvider;
 
 public class WorkspacesCategory extends AppPrefsCategory {
 

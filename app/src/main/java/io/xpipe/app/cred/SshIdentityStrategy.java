@@ -62,7 +62,7 @@ public interface SshIdentityStrategy {
 
     static FilePath getPublicKeyPath(FilePath file) {
         if (file.getExtension().isEmpty()) {
-            return FilePath.of(file.toString() + ".pub");
+            return FilePath.of(file + ".pub");
         } else {
             return FilePath.of(file.getBaseName() + ".pub");
         }

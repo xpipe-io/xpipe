@@ -1,19 +1,13 @@
 package io.xpipe.app.comp.base;
 
-import atlantafx.base.controls.ToggleSwitch;
 import io.xpipe.app.comp.RegionBuilder;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 

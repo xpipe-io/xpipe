@@ -3,12 +3,8 @@ package io.xpipe.app.vnc;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.util.LocalFileTracker;
-import io.xpipe.app.util.RemminaHelper;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
-
-import java.util.Optional;
 
 @Builder
 @Jacksonized

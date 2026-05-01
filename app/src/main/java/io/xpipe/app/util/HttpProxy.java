@@ -2,21 +2,15 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.InPlaceSecretValue;
-import io.xpipe.core.SecretValue;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Value

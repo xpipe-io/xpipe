@@ -12,7 +12,6 @@ import io.xpipe.core.FilePath;
 
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
 
 public class TerminalLauncherManager {
 

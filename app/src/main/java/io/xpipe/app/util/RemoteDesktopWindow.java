@@ -10,18 +10,14 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.OsType;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.Builder;
@@ -32,7 +28,6 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.concurrent.CountDownLatch;
 import java.util.function.Predicate;
 
 public class RemoteDesktopWindow {

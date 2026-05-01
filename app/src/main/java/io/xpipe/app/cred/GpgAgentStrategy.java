@@ -69,7 +69,7 @@ public class GpgAgentStrategy implements SshIdentityAgentStrategy {
     String publicKey;
 
     @Override
-    public void checkComplete() throws ValidationException {
+    public void checkComplete() {
 
     }
 

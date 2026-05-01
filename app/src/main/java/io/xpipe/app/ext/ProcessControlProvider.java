@@ -1,22 +1,18 @@
 package io.xpipe.app.ext;
 
 import io.modelcontextprotocol.spec.McpSchema;
-import io.xpipe.app.browser.BrowserFullSessionModel;
-import io.xpipe.app.browser.BrowserStoreSessionTab;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandControl;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
-import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.RemoteDesktopDockContentEntry;
 import io.xpipe.app.util.HttpProxy;
 import io.xpipe.app.vnc.VncBaseStore;
 import io.xpipe.core.SecretValue;
 
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 
 import java.nio.file.Path;

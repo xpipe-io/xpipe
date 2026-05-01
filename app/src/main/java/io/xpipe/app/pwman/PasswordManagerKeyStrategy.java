@@ -199,7 +199,7 @@ public interface PasswordManagerKeyStrategy {
 
         return new SshIdentityAgentStrategy() {
             @Override
-            public void checkComplete() throws ValidationException {}
+            public void checkComplete() {}
 
             @Override
             public void prepareParent(ShellControl parent) throws Exception {

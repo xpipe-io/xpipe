@@ -4,7 +4,6 @@ import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.process.*;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.core.OsType;
-import lombok.SneakyThrows;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

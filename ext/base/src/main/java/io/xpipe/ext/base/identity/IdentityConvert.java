@@ -5,7 +5,6 @@ import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.hub.comp.StoreCreationDialog;
 import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import javafx.application.Platform;
 import javafx.scene.control.Button;

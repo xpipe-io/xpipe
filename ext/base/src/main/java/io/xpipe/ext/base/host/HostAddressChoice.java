@@ -3,7 +3,6 @@ package io.xpipe.ext.base.host;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.IntFieldComp;
 import io.xpipe.app.comp.base.LabelComp;
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.ext.HostAddress;
 import io.xpipe.app.issue.TrackEvent;

@@ -27,7 +27,6 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;

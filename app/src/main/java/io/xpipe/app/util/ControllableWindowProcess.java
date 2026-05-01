@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public abstract class ControllableWindowProcess {
 
-    protected ProcessHandle process;
+    protected final ProcessHandle process;
     protected Rect lastBounds;
     protected boolean customBounds;
 
