@@ -72,7 +72,7 @@ dependencies {
     api 'commons-io:commons-io:2.21.0'
     api "com.fasterxml.jackson.core:jackson-databind:2.21.1"
     api "com.fasterxml.jackson.core:jackson-annotations:2.21"
-    api "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.1"
+    api "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.3"
     api "org.kordamp.ikonli:ikonli-material2-pack:12.4.0"
     api "org.kordamp.ikonli:ikonli-materialdesign2-pack:12.4.0"
     api 'org.kordamp.ikonli:ikonli-bootstrapicons-pack:12.4.0'
