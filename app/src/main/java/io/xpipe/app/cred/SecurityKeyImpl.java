@@ -50,6 +50,8 @@ public interface SecurityKeyImpl {
 
     FilePath determineLibraryPath(ShellControl sc) throws Exception;
 
+    String getLink();
+
     @JsonTypeName("yubikeyPiv")
     @Value
     @Jacksonized
@@ -82,6 +84,11 @@ public interface SecurityKeyImpl {
                     };
             return file;
         }
+
+        @Override
+        public String getLink() {
+            return "https://developers.yubico.com/yubico-piv-tool/YKCS11/";
+        }
     }
 
     @JsonTypeName("openSc")
@@ -89,6 +96,11 @@ public interface SecurityKeyImpl {
     @Jacksonized
     @Builder
     class OpenSc implements SecurityKeyImpl {
+
+        @Override
+        public String getLink() {
+            return "https://github.com/opensc/opensc";
+        }
 
         @Override
         public FilePath determineLibraryPath(ShellControl sc) throws Exception {
@@ -125,13 +137,18 @@ public interface SecurityKeyImpl {
     class MacOsKeychain implements SecurityKeyImpl {
 
         @Override
+        public String getLink() {
+            return "https://support.apple.com/en-gb/guide/keychain-access/welcome/mac";
+        }
+
+        @Override
         public FilePath determineLibraryPath(ShellControl sc) {
             var file =
                     switch (sc.getOsType()) {
                         case OsType.MacOs ignored -> FilePath.of("/usr/lib/ssh-keychain.dylib");
                         default ->
                             throw ErrorEventFactory.expected(new UnsupportedOperationException(
-                                    "macOS keychain is not supported on other operating systems"));
+                                    "macOS keychain is not supported as a PKCS#11 provider on other operating systems"));
                     };
             return file;
         }
@@ -185,6 +202,11 @@ public interface SecurityKeyImpl {
         @Override
         public FilePath determineLibraryPath(ShellControl sc) {
             return file;
+        }
+
+        @Override
+        public String getLink() {
+            return null;
         }
 
         @Override

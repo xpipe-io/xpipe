@@ -1,5 +1,7 @@
 package io.xpipe.app.pwman;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.LocalShell;
@@ -18,6 +20,15 @@ import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface PasswordManager {
+
+    default String getDisplayName() {
+        var a = getClass().getAnnotation(JsonTypeName.class);
+        if (a != null) {
+            return AppI18n.get(a.value());
+        } else {
+            return "?";
+        }
+    }
 
     @SneakyThrows
     static PasswordManager determineDefault(PasswordManager existing) {

@@ -7,6 +7,7 @@ import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.ScanDialog;
 
 import javafx.scene.layout.Region;
@@ -23,16 +24,16 @@ public class StoreIntroComp extends SimpleRegionBuilder {
         hub.setButtonAction(() -> {
             ScanDialog.showSingleAsync(DataStorage.get().local());
         });
-        hub.setButtonGraphic(new LabelGraphic.IconGraphic("mdi2m-magnify"));
+        hub.setButtonGraphic(new LabelGraphic.IconGraphic("mdi2i-import"));
         hub.setButtonDefault(true);
 
-        var sync = new IntroComp("storeIntroImport", new LabelGraphic.IconGraphic("mdi2g-git"));
-        sync.setButtonGraphic(new LabelGraphic.IconGraphic("mdi2g-git"));
-        sync.setButtonAction(() -> {
-            AppPrefs.get().selectCategory("vaultSync");
+        var docs = new IntroComp("storeIntroDocs", new LabelGraphic.IconGraphic("mdi2b-book-open-variant"));
+        docs.setButtonGraphic(new LabelGraphic.IconGraphic("mdi2b-book-open-variant"));
+        docs.setButtonAction(() -> {
+            DocumentationLink.INTRO.open();
         });
 
-        var list = new IntroListComp(List.of(hub, sync));
+        var list = new IntroListComp(List.of(hub, docs));
         return list.build();
     }
 }

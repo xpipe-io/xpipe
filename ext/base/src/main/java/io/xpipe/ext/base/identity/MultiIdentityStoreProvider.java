@@ -21,6 +21,11 @@ import java.util.UUID;
 public class MultiIdentityStoreProvider extends IdentityStoreProvider {
 
     @Override
+    public boolean allowCreation() {
+        return DataStorage.get().getStoreEntries().stream().anyMatch(e -> e.getStore() instanceof IdentityStore);
+    }
+
+    @Override
     public GuiDialog guiDialog(StoreCreationModel model, Property<DataStore> store) {
         MultiIdentityStore st = (MultiIdentityStore) store.getValue();
 

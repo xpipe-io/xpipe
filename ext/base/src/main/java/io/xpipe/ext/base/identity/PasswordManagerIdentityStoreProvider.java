@@ -71,7 +71,7 @@ public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider 
                 AppPrefs.get().passwordManager(),
                 sshKey);
 
-        var testComp = new PasswordManagerTestComp(key, false);
+        var testComp = new PasswordManagerTestComp(key, false, true, false);
         return new OptionsBuilder()
                 .nameAndDescription("passwordManagerKey")
                 .addComp(testComp.hgrow(), key)

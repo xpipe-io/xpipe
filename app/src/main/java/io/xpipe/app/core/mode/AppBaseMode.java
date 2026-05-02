@@ -183,7 +183,7 @@ public class AppBaseMode extends AppOperationMode {
                     TrackEvent.info("Browser initialization thread completed");
                 });
 
-        AppGreetingsDialog.showAndWaitIfNeeded();
+        // AppGreetingsDialog.showAndWaitIfNeeded();
         TrackEvent.info("Waiting for startup dialogs to close");
         AppDialog.waitForAllDialogsClose();
         UpdateChangelogDialog.showIfNeeded();

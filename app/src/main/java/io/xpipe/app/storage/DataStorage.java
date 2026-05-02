@@ -113,7 +113,7 @@ public abstract class DataStorage {
 
     public abstract void reloadContent();
 
-    public abstract SecretKey getVaultKey();
+    public abstract DataStorageVaultKey getVaultKey();
 
     public DataStoreCategory getDefaultConnectionsCategory() {
         return getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).orElseThrow();

@@ -2,18 +2,24 @@ package io.xpipe.app.cred;
 
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.ext.ValidationException;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LicenseProvider;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -39,6 +45,35 @@ public class SecurityKeyStrategy implements SshIdentityKeyListStrategy {
             Property<SecurityKeyStrategy> p, SshIdentityStrategyChoiceConfig config) {
         var publicKey = new SimpleStringProperty(p.getValue().getPublicKey());
         var securityKey = new SimpleObjectProperty<>(p.getValue().getSecurityKey());
+        var filePath = new SimpleObjectProperty<String>();
+        securityKey.subscribe(impl -> {
+            if (impl == null) {
+                filePath.set(null);
+                return;
+            }
+
+            ThreadHelper.runFailableAsync(() -> {
+                var fs = config.getFileSystem().getValue() != null ? config.getFileSystem().getValue().getStore() : (ShellStore) DataStorage.get().local().getStore().asNeeded();
+                filePath.set(impl.determineLibraryPath(fs.getOrStartSession()).toString());
+            });
+        });
+        if (config.getFileSystem() != null) {
+            config.getFileSystem().subscribe(fs -> {
+                if (fs == null) {
+                    filePath.set(null);
+                    return;
+                }
+
+                ThreadHelper.runFailableAsync(() -> {
+                    var impl = securityKey.get();
+                    if (impl != null) {
+                        filePath.set(impl.determineLibraryPath(fs.getStore().getOrStartSession()).toString());
+                    } else {
+                        filePath.set(null);
+                    }
+                });
+            });
+        }
 
         var choice = OptionsChoiceBuilder.builder()
                 .property(securityKey)
@@ -51,6 +86,9 @@ public class SecurityKeyStrategy implements SshIdentityKeyListStrategy {
                 .nameAndDescription("pkcs11Impl")
                 .sub(choice, securityKey)
                 .nonNull()
+                .nameAndDescription("pkcs11Library")
+                .addStaticString(filePath)
+                .hide(filePath.isNull())
                 .nameAndDescription("publicKey")
                 .documentationLink(DocumentationLink.SSH_AGENT_PUBLIC_KEYS)
                 .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false), publicKey)
@@ -79,7 +117,13 @@ public class SecurityKeyStrategy implements SshIdentityKeyListStrategy {
 
         var file = securityKey.determineLibraryPath(parent);
         if (!parent.view().fileExists(file)) {
-            throw ErrorEventFactory.expected(new IOException("PKCS11 library at " + file + " not found"));
+            var ex = new IOException("PKCS11 library at " + file + " not found");
+            var event = ErrorEventFactory.fromThrowable(ex).expected();
+            if (securityKey.getLink() != null) {
+                event.link(securityKey.getLink());
+            }
+            ErrorEventFactory.preconfigure(event);
+            throw ex;
         }
     }
 

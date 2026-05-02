@@ -143,15 +143,6 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
             state.getFieldText().setValue(n != null && n.length() > 0 ? n : null);
         });
 
-        // Fix caret not being visible on right side when overflowing
-        field.setSkin(field.createDefaultSkin());
-        Pane pane = (Pane) field.getChildrenUnmodifiable().getFirst();
-        var rec = new Rectangle();
-        rec.widthProperty().bind(pane.widthProperty().add(2));
-        rec.heightProperty().bind(pane.heightProperty());
-        rec.setSmooth(false);
-        field.getChildrenUnmodifiable().getFirst().setClip(rec);
-
         var menuButton = new IconButtonComp("mdi2a-animation-play", () -> {
             Bounds bounds = field.localToScreen(field.getBoundsInLocal());
             popover.show(field, bounds.getMinX() + (field.getWidth() / 1.5), bounds.getMaxY() - 4.0);

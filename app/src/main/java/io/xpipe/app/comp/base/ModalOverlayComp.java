@@ -222,6 +222,7 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
                             newValue.getGraphic() != null
                                     ? newValue.getGraphic()
                                     : new LabelGraphic.IconGraphic("mdi2i-information-outline")));
+            l.style("title");
             l.apply(struc -> {
                 struc.setGraphicTextGap(8);
                 AppFontSizes.xl(struc);

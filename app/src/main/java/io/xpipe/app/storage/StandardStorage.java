@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +39,7 @@ public class StandardStorage extends DataStorage {
     private final DataStorageUserHandler dataStorageUserHandler;
 
     private final ReentrantLock busyIo = new ReentrantLock();
-    private SecretKey vaultKey;
+    private DataStorageVaultKey vaultKey;
 
     @Getter
     private boolean disposed;
@@ -301,7 +302,7 @@ public class StandardStorage extends DataStorage {
     }
 
     @Override
-    public SecretKey getVaultKey() {
+    public DataStorageVaultKey getVaultKey() {
         return vaultKey;
     }
 
@@ -593,14 +594,11 @@ public class StandardStorage extends DataStorage {
         var file = dir.resolve("vaultkey");
         try {
             if (Files.exists(file)) {
-                var s = Files.readString(file);
-                var id = new String(Base64.getDecoder().decode(s), StandardCharsets.UTF_8);
-                vaultKey = EncryptionKey.getVaultSecretKey(id);
+                vaultKey = DataStorageVaultKey.load(file);
             } else {
                 FileUtils.forceMkdir(dir.toFile());
-                var id = UUID.randomUUID().toString();
-                Files.writeString(file, Base64.getEncoder().encodeToString(id.getBytes(StandardCharsets.UTF_8)));
-                vaultKey = EncryptionKey.getVaultSecretKey(id);
+                vaultKey = DataStorageVaultKey.generate();
+                DataStorageVaultKey.write(vaultKey, file);
             }
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(

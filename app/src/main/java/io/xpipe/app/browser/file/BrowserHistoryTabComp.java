@@ -117,13 +117,6 @@ public class BrowserHistoryTabComp extends SimpleRegionBuilder {
     }
 
     private BaseRegionBuilder<?, ?> createEmptyDisplay() {
-        var docs = new IntroComp("browserWelcomeDocs", new LabelGraphic.IconGraphic("mdi2b-book-open-variant"));
-        docs.setButtonAction(() -> {
-            DocumentationLink.INTRO.open();
-        });
-        docs.setButtonGraphic(new LabelGraphic.IconGraphic("mdi2w-web"));
-        docs.setButtonDefault(true);
-
         var open = new IntroComp(
                 "browserWelcomeEmpty",
                 new LabelGraphic.CompGraphic(PrettyImageHelper.ofSpecificFixedSize("welcome/hips.svg", 100, 122)));
@@ -133,7 +126,7 @@ public class BrowserHistoryTabComp extends SimpleRegionBuilder {
                     DataStorage.get().local().ref(), null, null, null);
         });
 
-        var list = new IntroListComp(List.of(docs, open));
+        var list = new IntroListComp(List.of(open));
         return list;
     }
 

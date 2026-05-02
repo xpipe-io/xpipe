@@ -18,8 +18,8 @@ public class ImpersistentStorage extends DataStorage {
     public void reloadContent() {}
 
     @Override
-    public SecretKey getVaultKey() {
-        return EncryptionKey.getVaultSecretKey("");
+    public DataStorageVaultKey getVaultKey() {
+        return DataStorageVaultKey.empty();
     }
 
     @Override

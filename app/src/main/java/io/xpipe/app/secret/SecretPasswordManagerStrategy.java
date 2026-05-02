@@ -8,6 +8,7 @@ import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.util.Validators;
 
 import javafx.beans.binding.Bindings;
@@ -35,22 +36,9 @@ public class SecretPasswordManagerStrategy implements SecretRetrievalStrategy {
         var options = new OptionsBuilder();
         var prefs = AppPrefs.get();
         var keyProperty = options.map(p, SecretPasswordManagerStrategy::getKey);
-        var field = new TextFieldComp(keyProperty).apply(struc -> struc.promptTextProperty()
-                .bind(Bindings.createStringBinding(
-                        () -> {
-                            return prefs.passwordManager().getValue() != null
-                                    ? prefs.passwordManager().getValue().getKeyPlaceholder()
-                                    : "?";
-                        },
-                        prefs.passwordManager())));
-        var button = new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
-            AppPrefs.get().selectCategory("passwordManager");
-            App.getApp().getStage().requestFocus();
-        });
-        var content = new InputGroupComp(List.of(field, button));
-        content.setMainReference(field);
+        var field = new PasswordManagerTestComp(keyProperty, false, true, true);
         return options.nameAndDescription("passwordManagerKey")
-                .addComp(content, keyProperty)
+                .addComp(field, keyProperty)
                 .nonNull()
                 .bind(
                         () -> {
