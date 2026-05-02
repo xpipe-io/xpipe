@@ -1,6 +1,7 @@
 package io.xpipe.ext.base.service;
 
 import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
@@ -66,7 +67,8 @@ public class FixedServiceStoreProvider extends AbstractServiceStoreProvider {
                                 host,
                                 DataStore.class,
                                 null,
-                                StoreViewState.get().getAllConnectionsCategory()),
+                                StoreViewState.get().getAllConnectionsCategory(),
+                                DataStoreCreationCategory.HOST),
                         host)
                 .nonNull()
                 .disable()

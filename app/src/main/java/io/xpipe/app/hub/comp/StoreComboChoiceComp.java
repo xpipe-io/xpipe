@@ -2,6 +2,7 @@ package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
@@ -78,7 +79,8 @@ public class StoreComboChoiceComp<T extends DataStore> extends SimpleRegionBuild
                 null,
                 requireComplete,
                 "selectConnection",
-                "noCompatibleConnection");
+                "noCompatibleConnection",
+                DataStoreCreationCategory.HOST);
 
         this.selected.addListener((v, o, n) -> {
             TrackEvent.withTrace("Store combo choice value changed")

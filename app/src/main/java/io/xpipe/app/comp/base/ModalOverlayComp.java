@@ -66,7 +66,7 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
                     if (lastShowValue != null
                             && java.time.Duration.between(lastShowValue, Instant.now())
                                             .toMillis()
-                                    > 500) {
+                                    > 1000) {
                         mouseHandler.handle(event);
                     }
                 });

@@ -1,10 +1,7 @@
 package io.xpipe.ext.system.podman;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
-import io.xpipe.app.ext.ContainerStoreState;
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.GuiDialog;
-import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -67,7 +64,8 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
                                 st.getCmd() != null ? st.getCmd().getStore().getHost() : null),
                         ShellStore.class,
                         null,
-                        StoreViewState.get().getAllConnectionsCategory()))
+                        StoreViewState.get().getAllConnectionsCategory(),
+                        DataStoreCreationCategory.HOST))
                 .disable()
                 .name("container")
                 .description("podmanContainerDescription")

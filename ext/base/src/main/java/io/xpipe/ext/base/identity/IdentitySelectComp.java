@@ -310,7 +310,8 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
                     null,
                     true,
                     "selectIdentity",
-                    "noCompatibleIdentity");
+                    "noCompatibleIdentity",
+                    DataStoreCreationCategory.IDENTITY);
 
             popover.withPopover(po -> {
                 ((Region) po.getContentNode()).setMaxHeight(350);

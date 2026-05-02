@@ -6,6 +6,7 @@ import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreDependencies;
 import io.xpipe.app.ext.ShellDialectChoiceComp;
 import io.xpipe.app.ext.ValidationException;
@@ -277,7 +278,8 @@ public interface ScriptTextSource {
                     ignored -> true,
                     StoreViewState.get().getAllScriptsCategory(),
                     StoreViewState.get().getScriptSourcesCategory(),
-                    true);
+                    true,
+                    null);
 
             var importButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2i-import"), () -> {
                 var current = AppDialog.getCurrentModalOverlay();

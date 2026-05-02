@@ -56,7 +56,7 @@ public class ActionConfigComp extends SimpleRegionBuilder {
         });
 
         var choice = new StoreListChoiceComp<>(
-                listProp, DataStore.class, null, StoreViewState.get().getAllConnectionsCategory());
+                listProp, DataStore.class, null, StoreViewState.get().getAllConnectionsCategory(), null);
         choice.hide(listProp.emptyProperty());
         choice.maxHeight(450);
         return choice;
@@ -79,7 +79,8 @@ public class ActionConfigComp extends SimpleRegionBuilder {
                 singleProp,
                 DataStore.class,
                 ref -> true,
-                StoreViewState.get().getAllConnectionsCategory());
+                StoreViewState.get().getAllConnectionsCategory(),
+                null);
         choice.hide(singleProp.isNull());
         return choice;
     }

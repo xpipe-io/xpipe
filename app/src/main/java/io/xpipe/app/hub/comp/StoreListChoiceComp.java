@@ -5,6 +5,7 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
 import javafx.beans.binding.Bindings;
@@ -24,17 +25,20 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleRegionBuilde
     private final Class<T> storeClass;
     private final Predicate<DataStoreEntryRef<T>> applicableCheck;
     private final StoreCategoryWrapper initialCategory;
+    private final DataStoreCreationCategory creationCategory;
     private boolean editable;
 
     public StoreListChoiceComp(
             ListProperty<DataStoreEntryRef<T>> selectedList,
             Class<T> storeClass,
             Predicate<DataStoreEntryRef<T>> applicableCheck,
-            StoreCategoryWrapper initialCategory) {
+            StoreCategoryWrapper initialCategory, DataStoreCreationCategory creationCategory
+    ) {
         this.selectedList = selectedList;
         this.storeClass = storeClass;
         this.applicableCheck = applicableCheck;
         this.initialCategory = initialCategory;
+        this.creationCategory = creationCategory;
         this.editable = true;
     }
 
@@ -102,7 +106,7 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleRegionBuilde
                 .apply(struc -> struc.setMinHeight(0))
                 .apply(struc -> ((VBox) struc.getContent()).setSpacing(5));
         var selected = new SimpleObjectProperty<DataStoreEntryRef<T>>();
-        var add = new StoreChoiceComp<>(null, selected, storeClass, applicableCheck, initialCategory);
+        var add = new StoreChoiceComp<>(null, selected, storeClass, applicableCheck, initialCategory, creationCategory);
         selected.addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 if (!selectedList.contains(newValue) && (applicableCheck == null || applicableCheck.test(newValue))) {

@@ -85,7 +85,8 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
                                 gateway,
                                 NetworkTunnelStore.class,
                                 null,
-                                StoreViewState.get().getAllConnectionsCategory()),
+                                StoreViewState.get().getAllConnectionsCategory(),
+                                DataStoreCreationCategory.HOST),
                         gateway)
                 .bind(
                         () -> {

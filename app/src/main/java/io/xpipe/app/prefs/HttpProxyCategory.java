@@ -72,7 +72,8 @@ public class HttpProxyCategory extends AppPrefsCategory {
                                     ref,
                                     DataStore.class,
                                     r -> HttpProxy.canUseAsProxy(r.asNeeded()),
-                                    StoreViewState.get().getAllConnectionsCategory()) {
+                                    StoreViewState.get().getAllConnectionsCategory(),
+                                    null) {
                                 @Override
                                 protected String toName(DataStoreEntry entry) {
                                     if (entry == null) {

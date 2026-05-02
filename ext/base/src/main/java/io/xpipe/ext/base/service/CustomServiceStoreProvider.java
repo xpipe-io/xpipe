@@ -105,7 +105,8 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
                 NetworkTunnelStore.class,
                 ref -> !ref.get().equals(DataStorage.get().local()),
                 StoreViewState.get().getAllConnectionsCategory(),
-                true);
+                true,
+                DataStoreCreationCategory.HOST);
 
         var q = new OptionsBuilder()
                 .nameAndDescription("serviceHost")

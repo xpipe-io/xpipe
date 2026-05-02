@@ -39,7 +39,8 @@ public class DataStorageVaultKey {
             return new DataStorageVaultKey(id, salt, key);
         } else {
             var parsed = new String(content, StandardCharsets.UTF_8);
-            var key = EncryptionKey.getLegacyVaultSecretKey(parsed);
+            var id = new String(Base64.getDecoder().decode(parsed), StandardCharsets.UTF_8);
+            var key = EncryptionKey.getLegacyVaultSecretKey(id);
             return new DataStorageVaultKey(parsed, null, key);
         }
     }

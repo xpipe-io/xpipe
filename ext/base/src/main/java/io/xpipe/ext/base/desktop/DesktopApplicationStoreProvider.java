@@ -74,7 +74,8 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
                                 DesktopBaseStore.class,
                                 desktopStoreDataStoreEntryRef ->
                                         desktopStoreDataStoreEntryRef.getStore().supportsDesktopAccess(),
-                                StoreViewState.get().getAllConnectionsCategory()),
+                                StoreViewState.get().getAllConnectionsCategory(),
+                                DataStoreCreationCategory.DESKTOP),
                         host)
                 .nonNull()
                 .nameAndDescription("desktopApplicationPath")

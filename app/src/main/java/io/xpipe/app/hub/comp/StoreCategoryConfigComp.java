@@ -7,6 +7,7 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.ToggleGroupComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategoryConfig;
@@ -110,7 +111,8 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
                                 identityRef,
                                 DataStore.class,
                                 null,
-                                StoreViewState.get().getAllIdentitiesCategory()),
+                                StoreViewState.get().getAllIdentitiesCategory(),
+                                DataStoreCreationCategory.IDENTITY),
                         identityRef)
                 .hide(!connectionsCategory)
                 .nameAndDescription("categoryDefaultGateway")
@@ -120,7 +122,8 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
                                 gatewayRef,
                                 DataStore.class,
                                 null,
-                                StoreViewState.get().getAllConnectionsCategory()),
+                                StoreViewState.get().getAllConnectionsCategory(),
+                                DataStoreCreationCategory.HOST),
                         gatewayRef)
                 .hide(!connectionsCategory)
                 .bind(

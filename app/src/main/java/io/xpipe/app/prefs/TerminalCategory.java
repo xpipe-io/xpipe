@@ -249,7 +249,8 @@ public class TerminalCategory extends AppPrefsCategory {
                             ref,
                             ShellStore.class,
                             r -> r.get().equals(DataStorage.get().local()) || TerminalProxyManager.canUseAsProxy(r),
-                            StoreViewState.get().getAllConnectionsCategory());
+                            StoreViewState.get().getAllConnectionsCategory(),
+                            null);
                     return comp.build();
                 }),
                 () -> StoreViewState.get() != null && StoreViewState.get().isInitialized());

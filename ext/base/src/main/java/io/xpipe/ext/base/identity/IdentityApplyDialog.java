@@ -7,6 +7,7 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
@@ -388,7 +389,8 @@ public class IdentityApplyDialog {
                         system,
                         ShellStore.class,
                         null,
-                        StoreViewState.get().getAllConnectionsCategory()) {
+                        StoreViewState.get().getAllConnectionsCategory(),
+                        DataStoreCreationCategory.HOST) {
 
                     @Override
                     protected String toName(DataStoreEntry entry) {

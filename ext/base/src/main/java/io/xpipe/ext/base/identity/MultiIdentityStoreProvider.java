@@ -2,6 +2,7 @@ package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.hub.comp.StoreCreationModel;
 import io.xpipe.app.hub.comp.StoreListChoiceComp;
@@ -51,7 +52,8 @@ public class MultiIdentityStoreProvider extends IdentityStoreProvider {
                                 identities,
                                 IdentityStore.class,
                                 ref -> !(ref.getStore() instanceof MultiIdentityStore) && !identities.contains(ref),
-                                StoreViewState.get().getAllIdentitiesCategory()),
+                                StoreViewState.get().getAllIdentitiesCategory(),
+                                DataStoreCreationCategory.IDENTITY),
                         identities)
                 .nameAndDescription(
                         DataStorageUserHandler.getInstance().getActiveUser() != null
