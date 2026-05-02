@@ -49,7 +49,6 @@ public class AppMainWindow {
     @Getter
     private final Stage stage;
 
-    private boolean wasShown;
     private final BooleanProperty windowActive = new SimpleBooleanProperty(false);
     private volatile Instant lastUpdate;
 
@@ -188,15 +187,6 @@ public class AppMainWindow {
                 AppWindowsShutdown.registerHook(ctrl.getWindowHandle());
             }
         }
-
-        if (!wasShown) {
-            // This does not work on the platform thread
-            ThreadHelper.runAsync(() -> {
-                // Set menu bar entries after window is shown, otherwise they don't work
-                AppDesktopIntegration.initMenuBar();
-            });
-        }
-        wasShown = true;
     }
 
     public void hide() {

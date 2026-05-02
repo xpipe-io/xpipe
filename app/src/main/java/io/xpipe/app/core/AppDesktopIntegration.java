@@ -3,8 +3,10 @@ package io.xpipe.app.core;
 import io.xpipe.app.Main;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.PlatformState;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.OsType;
 
 import java.awt.*;
@@ -81,6 +83,13 @@ public class AppDesktopIntegration {
                                 .handle();
                     }
                 }
+
+                Desktop.getDesktop().setQuitHandler((e, response) -> {
+                    response.cancelQuit();
+                    ThreadHelper.runAsync(() -> {
+                        AppOperationMode.externalShutdown();
+                    });
+                });
             }
         } catch (Throwable ex) {
             ErrorEventFactory.fromThrowable(ex).term().handle();
@@ -89,6 +98,10 @@ public class AppDesktopIntegration {
 
     public static void initMenuBar() {
         if (OsType.ofLocal() == OsType.MACOS && Desktop.isDesktopSupported()) {
+
+            // TODO: These don't show up any more
+            // JavaFX broke them
+
             Desktop.getDesktop().setPreferencesHandler(e -> {
                 if (PlatformState.getCurrent() != PlatformState.RUNNING) {
                     return;
