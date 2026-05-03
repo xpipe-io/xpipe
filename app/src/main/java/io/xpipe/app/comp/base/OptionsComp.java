@@ -152,9 +152,11 @@ public class OptionsComp extends RegionBuilder<VBox> {
                         descriptionBox.visibleProperty().bind(compRegion.visibleProperty());
                         descriptionBox.managedProperty().bind(compRegion.managedProperty());
                     } else {
-                        vbox.getChildren().add(description);
+                        var descriptionBox = new HBox(description);
+                        descriptionBox.getStyleClass().add("description-box");
+                        vbox.getChildren().add(descriptionBox);
                         vbox.getChildren().add(new Spacer(2, Orientation.VERTICAL));
-                        VBox.setMargin(description, new Insets(0, 0, 0, 1));
+                        VBox.setMargin(descriptionBox, new Insets(0, 0, 0, 1));
                     }
 
                     line.getChildren().add(vbox);

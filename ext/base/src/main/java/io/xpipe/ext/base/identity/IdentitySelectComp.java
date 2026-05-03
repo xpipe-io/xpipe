@@ -177,6 +177,10 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
     }
 
     private String formatName(DataStoreEntry storeEntry) {
+        if (storeEntry.getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
+            return null;
+        }
+
         IdentityStore id = storeEntry.getStore().asNeeded();
         var suffix = id instanceof LocalIdentityStore
                 ? AppI18n.get("localIdentity")

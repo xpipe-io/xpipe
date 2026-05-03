@@ -1,8 +1,11 @@
 package io.xpipe.app.platform;
 
+import com.fasterxml.jackson.databind.JavaType;
+import io.xpipe.app.browser.file.BrowserHistorySavedState;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.prefs.AppPrefs;
@@ -12,6 +15,7 @@ import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.core.InPlaceSecretValue;
 
+import io.xpipe.core.JacksonMapper;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -171,17 +175,32 @@ public class OptionsBuilder {
                 .description(AppI18n.observable(BindingsHelper.map(key, k -> k + "Description")));
     }
 
-    public OptionsBuilder subAdvanced(OptionsBuilder builder) {
+    public OptionsBuilder subAdvanced(OptionsBuilder builder, String trackKey) {
         name("advanced");
-        subExpandable("showAdvancedOptions", builder);
+        subExpandable("showAdvancedOptions", builder, trackKey);
         return this;
     }
 
-    public OptionsBuilder subExpandable(String key, OptionsBuilder builder) {
+    public OptionsBuilder subExpandable(String key, OptionsBuilder builder, String trackKey) {
+        var javaType =
+                JacksonMapper.getDefault().getTypeFactory().constructCollectionLikeType(List.class, String.class);
+        var expanded = trackKey != null && AppCache.getNonNull("advancedExpanded", javaType, () -> List.of()).contains(trackKey);
+
         sub(builder, null);
         var subComp = this.comp;
         var pane = new SimpleTitledPaneComp(AppI18n.observable(key), subComp, true);
-        pane.apply(struc -> struc.setExpanded(false));
+        pane.apply(struc -> {
+            struc.setExpanded(expanded);
+            struc.expandedProperty().addListener((observable, oldValue, newValue) -> {
+                var l = new ArrayList<>(AppCache.getNonNull("advancedExpanded", javaType, () -> List.of()));
+                if (newValue) {
+                    l.add(trackKey);
+                } else {
+                    l.remove(trackKey);
+                }
+                AppCache.update("advancedExpanded", l);
+            });
+        });
         this.comp = pane;
         this.lastCompHeadReference = comp;
         return this;

@@ -47,6 +47,7 @@ public class StoreCreationModel {
     boolean staticDisplay;
     StoreCreationConsumer consumer;
     ObservableBooleanValue syncable;
+    UUID uuid;
 
     public StoreCreationModel(
             Property<DataStoreProvider> provider,
@@ -63,6 +64,7 @@ public class StoreCreationModel {
         this.existingEntry = existingEntry;
         this.staticDisplay = staticDisplay;
         this.consumer = consumer;
+        this.uuid = existingEntry != null ? existingEntry.getUuid() : UUID.randomUUID();
 
         this.provider.addListener((c, o, n) -> {
             store.unbind();
@@ -94,7 +96,7 @@ public class StoreCreationModel {
                     }
 
                     var initial = DataStoreEntry.createNew(
-                            UUID.randomUUID(),
+                            uuid,
                             DataStorage.get().getSelectedCategory().getUuid(),
                             name.getValue(),
                             store.getValue());
@@ -103,7 +105,7 @@ public class StoreCreationModel {
                             : DataStorage.get().getDefaultDisplayParent(initial).orElse(initial);
                     var targetCategory = getTargetCategory(entryRef.getCategoryUuid());
                     return DataStoreEntry.createNew(
-                            UUID.randomUUID(), targetCategory.getUuid(), name.getValue(), store.getValue());
+                            uuid, targetCategory.getUuid(), name.getValue(), store.getValue());
                 },
                 name,
                 store);
