@@ -53,18 +53,6 @@ public final class BrowserFileListComp extends SimpleRegionBuilder {
         this.fileList = fileList;
     }
 
-    private static void prepareTableScrollFix(TableView<BrowserEntry> table) {
-        table.lookupAll(".scroll-bar").stream()
-                .filter(node -> node.getPseudoClassStates().contains(PseudoClass.getPseudoClass("horizontal")))
-                .findFirst()
-                .ifPresent(node -> {
-                    Region region = (Region) node;
-                    region.setMinHeight(0);
-                    region.setPrefHeight(0);
-                    region.setMaxHeight(0);
-                });
-    }
-
     @Override
     protected Region createSimple() {
         return createTable();
@@ -187,7 +175,6 @@ public final class BrowserFileListComp extends SimpleRegionBuilder {
         table.setFixedCellSize(30.0);
 
         prepareColumnVisibility(table, filenameCol, mtimeCol, modeCol, ownerCol, sizeCol);
-        prepareTableScrollFix(table);
         prepareTableSelectionModel(table);
         prepareTableShortcuts(table);
         prepareTableEntries(table);

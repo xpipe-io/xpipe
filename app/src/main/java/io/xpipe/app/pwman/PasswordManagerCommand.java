@@ -81,7 +81,7 @@ public class PasswordManagerCommand implements PasswordManager {
         });
 
         var area = IntegratedTextAreaComp.script(
-                new SimpleObjectProperty<>(DataStorage.get().local().ref()), script);
+                new SimpleObjectProperty<>(DataStorage.get().local().ref()), script, true);
         area.maxWidth(600);
 
         return new OptionsBuilder()

@@ -147,7 +147,7 @@ public class McpCategory extends AppPrefsCategory {
                         .addComp(tabComp.maxWidth(getCompWidth()))
                         .pref(prefs.mcpAdditionalContext)
                         .addComp(new IntegratedTextAreaComp(
-                                        prefs.mcpAdditionalContext, false, "prompt", new SimpleStringProperty("txt"))
+                                        prefs.mcpAdditionalContext, false, "prompt", new SimpleStringProperty("txt"), true)
                                 .applyStructure(structure -> {
                                     structure
                                             .getTextArea()

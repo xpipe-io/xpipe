@@ -14,7 +14,10 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.control.ScrollBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.skin.TextAreaSkin;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 
@@ -28,17 +31,19 @@ public class IntegratedTextAreaComp extends RegionStructureBuilder<AnchorPane, I
     private final boolean lazy;
     private final String identifier;
     private final ObservableValue<String> fileType;
+    private final boolean fitHeight;
 
     public IntegratedTextAreaComp(
-            Property<String> value, boolean lazy, String identifier, ObservableValue<String> fileType) {
+            Property<String> value, boolean lazy, String identifier, ObservableValue<String> fileType, boolean fitHeight) {
         this.value = value;
         this.lazy = lazy;
         this.identifier = identifier;
         this.fileType = fileType;
+        this.fitHeight = fitHeight;
     }
 
     public static IntegratedTextAreaComp script(
-            ObservableValue<DataStoreEntryRef<ShellStore>> host, Property<ShellScript> value) {
+            ObservableValue<DataStoreEntryRef<ShellStore>> host, Property<ShellScript> value, boolean fitHeight) {
         var type = Bindings.createStringBinding(
                 () -> {
                     return host.getValue() != null
@@ -49,10 +54,10 @@ public class IntegratedTextAreaComp extends RegionStructureBuilder<AnchorPane, I
                             : "sh";
                 },
                 host);
-        return script(value, type);
+        return script(value, type, fitHeight);
     }
 
-    public static IntegratedTextAreaComp script(Property<ShellScript> value, ObservableValue<String> fileType) {
+    public static IntegratedTextAreaComp script(Property<ShellScript> value, ObservableValue<String> fileType, boolean fitHeight) {
         var string = new SimpleStringProperty();
         value.subscribe(shellScript -> {
             string.set(shellScript != null ? shellScript.getValue() : null);
@@ -60,7 +65,7 @@ public class IntegratedTextAreaComp extends RegionStructureBuilder<AnchorPane, I
         string.addListener((observable, oldValue, newValue) -> {
             value.setValue(newValue != null ? new ShellScript(newValue) : null);
         });
-        var i = new IntegratedTextAreaComp(string, false, "script", fileType);
+        var i = new IntegratedTextAreaComp(string, false, "script", fileType, fitHeight);
         return i;
     }
 
@@ -110,12 +115,26 @@ public class IntegratedTextAreaComp extends RegionStructureBuilder<AnchorPane, I
         var copyButton = createOpenButton();
         var pane = new AnchorPane(textAreaStruc.get(), copyButton);
         pane.setPickOnBounds(false);
-        AnchorPane.setTopAnchor(copyButton, 4.0);
-        AnchorPane.setRightAnchor(copyButton, 4.0);
         AnchorPane.setLeftAnchor(textAreaStruc.get(), 0.0);
         AnchorPane.setRightAnchor(textAreaStruc.get(), 0.0);
-        pane.maxHeightProperty().bind(textAreaStruc.get().heightProperty());
-        return new Structure(pane, textAreaStruc.getTextArea());
+
+        if (fitHeight) {
+            pane.maxHeightProperty().bind(textAreaStruc.get().heightProperty());
+        } else {
+            textAreaStruc.getTextArea().prefHeightProperty().bind(pane.heightProperty());
+        }
+
+        TextArea ta = textAreaStruc.getTextArea();
+        ta.setSkin(new TextAreaSkin(ta));
+        var tas = (ScrollPane) ta.lookup(".scroll-pane");
+        tas.viewportBoundsProperty().subscribe(v -> {
+            var bar = (ScrollBar) tas.lookup(".scroll-bar:vertical");
+            var visible = bar != null && bar.isVisible();
+            AnchorPane.setTopAnchor(copyButton, visible ? 14 : 4.0);
+            AnchorPane.setRightAnchor(copyButton, visible ? 14 : 4.0);
+        });
+
+        return new Structure(pane, ta);
     }
 
     @Value

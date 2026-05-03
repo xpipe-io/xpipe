@@ -278,7 +278,7 @@ public class TerminalCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .nameAndDescription("terminalInitScript")
                 .addComp(
-                        IntegratedTextAreaComp.script(ref, prefs.terminalInitScript)
+                        IntegratedTextAreaComp.script(ref, prefs.terminalInitScript, true)
                                 .maxWidth(getCompWidth()),
                         prefs.terminalInitScript);
     }

@@ -234,7 +234,8 @@ public interface ShortLivedCertificateImpl extends Checkable {
                             IntegratedTextAreaComp.script(
                                     new ReadOnlyObjectWrapper<>(
                                             DataStorage.get().local().ref()),
-                                    command),
+                                    command,
+                                    true),
                             command)
                     .nonNull()
                     .bind(

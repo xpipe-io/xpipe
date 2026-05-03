@@ -99,7 +99,7 @@ public class ActionConfigComp extends SimpleRegionBuilder {
             }
         });
 
-        var area = new IntegratedTextAreaComp(config, false, "action", new SimpleStringProperty("json"));
+        var area = new IntegratedTextAreaComp(config, false, "action", new SimpleStringProperty("json"), true);
         area.hide(config.isNull());
         return area;
     }

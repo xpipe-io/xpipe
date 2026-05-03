@@ -43,8 +43,8 @@ public final class BrowserConnectionListFilterComp extends SimpleRegionBuilder {
                 });
         var filter = FilterComp.ofStoreFilter(this.filter)
                 .style(Styles.RIGHT_PILL)
-                .minWidth(80)
-                .prefWidth(100)
+                .minWidth(100)
+                .prefWidth(120)
                 .apply(struc -> {
                     AppFontSizes.base(struc);
                     filterTrigger.subscribe(() -> {

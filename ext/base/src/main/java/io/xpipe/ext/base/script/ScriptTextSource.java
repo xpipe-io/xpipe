@@ -94,7 +94,8 @@ public interface ScriptTextSource {
                                                         ? dialect.getValue().getScriptFileEnding()
                                                         : "sh";
                                             },
-                                            dialect)),
+                                            dialect),
+                                    true),
                             text)
                     .bind(
                             () -> InPlace.builder()

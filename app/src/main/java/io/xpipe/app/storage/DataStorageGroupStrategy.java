@@ -190,7 +190,8 @@ public interface DataStorageGroupStrategy {
                             IntegratedTextAreaComp.script(
                                     new ReadOnlyObjectWrapper<>(
                                             DataStorage.get().local().ref()),
-                                    command),
+                                    command,
+                                    true),
                             command)
                     .nonNull()
                     .bind(
