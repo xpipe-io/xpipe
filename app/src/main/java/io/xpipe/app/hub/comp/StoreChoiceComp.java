@@ -157,7 +157,9 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
                 r.requestFocus();
             }
         });
-        AnchorPane.setTopAnchor(dropdownIcon, OsType.ofLocal() == OsType.MACOS ? 8.5 : 11.0);
+        pane.heightProperty().subscribe(number -> {
+            AnchorPane.setTopAnchor(dropdownIcon, number.doubleValue() / 3.3);
+        });
         AnchorPane.setRightAnchor(dropdownIcon, 7.0);
         AnchorPane.setRightAnchor(r, 0.0);
         AnchorPane.setLeftAnchor(r, 0.0);

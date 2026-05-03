@@ -66,18 +66,18 @@ public class StoreFilterStateComp extends SimpleRegionBuilder {
                 false);
 
         var options = new OptionsBuilder()
-                .addComp(new LabelComp(AppI18n.observable("recentSearches")))
+                .addComp(new LabelComp(AppI18n.observable("recentSearches")).style(Styles.TEXT_BOLD))
                 .hide(searchesEmpty)
                 .addComp(searchesList)
                 .hide(searchesEmpty)
-                .addComp(new LabelComp(AppI18n.observable("recentQuickConnections")))
+                .addComp(new LabelComp(AppI18n.observable("recentQuickConnections")).style(Styles.TEXT_BOLD))
                 .hide(quickConnectionsEmpty)
                 .addComp(quickConnectionsList)
                 .hide(quickConnectionsEmpty)
                 .addComp(RegionBuilder.hseparator())
-                .addComp(new LabelComp(AppI18n.observable("recentSearchesDescription")))
+                .addComp(new LabelComp(AppI18n.observable("recentSearchesDescription")).style(Styles.TEXT_BOLD))
                 .addComp(searchesEmptyList)
-                .addComp(new LabelComp(AppI18n.observable("recentQuickConnectionsDescription")))
+                .addComp(new LabelComp(AppI18n.observable("recentQuickConnectionsDescription")).style(Styles.TEXT_BOLD))
                 .addComp(quickConnectionsEmptyList)
                 .build();
         options.getStyleClass().add("store-filter-state-comp");
