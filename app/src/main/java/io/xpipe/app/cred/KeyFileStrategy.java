@@ -246,26 +246,17 @@ public class KeyFileStrategy implements SshIdentityStrategy {
     public void buildCommand(CommandBuilder builder) {}
 
     @Override
-    public List<KeyValue> configOptions(ShellControl sc) {
+    public List<KeyValue> configOptions(ShellControl sc) throws Exception {
         return List.of(
                 KeyValue.raw("IdentitiesOnly", "yes"),
                 KeyValue.raw("IdentityAgent", "none"),
-                KeyValue.escape("IdentityFile", resolveFilePath(sc)),
+                KeyValue.escape("IdentityFile", file.toAbsoluteFilePath(sc).resolveTildeHome(sc.view().userHome())),
                 KeyValue.raw("PKCS11Provider", "none"));
     }
 
     @Override
     public SecretRetrievalStrategy getAskpassStrategy() {
         return password;
-    }
-
-    private FilePath resolveFilePath(ShellControl sc) {
-        var s = file.toAbsoluteFilePath(sc);
-        // The ~ is supported on all platforms, so manually replace it here for Windows
-        if (s.startsWith("~")) {
-            s = s.resolveTildeHome(FilePath.of(AppSystemInfo.ofCurrent().getUserHome()));
-        }
-        return s;
     }
 
     public PublicKeyStrategy getPublicKeyStrategy() {

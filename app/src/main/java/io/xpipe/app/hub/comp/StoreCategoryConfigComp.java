@@ -32,7 +32,7 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
     public static void show(StoreCategoryWrapper wrapper) {
         var config = new SimpleObjectProperty<>(wrapper.getCategory().getConfig());
         var comp = new StoreCategoryConfigComp(wrapper, config);
-        comp.prefWidth(600);
+        comp.prefWidth(700);
         var modal = ModalOverlay.of(
                 AppI18n.observable("categoryConfigTitle", wrapper.getName().getValue()), comp, null);
         modal.addButton(ModalButton.cancel());
@@ -87,7 +87,7 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
         var syncDisable = !DataStorage.get().supportsSync()
                 || ((sync.getValue() == null || !sync.getValue())
                         && !wrapper.getCategory().canShare());
-        options.name(
+        options.title("sync").sub(new OptionsBuilder().name(
                         specialCategorySync
                                 ? AppI18n.observable(
                                         "categorySyncSpecial", wrapper.getName().getValue())
@@ -95,12 +95,17 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
                 .description("categorySyncDescription")
                 .addComp(createToggle(sync, parentConfig.getSync()), sync)
                 .disable(syncDisable)
-                .nameAndDescription("categoryDontAllowScripts")
+                )
+                .title("connectionHandling")
+                .sub(new OptionsBuilder().nameAndDescription("categoryDontAllowScripts")
                 .addComp(createToggle(scripts, parentConfig.getDontAllowScripts()), scripts)
                 .hide(!connectionsCategory)
                 .nameAndDescription("categoryConfirmAllModifications")
                 .addComp(createToggle(confirm, parentConfig.getConfirmAllModifications()), confirm)
                 .hide(!connectionsCategory)
+                )
+                .title("connectionConfiguration")
+                .sub(new OptionsBuilder()
                 .nameAndDescription("categoryFreeze")
                 .addComp(createToggle(freeze, parentConfig.getFreezeConfigurations()), freeze)
                 .hide(!connectionsCategory)
@@ -126,6 +131,7 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
                                 DataStoreCreationCategory.HOST),
                         gatewayRef)
                 .hide(!connectionsCategory)
+                )
                 .bind(
                         () -> {
                             return new DataStoreCategoryConfig(
@@ -143,6 +149,7 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
                         },
                         config);
         var r = options.build();
+        r.getStyleClass().add("category-config");
         var sp = new ScrollPane(r);
         sp.setFitToWidth(true);
         sp.prefHeightProperty().bind(r.heightProperty());
