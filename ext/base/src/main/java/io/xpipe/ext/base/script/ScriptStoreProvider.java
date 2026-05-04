@@ -70,7 +70,7 @@ public class ScriptStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
+    public BaseRegionBuilder<?, ?> stateDisplay(StoreSection section) {
         return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
     }
 

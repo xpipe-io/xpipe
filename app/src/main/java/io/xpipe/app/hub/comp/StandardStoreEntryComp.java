@@ -122,7 +122,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         information.getStyleClass().add("information");
 
         var state = getWrapper().getEntry().getProvider() != null
-                ? getWrapper().getEntry().getProvider().stateDisplay(getWrapper())
+                ? getWrapper().getEntry().getProvider().stateDisplay(section)
                 : RegionBuilder.empty();
         information.setGraphic(state.build());
 

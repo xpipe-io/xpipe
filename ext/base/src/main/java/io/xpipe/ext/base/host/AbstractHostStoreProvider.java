@@ -17,7 +17,7 @@ import lombok.SneakyThrows;
 
 import java.util.List;
 
-public class AbstractHostStoreProvider implements DataStoreProvider {
+public class AbstractHostStoreProvider implements CountGroupStoreProvider {
 
     @Override
     public DocumentationLink getHelpLink() {
@@ -30,11 +30,6 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
-        return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
-    }
-
-    @Override
     public DataStoreCreationCategory getCreationCategory() {
         return DataStoreCreationCategory.HOST;
     }
@@ -42,28 +37,6 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
     @Override
     public DataStoreUsageCategory getUsageCategory() {
         return DataStoreUsageCategory.GROUP;
-    }
-
-    @Override
-    public ObservableValue<String> informationString(StoreSection section) {
-        return Bindings.createStringBinding(
-                () -> {
-                    var all = section.getAllChildren().getList();
-                    var shown = section.getShownChildren().getList();
-                    if (shown.size() == 0) {
-                        return null;
-                    }
-
-                    var string = all.size() == shown.size() ? all.size() : shown.size() + "/" + all.size();
-                    return all.size() > 0
-                            ? (all.size() == 1
-                                    ? AppI18n.get("hostHasConnection", string)
-                                    : AppI18n.get("hostHasConnections", string))
-                            : AppI18n.get("hostNoConnections");
-                },
-                section.getShownChildren().getList(),
-                section.getAllChildren().getList(),
-                AppI18n.activeLanguage());
     }
 
     @SneakyThrows
@@ -123,5 +96,10 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
     @Override
     public List<Class<?>> getStoreClasses() {
         return List.of(AbstractHostStore.class);
+    }
+
+    @Override
+    public String getCountTranslationKey() {
+        return "Connection";
     }
 }

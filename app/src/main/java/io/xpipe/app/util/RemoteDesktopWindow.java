@@ -181,6 +181,7 @@ public class RemoteDesktopWindow {
     public void close(RemoteDesktopDockEntry entry, boolean closeWindowIfNeeded) {
         model.closeWindow(entry);
         if (closeWindowIfNeeded) {
+            updateState();
             closeIfNecessary();
         }
     }

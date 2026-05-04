@@ -33,8 +33,8 @@ public class LxdCmdStoreProvider implements DataStoreProvider {
         return StoreEntryComp.create(sec, nonRunning, preferLarge);
     }
 
-    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
-        return new SystemStateComp(BindingsHelper.map(w.getPersistentState(), o -> {
+    public BaseRegionBuilder<?, ?> stateDisplay(StoreSection section) {
+        return new SystemStateComp(BindingsHelper.map(section.getWrapper().getPersistentState(), o -> {
             var state = (LxdCmdStore.State) o;
             if (state.isReachable()) {
                 return SystemStateComp.State.SUCCESS;
@@ -59,7 +59,7 @@ public class LxdCmdStoreProvider implements DataStoreProvider {
     public ObservableValue<String> informationString(StoreSection section) {
         return BindingsHelper.map(section.getWrapper().getPersistentState(), o -> {
             var state = (LxdCmdStore.State) o;
-            return state.isReachable() ? "lxd v" + state.getServerVersion() : "Connection failed";
+            return state.isReachable() ? "LXD v" + state.getServerVersion() : "Connection failed";
         });
     }
 

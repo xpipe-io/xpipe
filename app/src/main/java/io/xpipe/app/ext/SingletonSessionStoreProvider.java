@@ -28,10 +28,10 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
         return StoreEntryComp.create(sec, t, preferLarge);
     }
 
-    default BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
+    default BaseRegionBuilder<?, ?> stateDisplay(StoreSection section) {
         return new SystemStateComp(Bindings.createObjectBinding(
                 () -> {
-                    SingletonSessionStore<?> s = w.getEntry().getStore().asNeeded();
+                    SingletonSessionStore<?> s = section.getWrapper().getEntry().getStore().asNeeded();
                     if (!supportsSession(s)) {
                         return SystemStateComp.State.SUCCESS;
                     }
@@ -42,7 +42,7 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
 
                     return s.isSessionRunning() ? SystemStateComp.State.SUCCESS : SystemStateComp.State.FAILURE;
                 },
-                w.getCache()));
+                section.getWrapper().getCache()));
     }
 
     default StoreToggleComp createToggleComp(StoreSection sec) {

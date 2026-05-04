@@ -88,8 +88,8 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
         return List.of(PodmanContainerStore.class);
     }
 
-    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
-        return new OsLogoComp(w, BindingsHelper.map(w.getPersistentState(), o -> {
+    public BaseRegionBuilder<?, ?> stateDisplay(StoreSection section) {
+        return new OsLogoComp(section.getWrapper(), BindingsHelper.map(section.getWrapper().getPersistentState(), o -> {
             var state = (ContainerStoreState) o;
             var cs = state.getContainerState();
             if (cs != null && cs.toLowerCase().contains("exited")) {

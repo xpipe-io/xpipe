@@ -116,7 +116,7 @@ public interface DataStoreProvider {
         return true;
     }
 
-    default BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
+    default BaseRegionBuilder<?, ?> stateDisplay(StoreSection section) {
         return RegionBuilder.empty();
     }
 

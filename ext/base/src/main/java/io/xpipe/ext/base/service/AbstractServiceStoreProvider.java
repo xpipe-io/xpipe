@@ -145,14 +145,14 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     }
 
     @Override
-    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
+    public BaseRegionBuilder<?, ?> stateDisplay(StoreSection section) {
         return new SystemStateComp(Bindings.createObjectBinding(
                 () -> {
-                    if (!w.getEntry().getValidity().isUsable()) {
+                    if (!section.getWrapper().getEntry().getValidity().isUsable()) {
                         return SystemStateComp.State.OTHER;
                     }
 
-                    AbstractServiceStore s = w.getEntry().getStore().asNeeded();
+                    AbstractServiceStore s = section.getWrapper().getEntry().getStore().asNeeded();
 
                     if (!s.requiresTunnel()) {
                         return SystemStateComp.State.SUCCESS;
@@ -164,7 +164,7 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
 
                     return s.isSessionRunning() ? SystemStateComp.State.SUCCESS : SystemStateComp.State.FAILURE;
                 },
-                w.getCache()));
+                section.getWrapper().getCache()));
     }
 
     protected String formatService(AbstractServiceStore s) {
