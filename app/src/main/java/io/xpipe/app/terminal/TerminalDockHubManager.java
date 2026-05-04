@@ -120,7 +120,7 @@ public class TerminalDockHubManager {
     });
     private final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(
             AppI18n.observable(
-                    "toggleTerminalDock", new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN).toString()),
+                    "toggleTerminalDock", new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN).getDisplayText()),
             new LabelGraphic.NodeGraphic(() -> {
                 var inner = new FontIcon();
                 inner.iconCodeProperty()
@@ -322,15 +322,13 @@ public class TerminalDockHubManager {
         });
     }
 
-    public void toggleDock() {
+    public void triggerDock() {
         if (!enabled.get()) {
             return;
         }
 
-        if (showing.get()) {
-            hideDock();
-        } else {
-            showDock();
+        if (showing.get() && (minimized.get() || detached.get())) {
+            attach();
         }
     }
 

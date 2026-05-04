@@ -39,6 +39,9 @@ public class HostAddressChoice {
         });
         var options = new OptionsBuilder();
         var addressField = new HostAddressChoiceComp(val, list, allowMutation).hgrow();
+        if (!allowMutation && HostAddress.empty().equals(addressProperty.getValue())) {
+            addressField.disable(true);
+        }
         var sepLabel =
                 new LabelComp(":").apply(label -> AppFontSizes.xxl(label)).padding(new Insets(0, 0, 3, 0));
         var portField = new IntFieldComp(portProperty)

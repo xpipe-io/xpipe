@@ -1,8 +1,11 @@
 package io.xpipe.app.ext;
 
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.hub.comp.StoreSection;
 
+import io.xpipe.app.hub.comp.SystemStateComp;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 
@@ -19,16 +22,14 @@ public interface CountGroupStoreProvider extends DataStoreProvider {
                 () -> {
                     var all = section.getAllChildren().getList();
                     var shown = section.getShownChildren().getList();
-                    if (shown.size() == 0) {
+                    if (all.size() == 0) {
                         return AppI18n.get("noConnections");
                     }
 
                     var string = all.size() == shown.size() ? all.size() : shown.size() + "/" + all.size();
-                    return all.size() > 0
-                            ? (all.size() == 1
+                    return all.size() == 1
                                     ? AppI18n.get("hasConnection", string)
-                                    : AppI18n.get("hasConnections", string))
-                            : AppI18n.get("noConnections");
+                                    : AppI18n.get("hasConnections", string);
                 },
                 section.getShownChildren().getList(),
                 section.getAllChildren().getList(),
