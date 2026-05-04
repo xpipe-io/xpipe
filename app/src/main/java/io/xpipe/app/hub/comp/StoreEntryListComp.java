@@ -6,6 +6,7 @@ import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.prefs.AppPrefs;
 
@@ -63,7 +64,13 @@ public class StoreEntryListComp extends SimpleRegionBuilder {
         content.style("store-list-comp");
         content.vgrow();
 
-        var statusBar = new StoreEntryListBatchBarComp();
+        var expanded = new SimpleBooleanProperty();
+        expanded.set(AppCache.getBoolean("batchBarExpanded", true));
+        expanded.addListener((observable, oldValue, newValue) -> {
+            AppCache.update("batchBarExpanded", newValue);
+        });
+
+        var statusBar = new StoreEntryListBatchBarComp(expanded);
         statusBar.apply(struc -> {
             VBox.setMargin(struc, new Insets(3, 6, 4, 2));
         });

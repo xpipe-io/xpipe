@@ -121,8 +121,17 @@ public class StoreEntryWrapper {
     }
 
     public void moveTo(DataStoreCategory category) {
+        var oldCat = getCategory().getValue();
+        var newCat = StoreViewState.get().getCategoryWrapper(category);
+
         ThreadHelper.runAsync(() -> {
-            DataStorage.get().moveEntryToCategory(entry, category);
+            synchronized (this) {
+                DataStorage.get().moveEntryToCategory(entry, category);
+            }
+            Platform.runLater(() -> {
+                oldCat.update();
+                newCat.update();
+            });
         });
     }
 
@@ -140,7 +149,9 @@ public class StoreEntryWrapper {
 
     public void delete() {
         ThreadHelper.runAsync(() -> {
-            DataStorage.get().deleteWithChildren(this.entry);
+            synchronized (this) {
+                DataStorage.get().deleteWithChildren(this.entry);
+            }
         });
     }
 

@@ -320,7 +320,7 @@ public class StoreViewState {
         });
 
         batchMode.addListener((observable, oldValue, newValue) -> {
-            batchModeSelection.getList().clear();
+            batchModeSelectionSet.clear();
         });
     }
 
@@ -338,6 +338,8 @@ public class StoreViewState {
 
         activeCategory.addListener((observable, oldValue, newValue) -> {
             DataStorage.get().setSelectedCategory(newValue.getCategory());
+            batchModeSelection.getList().clear();
+            batchModeSelectionSet.clear();
         });
         var selected = AppCache.getNonNull("selectedCategory", UUID.class, () -> DataStorage.DEFAULT_CATEGORY_UUID);
         activeCategory.setValue(categories.getList().stream()

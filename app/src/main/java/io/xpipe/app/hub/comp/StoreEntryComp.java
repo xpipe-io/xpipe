@@ -641,7 +641,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
 
                 if (getWrapper().getEntry().getProvider() != null
                         && getWrapper().getEntry().getProvider().canMoveCategories()) {
-                    var move = new Menu(AppI18n.get("category"), new FontIcon("mdi2f-folder-move-outline"));
+                    var move = new Menu(AppI18n.get("move"), new FontIcon("mdi2f-folder-move-outline"));
                     StoreViewState.get()
                             .getSortedCategories(
                                     getWrapper().getCategory().getValue().getRoot(), true)
