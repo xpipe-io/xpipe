@@ -123,6 +123,9 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         // Always start a new window for split panes as we can't find the pane index to start with
         if (activeSocket.isEmpty() || configuration.getPanes().size() > 1 || !configuration.isPreferTabs()) {
             var gui = CommandBuilder.of().add(base.buildSimple().replace("wezterm.exe", "wezterm-gui.exe"));
+            gui.add("--config", "hide_tab_bar_if_only_one_tab=false");
+            gui.add("--config", "use_fancy_tab_bar=true");
+            gui.add("--config", "enable_tab_bar=true");
             var command = CommandBuilder.of()
                     .add(gui)
                     .add("start", "--always-new-process")

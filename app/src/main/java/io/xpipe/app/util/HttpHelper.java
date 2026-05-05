@@ -15,6 +15,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.time.Duration;
 import java.util.List;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -33,6 +34,7 @@ public class HttpHelper {
     @SneakyThrows
     public static HttpClient client(HttpProxy proxy, boolean checkTls) {
         var builder = HttpClient.newBuilder();
+        builder.connectTimeout(Duration.ofSeconds(5));
         builder.version(HttpClient.Version.HTTP_1_1);
         builder.followRedirects(HttpClient.Redirect.NORMAL);
 

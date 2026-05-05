@@ -73,6 +73,10 @@ public class ScriptHierarchy {
 
         for (DataStoreEntryRef<ScriptStore> scriptRef : enabled) {
             var scriptCategory = DataStorage.get().getStoreCategory(scriptRef.get());
+            if (scriptCategory.getParentCategory() == null) {
+                continue;
+            }
+
             var catHierarchy = findParent(hierarchy, scriptCategory);
             if (catHierarchy.isEmpty()) {
                 continue;
