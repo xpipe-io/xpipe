@@ -109,7 +109,7 @@ public class TerminalLauncher {
                             TerminalInitFunction.none()),
                     true);
             var singlePane = new TerminalPaneConfiguration(UUID.randomUUID(), title, 0, script, sc.getShellDialect());
-            var config = new TerminalLaunchConfiguration(null, title, title, true, List.of(singlePane));
+            var config = new TerminalLaunchConfiguration(null, title, title, true, false, List.of(singlePane));
             launch(type, config);
         }
     }
@@ -163,15 +163,15 @@ public class TerminalLauncher {
         var prefix = entry != null && color != null && type.useColoredTitle() ? color.getEmoji() + " " : "";
         var cleanTitle = (title != null ? title : entry != null ? entry.getName() : "Unknown");
         var adjustedTitle = prefix + cleanTitle;
-
         var effectivePreferTabs =
                 preferTabs && AppPrefs.get().preferTerminalTabs().get();
-        var launchConfig =
-                new TerminalLaunchConfiguration(color, adjustedTitle, cleanTitle, effectivePreferTabs, paneList);
-
-        if (effectivePreferTabs
+        var dock = effectivePreferTabs
                 && AppPrefs.get().enableConnectionHubTerminalDocking().get()
-                && TerminalDockHubManager.isAvailable()) {
+                && TerminalDockHubManager.isAvailable();
+        var launchConfig =
+                new TerminalLaunchConfiguration(color, adjustedTitle, cleanTitle, effectivePreferTabs, dock, paneList);
+
+        if (dock) {
             // Dock terminal if needed
             for (TerminalPaneConfiguration pane : launchConfig.getPanes()) {
                 TerminalDockHubManager.get().openTerminal(pane.getRequest());
@@ -316,7 +316,7 @@ public class TerminalLauncher {
                     fullLocalCommand,
                     LocalShell.getDialect());
             return Optional.of(new TerminalLaunchConfiguration(
-                    null, AppNames.ofCurrent().getName(), AppNames.ofCurrent().getName(), false, List.of(pane)));
+                    null, AppNames.ofCurrent().getName(), AppNames.ofCurrent().getName(), false, launchConfiguration.isDock(), List.of(pane)));
         } else {
             var multiplexerCommand = multiplexer
                     .get()
@@ -336,7 +336,7 @@ public class TerminalLauncher {
                     fullLocalCommand,
                     LocalShell.getDialect());
             return Optional.of(new TerminalLaunchConfiguration(
-                    null, AppNames.ofCurrent().getName(), AppNames.ofCurrent().getName(), false, List.of(pane)));
+                    null, AppNames.ofCurrent().getName(), AppNames.ofCurrent().getName(), false, launchConfiguration.isDock(), List.of(pane)));
         }
     }
 

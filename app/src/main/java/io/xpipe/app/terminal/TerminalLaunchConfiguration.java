@@ -14,6 +14,7 @@ public class TerminalLaunchConfiguration {
     String coloredTitle;
     String cleanTitle;
     boolean preferTabs;
+    boolean dock;
     List<TerminalPaneConfiguration> panes;
 
     public TerminalPaneConfiguration single() {
@@ -25,6 +26,6 @@ public class TerminalLaunchConfiguration {
     }
 
     public TerminalLaunchConfiguration withPanes(List<TerminalPaneConfiguration> panes) {
-        return new TerminalLaunchConfiguration(color, coloredTitle, cleanTitle, preferTabs, panes);
+        return new TerminalLaunchConfiguration(color, coloredTitle, cleanTitle, preferTabs, dock, panes);
     }
 }

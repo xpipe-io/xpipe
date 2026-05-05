@@ -157,6 +157,8 @@ public class OptionsComp extends RegionBuilder<VBox> {
                         vbox.getChildren().add(descriptionBox);
                         vbox.getChildren().add(new Spacer(2, Orientation.VERTICAL));
                         VBox.setMargin(descriptionBox, new Insets(0, 0, 0, 1));
+                        descriptionBox.visibleProperty().bind(compRegion.visibleProperty());
+                        descriptionBox.managedProperty().bind(compRegion.managedProperty());
                     }
 
                     line.getChildren().add(vbox);
