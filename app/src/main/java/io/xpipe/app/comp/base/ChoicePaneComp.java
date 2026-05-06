@@ -2,9 +2,11 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
 
+import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -16,6 +18,7 @@ import javafx.util.StringConverter;
 
 import lombok.Setter;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
@@ -58,6 +61,17 @@ public class ChoicePaneComp extends RegionBuilder<VBox> {
             @Override
             public Entry fromString(String string) {
                 throw new UnsupportedOperationException();
+            }
+        });
+
+        var ref = new WeakReference<>(cb);
+        AppI18n.activeLanguage().subscribe((v) -> {
+            var refValue = ref.get();
+            if (refValue != null) {
+                Platform.runLater(() -> {
+                    refValue.setPromptText(v.getId());
+                    refValue.setPromptText(null);
+                });
             }
         });
 

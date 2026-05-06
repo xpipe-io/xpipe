@@ -260,6 +260,9 @@ public class StoreCategoryWrapper {
         if (original.equals("Default")) {
             return AppI18n.get("default");
         }
+        if (original.equals("Sources")) {
+            return AppI18n.get("sources");
+        }
 
         return original;
     }

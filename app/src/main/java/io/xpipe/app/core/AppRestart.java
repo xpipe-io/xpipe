@@ -51,9 +51,9 @@ public class AppRestart {
             var async = dialect.launchAsync(b, true);
             return async.buildSimple();
         } else if (OsType.ofLocal() == OsType.MACOS) {
-            var exec = loc.getDaemonExecutablePath();
+            var exec = loc.getBaseInstallationPath();
             var b = CommandBuilder.of()
-                    .add("open")
+                    .add("open", "-a")
                     .addFile(exec)
                     .addIf(!arguments.isEmpty(), "--args")
                     .addAll(arguments);

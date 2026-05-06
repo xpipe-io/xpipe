@@ -268,6 +268,7 @@ public class TerminalCategory extends AppPrefsCategory {
                         });
                     });
                     refresh.hide(new ReadOnlyBooleanWrapper(OsType.ofLocal() != OsType.WINDOWS));
+                    refresh.maxHeight(200);
 
                     var box = new HorizontalComp(List.of(choice, refresh));
                     box.spacing(12);

@@ -6,6 +6,7 @@ import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.Translatable;
 
+import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -17,6 +18,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +69,19 @@ public class ChoiceComp<T> extends RegionBuilder<ComboBox<T>> {
                 throw new UnsupportedOperationException();
             }
         });
+
+        var ref = new WeakReference<>(cb);
+        AppI18n.activeLanguage().subscribe((v) -> {
+            var refValue = ref.get();
+            if (refValue != null) {
+                Platform.runLater(() -> {
+                    refValue.setPromptText(v.getId());
+                    refValue.setPromptText(null);
+                });
+            }
+        });
+
+
         range.subscribe(c -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 var list = FXCollections.observableArrayList(c.keySet());
