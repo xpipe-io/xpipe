@@ -909,6 +909,10 @@ public abstract class DataStorage {
     }
 
     public void addStoreEntryInProgress(@NonNull DataStoreEntry e) {
+        // Due to the uuid equality of entries, using multiple variants of the same
+        // entry with a different store wouldn't update properly if we don't remove it first
+        this.storeEntriesInProgress.remove(e);
+
         this.storeEntriesInProgress.put(e, e);
     }
 
