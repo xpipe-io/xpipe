@@ -159,7 +159,7 @@ public class ScanDialogBase {
                         so -> null,
                         selected,
                         scanOperation -> scanOperation.isDisabled(),
-                        () -> available.size() > 3)
+                        () -> available.stream().filter(sa -> !sa.isDisabled()).count() >= 2)
                 .build();
         stackPane.getChildren().add(r);
 

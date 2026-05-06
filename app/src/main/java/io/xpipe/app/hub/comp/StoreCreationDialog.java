@@ -2,9 +2,11 @@ package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProvider;
@@ -168,6 +170,14 @@ public class StoreCreationDialog {
         return model;
     }
 
+    private static void showNotice() {
+        var shown = AppCache.getBoolean("creationMinimizeDialogShown", false);
+        if (!shown) {
+            AppDialog.information("creationMinimizeNotice");
+            AppCache.update("creationMinimizeDialogShown", true);
+        }
+    }
+
     private static ModalOverlay createModalOverlay(StoreCreationModel model) {
         var comp = new StoreCreationComp(model);
         comp.prefWidth(650);
@@ -187,7 +197,12 @@ public class StoreCreationDialog {
 
         if (!model.isQuickConnect()) {
             var queueEntry = StoreCreationQueueEntry.of(model, modal);
-            modal.hideable(queueEntry);
+
+            modal.setHideAction(() -> {
+                AppLayoutModel.get().getQueueEntries().add(queueEntry);
+                showNotice();
+            });
+
             AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
                 if (model.getFinished().get() || !modal.isShowing()) {
                     return;
@@ -195,6 +210,7 @@ public class StoreCreationDialog {
 
                 modal.hide();
                 AppLayoutModel.get().getQueueEntries().add(queueEntry);
+                showNotice();
             });
             modal.setRequireCloseButtonForClose(true);
         }

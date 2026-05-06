@@ -86,6 +86,8 @@ public class RemoteDesktopDockView implements WindowDockListener {
             return;
         }
 
+        NativeWinWindowControl.MAIN_WINDOW.activate();
+
         var controllable = e.getProcess();
         controllable.show();
         controllable.moveToFront();

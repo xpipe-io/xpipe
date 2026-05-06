@@ -151,6 +151,11 @@ public final class ControllableWindowsProcess extends ControllableWindowProcess 
         return control.getBounds();
     }
 
+    @Override
+    public Object getRawHandle() {
+        return control.getWindowHandle();
+    }
+
     public void updateBoundsState() {
         if (!isActive()) {
             return;

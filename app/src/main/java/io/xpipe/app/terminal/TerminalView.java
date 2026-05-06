@@ -283,6 +283,19 @@ public class TerminalView {
         }
 
         @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof ControllableTerminalSession that)) {
+                return false;
+            }
+            return Objects.equals(terminalProcess.pid(), that.terminalProcess.pid()) && Objects.equals(controllable.getRawHandle(), that.controllable.getRawHandle());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(terminalProcess.pid(), controllable.getRawHandle());
+        }
+
+        @Override
         public boolean isRunning() {
             return super.isRunning() && !controllable.isDestroyed();
         }

@@ -29,7 +29,7 @@ public class TerminalDockView implements WindowDockListener {
 
     public synchronized void removeTerminal(TerminalView.TerminalSession s) {
         terminalInstances.removeIf(controllableTerminalSession ->
-                controllableTerminalSession.getTerminalProcess().equals(s.getTerminalProcess()));
+                controllableTerminalSession.equals(s));
     }
 
     public synchronized boolean isActive() {
@@ -125,11 +125,17 @@ public class TerminalDockView implements WindowDockListener {
     }
 
     public synchronized boolean closeOtherTerminals(UUID request) {
+        var owner = TerminalView.get().getSessions().stream()
+                .filter(shellSession -> shellSession.getRequest().equals(request))
+                .map(shellSession -> shellSession.getTerminal())
+                .findFirst().orElse(null);
+        if (owner == null) {
+            return false;
+        }
+
         var others = terminalInstances.stream()
                 .filter(terminal -> terminal.getTerminalProcess().isAlive())
-                .filter(terminal -> TerminalView.get().getSessions().stream()
-                        .noneMatch(shellSession -> shellSession.getRequest().equals(request)
-                                && shellSession.getTerminal().equals(terminal)))
+                .filter(terminal -> !terminal.equals(owner))
                 .toList();
         for (TerminalView.ControllableTerminalSession other : others) {
             closeTerminal(other);

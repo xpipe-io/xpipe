@@ -340,6 +340,10 @@ public class StoreViewState {
             DataStorage.get().setSelectedCategory(newValue.getCategory());
             batchModeSelection.getList().clear();
             batchModeSelectionSet.clear();
+
+            Platform.runLater(() -> {
+                updateWrappers();
+            });
         });
         var selected = AppCache.getNonNull("selectedCategory", UUID.class, () -> DataStorage.DEFAULT_CATEGORY_UUID);
         activeCategory.setValue(categories.getList().stream()

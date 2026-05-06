@@ -87,4 +87,6 @@ public abstract class ProcessControlProvider {
 
     public abstract void addAskpassEnvironment(
             CommandBuilder b, String prefix, UUID requestId, UUID secretId, String... askpassName);
+
+    public abstract void refreshWsl() throws Exception;
 }

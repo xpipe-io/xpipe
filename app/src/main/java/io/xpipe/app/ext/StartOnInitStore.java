@@ -29,6 +29,7 @@ public interface StartOnInitStore extends SelfReferentialStore, DataStore {
                         ErrorEventFactory.fromThrowable(ex)
                                 .description("Unable to automatically start connection "
                                         + DataStorage.get().getStoreEntryDisplayName(i.getSelfEntry()))
+                                .expected()
                                 .handle();
                     }
                 }

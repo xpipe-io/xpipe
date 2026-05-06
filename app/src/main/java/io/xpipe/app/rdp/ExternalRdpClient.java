@@ -80,7 +80,7 @@ public interface ExternalRdpClient extends PrefsValue {
                 yield windowsApp;
             }
             case OsType.Windows ignored -> {
-                yield MstscRdpClient.builder().smartSizing(false).build();
+                yield MstscRdpClient.builder().smartSizing(true).dock(true).build();
             }
         };
     }

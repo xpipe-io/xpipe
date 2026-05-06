@@ -51,6 +51,8 @@ public abstract class ControllableWindowProcess {
 
     public abstract Rect queryBounds();
 
+    public abstract Object getRawHandle();
+
     public void updateBoundsState() {
         if (!isActive()) {
             return;

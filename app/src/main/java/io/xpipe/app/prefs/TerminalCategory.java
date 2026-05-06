@@ -7,14 +7,12 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ScanProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.platform.BindingsHelper;
-import io.xpipe.app.platform.LabelGraphic;
-import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.platform.OptionsChoiceBuilder;
+import io.xpipe.app.platform.*;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -23,6 +21,8 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
@@ -244,14 +244,34 @@ public class TerminalCategory extends AppPrefsCategory {
         });
         var proxyChoice = new DelayedInitComp(
                 RegionBuilder.of(() -> {
-                    var comp = new StoreChoiceComp<>(
+                    var choice = new StoreChoiceComp<>(
                             null,
                             ref,
                             ShellStore.class,
                             r -> r.get().equals(DataStorage.get().local()) || TerminalProxyManager.canUseAsProxy(r),
                             StoreViewState.get().getAllConnectionsCategory(),
                             null);
-                    return comp.build();
+                    choice.hgrow();
+
+                    var refresh = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2r-refresh"), null);
+                    refresh.describe(d -> d.nameKey("refresh"));
+                    refresh.apply(button -> {
+                        var disable = new SimpleBooleanProperty();
+                        button.disableProperty().bind(PlatformThread.sync(disable));
+                        button.setOnAction(event -> {
+                            ThreadHelper.runFailableAsync(() -> {
+                                BooleanScope.executeExclusive(disable, () -> {
+                                    ProcessControlProvider.get().refreshWsl();
+                                });
+                            });
+                            event.consume();
+                        });
+                    });
+                    refresh.hide(new ReadOnlyBooleanWrapper(OsType.ofLocal() != OsType.WINDOWS));
+
+                    var box = new HorizontalComp(List.of(choice, refresh));
+                    box.spacing(12);
+                    return box.build();
                 }),
                 () -> StoreViewState.get() != null && StoreViewState.get().isInitialized());
         proxyChoice.maxWidth(getCompWidth());
