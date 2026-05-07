@@ -1,6 +1,8 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.mode.AppOperationMode;
@@ -98,6 +100,19 @@ public class TerminalDockHubManager {
             INSTANCE.refreshDockStatus();
             return false;
         });
+    }
+
+    private static void showDialogIfNeeded() {
+        var shown = AppCache.getBoolean("terminalDockDialog", false);
+        if (shown) {
+            return;
+        }
+
+        var modal = ModalOverlay.of("terminalDockDialogTitle", AppDialog.dialogTextKey("terminalDockDialogContent"));
+        modal.addButton(new ModalButton("openSettings", () -> AppPrefs.get().selectCategory("connectionHub"), true, false));
+        modal.addButton(new ModalButton("keepEnabled", null, true, true));
+        modal.show();
+        AppCache.update("terminalDockDialog", true);
     }
 
     public static TerminalDockHubManager get() {
@@ -316,6 +331,8 @@ public class TerminalDockHubManager {
             dockModel.deactivateView();
             enabled.set(false);
             showing.set(false);
+
+            showDialogIfNeeded();
 
             NativeWinWindowControl.MAIN_WINDOW.setWindowsTransitionsEnabled(true);
             AppLayoutModel.get().getQueueEntries().remove(queueEntry);

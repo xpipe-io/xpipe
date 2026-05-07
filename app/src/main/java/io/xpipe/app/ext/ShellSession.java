@@ -1,11 +1,15 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.core.FailableSupplier;
 
 import lombok.Getter;
+
+import java.time.Duration;
+import java.time.Instant;
 
 @Getter
 public class ShellSession extends Session {
@@ -85,6 +89,16 @@ public class ShellSession extends Session {
     }
 
     @Override
+    public boolean checkInactive() {
+        var secs = AppPrefs.get() != null ? AppPrefs.get().backgroundSessionInactivityTimeout().getValue() : null;
+        if (secs == null || secs <= 0) {
+            return false;
+        }
+
+        return shellControl.isInactive(Duration.ofSeconds(secs));
+    }
+
+    @Override
     public boolean checkAlive() throws Exception {
         if (shellControl == null) {
             return false;
@@ -109,6 +123,7 @@ public class ShellSession extends Session {
             return shellControl
                     .command(CommandBuilder.of().add("echo", "xpipetest"))
                     .sensitive()
+                    .noActivity()
                     .executeAndCheck();
         } catch (Exception ex) {
             throw ErrorEventFactory.expected(ex);

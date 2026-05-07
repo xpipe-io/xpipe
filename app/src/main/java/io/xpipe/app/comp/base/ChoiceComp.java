@@ -49,38 +49,37 @@ public class ChoiceComp<T> extends RegionBuilder<ComboBox<T>> {
     @Override
     public ComboBox<T> createSimple() {
         var cb = MenuHelper.<T>createComboBox();
-        cb.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(T object) {
-                if (object == null) {
-                    return AppI18n.get("none");
-                }
 
-                var found = range.getValue().get(object);
-                if (found == null) {
-                    return "";
-                }
-
-                return found.getValue();
-            }
-
-            @Override
-            public T fromString(String string) {
-                throw new UnsupportedOperationException();
-            }
-        });
-
+        // Reset converter on language change to force an update
+        // This does not work properly in older JFX versions, see JDK-8384006
         var ref = new WeakReference<>(cb);
         AppI18n.activeLanguage().subscribe((v) -> {
             var refValue = ref.get();
             if (refValue != null) {
                 Platform.runLater(() -> {
-                    refValue.setPromptText(v.getId());
-                    refValue.setPromptText(null);
+                    refValue.setConverter(new StringConverter<>() {
+                        @Override
+                        public String toString(T object) {
+                            if (object == null) {
+                                return AppI18n.get("none");
+                            }
+
+                            var found = range.getValue().get(object);
+                            if (found == null) {
+                                return "";
+                            }
+
+                            return found.getValue();
+                        }
+
+                        @Override
+                        public T fromString(String string) {
+                            throw new UnsupportedOperationException();
+                        }
+                    });
                 });
             }
         });
-
 
         range.subscribe(c -> {
             PlatformThread.runLaterIfNeeded(() -> {

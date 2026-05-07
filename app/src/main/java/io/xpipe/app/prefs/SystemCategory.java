@@ -2,6 +2,7 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ChoiceComp;
+import io.xpipe.app.comp.base.IntFieldComp;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellDialectChoiceComp;
@@ -23,7 +24,7 @@ public class SystemCategory extends AppPrefsCategory {
     public BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
         var builder = new OptionsBuilder();
-        builder.title("system")
+        builder.title("applicationBehaviour")
                 .sub(new OptionsBuilder()
                         .pref(prefs.startupBehaviour)
                         .addComp(ChoiceComp.ofTranslatable(
@@ -45,6 +46,9 @@ public class SystemCategory extends AppPrefsCategory {
                                                 .toList(),
                                         true)
                                 .maxWidth(getCompWidth()))
+                )
+                        .title("shells")
+                .sub(new OptionsBuilder()
                         .pref(prefs.localShellDialect)
                         .addComp(
                                 new ShellDialectChoiceComp(
@@ -53,6 +57,15 @@ public class SystemCategory extends AppPrefsCategory {
                                                 ShellDialectChoiceComp.NullHandling.NULL_DISABLED)
                                         .maxWidth(getCompWidth()),
                                 prefs.localShellDialect)
+                        .pref(prefs.backgroundSessionInactivityTimeout)
+                        .addComp(
+                                new IntFieldComp(prefs.backgroundSessionInactivityTimeout).apply(struc -> {
+                                    struc.setPromptText("3600");
+                                }).maxWidth(100),
+                                prefs.backgroundSessionInactivityTimeout)
+                )
+                        .title("developer")
+                .sub(new OptionsBuilder()
                         .pref(prefs.developerMode)
                         .addToggle(prefs.developerMode));
         return builder.buildComp();

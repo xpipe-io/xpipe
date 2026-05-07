@@ -26,6 +26,8 @@ public interface CommandControl extends ProcessControl {
 
     CommandControl sensitive();
 
+    CommandControl noActivity();
+
     CommandControl withExceptionConverter(ProcessExceptionConverter converter);
 
     CommandControl start() throws Exception;

@@ -176,6 +176,13 @@ public final class AppPrefs {
             .valueClass(Boolean.class)
             .requiresRestart(false)
             .build());
+    final Property<Integer> backgroundSessionInactivityTimeout = map(Mapping.builder()
+            .property(new GlobalObjectProperty<>())
+            .key("backgroundSessionInactivityTimeout")
+            .valueClass(Integer.class)
+            .requiresRestart(false)
+            .vaultSpecific(true)
+            .build());
     final BooleanProperty preferTerminalTabs = map(Mapping.builder()
             .property(new GlobalBooleanProperty(true))
             .key("preferTerminalTabs")
@@ -473,6 +480,10 @@ public final class AppPrefs {
 
     public boolean canSaveLocal() {
         return globalStorageHandler.isInitialized();
+    }
+
+    public ObservableValue<Integer> backgroundSessionInactivityTimeout() {
+        return backgroundSessionInactivityTimeout;
     }
 
     public ObservableBooleanValue useExternalNetcatForProxies() {
