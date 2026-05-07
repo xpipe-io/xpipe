@@ -4,6 +4,7 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.ClipboardHelper;
@@ -139,6 +140,27 @@ public class KeyFileStrategy implements SshIdentityStrategy {
 
         var publicKeyBox = new InputGroupComp(List.of(publicKeyField, copyButton, generateButton));
         publicKeyBox.setMainReference(publicKeyField);
+
+        keyPath.addListener((observable, oldValue, newValue) -> {
+            if (newValue == null) {
+                return;
+            }
+
+            ThreadHelper.runFailableAsync(() -> {
+                var pubFile = SshIdentityStrategy.getPublicKeyPath(newValue);
+                var fs =
+                        config.getFileSystem() != null && config.getFileSystem().getValue() != null
+                                ? config.getFileSystem().getValue().getStore()
+                                : (ShellStore) DataStorage.get().local().getStore();
+                var ex = fs.getOrStartSession().view().fileExists(pubFile);
+                if (ex) {
+                    var contents = fs.getOrStartSession().view().readTextFile(pubFile).strip();
+                    Platform.runLater(() -> {
+                        publicKey.set(contents);
+                    });
+                }
+            });
+        });
 
         return new OptionsBuilder()
                 .name("location")

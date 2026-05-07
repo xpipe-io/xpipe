@@ -49,6 +49,22 @@ public class ChoicePaneComp extends RegionBuilder<VBox> {
         });
         cb.getSelectionModel().select(selected.getValue());
 
+        cb.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Entry object) {
+                if (object == null || object.name() == null) {
+                    return "";
+                }
+
+                return object.name().getValue();
+            }
+
+            @Override
+            public Entry fromString(String string) {
+                throw new UnsupportedOperationException();
+            }
+        });
+
         // Reset converter on language change to force an update
         // This does not work properly in older JFX versions, see JDK-8384006
         var ref = new WeakReference<>(cb);
