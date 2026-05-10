@@ -33,6 +33,15 @@ public class HttpProxy {
         return Optional.of(current);
     }
 
+    public static boolean disableTlsVerification() {
+        var a = getActiveProxy();
+        if (a.isPresent()) {
+            return a.get().isDisableTlsVerification();
+        } else {
+            return AppPrefs.get() != null && AppPrefs.get().disableHttpsTlsCheck().getValue();
+        }
+    }
+
     public static boolean canUseAsProxy(DataStoreEntryRef<DataStore> ref) {
         if (!ref.get().getValidity().isUsable()) {
             return false;
@@ -52,9 +61,14 @@ public class HttpProxy {
                 + port;
     }
 
+    public boolean hasAuth() {
+        return user != null && password != null;
+    }
+
     String host;
     int port;
     String user;
     InPlaceSecretValue password;
     boolean socks5;
+    boolean disableTlsVerification;
 }

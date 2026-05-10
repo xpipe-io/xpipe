@@ -6,9 +6,10 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 
+import io.xpipe.app.core.AppCertStore;
 import lombok.SneakyThrows;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.*;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
@@ -17,9 +18,7 @@ import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.util.List;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.*;
 
 public class HttpHelper {
 
@@ -28,7 +27,7 @@ public class HttpHelper {
         var proxy = HttpProxy.getActiveProxy();
         return client(
                 proxy.orElse(null),
-                AppPrefs.get() != null && AppPrefs.get().disableHttpsTlsCheck().getValue());
+                HttpProxy.disableTlsVerification());
     }
 
     @SneakyThrows
@@ -54,6 +53,13 @@ public class HttpHelper {
             };
             sslContext.init(null, new TrustManager[] {trustManager}, new SecureRandom());
             builder.sslContext(sslContext);
+        } else {
+            var certStore = AppCertStore.get();
+            if (certStore != null) {
+                SSLContext context = SSLContext.getInstance("TLS");
+                context.init(null, new TrustManager[]{certStore.getCustomTrustManager()}, null);
+                builder.sslContext(context);
+            }
         }
 
         if (proxy != null) {

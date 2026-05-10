@@ -15,6 +15,7 @@ import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.HttpProxy;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
@@ -181,7 +182,7 @@ public class PassboltPasswordManager implements PasswordManager {
                 return null;
             }
 
-            b.addIf(AppPrefs.get().disableHttpsTlsCheck().getValue(), "--tlsSkipVerify")
+            b.addIf(HttpProxy.disableTlsVerification(), "--tlsSkipVerify")
                     .add("--serverAddress")
                     .addLiteral(serverUrl)
                     .add("--userPassword")

@@ -20,7 +20,7 @@ public class GuiErrorHandler extends GuiErrorHandlerBase implements ErrorHandler
     public void handle(ErrorEvent event) {
         log.handle(event);
 
-        if (event.isOmitted() && PlatformState.getCurrent() == PlatformState.RUNNING) {
+        if (event.isOmitted() && PlatformState.getCurrent() != PlatformState.RUNNING) {
             return;
         }
 

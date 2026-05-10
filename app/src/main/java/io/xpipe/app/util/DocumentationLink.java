@@ -11,7 +11,6 @@ public enum DocumentationLink {
     MACOS_SETUP("guide/installation#macos"),
     DOUBLE_PROMPT("troubleshoot/two-step-connections"),
     LICENSE_ACTIVATION("troubleshoot/license-activation"),
-    TLS_DECRYPTION("troubleshoot/license-activation#tls-decryption"),
     UPDATE_FAIL("troubleshoot/update-fail"),
     PRIVACY("legal/privacy-policy"),
     EULA("legal/end-user-license-agreement"),

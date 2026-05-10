@@ -39,9 +39,7 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
 
     @Override
     default boolean isRecommended() {
-        // Right now, opening scripts is broken
-        // Maybe this will be fixed at some point by Warp
-        return false;
+        return true;
     }
 
     @Override

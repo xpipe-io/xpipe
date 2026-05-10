@@ -95,6 +95,10 @@ public class ShellSession extends Session {
             return false;
         }
 
+        if (secs < 30) {
+            secs = 30;
+        }
+
         return shellControl.isInactive(Duration.ofSeconds(secs));
     }
 

@@ -7,10 +7,7 @@ import io.xpipe.core.OsType;
 
 import java.nio.file.AccessDeniedException;
 import java.nio.file.NoSuchFileException;
-import java.util.Arrays;
-import java.util.IdentityHashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import javax.net.ssl.SSLHandshakeException;
 
 public class ErrorEventFactory {
@@ -53,6 +50,12 @@ public class ErrorEventFactory {
     }
 
     public static synchronized void preconfigure(ErrorEvent.ErrorEventBuilder event) {
+        var found = EVENT_BASES.get(event.getThrowable());
+        if (found != null) {
+            found.apply(event);
+            return;
+        }
+
         EVENT_BASES.put(event.getThrowable(), event);
     }
 
@@ -62,12 +65,17 @@ public class ErrorEventFactory {
             b = ErrorEvent.builder().throwable(t);
         }
 
-        if (t instanceof SSLHandshakeException
-                || (t.getClass().getName().equals("sun.security.provider.certpath.SunCertPathBuilderException"))) {
-            if (b.getLink() == null) {
-                b.documentationLink(DocumentationLink.TLS_DECRYPTION);
+        var chain = new ArrayList<Throwable>();
+        var current = t;
+        while (current != null) {
+            chain.addFirst(current);
+            current = current.getCause();
+        }
+        for (Throwable pre : chain) {
+            var found = EVENT_BASES.get(pre);
+            if (found != null) {
+                b.apply(found);
             }
-            b.expected();
         }
 
         // Indicates that the session is scheduled to end and new processes won't be started

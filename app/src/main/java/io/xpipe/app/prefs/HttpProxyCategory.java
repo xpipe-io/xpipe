@@ -15,6 +15,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.HttpProxy;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 
 public class HttpProxyCategory extends AppPrefsCategory {
@@ -32,10 +33,23 @@ public class HttpProxyCategory extends AppPrefsCategory {
     @Override
     protected BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
+        var disableTlsReadOnly = Bindings.createBooleanBinding(() -> {
+            return prefs.httpProxy.get() != null && prefs.httpProxy.get().isDisableTlsVerification();
+        }, prefs.httpProxy);
+        var disableTlsReadOnlyProp = new SimpleObjectProperty<Boolean>();
+        disableTlsReadOnlyProp.bind(disableTlsReadOnly);
         return new OptionsBuilder()
                 .title("httpProxyConfiguration")
                 .sub(proxy())
-                .sub(new OptionsBuilder().pref(prefs.disableHttpsTlsCheck).addToggle(prefs.disableHttpsTlsCheck))
+                .sub(new OptionsBuilder()
+                        .pref(prefs.disableHttpsTlsCheck)
+                        .addToggle(prefs.disableHttpsTlsCheck)
+                        .hide(prefs.httpProxy.isNotNull())
+                        .nameAndDescription("disableHttpsTlsCheck")
+                        .addToggle(disableTlsReadOnlyProp)
+                        .disable()
+                        .hide(prefs.httpProxy.isNull())
+                )
                 .buildComp();
     }
 

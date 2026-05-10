@@ -246,15 +246,15 @@ public class IdentityChoiceBuilder {
                                 : null;
                         if (u == null && p == null && i == null) {
                             return null;
-                        } else {
-                            return IdentityValue.InPlace.builder()
-                                    .identityStore(LocalIdentityStore.builder()
-                                            .username(u)
-                                            .password(p)
-                                            .sshIdentity(i)
-                                            .build())
-                                    .build();
                         }
+
+                        return IdentityValue.InPlace.builder()
+                                .identityStore(LocalIdentityStore.builder()
+                                        .username(u)
+                                        .password(p)
+                                        .sshIdentity(i)
+                                        .build())
+                                .build();
                     }
                 },
                 identity);

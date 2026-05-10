@@ -17,6 +17,10 @@
     -fx-font-weight: BOLD;
 }
 
+.bookmark-list .store-section-mini-comp .item:busy {
+    -fx-opacity: 0.5;
+}
+
 .bookmark-list .store-section-mini-comp:top {
     -fx-padding: 0 0 0 2px;
 }

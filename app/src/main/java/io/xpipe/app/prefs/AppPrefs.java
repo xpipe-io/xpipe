@@ -283,7 +283,7 @@ public final class AppPrefs {
             .valueClass(ShellScript.class)
             .log(false)
             .build());
-    final Property<HttpProxy> httpProxy = map(Mapping.builder()
+    final ObjectProperty<HttpProxy> httpProxy = map(Mapping.builder()
             .property(new GlobalObjectProperty<>())
             .key("httpProxy")
             .valueClass(HttpProxy.class)
@@ -377,7 +377,7 @@ public final class AppPrefs {
     final BooleanProperty checkForSecurityUpdates =
             mapLocal(new GlobalBooleanProperty(true), "checkForSecurityUpdates", Boolean.class, false);
     final BooleanProperty disableHttpsTlsCheck =
-            mapLocal(new GlobalBooleanProperty(false), "disableHttpsTlsCheck", Boolean.class, true);
+            mapLocal(new GlobalBooleanProperty(false), "disableHttpsTlsCheck", Boolean.class, false);
     final BooleanProperty condenseConnectionDisplay =
             mapLocal(new GlobalBooleanProperty(false), "condenseConnectionDisplay", Boolean.class, false);
     final BooleanProperty showChildCategoriesInParentCategory =

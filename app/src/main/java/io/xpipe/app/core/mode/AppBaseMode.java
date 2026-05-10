@@ -28,6 +28,7 @@ import io.xpipe.app.prefs.WorkspaceManager;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.pwman.KeePassXcPasswordManager;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.core.AppCertStore;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.terminal.TerminalDockHubManager;
 import io.xpipe.app.terminal.TerminalLauncherManager;
@@ -64,6 +65,7 @@ public class AppBaseMode extends AppOperationMode {
         // if (true) throw new IllegalStateException();
 
         TrackEvent.info("Initializing base mode components ...");
+        AppCertStore.init();
         AppMainWindow.loadingText("checkingLicense");
         LicenseProvider.get().init();
         AppMainWindow.loadingText("initializingApp");
@@ -229,6 +231,7 @@ public class AppBaseMode extends AppOperationMode {
         AppDataLock.unlock();
         BlobManager.reset();
         FileBridge.reset();
+        AppCertStore.reset();
         AppFileWatcher.reset();
         GlobalTimer.reset();
         LocalFileTracker.reset();
