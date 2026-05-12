@@ -2,6 +2,8 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.FailableSupplier;
 
@@ -28,10 +30,22 @@ public class TestButtonComp extends RegionBuilder<Button> {
         AtomicReference<Region> button = new AtomicReference<>();
         var testButton = new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
             ThreadHelper.runAsync(() -> {
+                Platform.runLater(() -> {
+                    button.get().getStyleClass().removeAll(Styles.SUCCESS, Styles.DANGER, Styles.ACCENT);
+                    button.get().getStyleClass().add(Styles.ACCENT);
+                    button.get().setDisable(true);
+                });
                 try {
-                    var r = run.get();
+                    boolean r;
+                    try {
+                        r = run.get();
+                    } finally {
+                        Platform.runLater(() -> {
+                            button.get().setDisable(false);
+                            button.get().getStyleClass().removeAll(Styles.SUCCESS, Styles.DANGER, Styles.ACCENT);
+                        });
+                    }
                     Platform.runLater(() -> {
-                        button.get().getStyleClass().removeAll(Styles.SUCCESS, Styles.DANGER);
                         if (r) {
                             button.get().getStyleClass().add(Styles.SUCCESS);
                         } else {
@@ -42,6 +56,7 @@ public class TestButtonComp extends RegionBuilder<Button> {
                     Platform.runLater(() -> {
                         button.get().getStyleClass().add(Styles.DANGER);
                     });
+                    ErrorEventFactory.fromThrowable(e).expected().handle();
                 }
             });
         });

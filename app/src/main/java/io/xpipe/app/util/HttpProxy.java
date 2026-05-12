@@ -12,6 +12,8 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Value
@@ -19,6 +21,23 @@ import java.util.Optional;
 @Jacksonized
 @AllArgsConstructor
 public class HttpProxy {
+
+    public static Map<String, String> getEnvironmentVariables() {
+        var proxy = getActiveProxy();
+        if (proxy.isEmpty()) {
+            return Map.of();
+        }
+
+        var map = new LinkedHashMap<String, String>();
+        var http = proxy.get().toUrl();
+        map.put("http_proxy", http);
+        map.put("HTTP_PROXY", http);
+
+        // Use HTTP protocol as well here as most proxies still require
+        map.put("https_proxy", http);
+        map.put("HTTPS_PROXY", http);
+        return map;
+    }
 
     public static Optional<HttpProxy> getActiveProxy() {
         if (AppPrefs.get() == null) {
@@ -34,12 +53,7 @@ public class HttpProxy {
     }
 
     public static boolean disableTlsVerification() {
-        var a = getActiveProxy();
-        if (a.isPresent()) {
-            return a.get().isDisableTlsVerification();
-        } else {
-            return AppPrefs.get() != null && AppPrefs.get().disableHttpsTlsCheck().getValue();
-        }
+        return AppPrefs.get() != null && AppPrefs.get().disableHttpsTlsCheck().getValue();
     }
 
     public static boolean canUseAsProxy(DataStoreEntryRef<DataStore> ref) {
@@ -56,7 +70,7 @@ public class HttpProxy {
     }
 
     public String toUrl() {
-        return (socks5 ? "socks5" : "https") + "://"
+        return (socks5 ? "socks5" : "http") + "://"
                 + (user != null && password != null ? user + ":" + password.getSecretValue() + "@" : "") + host + ":"
                 + port;
     }
@@ -70,5 +84,4 @@ public class HttpProxy {
     String user;
     InPlaceSecretValue password;
     boolean socks5;
-    boolean disableTlsVerification;
 }

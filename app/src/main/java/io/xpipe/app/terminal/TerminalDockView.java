@@ -293,7 +293,20 @@ public class TerminalDockView implements WindowDockListener {
                 return;
             }
 
-            controllable.updatePosition(windowBoundsFunction.apply(viewBounds));
+            Rect lastViewBounds = viewBounds;
+            controllable.updatePosition(windowBoundsFunction.apply(lastViewBounds));
+
+            // Ugly fix for Windows Terminal instances using size constraints on first resize
+            // This will cause the dock to interpret is as detached if we don't fix it again
+            if (AppPrefs.get().terminalType().getValue() instanceof WindowsTerminalType) {
+                GlobalTimer.delay(
+                        () -> {
+                            if (lastViewBounds.equals(viewBounds)) {
+                                controllable.updatePosition(windowBoundsFunction.apply(viewBounds));
+                            }
+                        },
+                        Duration.ofMillis(100));
+            }
         });
     }
 

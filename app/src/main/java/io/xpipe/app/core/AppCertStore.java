@@ -11,7 +11,9 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.TlsCertificateFormat;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.Value;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -19,6 +21,7 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,6 +33,14 @@ import java.util.Enumeration;
 import java.util.List;
 
 public class AppCertStore {
+
+    @Value
+    static class Entry {
+
+        String name;
+        Path file;
+        X509Certificate certificate;
+    }
 
     private class SavingTrustManager implements X509TrustManager {
 
@@ -63,24 +74,76 @@ public class AppCertStore {
         }
     }
 
-    private final List<X509Certificate> certificates;
+    @Getter
+    private final List<Entry> certificates;
     private X509TrustManager trustManager;
     private final SavingTrustManager savingTrustManager = new SavingTrustManager();
 
-    private AppCertStore(List<X509Certificate> certificates) {this.certificates = certificates;}
+    private AppCertStore(List<Entry> certificates) {this.certificates = certificates;}
 
-    public void addCertificate(String name, X509Certificate certificate) {
+    public static Path getDir() {
+        return AppProperties.get().getDataDir().resolve("cacerts");
+    }
+
+    public static Path getMergedFile() {
+        return getDir().resolve("merged.pem");
+    }
+
+    public synchronized void addCertificate(String name, X509Certificate certificate) {
+        if (certificates.stream().anyMatch(entry -> entry.certificate.equals(certificate))) {
+            return;
+        }
+
         try {
-            var dir = AppProperties.get().getDataDir().resolve("cacerts");
+            var dir = getDir();
             Files.createDirectories(dir);
-            var file = dir.resolve(OsFileSystem.ofLocal().makeFileSystemCompatible(name) + ".pem");
+            var compatName = OsFileSystem.ofLocal().makeFileSystemCompatible(name);
+            var file = dir.resolve(name + ".pem");
             var s = convertToPem(certificate);
             Files.writeString(file, s);
-            certificates.add(certificate);
+            var entry = new Entry(compatName, file, certificate);
+            certificates.add(entry);
+            refreshMergedCerts(true);
             updateTrustManager();
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
         }
+    }
+
+    private void refreshMergedCerts(boolean force) throws Exception {
+        var file = getMergedFile();
+        if (certificates.isEmpty()) {
+            Files.deleteIfExists(file);
+            return;
+        }
+
+        if (!force && Files.exists(file)) {
+            return;
+        }
+
+        var s = new StringBuilder();
+
+        var ks = KeyStore.getInstance("JKS");
+        var caCertsFile = Path.of(System.getProperty("java.home") + "/lib/security/cacerts");
+        try (FileInputStream fis = new FileInputStream(caCertsFile.toFile())) {
+            ks.load(fis, null);
+        }
+
+        Enumeration<String> list = ks.aliases();
+        while (list.hasMoreElements()) {
+            String alias = list.nextElement();
+            // Check if this cert is labeled a trust anchor.
+            if (alias.contains(" [jdk")) {
+                X509Certificate cert = (X509Certificate) ks
+                        .getCertificate(alias);
+                s.append(convertToPem(cert));
+            }
+        }
+
+        for (Entry e : certificates) {
+            s.append(convertToPem(e.certificate));
+        }
+        Files.writeString(file, s);
     }
 
     public X509TrustManager getCustomTrustManager() {
@@ -96,8 +159,8 @@ public class AppCertStore {
             ks.load(fis, null);
         }
 
-        for (int i = 0; i < certificates.size(); i++) {
-            ks.setCertificateEntry(i + "", certificates.get(i));
+        for (Entry certificate : certificates) {
+            ks.setCertificateEntry(certificate.getName(), certificate.getCertificate());
         }
 
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
@@ -140,25 +203,35 @@ public class AppCertStore {
     }
 
     public static void init() {
-        var dir = AppProperties.get().getDataDir().resolve("cacerts");
+        var dir = getDir();
         if (!Files.exists(dir)) {
             INSTANCE = new AppCertStore(new ArrayList<>());
             INSTANCE.updateTrustManager();
             return;
         }
 
-        var list = new ArrayList<X509Certificate>();
+        var list = new ArrayList<Entry>();
         try (var stream = Files.list(dir)) {
             var files = stream.toList();
             for (Path f : files) {
+                if (f.equals(getMergedFile())) {
+                    continue;
+                }
+
                 var cert = parseCertificate(f);
-                list.add(cert);
+                var name = FilenameUtils.getBaseName(f.getFileName().toString());
+                list.add(new Entry(name, f, cert));
             }
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).expected().handle();
         }
 
         INSTANCE = new AppCertStore(list);
+        try {
+            INSTANCE.refreshMergedCerts(!AppProperties.get().isDevelopmentEnvironment() && AppProperties.get().isNewBuildSession());
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable(e).expected().handle();
+        }
         INSTANCE.updateTrustManager();
     }
 
