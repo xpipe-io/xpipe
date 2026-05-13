@@ -287,7 +287,7 @@ public final class AppPrefs {
             .property(new GlobalObjectProperty<>())
             .key("httpProxy")
             .valueClass(HttpProxy.class)
-            .requiresRestart(false)
+            .requiresRestart(true)
             .build());
     final Property<UUID> terminalProxy = map(Mapping.builder()
             .property(new GlobalObjectProperty<>())

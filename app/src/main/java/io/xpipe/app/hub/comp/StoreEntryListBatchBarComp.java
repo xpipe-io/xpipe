@@ -186,6 +186,7 @@ public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
 
             runActions(s);
         });
+        button.describe(d -> d.name(s.getName()));
 
         button.disable(Bindings.createBooleanBinding(
                 () -> {
@@ -213,6 +214,7 @@ public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
             return expanded.get() ? i18n.getValue() : null;
         }, expanded, i18n);
         var button = new ButtonComp(name, new SimpleObjectProperty<>(new LabelGraphic.IconGraphic("mdi2f-folder-move-outline")), null);
+        button.describe(d -> d.name(i18n));
         button.apply(new ContextMenuAugment<>(
                 mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, keyEvent -> false, () -> {
             var selection = StoreViewState.get().getBatchModeSelection().getList();
@@ -302,6 +304,7 @@ public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
                 w.delete();
             }
         });
+        button.describe(d -> d.name(i18n));
         return button;
     }
 

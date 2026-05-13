@@ -13,11 +13,14 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.Region;
+import lombok.Getter;
 
 class ScanSingleDialogComp extends ModalOverlayContentComp {
 
     private final DataStoreEntryRef<ShellStore> initialStore;
     private final ObjectProperty<DataStoreEntryRef<ShellStore>> entry;
+
+    @Getter
     private final ScanDialogBase base;
 
     @SuppressWarnings("unchecked")

@@ -88,6 +88,8 @@ public class MarkdownComp extends RegionBuilder<StackPane> {
     @SneakyThrows
     private WebView createWebView() {
         var wv = new WebView();
+        wv.setMinWidth(100);
+        wv.setMinHeight(100);
         wv.getEngine().setJavaScriptEnabled(false);
         wv.setContextMenuEnabled(false);
         wv.setPageFill(Color.TRANSPARENT);

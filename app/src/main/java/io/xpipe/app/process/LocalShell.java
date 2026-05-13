@@ -76,7 +76,7 @@ public class LocalShell {
 
         try {
             if (powershellInitialized) {
-                return Optional.ofNullable(localPowershell.start());
+                return Optional.ofNullable(localPowershell != null ? localPowershell.start() : null);
             }
 
             powershellInitialized = true;

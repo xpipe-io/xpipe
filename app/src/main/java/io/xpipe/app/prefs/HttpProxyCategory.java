@@ -3,6 +3,7 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppCertStore;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.*;
@@ -14,6 +15,7 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.HttpHelper;
 import io.xpipe.app.util.HttpProxy;
@@ -44,7 +46,7 @@ public class HttpProxyCategory extends AppPrefsCategory {
     protected BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
         var testComp = new TestButtonComp(() -> {
-           var addr = new SimpleStringProperty();
+           var addr = new SimpleStringProperty(AppCache.getNonNull("httpProxyTest", String.class, () -> null));
            var addrField = new TextFieldComp(addr).apply(textField -> textField.setPromptText("https://example.com"));
            var modal = ModalOverlay.of("proxyTestAddressDialogTitle", new OptionsBuilder()
                    .nameAndDescription("proxyTestAddress").addComp(addrField, addr).buildComp().prefWidth(450));
@@ -55,6 +57,7 @@ public class HttpProxyCategory extends AppPrefsCategory {
                return false;
            }
 
+            AppCache.update("httpProxyTest", addr.get());
             var effectiveAddr = addr.get();
            if (!effectiveAddr.startsWith("http")) {
                effectiveAddr = "https://" + effectiveAddr;
@@ -69,8 +72,6 @@ public class HttpProxyCategory extends AppPrefsCategory {
                 .sub(proxy())
                 .sub(new OptionsBuilder()
                         .addComp(testComp)
-                        .pref(prefs.disableHttpsTlsCheck)
-                        .addToggle(prefs.disableHttpsTlsCheck)
                         .nameAndDescription("browseCertificateStore")
                         .addComp(new ButtonComp(AppI18n.observable("browseCertificateStoreButton"), () -> {
                             ThreadHelper.runFailableAsync(() -> {
@@ -78,6 +79,8 @@ public class HttpProxyCategory extends AppPrefsCategory {
                                 DesktopHelper.browseFile(AppCertStore.getDir());
                             });
                         }))
+                        .pref(prefs.disableHttpsTlsCheck)
+                        .addToggle(prefs.disableHttpsTlsCheck)
                 )
                 .buildComp();
     }
@@ -139,6 +142,18 @@ public class HttpProxyCategory extends AppPrefsCategory {
                 }),
                 () -> StoreViewState.get() != null && StoreViewState.get().isInitialized());
         proxyChoice.maxWidth(getCompWidth());
+
+        prefs.httpProxy.addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                var updates = prefs.automaticallyCheckForUpdates.get();
+                var secOnly = prefs.checkForSecurityUpdates.get();
+                if (updates || secOnly) {
+                    ThreadHelper.runFailableAsync(() -> {
+                        AppDistributionType.get().getUpdateHandler().refreshUpdateCheck(false, !updates);
+                    });
+                }
+            }
+        });
 
         var addButton = new ButtonComp(AppI18n.observable("addProxy"), () -> {
             var selected = DataStoreProviders.byId("networkProxy").orElseThrow();

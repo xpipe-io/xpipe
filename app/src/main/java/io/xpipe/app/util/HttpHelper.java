@@ -27,7 +27,7 @@ public class HttpHelper {
         var proxy = HttpProxy.getActiveProxy();
         return client(
                 proxy.orElse(null),
-                HttpProxy.disableTlsVerification());
+                !HttpProxy.disableTlsVerification());
     }
 
     @SneakyThrows

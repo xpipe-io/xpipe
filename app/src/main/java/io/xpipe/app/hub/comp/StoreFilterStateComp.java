@@ -43,10 +43,10 @@ public class StoreFilterStateComp extends SimpleRegionBuilder {
         var searchesList = new ListBoxViewComp<>(searches, searches, s -> createButton(s, s), false);
 
         var searchesPlaceholders = FXCollections.observableList(List.of(
-                AppI18n.get("recentSearchesDescriptionNames"),
-                AppI18n.get("recentSearchesDescriptionTags"),
-                AppI18n.get("recentSearchesDescriptionTypes"),
-                AppI18n.get("recentSearchesDescriptionState"),
+                AppI18n.get("recentSearchesDescriptionNames", "Local machine"),
+                AppI18n.get("recentSearchesDescriptionTags", "my-custom-tag"),
+                AppI18n.get("recentSearchesDescriptionTypes", "Docker container"),
+                AppI18n.get("recentSearchesDescriptionState", "Running"),
                 AppI18n.get("recentSearchesDescriptionJoin")));
         var searchesEmptyList =
                 new ListBoxViewComp<>(searchesPlaceholders, searchesPlaceholders, s -> createButton(s, null), false);

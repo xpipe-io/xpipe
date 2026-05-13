@@ -6,31 +6,24 @@ import io.xpipe.app.comp.base.TextAreaComp;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.OsFileSystem;
-import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.TlsCertificateFormat;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.Value;
 import org.apache.commons.io.FilenameUtils;
 
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.KeyStore;
 import java.security.cert.*;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 public class AppCertStore {
 
@@ -85,8 +78,13 @@ public class AppCertStore {
         return AppProperties.get().getDataDir().resolve("cacerts");
     }
 
-    public static Path getMergedFile() {
-        return getDir().resolve("merged.pem");
+    public static Path getBundleFileFilePath() {
+        return getDir().resolve("bundle.pem");
+    }
+
+    public static Optional<Path> getBundleFile() {
+        var file = getBundleFileFilePath();
+        return Files.exists(file) ? Optional.of(file) : Optional.empty();
     }
 
     public synchronized void addCertificate(String name, X509Certificate certificate) {
@@ -98,20 +96,25 @@ public class AppCertStore {
             var dir = getDir();
             Files.createDirectories(dir);
             var compatName = OsFileSystem.ofLocal().makeFileSystemCompatible(name);
-            var file = dir.resolve(name + ".pem");
-            var s = convertToPem(certificate);
-            Files.writeString(file, s);
-            var entry = new Entry(compatName, file, certificate);
+            var pemFile = dir.resolve(name + ".pem");
+            var pem = convertToPem(certificate);
+            Files.writeString(pemFile, pem);
+
+            var cerFile = dir.resolve(name + ".cer");
+            var cer = certificate.getEncoded();
+            Files.write(cerFile, cer);
+
+            var entry = new Entry(compatName, pemFile, certificate);
             certificates.add(entry);
-            refreshMergedCerts(true);
+            refreshCertBundle(true);
             updateTrustManager();
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
         }
     }
 
-    private void refreshMergedCerts(boolean force) throws Exception {
-        var file = getMergedFile();
+    private void refreshCertBundle(boolean force) throws Exception {
+        var file = getBundleFileFilePath();
         if (certificates.isEmpty()) {
             Files.deleteIfExists(file);
             return;
@@ -214,7 +217,11 @@ public class AppCertStore {
         try (var stream = Files.list(dir)) {
             var files = stream.toList();
             for (Path f : files) {
-                if (f.equals(getMergedFile())) {
+                if (f.equals(getBundleFileFilePath())) {
+                    continue;
+                }
+
+                if (!f.getFileName().toString().endsWith(".pem")) {
                     continue;
                 }
 
@@ -228,7 +235,7 @@ public class AppCertStore {
 
         INSTANCE = new AppCertStore(list);
         try {
-            INSTANCE.refreshMergedCerts(!AppProperties.get().isDevelopmentEnvironment() && AppProperties.get().isNewBuildSession());
+            INSTANCE.refreshCertBundle(!AppProperties.get().isDevelopmentEnvironment() && AppProperties.get().isNewBuildSession());
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).expected().handle();
         }
