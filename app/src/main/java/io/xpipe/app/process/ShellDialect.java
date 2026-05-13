@@ -70,7 +70,7 @@ public interface ShellDialect {
 
     String quoteArgument(String s);
 
-    String prepareTerminalEnvironmentCommands();
+    String prepareTerminalEnvironmentCommands(boolean local);
 
     String addToPathVariableCommand(List<String> entries, boolean append);
 
