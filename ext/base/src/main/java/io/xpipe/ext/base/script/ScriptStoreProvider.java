@@ -60,11 +60,6 @@ public class ScriptStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public boolean showProviderChoice() {
-        return false;
-    }
-
-    @Override
     public boolean shouldShowScan() {
         return false;
     }

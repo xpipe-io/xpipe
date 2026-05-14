@@ -82,7 +82,7 @@ public class StoreCreationMenu {
 
         menu.getItems()
                 .add(categoryMenu(
-                        "addScript", "mdi2s-script-text-outline", DataStoreCreationCategory.SCRIPT));
+                        "addScript", "mdi2s-script-text-outline", DataStoreCreationCategory.SCRIPT, DataStoreCreationCategory.SCRIPT_SOURCE));
 
         menu.getItems().add(new SeparatorMenuItem());
 

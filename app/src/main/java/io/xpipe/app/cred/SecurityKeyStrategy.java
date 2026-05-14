@@ -91,7 +91,7 @@ public class SecurityKeyStrategy implements SshIdentityKeyListStrategy {
                 .hide(filePath.isNull())
                 .nameAndDescription("publicKey")
                 .documentationLink(DocumentationLink.SSH_AGENT_PUBLIC_KEYS)
-                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false), publicKey)
+                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false, true), publicKey)
                 .bind(
                         () -> {
                             return SecurityKeyStrategy.builder()

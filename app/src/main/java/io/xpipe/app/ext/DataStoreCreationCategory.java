@@ -16,6 +16,7 @@ public enum DataStoreCreationCategory {
     TUNNEL(DataStorage.ALL_CONNECTIONS_CATEGORY_UUID, "sshLocalTunnel"),
     SERVICE(DataStorage.ALL_CONNECTIONS_CATEGORY_UUID, "customService"),
     SCRIPT(DataStorage.ALL_SCRIPTS_CATEGORY_UUID, "script"),
+    SCRIPT_SOURCE(DataStorage.ALL_SCRIPTS_CATEGORY_UUID, "scriptCollectionSource"),
     CLUSTER(DataStorage.ALL_CONNECTIONS_CATEGORY_UUID, null),
     DESKTOP(DataStorage.ALL_CONNECTIONS_CATEGORY_UUID, null),
     SERIAL(DataStorage.ALL_CONNECTIONS_CATEGORY_UUID, null),

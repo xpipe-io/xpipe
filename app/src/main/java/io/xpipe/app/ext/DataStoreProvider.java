@@ -138,7 +138,7 @@ public interface DataStoreProvider {
             return DataStoreUsageCategory.COMMAND;
         }
 
-        if (cc == DataStoreCreationCategory.SCRIPT) {
+        if (cc == DataStoreCreationCategory.SCRIPT || cc == DataStoreCreationCategory.SCRIPT_SOURCE) {
             return DataStoreUsageCategory.SCRIPT;
         }
 

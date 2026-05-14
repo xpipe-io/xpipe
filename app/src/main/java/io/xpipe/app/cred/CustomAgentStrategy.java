@@ -87,7 +87,7 @@ public class CustomAgentStrategy implements SshIdentityAgentStrategy {
                         }))
                 .nameAndDescription("publicKey")
                 .documentationLink(DocumentationLink.SSH_AGENT_PUBLIC_KEYS)
-                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false), publicKey)
+                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false, false), publicKey)
                 .bind(
                         () -> {
                             return new CustomAgentStrategy(publicKey.get());

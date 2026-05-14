@@ -670,6 +670,28 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                                                     h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
                                 }
 
+                                var isLocalIdentity = DataStorage.get()
+                                        .getCategoryParentHierarchy(DataStorage.get()
+                                                .getStoreCategory(getWrapper().getEntry()))
+                                        .stream()
+                                        .anyMatch(h -> h.getUuid().equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID));
+                                if (isLocalIdentity) {
+                                    return DataStorage.get().getCategoryParentHierarchy(w.getCategory()).stream()
+                                            .noneMatch(
+                                                    h -> h.getUuid().equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID));
+                                }
+
+                                var isSyncedIdentity = DataStorage.get()
+                                        .getCategoryParentHierarchy(DataStorage.get()
+                                                .getStoreCategory(getWrapper().getEntry()))
+                                        .stream()
+                                        .anyMatch(h -> h.getUuid().equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID));
+                                if (isSyncedIdentity) {
+                                    return DataStorage.get().getCategoryParentHierarchy(w.getCategory()).stream()
+                                            .noneMatch(
+                                                    h -> h.getUuid().equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID));
+                                }
+
                                 return true;
                             })
                             .forEach(storeCategoryWrapper -> {

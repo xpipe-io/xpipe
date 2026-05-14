@@ -37,7 +37,7 @@ public class PageantStrategy implements SshIdentityAgentStrategy {
                 new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
         return new OptionsBuilder()
                 .nameAndDescription("publicKey")
-                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false), publicKey)
+                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false, false), publicKey)
                 .bind(
                         () -> {
                             return new PageantStrategy(publicKey.get());

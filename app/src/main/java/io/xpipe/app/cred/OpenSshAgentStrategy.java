@@ -39,7 +39,7 @@ public class OpenSshAgentStrategy implements SshIdentityAgentStrategy {
                 .hide(OsType.ofLocal() == OsType.WINDOWS)
                 .nameAndDescription("publicKey")
                 .documentationLink(DocumentationLink.SSH_AGENT_PUBLIC_KEYS)
-                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false), publicKey)
+                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false, false), publicKey)
                 .bind(
                         () -> {
                             return new OpenSshAgentStrategy(publicKey.get());

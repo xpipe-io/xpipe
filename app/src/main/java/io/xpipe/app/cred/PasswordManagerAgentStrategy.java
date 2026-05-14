@@ -80,7 +80,7 @@ public class PasswordManagerAgentStrategy implements SshIdentityAgentStrategy {
                 .hide(pwmanErrorProp.isNull())
                 .nameAndDescription(useKeyName() ? "agentKeyName" : "publicKeyRequired")
                 .documentationLink(DocumentationLink.SSH_AGENT_PUBLIC_KEYS)
-                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, identifier, useKeyName()), identifier)
+                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, identifier, useKeyName(), false), identifier)
                 .disable(pwmanErrorProp.isNotNull())
                 .nonNull()
                 .bind(

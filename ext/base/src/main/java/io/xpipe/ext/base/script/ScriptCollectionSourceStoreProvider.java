@@ -50,7 +50,7 @@ public class ScriptCollectionSourceStoreProvider implements DataStoreProvider {
 
     @Override
     public DataStoreCreationCategory getCreationCategory() {
-        return DataStoreCreationCategory.SCRIPT;
+        return DataStoreCreationCategory.SCRIPT_SOURCE;
     }
 
     @SneakyThrows

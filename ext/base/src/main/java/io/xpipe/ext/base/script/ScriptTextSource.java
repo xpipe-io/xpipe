@@ -3,6 +3,7 @@ package io.xpipe.ext.base.script;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
+import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
@@ -49,8 +50,8 @@ import java.util.List;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = ScriptTextSource.InPlace.class),
-    @JsonSubTypes.Type(value = ScriptTextSource.SourceReference.class),
-    @JsonSubTypes.Type(value = ScriptTextSource.Url.class)
+    @JsonSubTypes.Type(value = ScriptTextSource.Url.class),
+    @JsonSubTypes.Type(value = ScriptTextSource.SourceReference.class)
 })
 public interface ScriptTextSource {
 
@@ -161,7 +162,7 @@ public interface ScriptTextSource {
                     .documentationLink(DocumentationLink.SCRIPTING_COMPATIBILITY)
                     .addComp(choice, dialect)
                     .nameAndDescription("scriptTextSourceUrl")
-                    .addString(url)
+                    .addComp(new TextFieldComp(url).apply(textField -> textField.setPromptText("https://example.com/my-script.sh")), url)
                     .nonNull()
                     .bind(
                             () -> Url.builder()
@@ -280,7 +281,7 @@ public interface ScriptTextSource {
                     StoreViewState.get().getAllScriptsCategory(),
                     StoreViewState.get().getScriptSourcesCategory(),
                     true,
-                    null);
+                    DataStoreCreationCategory.SCRIPT_SOURCE);
 
             var importButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2i-import"), () -> {
                 var current = AppDialog.getCurrentModalOverlay();
