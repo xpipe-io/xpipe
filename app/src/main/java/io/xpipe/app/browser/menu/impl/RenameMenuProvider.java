@@ -8,6 +8,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.platform.LabelGraphic;
 
+import io.xpipe.core.OsType;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -44,7 +45,11 @@ public class RenameMenuProvider implements BrowserMenuLeafProvider {
 
     @Override
     public KeyCombination getShortcut() {
-        return new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN);
+        return switch (OsType.ofLocal()) {
+            case OsType.Linux linux -> new KeyCodeCombination(KeyCode.F2);
+            case OsType.MacOs macOs -> new KeyCodeCombination(KeyCode.ENTER);
+            case OsType.Windows windows -> new KeyCodeCombination(KeyCode.F2);
+        };
     }
 
     @Override

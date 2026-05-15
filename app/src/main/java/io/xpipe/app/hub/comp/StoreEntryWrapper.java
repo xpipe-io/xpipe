@@ -97,6 +97,7 @@ public class StoreEntryWrapper {
                     var n = summary.getValue();
                     return n != null && AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
                 },
+                AppI18n.activeLanguage(),
                 AppPrefs.get().censorMode(),
                 summary);
         this.shownDescription = Bindings.createStringBinding(
@@ -276,6 +277,7 @@ public class StoreEntryWrapper {
                                             ? "*".repeat(n.length())
                                             : n;
                                 },
+                                AppI18n.activeLanguage(),
                                 AppPrefs.get().censorMode(),
                                 information));
                     } catch (Exception e) {

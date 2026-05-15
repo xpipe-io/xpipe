@@ -23,7 +23,7 @@ public enum DocumentationLink {
     DESKTOP_APPLICATIONS("guide/desktop-applications"),
     SERVICES("guide/services"),
     SCRIPTING("guide/scripting"),
-    SCRIPTING_COMPATIBILITY("guide/scripting#shell-compatibility"),
+    SCRIPTING_COMPATIBILITY("guide/scripting#shell-types"),
     SCRIPTING_EDITING("guide/scripting#editing"),
     SCRIPTING_TYPES("guide/scripting#init-scripts"),
     SCRIPTING_DEPENDENCIES("guide/scripting#dependencies"),

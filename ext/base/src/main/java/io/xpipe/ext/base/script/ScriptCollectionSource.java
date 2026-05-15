@@ -7,6 +7,7 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.FilePath;
@@ -43,13 +44,13 @@ public interface ScriptCollectionSource {
     @Builder
     class Directory implements ScriptCollectionSource {
 
-        Path path;
+        ContextualFileReference path;
 
         @SuppressWarnings("unused")
         static OptionsBuilder createOptions(Property<Directory> property) {
             var path = new SimpleObjectProperty<>(
                     property.getValue().getPath() != null
-                            ? FilePath.of(property.getValue().getPath())
+                            ? property.getValue().getPath().toLocalAbsoluteFilePath()
                             : null);
             return new OptionsBuilder()
                     .nameAndDescription("scriptDirectory")
@@ -66,7 +67,7 @@ public interface ScriptCollectionSource {
                     .nonNull()
                     .bind(
                             () -> Directory.builder()
-                                    .path(path.get() != null ? path.get().asLocalPath() : null)
+                                    .path(path.get() != null ? ContextualFileReference.of(path.get()) : null)
                                     .build(),
                             property);
         }
@@ -74,11 +75,13 @@ public interface ScriptCollectionSource {
         @Override
         public void checkComplete() throws ValidationException {
             Validators.nonNull(path);
+            // Check if path is invalid
+            path.toLocalAbsoluteFilePath().asLocalPath();
         }
 
         @Override
         public void prepare() {
-            if (!Files.isDirectory(path)) {
+            if (!Files.isDirectory(getLocalPath())) {
                 throw ErrorEventFactory.expected(
                         new IllegalStateException("Source directory " + path + " does not exist"));
             }
@@ -86,12 +89,12 @@ public interface ScriptCollectionSource {
 
         @Override
         public Path getLocalPath() {
-            return path;
+            return path.toLocalAbsoluteFilePath().asLocalPath();
         }
 
         @Override
         public String toSummary() {
-            return path.toString();
+            return path.toLocalAbsoluteFilePath().toString();
         }
 
         @Override

@@ -283,18 +283,9 @@ public interface ScriptTextSource {
                     true,
                     DataStoreCreationCategory.SCRIPT_SOURCE);
 
-            var importButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2i-import"), () -> {
-                var current = AppDialog.getCurrentModalOverlay();
-                current.ifPresent(modalOverlay -> modalOverlay.close());
-
-                var dialog = new ScriptCollectionSourceImportDialog(ref.get());
-                dialog.show();
-            });
-            importButton.disable(ref.isNull());
-
             return new OptionsBuilder()
                     .nameAndDescription("scriptCollectionSourceEntry")
-                    .addComp(new InputGroupComp(List.of(sourceChoice, importButton)).setMainReference(0), ref)
+                    .addComp(sourceChoice, ref)
                     .nonNull()
                     .nameAndDescription("scriptSourceName")
                     .addString(name)

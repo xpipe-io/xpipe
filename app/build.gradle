@@ -68,7 +68,7 @@ dependencies {
     api 'org.bouncycastle:bcprov-jdk18on:1.83'
     api 'info.picocli:picocli:4.7.7'
     api 'org.apache.commons:commons-lang3:3.20.0'
-    api 'io.sentry:sentry:8.20.0'
+    api 'io.sentry:sentry:8.41.0'
     api 'commons-io:commons-io:2.21.0'
     api "com.fasterxml.jackson.core:jackson-databind:2.21.1"
     api "com.fasterxml.jackson.core:jackson-annotations:2.21"

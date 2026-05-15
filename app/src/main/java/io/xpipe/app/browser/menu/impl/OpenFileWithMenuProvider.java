@@ -43,11 +43,6 @@ public class OpenFileWithMenuProvider implements BrowserMenuLeafProvider {
     }
 
     @Override
-    public KeyCombination getShortcut() {
-        return new KeyCodeCombination(KeyCode.ENTER, KeyCombination.SHIFT_DOWN);
-    }
-
-    @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return AppI18n.observable("openFileWith");
     }

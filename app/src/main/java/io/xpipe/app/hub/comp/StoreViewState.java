@@ -404,6 +404,10 @@ public class StoreViewState {
             });
         }
 
+        AppI18n.activeLanguage().addListener((observable, oldValue, newValue) -> {
+            updateWrappers();
+        });
+
         getActiveCategory().addListener((observable, oldValue, newValue) -> {
             refreshActiveCategory();
         });

@@ -9,6 +9,7 @@ import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.LabelGraphic;
 
+import io.xpipe.core.OsType;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -30,7 +31,11 @@ public class OpenNativeFileDetailsMenuProvider implements BrowserMenuLeafProvide
 
     @Override
     public KeyCombination getShortcut() {
-        return new KeyCodeCombination(KeyCode.ENTER, KeyCombination.ALT_DOWN);
+        return switch (OsType.ofLocal()) {
+            case OsType.Linux linux -> new KeyCodeCombination(KeyCode.ENTER, KeyCombination.ALT_DOWN);
+            case OsType.MacOs macOs -> new KeyCodeCombination(KeyCode.I, KeyCombination.SHORTCUT_DOWN);
+            case OsType.Windows windows -> new KeyCodeCombination(KeyCode.ENTER, KeyCombination.ALT_DOWN);
+        };
     }
 
     @Override

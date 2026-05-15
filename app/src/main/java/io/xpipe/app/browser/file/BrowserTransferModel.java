@@ -2,9 +2,12 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.action.impl.TransferFilesActionProvider;
+import io.xpipe.app.comp.base.ModalOverlay;
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppLocalTemp;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.core.mode.AppOperationMode;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.OsFileSystem;
@@ -62,6 +65,16 @@ public class BrowserTransferModel {
             }
         });
         thread.start();
+
+        transferring.addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                var shown = AppCache.getBoolean("downloadDialogShown", false);
+                if (!shown) {
+                    AppDialog.information("downloadDialog");
+                    AppCache.update("downloadDialogShown", true);
+                }
+            }
+        });
     }
 
     public List<Item> getCurrentItems() {
