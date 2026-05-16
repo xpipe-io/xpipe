@@ -87,6 +87,9 @@ public class ShellTemp {
                             .add(
                                     "|",
                                     "Where-Object",
+                                    "{-not $_.PSIsContainer}",
+                                    "|",
+                                    "Where-Object",
                                     "{$_.Name.StartsWith(\"" + prefix.getFileName() + "\")}",
                                     "|",
                                     "Remove-Item",
@@ -95,7 +98,7 @@ public class ShellTemp {
                     .executeAndCheck();
         } else {
             sc.command(CommandBuilder.of()
-                            .add("rm", "-rf")
+                            .add("rm", "-f")
                             .add("\"" + prefix.toString() + "\"*")
                             .add("2>/dev/null"))
                     .executeAndCheck();
