@@ -27,13 +27,19 @@ public interface CountGroupStoreProvider extends DataStoreProvider {
         return Bindings.createStringBinding(
                 () -> {
                     var all = section.getAllChildren().getList();
+                    var allCount = all.stream()
+                            .filter(s -> !excludeNonCountable() || s.getWrapper().getEntry().getProvider()
+                                    .includeInConnectionCount()).count();
                     var shown = section.getShownChildren().getList();
-                    if (all.size() == 0) {
+                    var shownCount = shown.stream()
+                            .filter(s -> !excludeNonCountable() || s.getWrapper().getEntry().getProvider()
+                                    .includeInConnectionCount()).count();
+                    if (allCount == 0) {
                         return AppI18n.get("no" + getCountTranslationKey() + "s");
                     }
 
-                    var string = all.size() == shown.size() ? all.size() : shown.size() + "/" + all.size();
-                    return all.size() == 1
+                    var string = allCount == shownCount ? allCount : shownCount + "/" + allCount;
+                    return allCount == 1
                                     ? AppI18n.get("has" + getCountTranslationKey(), string)
                                     : AppI18n.get("has" + getCountTranslationKey() + "s", string);
                 },
@@ -43,4 +49,8 @@ public interface CountGroupStoreProvider extends DataStoreProvider {
     }
 
     String getCountTranslationKey();
+
+    default boolean excludeNonCountable() {
+        return true;
+    }
 }

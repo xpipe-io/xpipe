@@ -39,14 +39,15 @@ public class HostAddressChoice {
         });
         var options = new OptionsBuilder();
         var addressField = new HostAddressChoiceComp(val, list, allowMutation).hgrow();
-        if (!allowMutation && HostAddress.empty().equals(addressProperty.getValue())) {
-            addressField.disable(true);
-        }
         var sepLabel =
                 new LabelComp(":").apply(label -> AppFontSizes.xxl(label)).padding(new Insets(0, 0, 3, 0));
         var portField = new IntFieldComp(portProperty)
                 .maxWidth(63)
                 .apply(textField -> textField.setAlignment(Pos.BASELINE_CENTER));
+        if (!allowMutation && HostAddress.empty().equals(addressProperty.getValue())) {
+            addressField.disable(true);
+            portField.disable(true);
+        }
         var box = new HorizontalComp(List.of(addressField, sepLabel, portField)).spacing(5);
         options.nameAndDescription("connectionInformation");
         options.addComp(box);

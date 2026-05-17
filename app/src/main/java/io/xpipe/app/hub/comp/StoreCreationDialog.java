@@ -54,23 +54,21 @@ public class StoreCreationDialog {
                         || DataStorage.get().getEffectiveReadOnlyState(e)) {
                     DataStorage.get().addStoreEntryIfNotPresent(newE);
                 } else {
-                    // We didn't change anything
+                    var wasChanged = !e.getStore().equals(newE.getStore());
+                    var madeValid = !e.getValidity().isUsable()
+                            && newE.getValidity().isUsable();
 
-                    // However, we might still have changed some auxiliary config value
-                    // So, always force an update
+                    // We might still have changed some auxiliary config value
+                    // So, always force an update, regardless of wasChanged
                     DataStorage.get().updateEntry(e, newE);
 
-                    if (!e.getStore().equals(newE.getStore())) {
-                        var madeValid = !e.getValidity().isUsable()
-                                && newE.getValidity().isUsable();
-                        if (madeValid
-                                && validated
-                                && e.getProvider().shouldShowScan()
-                                && AppPrefs.get()
-                                        .openConnectionSearchWindowOnConnectionCreation()
-                                        .get()) {
-                            ScanDialog.showSingleAsync(e);
-                        }
+                    if (wasChanged && madeValid
+                            && validated
+                            && e.getProvider().shouldShowScan()
+                            && AppPrefs.get()
+                                    .openConnectionSearchWindowOnConnectionCreation()
+                                    .get()) {
+                        ScanDialog.showSingleAsync(e);
                     }
                 }
 

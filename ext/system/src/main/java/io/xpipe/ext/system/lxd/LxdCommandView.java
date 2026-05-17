@@ -287,6 +287,12 @@ public class LxdCommandView extends CommandViewBase {
                 l.add(new ContainerEntry(project, name, status, ipv4, ipv6));
             }
             return l;
+        } catch (ProcessOutputException ex) {
+            if (ex.getOutput().contains("Error: unknown flag: --all-projects")) {
+                return List.of();
+            } else {
+                throw ex;
+            }
         }
     }
 }

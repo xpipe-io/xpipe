@@ -22,6 +22,7 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class ChoicePaneComp extends RegionBuilder<VBox> {
 
@@ -49,7 +50,7 @@ public class ChoicePaneComp extends RegionBuilder<VBox> {
         });
         cb.getSelectionModel().select(selected.getValue());
 
-        cb.setConverter(new StringConverter<>() {
+        Supplier<StringConverter<Entry>> converter = () -> new StringConverter<>() {
             @Override
             public String toString(Entry object) {
                 if (object == null || object.name() == null) {
@@ -63,7 +64,8 @@ public class ChoicePaneComp extends RegionBuilder<VBox> {
             public Entry fromString(String string) {
                 throw new UnsupportedOperationException();
             }
-        });
+        };
+        cb.setConverter(converter.get());
 
         // Reset converter on language change to force an update
         // This does not work properly in older JFX versions, see JDK-8384006
@@ -72,21 +74,7 @@ public class ChoicePaneComp extends RegionBuilder<VBox> {
             var refValue = ref.get();
             if (refValue != null) {
                 Platform.runLater(() -> {
-                    refValue.setConverter(new StringConverter<>() {
-                        @Override
-                        public String toString(Entry object) {
-                            if (object == null || object.name() == null) {
-                                return "";
-                            }
-
-                            return object.name().getValue();
-                        }
-
-                        @Override
-                        public Entry fromString(String string) {
-                            throw new UnsupportedOperationException();
-                        }
-                    });
+                    refValue.setConverter(converter.get());
                 });
             }
         });

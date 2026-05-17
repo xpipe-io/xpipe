@@ -110,16 +110,16 @@ install() {
       sudo zypper --no-gpg-checks --gpg-auto-import-keys install "$file"
     elif [ -x "$(command -v dnf)" ]; then
       info "Installing file $file with dnf"
-      sudo rpm --import https://xpipe.io/signatures/crschnick.asc
+      sudo rpm --import https://xpipe.io/signatures/0xDD3E0AD0.asc
       sudo dnf install --refresh "$file"
     elif [ -x "$(command -v yum)" ]; then
       info "Installing file $file with yum"
-      sudo rpm --import https://xpipe.io/signatures/crschnick.asc
+      sudo rpm --import https://xpipe.io/signatures/0xDD3E0AD0.asc
       sudo yum clean expire-cache
       sudo yum install "$file"
     else
       info "Installing file $file with rpm"
-      sudo rpm --import https://xpipe.io/signatures/crschnick.asc
+      sudo rpm --import https://xpipe.io/signatures/0xDD3E0AD0.asc
       sudo rpm -U -v --force "$file"
     fi
     ;;
