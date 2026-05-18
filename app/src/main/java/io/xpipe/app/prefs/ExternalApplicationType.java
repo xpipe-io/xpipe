@@ -73,8 +73,7 @@ public interface ExternalApplicationType extends PrefsValue {
 
         default void focus() {
             try (ShellControl pc = LocalShell.getShell().start()) {
-                pc.command(String.format("open -a \"%s.app\"", getApplicationName()))
-                        .execute();
+                pc.osascriptCommand("tell application \"%s\" to activate".formatted(getApplicationName())).execute();
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).handle();
             }
