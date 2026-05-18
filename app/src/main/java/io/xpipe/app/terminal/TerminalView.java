@@ -289,7 +289,8 @@ public class TerminalView {
             if (!(o instanceof ControllableTerminalSession that)) {
                 return false;
             }
-            return Objects.equals(terminalProcess.pid(), that.terminalProcess.pid()) && Objects.equals(controllable.getRawHandle(), that.controllable.getRawHandle());
+            return Objects.equals(terminalProcess.pid(), that.terminalProcess.pid())
+                    && Objects.equals(controllable.getRawHandle(), that.controllable.getRawHandle());
         }
 
         @Override

@@ -19,9 +19,8 @@ import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.HttpHelper;
 import io.xpipe.app.util.HttpProxy;
-
 import io.xpipe.app.util.ThreadHelper;
-import javafx.beans.binding.Bindings;
+
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -46,26 +45,37 @@ public class HttpProxyCategory extends AppPrefsCategory {
     protected BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
         var testComp = new TestButtonComp(() -> {
-           var addr = new SimpleStringProperty(AppCache.getNonNull("httpProxyTest", String.class, () -> null));
-           var addrField = new TextFieldComp(addr).apply(textField -> textField.setPromptText("https://example.com"));
-           var modal = ModalOverlay.of("proxyTestAddressDialogTitle", new OptionsBuilder()
-                   .nameAndDescription("proxyTestAddress").addComp(addrField, addr).buildComp().prefWidth(450));
-           modal.addButton(ModalButton.cancel());
-           modal.addButton(ModalButton.ok());
-           modal.showAndWait();
-           if (addr.get() == null) {
-               return false;
-           }
+            var addr = new SimpleStringProperty(AppCache.getNonNull("httpProxyTest", String.class, () -> null));
+            var addrField = new TextFieldComp(addr).apply(textField -> textField.setPromptText("https://example.com"));
+            var modal = ModalOverlay.of(
+                    "proxyTestAddressDialogTitle",
+                    new OptionsBuilder()
+                            .nameAndDescription("proxyTestAddress")
+                            .addComp(addrField, addr)
+                            .buildComp()
+                            .prefWidth(450));
+            modal.addButton(ModalButton.cancel());
+            modal.addButton(ModalButton.ok());
+            modal.showAndWait();
+            if (addr.get() == null) {
+                return false;
+            }
 
             AppCache.update("httpProxyTest", addr.get());
             var effectiveAddr = addr.get();
-           if (!effectiveAddr.startsWith("http")) {
-               effectiveAddr = "https://" + effectiveAddr;
-           }
+            if (!effectiveAddr.startsWith("http")) {
+                effectiveAddr = "https://" + effectiveAddr;
+            }
 
-            var res = HttpHelper.client().send(HttpRequest.newBuilder().GET().uri(URI.create(effectiveAddr)).build(), HttpResponse.BodyHandlers.ofString());
-           HttpHelper.checkOrThrow(res);
-           return true;
+            var res = HttpHelper.client()
+                    .send(
+                            HttpRequest.newBuilder()
+                                    .GET()
+                                    .uri(URI.create(effectiveAddr))
+                                    .build(),
+                            HttpResponse.BodyHandlers.ofString());
+            HttpHelper.checkOrThrow(res);
+            return true;
         });
         return new OptionsBuilder()
                 .title("httpProxyConfiguration")
@@ -80,8 +90,7 @@ public class HttpProxyCategory extends AppPrefsCategory {
                             });
                         }))
                         .pref(prefs.disableHttpsTlsCheck)
-                        .addToggle(prefs.disableHttpsTlsCheck)
-                )
+                        .addToggle(prefs.disableHttpsTlsCheck))
                 .buildComp();
     }
 

@@ -1,9 +1,5 @@
 package io.xpipe.app.secret;
 
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.InputGroupComp;
-import io.xpipe.app.comp.base.TextFieldComp;
-import io.xpipe.app.core.App;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -11,18 +7,15 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.util.Validators;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.nio.CharBuffer;
 import java.time.Duration;
-import java.util.List;
 
 @JsonTypeName("passwordManager")
 @Builder

@@ -1,11 +1,10 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.secret.EncryptionKey;
-import io.xpipe.app.secret.VaultKeySecretValue;
+
 import lombok.Value;
 import org.bouncycastle.util.Arrays;
 
-import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -13,6 +12,7 @@ import java.nio.file.Path;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.UUID;
+import javax.crypto.SecretKey;
 
 @Value
 public class DataStorageVaultKey {

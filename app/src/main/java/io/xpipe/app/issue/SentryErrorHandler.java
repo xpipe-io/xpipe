@@ -1,6 +1,5 @@
 package io.xpipe.app.issue;
 
-import io.sentry.protocol.Feedback;
 import io.xpipe.app.core.AppCertStore;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
@@ -14,6 +13,7 @@ import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LicenseRequiredException;
 
 import io.sentry.*;
+import io.sentry.protocol.Feedback;
 import io.sentry.protocol.Geo;
 import io.sentry.protocol.SentryId;
 import io.sentry.protocol.User;
@@ -250,9 +250,12 @@ public class SentryErrorHandler implements ErrorHandler {
         s.setTag("initial", AppProperties.get() != null ? AppProperties.get().isInitialLaunch() + "" : "false");
 
         var httpProxy = HttpProxy.getActiveProxy();
-        var doProxy = httpProxy.isPresent() && !HttpProxy.disableTlsVerification() && AppCertStore.get().getCertificates().isEmpty();
+        var doProxy = httpProxy.isPresent()
+                && !HttpProxy.disableTlsVerification()
+                && AppCertStore.get().getCertificates().isEmpty();
         if (doProxy) {
-            var sentryProxy = new SentryOptions.Proxy(httpProxy.get().getHost(),
+            var sentryProxy = new SentryOptions.Proxy(
+                    httpProxy.get().getHost(),
                     "" + httpProxy.get().getPort(),
                     httpProxy.get().isSocks5() ? Proxy.Type.SOCKS : Proxy.Type.HTTP,
                     httpProxy.get().getUser(),

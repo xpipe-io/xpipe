@@ -97,7 +97,9 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
                 })
                 .disable(Bindings.isEmpty(category.getChildren().getList()))
                 .style("expand-button")
-                .describe(d -> d.nameKey("expand").shortcut(new KeyCodeCombination(KeyCode.SPACE)).showTooltips(false));
+                .describe(d -> d.nameKey("expand")
+                        .shortcut(new KeyCodeCombination(KeyCode.SPACE))
+                        .showTooltips(false));
 
         var focus = new SimpleBooleanProperty();
         var hover = new SimpleBooleanProperty();

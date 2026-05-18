@@ -1,7 +1,6 @@
 package io.xpipe.app.secret;
 
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
-import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -12,9 +11,9 @@ import io.xpipe.app.util.Validators;
 import io.xpipe.core.InPlaceSecretValue;
 
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -32,9 +31,14 @@ public class SecretCustomCommandStrategy implements SecretRetrievalStrategy {
             Property<SecretCustomCommandStrategy> p, SecretStrategyChoiceConfig config) {
         var options = new OptionsBuilder();
         var cmdProperty = options.map(p, SecretCustomCommandStrategy::getCommand);
-        return options
-                .nameAndDescription("customCommandValue")
-                .addComp(IntegratedTextAreaComp.script(cmdProperty, new ReadOnlyObjectWrapper<>(LocalShell.getDialect().getScriptFileEnding()), true), cmdProperty)
+        return options.nameAndDescription("customCommandValue")
+                .addComp(
+                        IntegratedTextAreaComp.script(
+                                cmdProperty,
+                                new ReadOnlyObjectWrapper<>(
+                                        LocalShell.getDialect().getScriptFileEnding()),
+                                true),
+                        cmdProperty)
                 .nonNull()
                 .bind(
                         () -> {

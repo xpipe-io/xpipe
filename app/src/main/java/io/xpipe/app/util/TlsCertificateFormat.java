@@ -2,7 +2,6 @@ package io.xpipe.app.util;
 
 import java.security.MessageDigest;
 import java.security.cert.X509Certificate;
-import java.security.interfaces.RSAKey;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -11,7 +10,8 @@ import java.util.*;
 
 public class TlsCertificateFormat {
 
-    private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneOffset.UTC);
+    private static final DateTimeFormatter DATE_FMT =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneOffset.UTC);
 
     public static String format(X509Certificate cert) {
         var sb = new StringBuilder();
@@ -106,23 +106,21 @@ public class TlsCertificateFormat {
         int len = dn.length();
 
         while (i < len) {
-            while (i < len && dn.charAt(i) == ' ')
-                i++;
+            while (i < len && dn.charAt(i) == ' ') i++;
             if (i >= len) {
                 break;
             }
 
             int typeStart = i;
-            while (i < len && dn.charAt(i) != '=')
-                i++;
+            while (i < len && dn.charAt(i) != '=') i++;
             if (i >= len) {
                 break;
             }
             String type = dn.substring(typeStart, i).trim().toUpperCase();
-            i++;
 
-            while (i < len && dn.charAt(i) == ' ')
+            do {
                 i++;
+            } while (i < len && dn.charAt(i) == ' ');
 
             var value = new StringBuilder();
 
@@ -133,8 +131,7 @@ public class TlsCertificateFormat {
                     i++;
                 }
                 map.putIfAbsent(type, "#" + value);
-                while (i < len && dn.charAt(i) != ',' && dn.charAt(i) != ';')
-                    i++;
+                while (i < len && dn.charAt(i) != ',' && dn.charAt(i) != ';') i++;
                 if (i < len) {
                     i++;
                 }

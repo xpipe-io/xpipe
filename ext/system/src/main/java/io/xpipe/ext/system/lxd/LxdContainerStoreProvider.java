@@ -22,17 +22,18 @@ import java.util.List;
 public class LxdContainerStoreProvider implements ShellStoreProvider {
 
     public BaseRegionBuilder<?, ?> stateDisplay(StoreSection section) {
-        return new OsLogoComp(section.getWrapper(), BindingsHelper.map(section.getWrapper().getPersistentState(), o -> {
-            var state = (ContainerStoreState) o;
-            var cs = state.getContainerState();
-            if (cs != null && cs.toLowerCase().contains("stopped")) {
-                return SystemStateComp.State.FAILURE;
-            } else if (cs != null && cs.toLowerCase().contains("running")) {
-                return SystemStateComp.State.SUCCESS;
-            } else {
-                return SystemStateComp.State.OTHER;
-            }
-        }));
+        return new OsLogoComp(
+                section.getWrapper(), BindingsHelper.map(section.getWrapper().getPersistentState(), o -> {
+                    var state = (ContainerStoreState) o;
+                    var cs = state.getContainerState();
+                    if (cs != null && cs.toLowerCase().contains("stopped")) {
+                        return SystemStateComp.State.FAILURE;
+                    } else if (cs != null && cs.toLowerCase().contains("running")) {
+                        return SystemStateComp.State.SUCCESS;
+                    } else {
+                        return SystemStateComp.State.OTHER;
+                    }
+                }));
     }
 
     @Override

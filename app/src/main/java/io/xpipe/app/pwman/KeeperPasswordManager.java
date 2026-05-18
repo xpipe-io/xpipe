@@ -177,8 +177,10 @@ public class KeeperPasswordManager implements PasswordManager {
                 command.killOnTimeout(CountDown.of().start(30_000));
                 command.sensitive();
                 var output = command.readStdoutAndStderr();
-                if (command.getExitCode() == CommandControl.EXIT_TIMEOUT_EXIT_CODE ||
-                        (command.getExitCode() != 0 && !output[1].isEmpty() && !output[1].contains("get: Cannot find"))) {
+                if (command.getExitCode() == CommandControl.EXIT_TIMEOUT_EXIT_CODE
+                        || (command.getExitCode() != 0
+                                && !output[1].isEmpty()
+                                && !output[1].contains("get: Cannot find"))) {
                     throw ErrorEventFactory.expected(new IllegalStateException("Failed to request Keeper 2FA SMS"));
                 }
 
@@ -617,7 +619,9 @@ public class KeeperPasswordManager implements PasswordManager {
                 }
 
                 if (exitCode == CommandControl.EXIT_TIMEOUT_EXIT_CODE) {
-                    ErrorEventFactory.fromMessage("Keeper request timed out").expected().handle();
+                    ErrorEventFactory.fromMessage("Keeper request timed out")
+                            .expected()
+                            .handle();
                     return null;
                 }
 

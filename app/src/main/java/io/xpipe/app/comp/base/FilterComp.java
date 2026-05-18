@@ -15,8 +15,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.Pane;
-import javafx.scene.shape.Rectangle;
 
 import atlantafx.base.controls.CustomTextField;
 import org.kordamp.ikonli.javafx.FontIcon;

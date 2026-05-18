@@ -7,7 +7,6 @@ import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.action.BatchHubProvider;
@@ -32,7 +31,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Styles;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +39,9 @@ public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
 
     private final BooleanProperty expanded;
 
-    public StoreEntryListBatchBarComp(BooleanProperty expanded) {this.expanded = expanded;}
+    public StoreEntryListBatchBarComp(BooleanProperty expanded) {
+        this.expanded = expanded;
+    }
 
     @Override
     protected Region createSimple() {
@@ -79,7 +79,8 @@ public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
             expanded.set(!expanded.get());
         });
         toggleExpand.describe(d -> d.nameKey("expand"));
-        toggleExpand.hide(Bindings.isEmpty(StoreViewState.get().getEffectiveBatchModeSelection().getList()));
+        toggleExpand.hide(Bindings.isEmpty(
+                StoreViewState.get().getEffectiveBatchModeSelection().getList()));
         toggleExpand.apply(struc -> {
             struc.getStyleClass().remove(Styles.FLAT);
             struc.minWidthProperty().bind(struc.heightProperty());
@@ -108,9 +109,9 @@ public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
     }
 
     private ObservableList<BaseRegionBuilder<?, ?>> createActions() {
-        var actions = DerivedObservableList.<BaseRegionBuilder<?,?>>arrayList(true);
+        var actions = DerivedObservableList.<BaseRegionBuilder<?, ?>>arrayList(true);
         StoreViewState.get().getBatchModeSelection().getList().addListener((ListChangeListener<
-                ? super StoreEntryWrapper>)
+                        ? super StoreEntryWrapper>)
                 c -> {
                     actions.getList().clear();
                     for (var p : getCompatibleActionProviders()) {
@@ -176,9 +177,12 @@ public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
                 .getEffectiveBatchModeSelection()
                 .mapped(storeEntryWrapper -> storeEntryWrapper.getEntry().<T>ref());
         var batchActions = s.getChildren(childrenRefs.getList());
-        var name = Bindings.createStringBinding(() -> {
-            return expanded.get() ? s.getName().getValue() : null;
-        }, expanded, s.getName());
+        var name = Bindings.createStringBinding(
+                () -> {
+                    return expanded.get() ? s.getName().getValue() : null;
+                },
+                expanded,
+                s.getName());
         var button = new ButtonComp(name, new SimpleObjectProperty<>(s.getIcon()), () -> {
             if (batchActions.size() > 0) {
                 return;
@@ -210,122 +214,126 @@ public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
 
     private BaseRegionBuilder<?, ?> buildMoveButton() {
         var i18n = AppI18n.observable("move");
-        var name = Bindings.createStringBinding(() -> {
-            return expanded.get() ? i18n.getValue() : null;
-        }, expanded, i18n);
-        var button = new ButtonComp(name, new SimpleObjectProperty<>(new LabelGraphic.IconGraphic("mdi2f-folder-move-outline")), null);
+        var name = Bindings.createStringBinding(
+                () -> {
+                    return expanded.get() ? i18n.getValue() : null;
+                },
+                expanded,
+                i18n);
+        var button = new ButtonComp(
+                name, new SimpleObjectProperty<>(new LabelGraphic.IconGraphic("mdi2f-folder-move-outline")), null);
         button.describe(d -> d.name(i18n));
         button.apply(new ContextMenuAugment<>(
                 mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, keyEvent -> false, () -> {
-            var selection = StoreViewState.get().getBatchModeSelection().getList();
-            if (selection.isEmpty()) {
-                return null;
-            }
+                    var selection = StoreViewState.get().getBatchModeSelection().getList();
+                    if (selection.isEmpty()) {
+                        return null;
+                    }
 
-            var refWrapper = selection.getFirst();
+                    var refWrapper = selection.getFirst();
 
-            var menu = MenuHelper.createContextMenu();
-            StoreViewState.get()
-                    .getSortedCategories(
-                            refWrapper.getCategory().getValue().getRoot(), true)
-                    .getList()
-                    .stream()
-                    .filter(w -> {
-                        var isSource = DataStorage.get()
-                                .getCategoryParentHierarchy(DataStorage.get()
-                                        .getStoreCategory(refWrapper.getEntry()))
-                                .stream()
-                                .anyMatch(h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
-                        if (isSource) {
-                            return DataStorage.get().getCategoryParentHierarchy(w.getCategory()).stream()
-                                    .anyMatch(
-                                            h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
-                        }
+                    var menu = MenuHelper.createContextMenu();
+                    StoreViewState.get()
+                            .getSortedCategories(
+                                    refWrapper.getCategory().getValue().getRoot(), true)
+                            .getList()
+                            .stream()
+                            .filter(w -> {
+                                var isSource = DataStorage.get()
+                                        .getCategoryParentHierarchy(
+                                                DataStorage.get().getStoreCategory(refWrapper.getEntry()))
+                                        .stream()
+                                        .anyMatch(h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
+                                if (isSource) {
+                                    return DataStorage.get().getCategoryParentHierarchy(w.getCategory()).stream()
+                                            .anyMatch(
+                                                    h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
+                                }
 
-                        var isScript = DataStorage.get()
-                                .getCategoryParentHierarchy(DataStorage.get()
-                                        .getStoreCategory(refWrapper.getEntry()))
-                                .stream()
-                                .anyMatch(h -> h.getUuid().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID));
-                        if (isScript) {
-                            return DataStorage.get().getCategoryParentHierarchy(w.getCategory()).stream()
-                                    .noneMatch(
-                                            h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
-                        }
+                                var isScript = DataStorage.get()
+                                        .getCategoryParentHierarchy(
+                                                DataStorage.get().getStoreCategory(refWrapper.getEntry()))
+                                        .stream()
+                                        .anyMatch(h -> h.getUuid().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID));
+                                if (isScript) {
+                                    return DataStorage.get().getCategoryParentHierarchy(w.getCategory()).stream()
+                                            .noneMatch(
+                                                    h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
+                                }
 
-                        var isLocalIdentity = DataStorage.get()
-                                .getCategoryParentHierarchy(DataStorage.get()
-                                        .getStoreCategory(refWrapper.getEntry()))
-                                .stream()
-                                .anyMatch(h -> h.getUuid().equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID));
-                        if (isLocalIdentity) {
-                            return DataStorage.get().getCategoryParentHierarchy(w.getCategory()).stream()
-                                    .noneMatch(
-                                            h -> h.getUuid().equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID));
-                        }
+                                var isLocalIdentity = DataStorage.get()
+                                        .getCategoryParentHierarchy(
+                                                DataStorage.get().getStoreCategory(refWrapper.getEntry()))
+                                        .stream()
+                                        .anyMatch(h -> h.getUuid().equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID));
+                                if (isLocalIdentity) {
+                                    return DataStorage.get().getCategoryParentHierarchy(w.getCategory()).stream()
+                                            .noneMatch(h ->
+                                                    h.getUuid().equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID));
+                                }
 
-                        var isSyncedIdentity = DataStorage.get()
-                                .getCategoryParentHierarchy(DataStorage.get()
-                                        .getStoreCategory(refWrapper.getEntry()))
-                                .stream()
-                                .anyMatch(h -> h.getUuid().equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID));
-                        if (isSyncedIdentity) {
-                            return DataStorage.get().getCategoryParentHierarchy(w.getCategory()).stream()
-                                    .noneMatch(
-                                            h -> h.getUuid().equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID));
-                        }
+                                var isSyncedIdentity = DataStorage.get()
+                                        .getCategoryParentHierarchy(
+                                                DataStorage.get().getStoreCategory(refWrapper.getEntry()))
+                                        .stream()
+                                        .anyMatch(h -> h.getUuid().equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID));
+                                if (isSyncedIdentity) {
+                                    return DataStorage.get().getCategoryParentHierarchy(w.getCategory()).stream()
+                                            .noneMatch(h ->
+                                                    h.getUuid().equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID));
+                                }
 
-                        return true;
-                    })
-                    .forEach(targetCategory -> {
-                        var m = new CustomMenuItem();
+                                return true;
+                            })
+                            .forEach(targetCategory -> {
+                                var m = new CustomMenuItem();
 
-                        var li = new Label();
-                        li.setGraphic(PrettyImageHelper.ofFixedSizeSquare(
-                                        targetCategory
-                                                .getIconFile()
-                                                .getValue(),
-                                        16)
-                                .padding(new Insets(0, 0, 1, 0))
-                                .build());
-                        li.setText(targetCategory.getName().getValue());
-                        li.setPadding(new Insets(0, 1, 1, targetCategory.getDepth() * 10));
-                        m.setContent(li);
+                                var li = new Label();
+                                li.setGraphic(PrettyImageHelper.ofFixedSizeSquare(
+                                                targetCategory.getIconFile().getValue(), 16)
+                                        .padding(new Insets(0, 0, 1, 0))
+                                        .build());
+                                li.setText(targetCategory.getName().getValue());
+                                li.setPadding(new Insets(0, 1, 1, targetCategory.getDepth() * 10));
+                                m.setContent(li);
 
-                        m.setOnAction(event -> {
-                            for (StoreEntryWrapper w : selection) {
-                                w.moveTo(targetCategory.getCategory());
-                            }
-                            event.consume();
-                        });
-                        if (targetCategory.getParent() == null) {
-                            m.setDisable(true);
-                        }
+                                m.setOnAction(event -> {
+                                    for (StoreEntryWrapper w : selection) {
+                                        w.moveTo(targetCategory.getCategory());
+                                    }
+                                    event.consume();
+                                });
+                                if (targetCategory.getParent() == null) {
+                                    m.setDisable(true);
+                                }
 
-                        menu.getItems().add(m);
-                    });
-            return menu;
-
-        }));
+                                menu.getItems().add(m);
+                            });
+                    return menu;
+                }));
         return button;
     }
 
     private BaseRegionBuilder<?, ?> buildDeleteButton() {
         var i18n = AppI18n.observable("delete");
-        var name = Bindings.createStringBinding(() -> {
-            return expanded.get() ? i18n.getValue() : null;
-        }, expanded, i18n);
-        var button = new ButtonComp(name, new SimpleObjectProperty<>(new LabelGraphic.IconGraphic("mdal-delete_outline")), () -> {
-            var confirm = AppDialog.confirm("confirmDeletion");
-            if (!confirm) {
-                return;
-            }
+        var name = Bindings.createStringBinding(
+                () -> {
+                    return expanded.get() ? i18n.getValue() : null;
+                },
+                expanded,
+                i18n);
+        var button = new ButtonComp(
+                name, new SimpleObjectProperty<>(new LabelGraphic.IconGraphic("mdal-delete_outline")), () -> {
+                    var confirm = AppDialog.confirm("confirmDeletion");
+                    if (!confirm) {
+                        return;
+                    }
 
-            var selection = StoreViewState.get().getBatchModeSelection().getList();
-            for (StoreEntryWrapper w : selection) {
-                w.delete();
-            }
-        });
+                    var selection = StoreViewState.get().getBatchModeSelection().getList();
+                    for (StoreEntryWrapper w : selection) {
+                        w.delete();
+                    }
+                });
         button.describe(d -> d.name(i18n));
         return button;
     }

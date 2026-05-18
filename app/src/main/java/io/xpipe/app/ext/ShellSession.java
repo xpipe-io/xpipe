@@ -9,7 +9,6 @@ import io.xpipe.core.FailableSupplier;
 import lombok.Getter;
 
 import java.time.Duration;
-import java.time.Instant;
 
 @Getter
 public class ShellSession extends Session {
@@ -90,7 +89,9 @@ public class ShellSession extends Session {
 
     @Override
     public boolean checkInactive() {
-        var secs = AppPrefs.get() != null ? AppPrefs.get().backgroundSessionInactivityTimeout().getValue() : null;
+        var secs = AppPrefs.get() != null
+                ? AppPrefs.get().backgroundSessionInactivityTimeout().getValue()
+                : null;
         if (secs == null || secs <= 0) {
             return false;
         }

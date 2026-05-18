@@ -677,8 +677,8 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                                         .anyMatch(h -> h.getUuid().equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID));
                                 if (isLocalIdentity) {
                                     return DataStorage.get().getCategoryParentHierarchy(w.getCategory()).stream()
-                                            .noneMatch(
-                                                    h -> h.getUuid().equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID));
+                                            .noneMatch(h ->
+                                                    h.getUuid().equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID));
                                 }
 
                                 var isSyncedIdentity = DataStorage.get()
@@ -688,8 +688,8 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                                         .anyMatch(h -> h.getUuid().equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID));
                                 if (isSyncedIdentity) {
                                     return DataStorage.get().getCategoryParentHierarchy(w.getCategory()).stream()
-                                            .noneMatch(
-                                                    h -> h.getUuid().equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID));
+                                            .noneMatch(h ->
+                                                    h.getUuid().equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID));
                                 }
 
                                 return true;

@@ -28,7 +28,6 @@ import io.xpipe.app.prefs.WorkspaceManager;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.pwman.KeePassXcPasswordManager;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.core.AppCertStore;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.terminal.TerminalDockHubManager;
 import io.xpipe.app.terminal.TerminalLauncherManager;

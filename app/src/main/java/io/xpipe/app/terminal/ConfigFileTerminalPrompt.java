@@ -37,7 +37,7 @@ public abstract class ConfigFileTerminalPrompt implements TerminalPrompt {
                                                 p.getValue() != null
                                                         ? p.getValue().getConfigFileExtension()
                                                         : null),
-                                false)
+                                        false)
                                 .prefHeight(400),
                         prop)
                 .bind(

@@ -55,14 +55,15 @@ public class StoreCreationDialog {
                     DataStorage.get().addStoreEntryIfNotPresent(newE);
                 } else {
                     var wasChanged = !e.getStore().equals(newE.getStore());
-                    var madeValid = !e.getValidity().isUsable()
-                            && newE.getValidity().isUsable();
+                    var madeValid =
+                            !e.getValidity().isUsable() && newE.getValidity().isUsable();
 
                     // We might still have changed some auxiliary config value
                     // So, always force an update, regardless of wasChanged
                     DataStorage.get().updateEntry(e, newE);
 
-                    if (wasChanged && madeValid
+                    if (wasChanged
+                            && madeValid
                             && validated
                             && e.getProvider().shouldShowScan()
                             && AppPrefs.get()

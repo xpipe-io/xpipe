@@ -1,7 +1,5 @@
 package io.xpipe.app.platform;
 
-import com.fasterxml.jackson.databind.JavaType;
-import io.xpipe.app.browser.file.BrowserHistorySavedState;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
@@ -14,8 +12,8 @@ import io.xpipe.app.util.Checkable;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.core.InPlaceSecretValue;
-
 import io.xpipe.core.JacksonMapper;
+
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -184,7 +182,9 @@ public class OptionsBuilder {
     public OptionsBuilder subExpandable(String key, OptionsBuilder builder, String trackKey) {
         var javaType =
                 JacksonMapper.getDefault().getTypeFactory().constructCollectionLikeType(List.class, String.class);
-        var expanded = trackKey != null && AppCache.getNonNull("advancedExpanded", javaType, () -> List.of()).contains(trackKey);
+        var expanded = trackKey != null
+                && AppCache.getNonNull("advancedExpanded", javaType, () -> List.of())
+                        .contains(trackKey);
 
         sub(builder, null);
         var subComp = this.comp;

@@ -13,6 +13,7 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.Region;
+
 import lombok.Getter;
 
 class ScanSingleDialogComp extends ModalOverlayContentComp {

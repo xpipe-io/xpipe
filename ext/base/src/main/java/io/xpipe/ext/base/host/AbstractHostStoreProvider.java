@@ -1,17 +1,13 @@
 package io.xpipe.ext.base.host;
 
-import io.xpipe.app.comp.BaseRegionBuilder;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.util.DocumentationLink;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
 
 import lombok.SneakyThrows;
 

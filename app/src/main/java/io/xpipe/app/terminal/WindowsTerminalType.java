@@ -4,14 +4,12 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppSystemInfo;
-import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.util.NativeWinWindowControl;
-import io.xpipe.app.util.RemoteDesktopDockView;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.JacksonMapper;
 

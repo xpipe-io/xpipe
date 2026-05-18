@@ -6,8 +6,8 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.DerivedObservableList;
-
 import io.xpipe.app.util.GlobalTimer;
+
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -162,11 +162,13 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
             Platform.runLater(() -> {
                 dirty.set(true);
             });
-            GlobalTimer.delay(() -> {
-                Platform.runLater(() -> {
-                    dirty.set(true);
-                });
-            }, Duration.ofMillis(50));
+            GlobalTimer.delay(
+                    () -> {
+                        Platform.runLater(() -> {
+                            dirty.set(true);
+                        });
+                    },
+                    Duration.ofMillis(50));
         });
         shown.addListener((ListChangeListener<? super T>) (change) -> {
             Platform.runLater(() -> {

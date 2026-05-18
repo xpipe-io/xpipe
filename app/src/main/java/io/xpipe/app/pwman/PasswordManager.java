@@ -1,6 +1,5 @@
 package io.xpipe.app.pwman;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -11,6 +10,7 @@ import io.xpipe.core.OsType;
 import io.xpipe.core.SecretValue;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

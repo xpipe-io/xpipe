@@ -2,13 +2,11 @@ package io.xpipe.app.issue;
 
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.process.ProcessOutputException;
-import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.OsType;
 
 import java.nio.file.AccessDeniedException;
 import java.nio.file.NoSuchFileException;
 import java.util.*;
-import javax.net.ssl.SSLHandshakeException;
 
 public class ErrorEventFactory {
 

@@ -32,8 +32,8 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleRegionBuilde
             ListProperty<DataStoreEntryRef<T>> selectedList,
             Class<T> storeClass,
             Predicate<DataStoreEntryRef<T>> applicableCheck,
-            StoreCategoryWrapper initialCategory, DataStoreCreationCategory creationCategory
-    ) {
+            StoreCategoryWrapper initialCategory,
+            DataStoreCreationCategory creationCategory) {
         this.selectedList = selectedList;
         this.storeClass = storeClass;
         this.applicableCheck = applicableCheck;

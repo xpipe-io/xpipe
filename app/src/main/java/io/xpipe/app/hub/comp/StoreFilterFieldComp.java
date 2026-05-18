@@ -16,9 +16,7 @@ import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.shape.Rectangle;
 
 import atlantafx.base.controls.CustomTextField;
 import atlantafx.base.controls.Popover;

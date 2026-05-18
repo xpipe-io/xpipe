@@ -2,7 +2,6 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.action.impl.TransferFilesActionProvider;
-import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppLocalTemp;
 import io.xpipe.app.core.AppSystemInfo;

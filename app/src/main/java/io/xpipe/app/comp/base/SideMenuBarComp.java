@@ -76,7 +76,7 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
         {
             var b = new IconButtonComp("mdi2u-update", () -> {
                 ThreadHelper.runFailableAsync(() -> {
-                var r = UpdateAvailableDialog.showIfNeeded(false);
+                    var r = UpdateAvailableDialog.showIfNeeded(false);
                     if (!r) {
                         AppPrefs.get().selectCategory("about");
                         UpdateHandler uh = AppDistributionType.get().getUpdateHandler();

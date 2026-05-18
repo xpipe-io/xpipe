@@ -1,12 +1,9 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreDependencies;
 import io.xpipe.app.ext.ShellDialectChoiceComp;
@@ -14,7 +11,6 @@ import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellScript;
@@ -162,7 +158,10 @@ public interface ScriptTextSource {
                     .documentationLink(DocumentationLink.SCRIPTING_COMPATIBILITY)
                     .addComp(choice, dialect)
                     .nameAndDescription("scriptTextSourceUrl")
-                    .addComp(new TextFieldComp(url).apply(textField -> textField.setPromptText("https://example.com/my-script.sh")), url)
+                    .addComp(
+                            new TextFieldComp(url)
+                                    .apply(textField -> textField.setPromptText("https://example.com/my-script.sh")),
+                            url)
                     .nonNull()
                     .bind(
                             () -> Url.builder()

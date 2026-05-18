@@ -2,7 +2,6 @@ package io.xpipe.app.cred;
 
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.ext.ValidationException;
@@ -21,7 +20,6 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.FilePath;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
@@ -154,7 +152,8 @@ public class KeyFileStrategy implements SshIdentityStrategy {
                                 : (ShellStore) DataStorage.get().local().getStore();
                 var ex = fs.getOrStartSession().view().fileExists(pubFile);
                 if (ex) {
-                    var contents = fs.getOrStartSession().view().readTextFile(pubFile).strip();
+                    var contents =
+                            fs.getOrStartSession().view().readTextFile(pubFile).strip();
                     Platform.runLater(() -> {
                         publicKey.set(contents);
                     });
@@ -272,7 +271,9 @@ public class KeyFileStrategy implements SshIdentityStrategy {
         return List.of(
                 KeyValue.raw("IdentitiesOnly", "yes"),
                 KeyValue.raw("IdentityAgent", "none"),
-                KeyValue.escape("IdentityFile", file.toAbsoluteFilePath(sc).resolveTildeHome(sc.view().userHome())),
+                KeyValue.escape(
+                        "IdentityFile",
+                        file.toAbsoluteFilePath(sc).resolveTildeHome(sc.view().userHome())),
                 KeyValue.raw("PKCS11Provider", "none"));
     }
 

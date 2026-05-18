@@ -147,8 +147,9 @@ public interface SecurityKeyImpl {
                     switch (sc.getOsType()) {
                         case OsType.MacOs ignored -> FilePath.of("/usr/lib/ssh-keychain.dylib");
                         default ->
-                            throw ErrorEventFactory.expected(new UnsupportedOperationException(
-                                    "macOS keychain is not supported as a PKCS#11 provider on other operating systems"));
+                            throw ErrorEventFactory.expected(
+                                    new UnsupportedOperationException(
+                                            "macOS keychain is not supported as a PKCS#11 provider on other operating systems"));
                     };
             return file;
         }

@@ -31,7 +31,8 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
     default BaseRegionBuilder<?, ?> stateDisplay(StoreSection section) {
         return new SystemStateComp(Bindings.createObjectBinding(
                 () -> {
-                    SingletonSessionStore<?> s = section.getWrapper().getEntry().getStore().asNeeded();
+                    SingletonSessionStore<?> s =
+                            section.getWrapper().getEntry().getStore().asNeeded();
                     if (!supportsSession(s)) {
                         return SystemStateComp.State.SUCCESS;
                     }

@@ -10,7 +10,6 @@ import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -74,7 +73,8 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
             ObjectProperty<DataStoreEntryRef<T>> selected,
             Class<?> storeClass,
             Predicate<DataStoreEntryRef<T>> applicableCheck,
-            StoreCategoryWrapper initialCategory, DataStoreCreationCategory creationCategory) {
+            StoreCategoryWrapper initialCategory,
+            DataStoreCreationCategory creationCategory) {
         this(self, selected, storeClass, applicableCheck, initialCategory, true, creationCategory);
     }
 

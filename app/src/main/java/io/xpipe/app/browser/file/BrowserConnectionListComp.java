@@ -62,9 +62,7 @@ public final class BrowserConnectionListComp extends SimpleRegionBuilder {
                 });
                 busyEntries.addListener((SetChangeListener<? super StoreSection>) change -> {
                     PlatformThread.runLaterIfNeeded(() -> {
-                        struc.pseudoClassStateChanged(
-                                BUSY,
-                                change.getSet().contains(s));
+                        struc.pseudoClassStateChanged(BUSY, change.getSet().contains(s));
                     });
                 });
             });

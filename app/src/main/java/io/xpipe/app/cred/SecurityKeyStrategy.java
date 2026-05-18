@@ -4,9 +4,7 @@ import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.ext.ValidationException;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.process.CommandBuilder;
@@ -19,7 +17,6 @@ import io.xpipe.app.util.Validators;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -53,7 +50,9 @@ public class SecurityKeyStrategy implements SshIdentityKeyListStrategy {
             }
 
             ThreadHelper.runFailableAsync(() -> {
-                var fs = config.getFileSystem().getValue() != null ? config.getFileSystem().getValue().getStore() : (ShellStore) DataStorage.get().local().getStore().asNeeded();
+                var fs = config.getFileSystem().getValue() != null
+                        ? config.getFileSystem().getValue().getStore()
+                        : (ShellStore) DataStorage.get().local().getStore().asNeeded();
                 filePath.set(impl.determineLibraryPath(fs.getOrStartSession()).toString());
             });
         });
@@ -67,7 +66,8 @@ public class SecurityKeyStrategy implements SshIdentityKeyListStrategy {
                 ThreadHelper.runFailableAsync(() -> {
                     var impl = securityKey.get();
                     if (impl != null) {
-                        filePath.set(impl.determineLibraryPath(fs.getStore().getOrStartSession()).toString());
+                        filePath.set(impl.determineLibraryPath(fs.getStore().getOrStartSession())
+                                .toString());
                     } else {
                         filePath.set(null);
                     }

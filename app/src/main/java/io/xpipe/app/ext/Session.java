@@ -34,7 +34,7 @@ public abstract class Session implements AutoCloseable {
                 }
 
                 if (checkInactive()) {
-                     handleSessionDeath();
+                    handleSessionDeath();
                 }
             });
             return false;

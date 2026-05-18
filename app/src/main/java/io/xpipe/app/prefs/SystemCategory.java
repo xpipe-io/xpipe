@@ -45,9 +45,8 @@ public class SystemCategory extends AppPrefsCategory {
                                                 .filter(b -> b.isAvailable())
                                                 .toList(),
                                         true)
-                                .maxWidth(getCompWidth()))
-                )
-                        .title("shells")
+                                .maxWidth(getCompWidth())))
+                .title("shells")
                 .sub(new OptionsBuilder()
                         .pref(prefs.localShellDialect)
                         .addComp(
@@ -59,15 +58,14 @@ public class SystemCategory extends AppPrefsCategory {
                                 prefs.localShellDialect)
                         .pref(prefs.backgroundSessionInactivityTimeout)
                         .addComp(
-                                new IntFieldComp(prefs.backgroundSessionInactivityTimeout).apply(struc -> {
-                                    struc.setPromptText("3600");
-                                }).maxWidth(100),
-                                prefs.backgroundSessionInactivityTimeout)
-                )
-                        .title("developer")
-                .sub(new OptionsBuilder()
-                        .pref(prefs.developerMode)
-                        .addToggle(prefs.developerMode));
+                                new IntFieldComp(prefs.backgroundSessionInactivityTimeout)
+                                        .apply(struc -> {
+                                            struc.setPromptText("3600");
+                                        })
+                                        .maxWidth(100),
+                                prefs.backgroundSessionInactivityTimeout))
+                .title("developer")
+                .sub(new OptionsBuilder().pref(prefs.developerMode).addToggle(prefs.developerMode));
         return builder.buildComp();
     }
 }

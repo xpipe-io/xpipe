@@ -11,7 +11,6 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.NativeWinWindowControl;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.OsType;
 
 import javafx.application.Platform;

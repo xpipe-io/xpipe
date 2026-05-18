@@ -39,6 +39,7 @@ public class ScanDialogBase {
     private final boolean showButton;
     private final ObservableList<ScanProvider.ScanOpportunity> available =
             FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
+
     @Getter
     private final ListProperty<ScanProvider.ScanOpportunity> selected =
             new SimpleListProperty<>(FXCollections.synchronizedObservableList(FXCollections.observableArrayList()));

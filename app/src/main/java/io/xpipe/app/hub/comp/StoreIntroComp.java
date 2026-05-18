@@ -5,7 +5,6 @@ import io.xpipe.app.comp.base.IntroComp;
 import io.xpipe.app.comp.base.IntroListComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.platform.LabelGraphic;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.ScanDialog;

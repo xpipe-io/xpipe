@@ -1,6 +1,5 @@
 package io.xpipe.app.hub.comp;
 
-import atlantafx.base.layout.InputGroup;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
@@ -30,7 +29,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import atlantafx.base.controls.Popover;
-import atlantafx.base.theme.Styles;
 import lombok.RequiredArgsConstructor;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -142,29 +140,31 @@ public class StoreChoicePopover<T extends DataStore> {
                     initialExpanded);
 
             var category = new StoreCategoryChoiceComp(
-                            rootCategory != null ? rootCategory.getRoot() : null,
-                            StoreViewState.get().getActiveCategory(),
-                            selectedCategory,
-                            explicitCategory == null,
-                            ignored -> true);
-            var filter = FilterComp.ofStoreFilter(storeFilter)
-                    .hgrow();
+                    rootCategory != null ? rootCategory.getRoot() : null,
+                    StoreViewState.get().getActiveCategory(),
+                    selectedCategory,
+                    explicitCategory == null,
+                    ignored -> true);
+            var filter = FilterComp.ofStoreFilter(storeFilter).hgrow();
 
-            var addButton = creationCategory != null ?
-                    new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2p-plus"), () -> {
-                        StoreCreationDialog.showCreation(DataStoreProviders.byId(creationCategory.getDefaultProvider()).orElseThrow(), creationCategory);
-                    })
-                    .describe(d -> d.nameKey("addConnection")) :
-                    RegionBuilder.of(() -> {
-                        var m = MenuHelper.createMenuButton();
-                        m.setGraphic(new FontIcon("mdi2p-plus-box-outline"));
-                        m.setMaxHeight(100);
-                        m.setMinHeight(0);
-                        StoreCreationMenu.addButtons(m.getItems(), false);
-                        return m;
-                    })
-                    .describe(d -> d.nameKey("addConnection"))
-                    .padding(new Insets(-5));
+            var addButton = creationCategory != null
+                    ? new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2p-plus"), () -> {
+                                StoreCreationDialog.showCreation(
+                                        DataStoreProviders.byId(creationCategory.getDefaultProvider())
+                                                .orElseThrow(),
+                                        creationCategory);
+                            })
+                            .describe(d -> d.nameKey("addConnection"))
+                    : RegionBuilder.of(() -> {
+                                var m = MenuHelper.createMenuButton();
+                                m.setGraphic(new FontIcon("mdi2p-plus-box-outline"));
+                                m.setMaxHeight(100);
+                                m.setMinHeight(0);
+                                StoreCreationMenu.addButtons(m.getItems(), false);
+                                return m;
+                            })
+                            .describe(d -> d.nameKey("addConnection"))
+                            .padding(new Insets(-5));
 
             var top = new InputGroupComp(List.of(category, filter, addButton))
                     .setMainReference(category)

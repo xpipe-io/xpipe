@@ -5,16 +5,13 @@ import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.MultiContentComp;
-import io.xpipe.app.comp.base.StackComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.prefs.AppPrefs;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;

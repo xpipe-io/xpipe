@@ -10,7 +10,6 @@ import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;

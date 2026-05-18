@@ -1,10 +1,8 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.ext.LocalStore;
-import io.xpipe.app.secret.EncryptionKey;
 
 import java.time.Instant;
-import javax.crypto.SecretKey;
 
 public class ImpersistentStorage extends DataStorage {
 

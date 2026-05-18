@@ -131,16 +131,15 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                 gui.add("--config", "enable_tab_bar=true");
             }
 
-            var command = CommandBuilder.of()
-                    .add(gui)
-                    .add("start");
+            var command = CommandBuilder.of().add(gui).add("start");
 
             if (configuration.isDock()) {
                 var bounds = NativeWinWindowControl.MAIN_WINDOW.getBounds();
-                command.add("--position").addQuoted(bounds.getX() + "," +(bounds.getY() + 20));
+                command.add("--position").addQuoted(bounds.getX() + "," + (bounds.getY() + 20));
             }
 
-            command.add("--always-new-process").add(configuration.getPanes().getFirst().getDialectLaunchCommand());
+            command.add("--always-new-process")
+                    .add(configuration.getPanes().getFirst().getDialectLaunchCommand());
             ExternalApplicationHelper.startAsync(command);
             activeSocket = waitForInstanceStart(50);
             if (activeSocket.isEmpty()) {

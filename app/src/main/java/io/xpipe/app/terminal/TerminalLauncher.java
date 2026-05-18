@@ -316,7 +316,12 @@ public class TerminalLauncher {
                     fullLocalCommand,
                     LocalShell.getDialect());
             return Optional.of(new TerminalLaunchConfiguration(
-                    null, AppNames.ofCurrent().getName(), AppNames.ofCurrent().getName(), false, launchConfiguration.isDock(), List.of(pane)));
+                    null,
+                    AppNames.ofCurrent().getName(),
+                    AppNames.ofCurrent().getName(),
+                    false,
+                    launchConfiguration.isDock(),
+                    List.of(pane)));
         } else {
             var multiplexerCommand = multiplexer
                     .get()
@@ -336,7 +341,12 @@ public class TerminalLauncher {
                     fullLocalCommand,
                     LocalShell.getDialect());
             return Optional.of(new TerminalLaunchConfiguration(
-                    null, AppNames.ofCurrent().getName(), AppNames.ofCurrent().getName(), false, launchConfiguration.isDock(), List.of(pane)));
+                    null,
+                    AppNames.ofCurrent().getName(),
+                    AppNames.ofCurrent().getName(),
+                    false,
+                    launchConfiguration.isDock(),
+                    List.of(pane)));
         }
     }
 

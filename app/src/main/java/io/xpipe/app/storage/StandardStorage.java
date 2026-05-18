@@ -7,7 +7,6 @@ import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.secret.EncryptionKey;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
@@ -17,16 +16,13 @@ import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
-import javax.crypto.SecretKey;
 
 public class StandardStorage extends DataStorage {
 

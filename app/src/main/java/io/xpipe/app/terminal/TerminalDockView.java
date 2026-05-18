@@ -28,8 +28,7 @@ public class TerminalDockView implements WindowDockListener {
     }
 
     public synchronized void removeTerminal(TerminalView.TerminalSession s) {
-        terminalInstances.removeIf(controllableTerminalSession ->
-                controllableTerminalSession.equals(s));
+        terminalInstances.removeIf(controllableTerminalSession -> controllableTerminalSession.equals(s));
     }
 
     public synchronized boolean isActive() {
@@ -128,7 +127,8 @@ public class TerminalDockView implements WindowDockListener {
         var owner = TerminalView.get().getSessions().stream()
                 .filter(shellSession -> shellSession.getRequest().equals(request))
                 .map(shellSession -> shellSession.getTerminal())
-                .findFirst().orElse(null);
+                .findFirst()
+                .orElse(null);
         if (owner == null) {
             return false;
         }

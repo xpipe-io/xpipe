@@ -34,7 +34,11 @@ public class IntegratedTextAreaComp extends RegionStructureBuilder<AnchorPane, I
     private final boolean fitHeight;
 
     public IntegratedTextAreaComp(
-            Property<String> value, boolean lazy, String identifier, ObservableValue<String> fileType, boolean fitHeight) {
+            Property<String> value,
+            boolean lazy,
+            String identifier,
+            ObservableValue<String> fileType,
+            boolean fitHeight) {
         this.value = value;
         this.lazy = lazy;
         this.identifier = identifier;
@@ -57,7 +61,8 @@ public class IntegratedTextAreaComp extends RegionStructureBuilder<AnchorPane, I
         return script(value, type, fitHeight);
     }
 
-    public static IntegratedTextAreaComp script(Property<ShellScript> value, ObservableValue<String> fileType, boolean fitHeight) {
+    public static IntegratedTextAreaComp script(
+            Property<ShellScript> value, ObservableValue<String> fileType, boolean fitHeight) {
         var string = new SimpleStringProperty();
         value.subscribe(shellScript -> {
             string.set(shellScript != null ? shellScript.getValue() : null);

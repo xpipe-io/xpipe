@@ -87,51 +87,52 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
         var syncDisable = !DataStorage.get().supportsSync()
                 || ((sync.getValue() == null || !sync.getValue())
                         && !wrapper.getCategory().canShare());
-        options.title("sync").sub(new OptionsBuilder().name(
-                        specialCategorySync
-                                ? AppI18n.observable(
-                                        "categorySyncSpecial", wrapper.getName().getValue())
-                                : AppI18n.observable("categorySync"))
-                .description("categorySyncDescription")
-                .addComp(createToggle(sync, parentConfig.getSync()), sync)
-                .disable(syncDisable)
-                )
+        options.title("sync")
+                .sub(new OptionsBuilder()
+                        .name(
+                                specialCategorySync
+                                        ? AppI18n.observable(
+                                                "categorySyncSpecial",
+                                                wrapper.getName().getValue())
+                                        : AppI18n.observable("categorySync"))
+                        .description("categorySyncDescription")
+                        .addComp(createToggle(sync, parentConfig.getSync()), sync)
+                        .disable(syncDisable))
                 .title("connectionHandling")
-                .sub(new OptionsBuilder().nameAndDescription("categoryDontAllowScripts")
-                .addComp(createToggle(scripts, parentConfig.getDontAllowScripts()), scripts)
-                .hide(!connectionsCategory)
-                .nameAndDescription("categoryConfirmAllModifications")
-                .addComp(createToggle(confirm, parentConfig.getConfirmAllModifications()), confirm)
-                .hide(!connectionsCategory)
-                )
+                .sub(new OptionsBuilder()
+                        .nameAndDescription("categoryDontAllowScripts")
+                        .addComp(createToggle(scripts, parentConfig.getDontAllowScripts()), scripts)
+                        .hide(!connectionsCategory)
+                        .nameAndDescription("categoryConfirmAllModifications")
+                        .addComp(createToggle(confirm, parentConfig.getConfirmAllModifications()), confirm)
+                        .hide(!connectionsCategory))
                 .title("connectionConfiguration")
                 .sub(new OptionsBuilder()
-                .nameAndDescription("categoryFreeze")
-                .addComp(createToggle(freeze, parentConfig.getFreezeConfigurations()), freeze)
-                .hide(!connectionsCategory)
-                .nameAndDescription("categoryDefaultIdentity")
-                .addComp(
-                        new StoreChoiceComp<>(
-                                null,
-                                identityRef,
-                                DataStore.class,
-                                null,
-                                StoreViewState.get().getAllIdentitiesCategory(),
-                                DataStoreCreationCategory.IDENTITY),
-                        identityRef)
-                .hide(!connectionsCategory)
-                .nameAndDescription("categoryDefaultGateway")
-                .addComp(
-                        new StoreChoiceComp<>(
-                                null,
-                                gatewayRef,
-                                DataStore.class,
-                                null,
-                                StoreViewState.get().getAllConnectionsCategory(),
-                                DataStoreCreationCategory.HOST),
-                        gatewayRef)
-                .hide(!connectionsCategory)
-                )
+                        .nameAndDescription("categoryFreeze")
+                        .addComp(createToggle(freeze, parentConfig.getFreezeConfigurations()), freeze)
+                        .hide(!connectionsCategory)
+                        .nameAndDescription("categoryDefaultIdentity")
+                        .addComp(
+                                new StoreChoiceComp<>(
+                                        null,
+                                        identityRef,
+                                        DataStore.class,
+                                        null,
+                                        StoreViewState.get().getAllIdentitiesCategory(),
+                                        DataStoreCreationCategory.IDENTITY),
+                                identityRef)
+                        .hide(!connectionsCategory)
+                        .nameAndDescription("categoryDefaultGateway")
+                        .addComp(
+                                new StoreChoiceComp<>(
+                                        null,
+                                        gatewayRef,
+                                        DataStore.class,
+                                        null,
+                                        StoreViewState.get().getAllConnectionsCategory(),
+                                        DataStoreCreationCategory.HOST),
+                                gatewayRef)
+                        .hide(!connectionsCategory))
                 .bind(
                         () -> {
                             return new DataStoreCategoryConfig(

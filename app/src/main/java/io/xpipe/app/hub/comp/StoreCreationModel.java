@@ -64,10 +64,11 @@ public class StoreCreationModel {
         this.filter = filter;
         this.name = new SimpleStringProperty(initialName != null && !initialName.isEmpty() ? initialName : null);
         this.existingEntry = existingEntry;
-        this.existingDependencies = existingEntry != null ?
-                DataStorage.get().getDependencies(existingEntry).stream()
-                .<DataStore>map(ref -> ref.getStore())
-                .toList() : null;
+        this.existingDependencies = existingEntry != null
+                ? DataStorage.get().getDependencies(existingEntry).stream()
+                        .<DataStore>map(ref -> ref.getStore())
+                        .toList()
+                : null;
         this.staticDisplay = staticDisplay;
         this.consumer = consumer;
         this.uuid = existingEntry != null ? existingEntry.getUuid() : UUID.randomUUID();
@@ -102,16 +103,12 @@ public class StoreCreationModel {
                     }
 
                     var initial = DataStoreEntry.createNew(
-                            uuid,
-                            DataStorage.get().getSelectedCategory().getUuid(),
-                            name.getValue(),
-                            store.getValue());
+                            uuid, DataStorage.get().getSelectedCategory().getUuid(), name.getValue(), store.getValue());
                     var entryRef = existingEntry != null
                             ? existingEntry
                             : DataStorage.get().getDefaultDisplayParent(initial).orElse(initial);
                     var targetCategory = getTargetCategory(entryRef.getCategoryUuid());
-                    return DataStoreEntry.createNew(
-                            uuid, targetCategory.getUuid(), name.getValue(), store.getValue());
+                    return DataStoreEntry.createNew(uuid, targetCategory.getUuid(), name.getValue(), store.getValue());
                 },
                 name,
                 store);

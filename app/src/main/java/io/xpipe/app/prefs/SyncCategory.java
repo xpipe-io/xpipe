@@ -14,18 +14,11 @@ import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.*;
 import io.xpipe.core.FilePath;
 
-import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.layout.Region;
-
-import atlantafx.base.theme.Styles;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class SyncCategory extends AppPrefsCategory {
 
@@ -42,7 +35,7 @@ public class SyncCategory extends AppPrefsCategory {
     public BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
 
-        var testButton = new TestButtonComp( () -> {
+        var testButton = new TestButtonComp(() -> {
             var r = DataStorageSyncHandler.getInstance().validateConnection();
             return r;
         });

@@ -1,12 +1,12 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppCertStore;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 
-import io.xpipe.app.core.AppCertStore;
 import lombok.SneakyThrows;
 
 import java.io.*;
@@ -25,9 +25,7 @@ public class HttpHelper {
     @SneakyThrows
     public static HttpClient client() {
         var proxy = HttpProxy.getActiveProxy();
-        return client(
-                proxy.orElse(null),
-                !HttpProxy.disableTlsVerification());
+        return client(proxy.orElse(null), !HttpProxy.disableTlsVerification());
     }
 
     @SneakyThrows
@@ -57,7 +55,7 @@ public class HttpHelper {
             var certStore = AppCertStore.get();
             if (certStore != null) {
                 SSLContext context = SSLContext.getInstance("TLS");
-                context.init(null, new TrustManager[]{certStore.getCustomTrustManager()}, null);
+                context.init(null, new TrustManager[] {certStore.getCustomTrustManager()}, null);
                 builder.sslContext(context);
             }
         }

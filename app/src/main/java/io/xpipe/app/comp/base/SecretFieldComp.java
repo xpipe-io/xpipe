@@ -10,7 +10,6 @@ import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.core.InPlaceSecretValue;
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;

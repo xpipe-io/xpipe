@@ -8,14 +8,14 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.TlsCertificateFormat;
+
 import javafx.beans.property.SimpleStringProperty;
+
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.Value;
 import org.apache.commons.io.FilenameUtils;
 
-import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509TrustManager;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
@@ -24,6 +24,8 @@ import java.nio.file.Path;
 import java.security.KeyStore;
 import java.security.cert.*;
 import java.util.*;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 public class AppCertStore {
 
@@ -42,23 +44,23 @@ public class AppCertStore {
             return trustManager.getAcceptedIssuers();
         }
 
-        public void checkClientTrusted(X509Certificate[] chain, String authType)
-                throws CertificateException {
+        public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
             trustManager.checkClientTrusted(chain, authType);
         }
 
-        public void checkServerTrusted(X509Certificate[] chain, String authType)
-                throws CertificateException {
+        public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
             try {
                 trustManager.checkServerTrusted(chain, authType);
             } catch (CertificateException e) {
                 var cause = e.getCause();
-                var nonTrusted = cause != null && cause.getClass().getName().equals("sun.security.provider.certpath.SunCertPathBuilderException");
+                var nonTrusted = cause != null
+                        && cause.getClass()
+                                .getName()
+                                .equals("sun.security.provider.certpath.SunCertPathBuilderException");
                 if (nonTrusted) {
                     showTrustDialog(chain[chain.length - 1]);
-                    ErrorEventFactory.preconfigure(ErrorEventFactory.fromThrowable(e)
-                            .expected()
-                            .omit());
+                    ErrorEventFactory.preconfigure(
+                            ErrorEventFactory.fromThrowable(e).expected().omit());
                     throw e;
                 } else {
                     throw ErrorEventFactory.expected(e);
@@ -69,10 +71,13 @@ public class AppCertStore {
 
     @Getter
     private final List<Entry> certificates;
+
     private X509TrustManager trustManager;
     private final SavingTrustManager savingTrustManager = new SavingTrustManager();
 
-    private AppCertStore(List<Entry> certificates) {this.certificates = certificates;}
+    private AppCertStore(List<Entry> certificates) {
+        this.certificates = certificates;
+    }
 
     public static Path getDir() {
         return AppProperties.get().getDataDir().resolve("cacerts");
@@ -137,8 +142,7 @@ public class AppCertStore {
             String alias = list.nextElement();
             // Check if this cert is labeled a trust anchor.
             if (alias.contains(" [jdk")) {
-                X509Certificate cert = (X509Certificate) ks
-                        .getCertificate(alias);
+                X509Certificate cert = (X509Certificate) ks.getCertificate(alias);
                 s.append(convertToPem(cert));
             }
         }
@@ -189,13 +193,18 @@ public class AppCertStore {
                 .prefWidth(650);
         var modal = ModalOverlay.of("untrustedCertificateTitle", options);
         modal.addButton(ModalButton.cancel());
-        modal.addButton(new ModalButton("trust", () -> {
-            ThreadHelper.runAsync(() -> {
-                addCertificate(name.getValue(), certificate);
-            });
-        }, true, true).augment(button -> {
-            button.disableProperty().bind(name.isNull());
-        }));
+        modal.addButton(new ModalButton(
+                        "trust",
+                        () -> {
+                            ThreadHelper.runAsync(() -> {
+                                addCertificate(name.getValue(), certificate);
+                            });
+                        },
+                        true,
+                        true)
+                .augment(button -> {
+                    button.disableProperty().bind(name.isNull());
+                }));
         modal.show();
     }
 
@@ -235,7 +244,8 @@ public class AppCertStore {
 
         INSTANCE = new AppCertStore(list);
         try {
-            INSTANCE.refreshCertBundle(!AppProperties.get().isDevelopmentEnvironment() && AppProperties.get().isNewBuildSession());
+            INSTANCE.refreshCertBundle(!AppProperties.get().isDevelopmentEnvironment()
+                    && AppProperties.get().isNewBuildSession());
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).expected().handle();
         }
@@ -248,7 +258,8 @@ public class AppCertStore {
 
     private static X509Certificate parseCertificate(Path file) throws Exception {
         var b = Files.readAllBytes(file);
-        return (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(b));
+        return (X509Certificate)
+                CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(b));
     }
 
     private static String convertToPem(X509Certificate cert) throws CertificateEncodingException {

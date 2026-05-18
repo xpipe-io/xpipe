@@ -5,7 +5,6 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.BindingsHelper;
-import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -38,7 +37,8 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
         this(new SimpleStringProperty(), handleEnter, false, false);
     }
 
-    public PasswordManagerTestComp(Property<String> value, boolean handleEnter, boolean showName, boolean showSettings) {
+    public PasswordManagerTestComp(
+            Property<String> value, boolean handleEnter, boolean showName, boolean showSettings) {
         this.value = value;
         this.handleEnter = handleEnter;
         this.showName = showName;
@@ -59,7 +59,8 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
                                             ? (showName ? p.getDisplayName() + " - " : "") + p.getKeyPlaceholder()
                                             : "?";
                                 },
-                                prefs.passwordManager, AppI18n.activeLanguage())))
+                                prefs.passwordManager,
+                                AppI18n.activeLanguage())))
                 .hgrow();
         if (handleEnter) {
             field.apply(struc -> struc.setOnKeyPressed(event -> {

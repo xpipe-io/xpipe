@@ -152,7 +152,8 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
                         return SystemStateComp.State.OTHER;
                     }
 
-                    AbstractServiceStore s = section.getWrapper().getEntry().getStore().asNeeded();
+                    AbstractServiceStore s =
+                            section.getWrapper().getEntry().getStore().asNeeded();
 
                     if (!s.requiresTunnel()) {
                         return SystemStateComp.State.SUCCESS;

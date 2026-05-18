@@ -109,7 +109,8 @@ public class TerminalDockHubManager {
         }
 
         var modal = ModalOverlay.of("terminalDockDialogTitle", AppDialog.dialogTextKey("terminalDockDialogContent"));
-        modal.addButton(new ModalButton("openSettings", () -> AppPrefs.get().selectCategory("connectionHub"), true, false));
+        modal.addButton(
+                new ModalButton("openSettings", () -> AppPrefs.get().selectCategory("connectionHub"), true, false));
         modal.addButton(new ModalButton("keepEnabled", null, true, true));
         modal.show();
         AppCache.update("terminalDockDialog", true);
@@ -135,7 +136,8 @@ public class TerminalDockHubManager {
     });
     private final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(
             AppI18n.observable(
-                    "toggleTerminalDock", new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN).getDisplayText()),
+                    "toggleTerminalDock",
+                    new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN).getDisplayText()),
             new LabelGraphic.NodeGraphic(() -> {
                 var inner = new FontIcon();
                 inner.iconCodeProperty()

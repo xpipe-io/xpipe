@@ -6,10 +6,7 @@ import io.xpipe.app.platform.PlatformThread;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.TextField;
-import javafx.scene.control.skin.TextFieldSkin;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.Pane;
-import javafx.scene.shape.Rectangle;
 
 import java.util.Objects;
 

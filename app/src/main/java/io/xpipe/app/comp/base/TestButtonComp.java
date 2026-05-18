@@ -2,7 +2,6 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.FailableSupplier;

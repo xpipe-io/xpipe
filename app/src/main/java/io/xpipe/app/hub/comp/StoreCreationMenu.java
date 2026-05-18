@@ -10,11 +10,9 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Menu;
-import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 
-import lombok.NonNull;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.Arrays;
@@ -61,29 +59,23 @@ public class StoreCreationMenu {
 
         items.add(new SeparatorMenuItem());
 
-        items
-                .add(categoryMenu(
-                        "addIdentity",
-                        "mdi2a-account-multiple-plus",
-                        DataStoreCreationCategory.IDENTITY));
+        items.add(categoryMenu("addIdentity", "mdi2a-account-multiple-plus", DataStoreCreationCategory.IDENTITY));
 
         items.add(new SeparatorMenuItem());
 
-        items
-                .add(categoryMenu("addService", "mdi2l-link-plus", DataStoreCreationCategory.SERVICE));
+        items.add(categoryMenu("addService", "mdi2l-link-plus", DataStoreCreationCategory.SERVICE));
 
-        items
-                .add(categoryMenu(
-                        "addTunnel", "mdi2v-vector-polyline-plus", DataStoreCreationCategory.TUNNEL));
+        items.add(categoryMenu("addTunnel", "mdi2v-vector-polyline-plus", DataStoreCreationCategory.TUNNEL));
 
         items.add(new SeparatorMenuItem());
 
-        items
-                .add(categoryMenu("addCommand", "mdi2c-code-greater-than", DataStoreCreationCategory.COMMAND));
+        items.add(categoryMenu("addCommand", "mdi2c-code-greater-than", DataStoreCreationCategory.COMMAND));
 
-        items
-                .add(categoryMenu(
-                        "addScript", "mdi2s-script-text-outline", DataStoreCreationCategory.SCRIPT, DataStoreCreationCategory.SCRIPT_SOURCE));
+        items.add(categoryMenu(
+                "addScript",
+                "mdi2s-script-text-outline",
+                DataStoreCreationCategory.SCRIPT,
+                DataStoreCreationCategory.SCRIPT_SOURCE));
 
         items.add(new SeparatorMenuItem());
 
@@ -101,22 +93,20 @@ public class StoreCreationMenu {
         });
         actionMenu.getItems().addFirst(item);
 
-        items
-                .add(categoryMenu(
-                        "addOther",
-                        "mdi2f-folder-plus-outline",
-                        DataStoreCreationCategory.NETWORK,
-                        DataStoreCreationCategory.CLUSTER,
-                        DataStoreCreationCategory.FILE_SYSTEM,
-                        DataStoreCreationCategory.SERIAL));
+        items.add(categoryMenu(
+                "addOther",
+                "mdi2f-folder-plus-outline",
+                DataStoreCreationCategory.NETWORK,
+                DataStoreCreationCategory.CLUSTER,
+                DataStoreCreationCategory.FILE_SYSTEM,
+                DataStoreCreationCategory.SERIAL));
 
         items.add(new SeparatorMenuItem());
 
         items.add(actionMenu);
     }
 
-    private static Menu categoryMenu(
-            String name, String graphic, DataStoreCreationCategory... categories) {
+    private static Menu categoryMenu(String name, String graphic, DataStoreCreationCategory... categories) {
         var providers = DataStoreProviders.getAll().stream()
                 .filter(dataStoreProvider ->
                         Arrays.asList(categories).contains(dataStoreProvider.getCreationCategory()))
