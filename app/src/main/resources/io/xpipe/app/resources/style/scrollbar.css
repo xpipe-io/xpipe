@@ -2,18 +2,15 @@
     -fx-opacity: 1.0;
 }
 
-.root .scroll-bar:vertical .thumb {
+.scroll-bar .thumb {
     -fx-opacity: 0.5;
-    -fx-padding: 5 1 5 1;
-    -fx-min-height: 20;
-    -fx-background-color: red;
 }
 
 .scroll-bar:vertical {
-    -fx-min-width: 14px;
-    -fx-pref-width: 14px;
-    -fx-max-width: 14px;
-    -fx-padding: 5 1 5 1;
+    -fx-min-width: 7px;
+    -fx-pref-width: 7px;
+    -fx-max-width: 7px;
+    -fx-padding: 1;
     -fx-background-color: transparent;
 }
 

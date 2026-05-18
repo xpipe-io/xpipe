@@ -35,7 +35,9 @@ public class TerminalView {
             if (OsType.ofLocal() == OsType.MACOS) {
                 // Just focus the app, this is correct most of the time
                 var terminalType = AppPrefs.get().terminalType().getValue();
-                if (terminalType instanceof ExternalApplicationType.MacApplication m) {
+                // We should only focus terminals which support tabbing, otherwise we might
+                // choose the wrong one
+                if (terminalType.isRecommended() && terminalType instanceof ExternalApplicationType.MacApplication m) {
                     m.focus();
                 }
             }

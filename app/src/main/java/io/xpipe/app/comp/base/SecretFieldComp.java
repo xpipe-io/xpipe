@@ -10,6 +10,8 @@ import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.core.InPlaceSecretValue;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
@@ -34,11 +36,11 @@ import java.util.Objects;
 
 public class SecretFieldComp extends RegionStructureBuilder<InputGroup, SecretFieldComp.Structure> {
 
-    private final Property<InPlaceSecretValue> value;
+    private final ObjectProperty<InPlaceSecretValue> value;
     private final boolean allowCopy;
     private final List<BaseRegionBuilder<?, ?>> additionalButtons = new ArrayList<>();
 
-    public SecretFieldComp(Property<InPlaceSecretValue> value, boolean allowCopy) {
+    public SecretFieldComp(ObjectProperty<InPlaceSecretValue> value, boolean allowCopy) {
         this.value = value;
         this.allowCopy = allowCopy;
     }
@@ -123,6 +125,7 @@ public class SecretFieldComp extends RegionStructureBuilder<InputGroup, SecretFi
         var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
                     ClipboardHelper.copyPassword(value.getValue(), true);
                 })
+                .disable(value.isNull())
                 .describe(d -> d.nameKey("copy"));
 
         var list = new ArrayList<BaseRegionBuilder<?, ?>>();

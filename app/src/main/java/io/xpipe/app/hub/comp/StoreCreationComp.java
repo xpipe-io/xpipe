@@ -116,6 +116,7 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                 sp.setFocusTraversable(false);
                 sp.setSkin(new ScrollPaneSkin(sp));
                 sp.setFitToWidth(true);
+                sp.prefHeightProperty().bind(valSp.heightProperty());
                 var vbar = (ScrollBar) sp.lookup(".scroll-bar:vertical");
 
                 var topSep = new Separator();

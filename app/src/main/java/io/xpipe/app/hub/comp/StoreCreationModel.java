@@ -24,6 +24,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -44,6 +45,7 @@ public class StoreCreationModel {
     BooleanProperty connectable = new SimpleBooleanProperty();
     StringProperty name;
     DataStoreEntry existingEntry;
+    List<DataStore> existingDependencies;
     boolean staticDisplay;
     StoreCreationConsumer consumer;
     ObservableBooleanValue syncable;
@@ -62,6 +64,10 @@ public class StoreCreationModel {
         this.filter = filter;
         this.name = new SimpleStringProperty(initialName != null && !initialName.isEmpty() ? initialName : null);
         this.existingEntry = existingEntry;
+        this.existingDependencies = existingEntry != null ?
+                DataStorage.get().getDependencies(existingEntry).stream()
+                .<DataStore>map(ref -> ref.getStore())
+                .toList() : null;
         this.staticDisplay = staticDisplay;
         this.consumer = consumer;
         this.uuid = existingEntry != null ? existingEntry.getUuid() : UUID.randomUUID();
@@ -211,11 +217,22 @@ public class StoreCreationModel {
     }
 
     boolean wasChanged() {
-        if (existingEntry != null && existingEntry.getStore().equals(store.getValue())) {
-            return false;
+        if (existingEntry == null) {
+            return true;
         }
 
-        return true;
+        if (!existingEntry.getStore().equals(store.getValue())) {
+            return true;
+        }
+
+        var newDependencies = DataStorage.get().getDependencies(entry.getValue()).stream()
+                .map(ref -> ref.getStore())
+                .toList();
+        if (!existingDependencies.equals(newDependencies)) {
+            return true;
+        }
+
+        return false;
     }
 
     void finish() {

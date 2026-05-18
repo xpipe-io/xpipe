@@ -69,7 +69,7 @@ public class ClipboardHelper {
                 }
             }
 
-            var transition = new PauseTransition(Duration.millis(15000));
+            var transition = new PauseTransition(Duration.millis(25000));
             transition.setOnFinished(e -> {
                 var present = clipboard.getString();
                 if (present != null && present.equals(pass.getSecretValue())) {

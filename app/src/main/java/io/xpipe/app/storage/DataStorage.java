@@ -431,7 +431,7 @@ public abstract class DataStorage {
         entry.finalizeEntry();
     }
 
-    private Collection<DataStoreEntryRef<?>> getDependencies(DataStoreEntry entry) {
+    public Collection<DataStoreEntryRef<?>> getDependencies(DataStoreEntry entry) {
         var l = new HashSet<DataStoreEntryRef<?>>();
 
         var store = entry.getStore();

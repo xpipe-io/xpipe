@@ -449,7 +449,7 @@ public class OptionsBuilder {
         return this;
     }
 
-    public OptionsBuilder addSecret(Property<InPlaceSecretValue> prop, boolean copy) {
+    public OptionsBuilder addSecret(ObjectProperty<InPlaceSecretValue> prop, boolean copy) {
         var comp = new SecretFieldComp(prop, copy);
         pushComp(comp);
         props.add(prop);

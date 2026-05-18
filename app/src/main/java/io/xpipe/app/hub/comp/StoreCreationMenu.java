@@ -8,6 +8,7 @@ import io.xpipe.app.util.ScanDialog;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
@@ -21,7 +22,7 @@ import java.util.Comparator;
 
 public class StoreCreationMenu {
 
-    public static void addButtons(MenuButton menu, boolean allowSearch) {
+    public static void addButtons(ObservableList<MenuItem> items, boolean allowSearch) {
         if (allowSearch) {
             var automatically = new MenuItem();
             automatically.setGraphic(new FontIcon("mdi2e-eye-plus-outline"));
@@ -30,9 +31,9 @@ public class StoreCreationMenu {
                 ScanDialog.showSingleAsync(null);
                 event.consume();
             });
-            menu.getItems().add(automatically);
-            menu.getItems().add(networkScanMenu());
-            menu.getItems().add(new SeparatorMenuItem());
+            items.add(automatically);
+            items.add(networkScanMenu());
+            items.add(new SeparatorMenuItem());
 
             var disableSearch = Bindings.createBooleanBinding(
                     () -> {
@@ -52,39 +53,39 @@ public class StoreCreationMenu {
             automatically.disableProperty().bind(disableSearch);
         }
 
-        menu.getItems().add(categoryMenu("addHost", "mdi2h-home-plus", DataStoreCreationCategory.HOST));
+        items.add(categoryMenu("addHost", "mdi2h-home-plus", DataStoreCreationCategory.HOST));
 
-        menu.getItems().add(categoryMenu("addDesktop", "mdi2c-camera-plus", DataStoreCreationCategory.DESKTOP));
+        items.add(categoryMenu("addDesktop", "mdi2c-camera-plus", DataStoreCreationCategory.DESKTOP));
 
-        menu.getItems().add(cloudMenu());
+        items.add(cloudMenu());
 
-        menu.getItems().add(new SeparatorMenuItem());
+        items.add(new SeparatorMenuItem());
 
-        menu.getItems()
+        items
                 .add(categoryMenu(
                         "addIdentity",
                         "mdi2a-account-multiple-plus",
                         DataStoreCreationCategory.IDENTITY));
 
-        menu.getItems().add(new SeparatorMenuItem());
+        items.add(new SeparatorMenuItem());
 
-        menu.getItems()
+        items
                 .add(categoryMenu("addService", "mdi2l-link-plus", DataStoreCreationCategory.SERVICE));
 
-        menu.getItems()
+        items
                 .add(categoryMenu(
                         "addTunnel", "mdi2v-vector-polyline-plus", DataStoreCreationCategory.TUNNEL));
 
-        menu.getItems().add(new SeparatorMenuItem());
+        items.add(new SeparatorMenuItem());
 
-        menu.getItems()
+        items
                 .add(categoryMenu("addCommand", "mdi2c-code-greater-than", DataStoreCreationCategory.COMMAND));
 
-        menu.getItems()
+        items
                 .add(categoryMenu(
                         "addScript", "mdi2s-script-text-outline", DataStoreCreationCategory.SCRIPT, DataStoreCreationCategory.SCRIPT_SOURCE));
 
-        menu.getItems().add(new SeparatorMenuItem());
+        items.add(new SeparatorMenuItem());
 
         var actionMenu = categoryMenu("addMacro", "mdmz-miscellaneous_services", DataStoreCreationCategory.MACRO);
         var item = new MenuItem();
@@ -100,7 +101,7 @@ public class StoreCreationMenu {
         });
         actionMenu.getItems().addFirst(item);
 
-        menu.getItems()
+        items
                 .add(categoryMenu(
                         "addOther",
                         "mdi2f-folder-plus-outline",
@@ -109,9 +110,9 @@ public class StoreCreationMenu {
                         DataStoreCreationCategory.FILE_SYSTEM,
                         DataStoreCreationCategory.SERIAL));
 
-        menu.getItems().add(new SeparatorMenuItem());
+        items.add(new SeparatorMenuItem());
 
-        menu.getItems().add(actionMenu);
+        items.add(actionMenu);
     }
 
     private static Menu categoryMenu(

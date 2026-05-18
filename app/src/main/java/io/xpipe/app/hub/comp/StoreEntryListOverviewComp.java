@@ -107,7 +107,7 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
         menu.setGraphic(new FontIcon("mdi2p-plus-thick"));
         menu.setOnShowing(event -> {
             menu.getItems().clear();
-            StoreCreationMenu.addButtons(menu, true);
+            StoreCreationMenu.addButtons(menu.getItems(), true);
             event.consume();
         });
         menu.textProperty().bind(AppI18n.observable("new"));

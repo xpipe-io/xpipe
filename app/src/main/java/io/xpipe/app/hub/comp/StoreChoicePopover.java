@@ -160,7 +160,7 @@ public class StoreChoicePopover<T extends DataStore> {
                         m.setGraphic(new FontIcon("mdi2p-plus-box-outline"));
                         m.setMaxHeight(100);
                         m.setMinHeight(0);
-                        StoreCreationMenu.addButtons(m, false);
+                        StoreCreationMenu.addButtons(m.getItems(), false);
                         return m;
                     })
                     .describe(d -> d.nameKey("addConnection"))
