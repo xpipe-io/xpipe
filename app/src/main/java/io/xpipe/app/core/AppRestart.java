@@ -53,7 +53,7 @@ public class AppRestart {
         } else if (OsType.ofLocal() == OsType.MACOS) {
             var exec = loc.getBaseInstallationPath();
             var b = CommandBuilder.of()
-                    .add("open", "-a")
+                    .add("open", "-na")
                     .addFile(exec)
                     .addIf(!arguments.isEmpty(), "--args")
                     .addAll(arguments);
