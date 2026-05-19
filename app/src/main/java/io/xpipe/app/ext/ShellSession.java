@@ -123,6 +123,10 @@ public class ShellSession extends Session {
             return true;
         }
 
+        if (!shellControl.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
+            return true;
+        }
+
         try {
             // Don't print it constantly
             return shellControl

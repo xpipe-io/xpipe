@@ -11,6 +11,7 @@ import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ObservableSubscriber;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
@@ -52,6 +53,9 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
         field.focusedProperty().subscribe(focus -> {
             if (focus) {
                 popover.hide();
+                Platform.runLater(() -> {
+                    field.selectAll();
+                });
             } else {
                 state.onFocusLost();
             }

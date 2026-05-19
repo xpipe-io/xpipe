@@ -1,5 +1,6 @@
 package io.xpipe.app.storage;
 
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppMainWindow;
@@ -21,6 +22,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -41,6 +43,9 @@ public class StandardStorage extends DataStorage {
     private boolean disposed;
 
     private boolean saveQueued;
+
+    private final AppLayoutModel.QueueEntry queueEntry = AppLayoutModel.QueueEntry.ofNotification(
+            "syncInProgressTitle", "syncInProgress", "mdi2g-git", false);
 
     StandardStorage() {
         this.dataStorageSyncHandler = DataStorageSyncHandler.getInstance();
@@ -396,6 +401,16 @@ public class StandardStorage extends DataStorage {
 
         this.saveQueued = false;
 
+        var saveActive = new AtomicBoolean(true);
+        var syncEnabled = dataStorageSyncHandler.supportsSync();
+        if (syncEnabled) {
+            GlobalTimer.delay(() -> {
+                if (saveActive.get()) {
+                    AppLayoutModel.get().showQueueEntry(queueEntry, null, false);
+                }
+            }, Duration.ofSeconds(5));
+        }
+
         this.dataStorageSyncHandler.beforeStorageSave();
 
         try {
@@ -458,6 +473,9 @@ public class StandardStorage extends DataStorage {
         if (dispose) {
             disposed = true;
         }
+
+        saveActive.set(false);
+        queueEntry.hide();
 
         busyIo.unlock();
         if (!dispose && saveQueued) {

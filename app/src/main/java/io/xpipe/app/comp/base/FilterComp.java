@@ -7,6 +7,7 @@ import io.xpipe.app.core.AppOpenArguments;
 import io.xpipe.app.hub.comp.StoreFilter;
 import io.xpipe.app.platform.PlatformThread;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
@@ -65,6 +66,14 @@ public class FilterComp extends RegionBuilder<CustomTextField> {
                         },
                         filter.focusedProperty()));
         RegionDescriptor.builder().nameKey("search").build().apply(filter);
+
+        filter.focusedProperty().subscribe(f -> {
+            if (f) {
+                Platform.runLater(() -> {
+                    filter.selectAll();
+                });
+            }
+        });
 
         filter.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (new KeyCodeCombination(KeyCode.ESCAPE).match(event)) {

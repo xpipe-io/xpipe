@@ -59,7 +59,7 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
                 }
             });
 
-            var stack = createStyle(e, b);
+            var stack = createStyle(e, b, false);
             var shortcut = e.combination();
             if (shortcut != null) {
                 stack.apply(struc -> struc.getProperties().put("shortcut", shortcut));
@@ -85,7 +85,7 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
                 });
             });
             b.describe(d -> d.nameKey("updateAvailableTooltip"));
-            var stack = createStyle(null, b);
+            var stack = createStyle(null, b, false);
             var h = AppDistributionType.get().getUpdateHandler();
             stack.hide(Bindings.createBooleanBinding(
                     () -> {
@@ -99,7 +99,7 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
         if (!AppProperties.get().isStaging()) {
             var b = new IconButtonComp("mdoal-insights", () -> Hyperlinks.open(Hyperlinks.GITHUB_PTB));
             b.describe(d -> d.nameKey("ptbAvailableTooltip"));
-            var stack = createStyle(null, b);
+            var stack = createStyle(null, b, false);
             stack.hide(AppLayoutModel.get().getPtbAvailable().not());
             vbox.getChildren().add(stack.build());
         }
@@ -130,7 +130,7 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
                             e.consume();
                         });
                     });
-                    var stack = createStyle(null, b);
+                    var stack = createStyle(null, b, !item.isTop());
                     (item.isTop() ? topQueueButtons : bottomQueueButtons)
                             .getChildren()
                             .add(stack.build());
@@ -145,7 +145,7 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
         return vbox;
     }
 
-    private BaseRegionBuilder<?, ?> createStyle(AppLayoutModel.Entry e, IconButtonComp b) {
+    private BaseRegionBuilder<?, ?> createStyle(AppLayoutModel.Entry e, IconButtonComp b, boolean highlight) {
         var selected = PseudoClass.getPseudoClass("selected");
 
         b.apply(struc -> {
@@ -196,12 +196,12 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
                     .backgroundProperty()
                     .bind(Bindings.createObjectBinding(
                             () -> {
-                                if (value.getValue().equals(e)) {
-                                    return selectedBorder.get();
-                                }
-
                                 if (struc.isHover()) {
                                     return hoverBorder.get();
+                                }
+
+                                if (highlight || value.getValue().equals(e)) {
+                                    return selectedBorder.get();
                                 }
 
                                 return noneBorder.get();

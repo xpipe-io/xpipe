@@ -14,6 +14,14 @@ public class HostHelper {
         return p;
     }
 
+    public static boolean isPortAvailable(int port) {
+        try (ServerSocket ignored = new ServerSocket(port)) {
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
     public static int findRandomOpenPortOnAllLocalInterfaces() {
         try (ServerSocket socket = new ServerSocket(0)) {
             return socket.getLocalPort();

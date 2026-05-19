@@ -236,8 +236,15 @@ public class AppLayoutModel {
     @AllArgsConstructor
     public static class QueueEntry {
 
-        public static QueueEntry ofNotification(String key, String value) {
-            return new QueueEntry(AppI18n.observable(key), new LabelGraphic.IconGraphic(value), () -> true);
+        public static QueueEntry ofNotification(String nameKey, String icon) {
+            return new QueueEntry(AppI18n.observable(nameKey), new LabelGraphic.IconGraphic(icon), () -> true);
+        }
+
+        public static QueueEntry ofNotification(String nameKey, String modalKey, String icon, boolean hideOnClick) {
+            return new QueueEntry(AppI18n.observable(nameKey), new LabelGraphic.IconGraphic(icon), () -> {
+                AppDialog.information(modalKey);
+                return hideOnClick;
+            });
         }
 
         public QueueEntry(ObservableValue<String> name, LabelGraphic icon, Supplier<Boolean> action) {
