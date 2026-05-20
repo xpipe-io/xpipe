@@ -53,7 +53,11 @@ public class MultiIdentityStoreProvider extends IdentityStoreProvider {
                                 IdentityStore.class,
                                 ref -> !(ref.getStore() instanceof MultiIdentityStore) && !identities.contains(ref),
                                 StoreViewState.get().getAllIdentitiesCategory(),
-                                DataStoreCreationCategory.IDENTITY),
+                                DataStoreCreationCategory.IDENTITY,
+                                ref -> {
+                                    var l = identities.stream().filter(r -> r.getStore() != null).toList();
+                                    return l.size() > 0 && l.getFirst() == ref;
+                                }),
                         identities)
                 .nameAndDescription(
                         DataStorageUserHandler.getInstance().getActiveUser() != null

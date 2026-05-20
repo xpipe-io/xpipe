@@ -6,12 +6,14 @@ import lombok.experimental.UtilityClass;
 
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 @UtilityClass
 public class BeaconConfig {
 
     public static final String BEACON_PORT_PROP = "io.xpipe.beacon.port";
     private static final String PRINT_MESSAGES_PROPERTY = "io.xpipe.beacon.printMessages";
+    private static Integer portOverride;
 
     public static boolean printMessages() {
         if (System.getProperty(PRINT_MESSAGES_PROPERTY) != null) {
@@ -21,6 +23,10 @@ public class BeaconConfig {
     }
 
     public static int getUsedPort() {
+        if (portOverride != null) {
+            return portOverride;
+        }
+
         var beaconPort = System.getenv("BEACON_PORT");
         if (beaconPort != null && !beaconPort.isBlank()) {
             return Integer.parseInt(beaconPort);
@@ -31,6 +37,19 @@ public class BeaconConfig {
         }
 
         return getDefaultBeaconPort();
+    }
+
+    public static OptionalInt fallBackToAnotherPort() {
+        var start = 21723;
+        for (int i = 0; i < 20; i++) {
+            var p = start + i;
+            var occupied = BeaconServer.isReachable(p);
+            if (!occupied) {
+                portOverride = p;
+                return OptionalInt.of(p);
+            }
+        }
+        return OptionalInt.empty();
     }
 
     public static int getDefaultBeaconPort() {

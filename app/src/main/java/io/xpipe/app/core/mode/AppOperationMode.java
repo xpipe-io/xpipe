@@ -121,7 +121,6 @@ public abstract class AppOperationMode {
             AppExtensionManager.init();
             AppI18n.init();
             AppPrefs.initLocal();
-            AppBeaconServer.setupPort();
             AppInstance.init();
             // Initialize early to load in parallel
             PlatformInit.init(false);

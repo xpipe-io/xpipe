@@ -49,13 +49,9 @@ public class AppBeaconServer {
         this.port = port;
     }
 
-    public static void setupPort() {
-        int port = BeaconConfig.getUsedPort();
-        INSTANCE = new AppBeaconServer(port);
-    }
-
     public static void init() {
         try {
+            INSTANCE = new AppBeaconServer(BeaconConfig.getUsedPort());
             INSTANCE.initAuthSecret();
             INSTANCE.start();
             TrackEvent.withInfo("Started http server")
@@ -176,7 +172,7 @@ public class AppBeaconServer {
     private boolean handleCorsHeaders(HttpExchange exchange) throws IOException {
         if (AppPrefs.get().enableHttpApi().get()) {
             exchange.getResponseHeaders()
-                    .add("Origin", "http://localhost:" + AppBeaconServer.get().getPort());
+                    .add("Origin", "http://localhost:" + getPort());
             exchange.getResponseHeaders().add("Vary", "Origin");
             exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
             exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");

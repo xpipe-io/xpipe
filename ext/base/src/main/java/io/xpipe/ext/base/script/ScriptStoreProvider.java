@@ -152,7 +152,8 @@ public class ScriptStoreProvider implements DataStoreProvider {
                                         scriptStore -> !scriptStore.get().equals(model.getExistingEntry())
                                                 && !others.contains(scriptStore),
                                         StoreViewState.get().getAllScriptsCategory(),
-                                        DataStoreCreationCategory.SCRIPT),
+                                        DataStoreCreationCategory.SCRIPT,
+                                        null),
                                 others)
                         .bind(
                                 () -> {
