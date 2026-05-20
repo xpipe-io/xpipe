@@ -23,7 +23,7 @@ public class ModalOverlayStackComp extends SimpleRegionBuilder {
     @Override
     protected Region createSimple() {
         var current = background;
-        for (var i = 0; i < 5; i++) {
+        for (var i = 0; i < 6; i++) {
             current = buildModalOverlay(current, i);
         }
         return current.build();
@@ -35,8 +35,8 @@ public class ModalOverlayStackComp extends SimpleRegionBuilder {
         modalOverlay.addListener((ListChangeListener<? super ModalOverlay>) c -> {
             var ex = prop.get();
             // Don't shift just for an index change
-            if (ex != null && modalOverlay.contains(ex)) {
-                currentIndex.set(modalOverlay.indexOf(ex));
+            if (ex != null && c.getList().contains(ex)) {
+                currentIndex.set(c.getList().indexOf(ex));
                 return;
             } else {
                 currentIndex.set(index);

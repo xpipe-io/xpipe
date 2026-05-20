@@ -94,12 +94,12 @@ public class IdentityChoiceBuilder {
                 modal.addButton(new ModalButton(
                         "syncIdentity",
                         () -> {
-                            IdentityConvert.syncLocal(r.getRef().asNeeded(), false, updated -> {
-                                Platform.runLater(() -> {
-                                    identity.set(null);
-                                    identity.set(IdentityValue.Ref.builder()
-                                            .ref(updated.asNeeded())
-                                            .build());
+                            Platform.runLater(() -> {
+                                IdentityConvert.syncLocal(r.getRef().asNeeded(), false, updated -> {
+                                    Platform.runLater(() -> {
+                                        identity.set(null);
+                                        identity.set(IdentityValue.Ref.builder().ref(updated.asNeeded()).build());
+                                    });
                                 });
                             });
                         },
