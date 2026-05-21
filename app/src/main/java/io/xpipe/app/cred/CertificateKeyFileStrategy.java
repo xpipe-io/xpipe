@@ -16,6 +16,7 @@ import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.FilePath;
@@ -241,6 +242,7 @@ public class CertificateKeyFileStrategy implements SshIdentityStrategy {
 
     @Override
     public void prepareParent(ShellControl parent) throws Exception {
+        parent.requireLicensedFeature(LicenseProvider.get().getFeature("sshCertificateFile"));
         preparePrivateKey(parent);
         prepareCertificateKey(parent, false);
     }

@@ -127,8 +127,6 @@ public class SecurityKeyStrategy implements SshIdentityKeyListStrategy {
 
     @Override
     public void prepareParent(ShellControl parent) throws Exception {
-        parent.requireLicensedFeature(LicenseProvider.get().getFeature("pkcs11Identity"));
-
         var file = securityKey.determineLibraryPath(parent);
         if (!parent.view().fileExists(file)) {
             var ex = new IOException("PKCS11 library at " + file + " not found");

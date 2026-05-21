@@ -232,6 +232,8 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
         prop.addListener((observable, oldValue, newValue) -> {
             var newRef = map.get(newValue);
 
+            // Ugly fix to handle selection of an entry with the same name as another
+            // Using the map would lead the sometimes selecting the wrong one
             var sameName = selectedReference.getValue() != null && formatName(selectedReference.get().get()).equals(newValue);
             if (!sameName) {
                 applyRef(newRef);

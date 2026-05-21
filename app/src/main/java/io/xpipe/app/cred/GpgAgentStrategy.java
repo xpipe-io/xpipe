@@ -67,7 +67,6 @@ public class GpgAgentStrategy implements SshIdentityAgentStrategy {
 
     @Override
     public void prepareParent(ShellControl parent) throws Exception {
-        parent.requireLicensedFeature(LicenseProvider.get().getFeature("gpgAgent"));
         if (parent.isLocal()) {
             SshIdentityStateManager.prepareLocalGpgAgent();
         }
