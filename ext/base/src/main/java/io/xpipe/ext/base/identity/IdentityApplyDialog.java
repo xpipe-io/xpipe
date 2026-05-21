@@ -53,6 +53,7 @@ public class IdentityApplyDialog {
         boolean passwordAuthInMethods;
         boolean rootLoginEnabled;
         boolean mightRequireAdministratorAuthorizedKeys;
+        boolean caKeysConfigured;
 
         FilePath configFile;
         FilePath authorizedKeysFile;
@@ -78,6 +79,7 @@ public class IdentityApplyDialog {
             mightRequireAdministratorAuthorizedKeys = sc.getOsType() == OsType.WINDOWS
                     && isSet(configContent, "Match", "Group administrators", false, false)
                     && isSet(configContent, "AuthorizedKeysFile", "administrators_authorized_keys", false, false);
+            caKeysConfigured = isSet(configContent, "TrustedUserCaKeys", null, false, false);
 
             if (hasIdentity) {
                 var authorizedKeysContent = getAuthorizedKeysContent(sc);
@@ -132,14 +134,18 @@ public class IdentityApplyDialog {
                 return notFoundDef;
             }
 
-            for (String line : found) {
-                var matches = line.toLowerCase().contains(value.toLowerCase());
-                if (matches) {
-                    return true;
+            if (value != null) {
+                for (String line : found) {
+                    var matches = line.toLowerCase().contains(value.toLowerCase());
+                    if (matches) {
+                        return true;
+                    }
                 }
-            }
 
-            return notSpecifiedDef;
+                return notSpecifiedDef;
+            } else {
+                return true;
+            }
         }
     }
 
@@ -266,6 +272,12 @@ public class IdentityApplyDialog {
             Property<SystemState> systemState,
             IdentityStore identity,
             BooleanProperty busy) {
+        var showCaWarning = BindingsHelper.mapBoolean(systemState, s -> {
+            return s != null
+                    && identity.getSshIdentity() != null
+                    && identity.getSshIdentity().providesKey()
+                    && s.isCaKeysConfigured();
+        });
         var showAdminWarning = BindingsHelper.mapBoolean(systemState, s -> {
             return s != null
                     && identity.getSshIdentity() != null
@@ -310,7 +322,8 @@ public class IdentityApplyDialog {
                 .or(showPasswordEnabledWarning)
                 .or(showPasswordDisabledWarning)
                 .or(showKeyDisabledWarning)
-                .or(showAdminWarning);
+                .or(showAdminWarning)
+                .or(showCaWarning);
 
         var editButton = new ButtonComp(AppI18n.observable("identityApplyEditConfigButton"), () -> {
                     ThreadHelper.runFailableAsync(() -> {
@@ -329,6 +342,9 @@ public class IdentityApplyDialog {
                 .padding(new Insets(4, 8, 4, 8));
 
         var options = new OptionsBuilder()
+                .nameAndDescription("identityApplyConfigCaConfigured")
+                .addComp(warning())
+                .hide(showCaWarning.not())
                 .nameAndDescription("identityApplyConfigPasswordEnabled")
                 .addComp(warning())
                 .hide(showPasswordEnabledWarning.not())

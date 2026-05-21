@@ -104,7 +104,7 @@ public class KeyFileStrategy implements SshIdentityStrategy {
                         var sc = config.getFileSystem() != null
                                 ? config.getFileSystem().getValue().getStore().getOrStartSession()
                                 : LocalShell.getShell();
-                        var path = keyPath.get();
+                        var path = keyPath.get().resolveTildeHome(sc.view().userHome());
                         if (!sc.view().fileExists(path)) {
                             return;
                         }

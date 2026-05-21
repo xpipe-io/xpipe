@@ -37,11 +37,6 @@ public class GpgAgentStrategy implements SshIdentityAgentStrategy {
                 .nameAndDescription("publicKey")
                 .documentationLink(DocumentationLink.SSH_AGENT_PUBLIC_KEYS)
                 .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false, false), publicKey)
-                .addComp(
-                        new TextFieldComp(publicKey)
-                                .apply(struc -> struc.setPromptText(
-                                        "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")),
-                        publicKey)
                 .bind(
                         () -> {
                             return new GpgAgentStrategy(publicKey.get());

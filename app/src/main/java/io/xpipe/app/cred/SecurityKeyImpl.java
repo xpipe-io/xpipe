@@ -46,6 +46,10 @@ public interface SecurityKeyImpl {
         return l;
     }
 
+    default boolean showLibraryPath() {
+        return true;
+    }
+
     default void checkComplete() throws ValidationException {}
 
     FilePath determineLibraryPath(ShellControl sc) throws Exception;
@@ -199,6 +203,11 @@ public interface SecurityKeyImpl {
         }
 
         FilePath file;
+
+        @Override
+        public boolean showLibraryPath() {
+            return false;
+        }
 
         @Override
         public FilePath determineLibraryPath(ShellControl sc) {

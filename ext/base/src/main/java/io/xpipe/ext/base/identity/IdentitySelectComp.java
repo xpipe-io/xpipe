@@ -230,10 +230,14 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
         }
 
         prop.addListener((observable, oldValue, newValue) -> {
-            var ex = map.get(newValue);
-            applyRef(ex);
+            var newRef = map.get(newValue);
 
-            if (ex == null) {
+            var sameName = selectedReference.getValue() != null && formatName(selectedReference.get().get()).equals(newValue);
+            if (!sameName) {
+                applyRef(newRef);
+            }
+
+            if (newRef == null) {
                 inPlaceUser.setValue(newValue);
             } else {
                 inPlaceUser.setValue(null);

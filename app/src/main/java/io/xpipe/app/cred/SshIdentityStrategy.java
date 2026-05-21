@@ -38,7 +38,7 @@ public interface SshIdentityStrategy {
         if (PageantStrategy.isSupported()) {
             l.add(PageantStrategy.class);
         }
-        l.add(OtherExternalAgentStrategy.class);
+        l.add(OtherExternalIdentityStrategy.class);
 
         return l;
     }
@@ -55,7 +55,7 @@ public interface SshIdentityStrategy {
         l.add(CustomAgentStrategy.class);
         l.add(GpgAgentStrategy.class);
         l.add(PageantStrategy.class);
-        l.add(OtherExternalAgentStrategy.class);
+        l.add(OtherExternalIdentityStrategy.class);
 
         return l;
     }

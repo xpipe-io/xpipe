@@ -17,6 +17,7 @@ import io.xpipe.app.util.Validators;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -53,7 +54,8 @@ public class SecurityKeyStrategy implements SshIdentityKeyListStrategy {
                 var fs = config.getFileSystem().getValue() != null
                         ? config.getFileSystem().getValue().getStore()
                         : (ShellStore) DataStorage.get().local().getStore().asNeeded();
-                filePath.set(impl.determineLibraryPath(fs.getOrStartSession()).toString());
+                var path = impl.determineLibraryPath(fs.getOrStartSession());
+                filePath.set(path != null ? path.toString() : null);
             });
         });
         if (config.getFileSystem() != null) {
@@ -82,13 +84,25 @@ public class SecurityKeyStrategy implements SshIdentityKeyListStrategy {
                 .build()
                 .build();
 
+        var showLibraryPath = Bindings.createBooleanBinding(() -> {
+            if (filePath.get() == null) {
+                return false;
+            }
+
+            if (securityKey.get() == null) {
+                return false;
+            }
+
+            return securityKey.get().showLibraryPath();
+        }, filePath, securityKey);
+
         return new OptionsBuilder()
                 .nameAndDescription("pkcs11Impl")
                 .sub(choice, securityKey)
                 .nonNull()
                 .nameAndDescription("pkcs11Library")
                 .addStaticString(filePath)
-                .hide(filePath.isNull())
+                .hide(Bindings.not(showLibraryPath))
                 .nameAndDescription("publicKey")
                 .documentationLink(DocumentationLink.SSH_AGENT_PUBLIC_KEYS)
                 .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false, true), publicKey)
