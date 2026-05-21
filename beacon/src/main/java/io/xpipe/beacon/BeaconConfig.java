@@ -40,6 +40,11 @@ public class BeaconConfig {
     }
 
     public static OptionalInt fallBackToAnotherPort() {
+        var hasEnv = System.getenv("BEACON_PORT") != null || System.getenv("XPIPE_BEACON_PORT") != null;
+        if (hasEnv) {
+            return OptionalInt.empty();
+        }
+
         var start = 21723;
         for (int i = 0; i < 20; i++) {
             var p = start + i;
@@ -87,5 +92,9 @@ public class BeaconConfig {
             }
             return path;
         }
+    }
+
+    public static Path getLocalBeaconLockFile() {
+        return getLocalBeaconAuthFile().getParent().resolve("lock");
     }
 }

@@ -15,9 +15,12 @@ import com.sun.net.httpserver.HttpServer;
 import lombok.Getter;
 
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.Inet4Address;
 import java.net.InetSocketAddress;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.*;
@@ -44,6 +47,8 @@ public class AppBeaconServer {
 
     @Getter
     private String localAuthSecret;
+    private FileChannel localLockFileChannel;
+    private FileLock localLockFileLock;
 
     private AppBeaconServer(int port) {
         this.port = port;
@@ -109,20 +114,26 @@ public class AppBeaconServer {
         var file = BeaconConfig.getLocalBeaconAuthFile();
         // Create and set temp dir permissions for Linux
         AppLocalTemp.getLocalTempDataDirectory();
+
         var id = UUID.randomUUID().toString();
         Files.writeString(file, id);
         if (OsType.ofLocal() != OsType.WINDOWS) {
             Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("rw-rw----"));
         }
         localAuthSecret = id;
+
+        var lockFile = BeaconConfig.getLocalBeaconLockFile();
+        localLockFileChannel = new RandomAccessFile(lockFile.toFile(), "rw").getChannel();
+        localLockFileLock = localLockFileChannel.tryLock();
     }
 
     private void deleteAuthSecret() {
         var file = BeaconConfig.getLocalBeaconAuthFile();
         try {
             Files.delete(file);
-        } catch (IOException ignored) {
-        }
+            localLockFileLock.release();
+            localLockFileChannel.close();
+        } catch (IOException ignored) {}
     }
 
     private void start() throws IOException {

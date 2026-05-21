@@ -73,6 +73,7 @@ public class AppCertStore {
     private final List<Entry> certificates;
 
     private X509TrustManager trustManager;
+    private boolean modalShowing;
     private final SavingTrustManager savingTrustManager = new SavingTrustManager();
 
     private AppCertStore(List<Entry> certificates) {
@@ -166,6 +167,18 @@ public class AppCertStore {
             ks.load(fis, null);
         }
 
+        // For testing TLS cert acceptance dialogs
+        // without setting up a custom proxy
+//        var e = ks.aliases();
+//        var list = new ArrayList<String>();
+//        while (e.hasMoreElements()) {
+//            String alias = e.nextElement();
+//            list.add(alias);
+//        }
+//        for (String s : list) {
+//            ks.deleteEntry(s);
+//        }
+
         for (Entry certificate : certificates) {
             ks.setCertificateEntry(certificate.getName(), certificate.getCertificate());
         }
@@ -175,37 +188,45 @@ public class AppCertStore {
         trustManager = (X509TrustManager) tmf.getTrustManagers()[0];
     }
 
-    private void showTrustDialog(X509Certificate certificate) {
-        var format = TlsCertificateFormat.format(certificate);
-        var content = new TextAreaComp(new SimpleStringProperty(format))
-                .applyStructure(structure -> {
-                    structure.getTextArea().setEditable(false);
-                })
-                .prefHeight(450);
-        var name = new SimpleStringProperty();
-        var options = new OptionsBuilder()
-                .nameAndDescription("certificateDetails")
-                .addComp(content)
-                .nameAndDescription("certificateName")
-                .addString(name)
-                .nonNull()
-                .buildComp()
-                .prefWidth(650);
-        var modal = ModalOverlay.of("untrustedCertificateTitle", options);
-        modal.addButton(ModalButton.cancel());
-        modal.addButton(new ModalButton(
-                        "trust",
-                        () -> {
-                            ThreadHelper.runAsync(() -> {
-                                addCertificate(name.getValue(), certificate);
-                            });
-                        },
-                        true,
-                        true)
-                .augment(button -> {
-                    button.disableProperty().bind(name.isNull());
-                }));
-        modal.show();
+    private synchronized void showTrustDialog(X509Certificate certificate) {
+        if (modalShowing) {
+            return;
+        }
+
+        modalShowing = true;
+        ThreadHelper.runAsync(() -> {
+            var format = TlsCertificateFormat.format(certificate);
+            var content = new TextAreaComp(new SimpleStringProperty(format))
+                    .applyStructure(structure -> {
+                        structure.getTextArea().setEditable(false);
+                    })
+                    .prefHeight(450);
+            var name = new SimpleStringProperty();
+            var options = new OptionsBuilder()
+                    .nameAndDescription("certificateDetails")
+                    .addComp(content)
+                    .nameAndDescription("certificateName")
+                    .addString(name)
+                    .nonNull()
+                    .buildComp()
+                    .prefWidth(650);
+            var modal = ModalOverlay.of("untrustedCertificateTitle", options);
+            modal.addButton(ModalButton.cancel());
+            modal.addButton(new ModalButton(
+                            "trust",
+                            () -> {
+                                ThreadHelper.runAsync(() -> {
+                                    addCertificate(name.getValue(), certificate);
+                                });
+                            },
+                            true,
+                            true)
+                    .augment(button -> {
+                        button.disableProperty().bind(name.isNull());
+                    }));
+            modal.showAndWait();
+            modalShowing = false;
+        });
     }
 
     private static AppCertStore INSTANCE;

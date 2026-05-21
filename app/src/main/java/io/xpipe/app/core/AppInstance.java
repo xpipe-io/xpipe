@@ -4,6 +4,7 @@ import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.BeaconClient;
 import io.xpipe.beacon.BeaconClientInformation;
@@ -14,7 +15,9 @@ import io.xpipe.beacon.api.DaemonOpenExchange;
 import io.xpipe.core.OsType;
 
 import java.awt.*;
+import java.io.RandomAccessFile;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,11 +43,29 @@ public class AppInstance {
 
         if (reachable) {
             // If an instance is running as another user, we cannot connect to it as the xpipe_auth file is inaccessible
-            var hasAuthFile = Files.exists(BeaconConfig.getLocalBeaconAuthFile());
+            var authFile = BeaconConfig.getLocalBeaconAuthFile();
+            var hasAuthFile = Files.exists(authFile);
+
+            // Make sure that it is not a leftover
+            if (hasAuthFile) {
+                try (var channel = new RandomAccessFile(BeaconConfig.getLocalBeaconLockFile().toFile(), "rw").getChannel()) {
+                    var lock = channel.tryLock();
+                    if (lock != null) {
+                        lock.release();
+                        Files.delete(authFile);
+                        hasAuthFile = false;
+                    }
+                } catch (Exception ignored) {}
+            }
+
             if (!hasAuthFile) {
                 var replacement = BeaconConfig.fallBackToAnotherPort();
                 if (replacement.isEmpty()) {
-                    TrackEvent.info("Unable to find free beacon port. Quitting ...");
+                    ErrorEventFactory.fromMessage("Unable to find free beacon port")
+                            .term()
+                            .documentationLink(DocumentationLink.BEACON_PORT_BIND)
+                            .expected()
+                            .handle();
                     AppOperationMode.halt(1);
                 } else {
                     port = replacement.getAsInt();
