@@ -1,16 +1,18 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.platform.LabelGraphic;
-import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
+import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.util.Rect;
 import io.xpipe.core.OsType;
 
@@ -100,6 +102,20 @@ public class TerminalDockHubManager {
         });
     }
 
+    private static void showDialogIfNeeded() {
+        var shown = AppCache.getBoolean("terminalDockDialog", false);
+        if (shown) {
+            return;
+        }
+
+        var modal = ModalOverlay.of("terminalDockDialogTitle", AppDialog.dialogTextKey("terminalDockDialogContent"));
+        modal.addButton(
+                new ModalButton("openSettings", () -> AppPrefs.get().selectCategory("connectionHub"), true, false));
+        modal.addButton(new ModalButton("keepEnabled", null, true, true));
+        modal.show();
+        AppCache.update("terminalDockDialog", true);
+    }
+
     public static TerminalDockHubManager get() {
         return INSTANCE;
     }
@@ -120,7 +136,8 @@ public class TerminalDockHubManager {
     });
     private final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(
             AppI18n.observable(
-                    "toggleTerminalDock", new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN).toString()),
+                    "toggleTerminalDock",
+                    new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN).getDisplayText()),
             new LabelGraphic.NodeGraphic(() -> {
                 var inner = new FontIcon();
                 inner.iconCodeProperty()
@@ -169,9 +186,20 @@ public class TerminalDockHubManager {
             true);
 
     private void addDialogListeners() {
+        var wasShowing = new SimpleBooleanProperty();
+        var wasAttached = new SimpleBooleanProperty();
         AppDialog.getModalOverlays().addListener((ListChangeListener<? super ModalOverlay>) c -> {
-            if (c.getList().size() > 0) {
-                INSTANCE.hideDock();
+            if (c.getList().isEmpty()) {
+                if (wasShowing.get()) {
+                    showDock();
+                }
+                if (wasAttached.get()) {
+                    attach();
+                }
+            } else {
+                wasAttached.set(!minimized.get() && !detached.get() && showing.get());
+                wasShowing.set(showing.get());
+                hideDock();
             }
         });
     }
@@ -182,15 +210,15 @@ public class TerminalDockHubManager {
         AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
             if (AppLayoutModel.get().getEntries().indexOf(newValue) == 0) {
                 if (wasShowing.get()) {
-                    INSTANCE.showDock();
+                    showDock();
                 }
                 if (wasAttached.get()) {
-                    INSTANCE.attach();
+                    attach();
                 }
             } else if (AppLayoutModel.get().getEntries().indexOf(oldValue) == 0) {
-                wasAttached.set(!INSTANCE.minimized.get() && !INSTANCE.detached.get() && INSTANCE.showing.get());
-                wasShowing.set(INSTANCE.showing.get());
-                INSTANCE.hideDock();
+                wasAttached.set(!minimized.get() && !detached.get() && showing.get());
+                wasShowing.set(showing.get());
+                hideDock();
             }
         });
     }
@@ -203,14 +231,13 @@ public class TerminalDockHubManager {
                     return;
                 }
 
-                var controllable = session.getTerminal().controllable();
-                if (controllable.isEmpty()) {
+                if (!(session.getTerminal() instanceof TerminalView.ControllableTerminalSession t)) {
                     return;
                 }
 
-                var term = controllable.get().getTerminalType();
-                if (term instanceof TrackableTerminalType t) {
-                    if (t.getDockMode() == TerminalDockMode.UNSUPPORTED) {
+                var term = t.getTerminalType();
+                if (term instanceof TrackableTerminalType trackableType) {
+                    if (trackableType.getDockMode() == TerminalDockMode.UNSUPPORTED) {
                         return;
                     }
                 }
@@ -219,7 +246,7 @@ public class TerminalDockHubManager {
                 enableDock();
                 showDock();
                 Platform.runLater(() -> {
-                    dockModel.trackTerminal(controllable.get(), dock);
+                    dockModel.trackTerminal(t, dock);
                     dockModel.closeOtherTerminals(session.getRequest());
                 });
             }
@@ -235,21 +262,14 @@ public class TerminalDockHubManager {
 
             @Override
             public void onTerminalClosed(TerminalView.TerminalSession instance) {
-                var sessions = TerminalView.get().getSessions();
-                var remaining = sessions.stream()
-                        .filter(s -> hubRequests.contains(s.getRequest())
-                                && s.getTerminal().isRunning())
-                        .toList();
-                if (remaining.isEmpty()) {
-                    disableDock();
-                }
+                dockModel.removeTerminal(instance);
+                refreshDockStatus();
             }
         };
         return listener;
     }
 
     public void refreshDockStatus() {
-        dockModel.clearDeadTerminals();
         dockModel.updateCustomBounds();
 
         var running = dockModel.isRunning();
@@ -314,20 +334,20 @@ public class TerminalDockHubManager {
             enabled.set(false);
             showing.set(false);
 
+            showDialogIfNeeded();
+
             NativeWinWindowControl.MAIN_WINDOW.setWindowsTransitionsEnabled(true);
             AppLayoutModel.get().getQueueEntries().remove(queueEntry);
         });
     }
 
-    public void toggleDock() {
+    public void triggerDock() {
         if (!enabled.get()) {
             return;
         }
 
-        if (showing.get()) {
-            hideDock();
-        } else {
-            showDock();
+        if (showing.get() && (minimized.get() || detached.get())) {
+            attach();
         }
     }
 

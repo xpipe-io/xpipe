@@ -10,6 +10,7 @@ import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.OsType;
 
 import javafx.beans.value.ObservableValue;
 import javafx.scene.input.KeyCode;
@@ -46,7 +47,12 @@ public class EditFileMenuProvider implements BrowserMenuLeafProvider {
 
     @Override
     public KeyCombination getShortcut() {
-        return new KeyCodeCombination(KeyCode.E, KeyCombination.SHORTCUT_DOWN);
+        return switch (OsType.ofLocal()) {
+            case OsType.Linux linux -> new KeyCodeCombination(KeyCode.ENTER, KeyCombination.SHORTCUT_DOWN);
+            case OsType.MacOs macOs ->
+                new KeyCodeCombination(KeyCode.DOWN, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN);
+            case OsType.Windows windows -> new KeyCodeCombination(KeyCode.ENTER, KeyCombination.SHORTCUT_DOWN);
+        };
     }
 
     @Override

@@ -1,14 +1,16 @@
 package io.xpipe.app.vnc;
 
-import io.xpipe.app.browser.BrowserFullSessionModel;
-import io.xpipe.app.browser.BrowserStoreSessionTab;
-import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DocumentationLink;
+import io.xpipe.app.util.RemoteDesktopDockEntry;
+import io.xpipe.app.util.RemoteDesktopWindow;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 @Builder
 @Jacksonized
@@ -16,23 +18,20 @@ import lombok.extern.jackson.Jacksonized;
 public class InternalVncClient implements ExternalVncClient {
 
     @Override
-    public void launch(VncLaunchConfig configuration) throws Exception {
-        var browserSession = BrowserFullSessionModel.DEFAULT;
-        var open = browserSession.getSessionEntriesSnapshot().stream()
-                .filter(browserSessionTab -> browserSessionTab instanceof BrowserStoreSessionTab<?> st
-                        && st.getEntry().get().equals(configuration.getEntry().get()))
-                .findFirst()
-                .orElse(null);
-        if (open != null) {
-            AppLayoutModel.get().selectBrowser();
-            browserSession.getSelectedEntry().setValue(open);
-            return;
-        }
-
-        browserSession.openSync(
-                ProcessControlProvider.get().createVncSession(browserSession, configuration.getEntry()),
-                browserSession.getBusy());
-        AppLayoutModel.get().selectBrowser();
+    public void launch(VncLaunchConfig configuration) {
+        var w = RemoteDesktopWindow.get();
+        w.show();
+        var ref = new AtomicReference<RemoteDesktopDockEntry>();
+        var session = ProcessControlProvider.get().createVncSession(configuration.getEntry(), () -> {
+            w.close(ref.get(), false);
+        });
+        ref.set(w.trackInternal(
+                DataStorage.get()
+                        .getStoreEntryDisplayName(configuration.getEntry().get()),
+                configuration.getEntry().get().getEffectiveIconFile(),
+                DataStorage.get().getEffectiveColor(configuration.getEntry().get()),
+                configuration.getEntry().get(),
+                session));
     }
 
     @Override

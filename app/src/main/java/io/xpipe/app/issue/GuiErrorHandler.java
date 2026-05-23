@@ -3,6 +3,7 @@ package io.xpipe.app.issue;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.PlatformState;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LicenseRequiredException;
 
@@ -18,6 +19,10 @@ public class GuiErrorHandler extends GuiErrorHandlerBase implements ErrorHandler
     @Override
     public void handle(ErrorEvent event) {
         log.handle(event);
+
+        if (event.isOmitted() && PlatformState.getCurrent() != PlatformState.RUNNING) {
+            return;
+        }
 
         if (!startupGui(throwable -> {
             var second = ErrorEventFactory.fromThrowable(throwable).build();

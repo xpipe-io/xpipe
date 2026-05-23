@@ -1,9 +1,11 @@
 package io.xpipe.ext.base.service;
 
 import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
+import io.xpipe.app.hub.comp.StoreCreationModel;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStorage;
@@ -35,7 +37,7 @@ public class FixedServiceStoreProvider extends AbstractServiceStoreProvider {
     }
 
     @Override
-    public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
+    public GuiDialog guiDialog(StoreCreationModel model, Property<DataStore> store) {
         FixedServiceStore st = store.getValue().asNeeded();
         var host = new ReadOnlyObjectWrapper<>(st.getHost());
         var localPort = new SimpleObjectProperty<>(st.getLocalPort());
@@ -61,11 +63,12 @@ public class FixedServiceStoreProvider extends AbstractServiceStoreProvider {
                 .nameAndDescription("serviceHost")
                 .addComp(
                         new StoreChoiceComp<>(
-                                entry,
+                                model.getExistingEntry(),
                                 host,
                                 DataStore.class,
                                 null,
-                                StoreViewState.get().getAllConnectionsCategory()),
+                                StoreViewState.get().getAllConnectionsCategory(),
+                                DataStoreCreationCategory.HOST),
                         host)
                 .nonNull()
                 .disable()

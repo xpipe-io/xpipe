@@ -2,15 +2,6 @@
     -fx-font-family: "Inter";
 }
 
-.browser .visual-display {
-    -fx-border-color: -color-border-default;
-    -fx-border-width: 2 1 1 1;
-}
-
-.browser .visual-display:focused {
-    -fx-border-color: -color-accent-emphasis;
-}
-
 .download-background {
     -fx-padding: 1em;
 }
@@ -262,13 +253,17 @@
     -fx-opacity: 0;
 }
 
+.browser .tab-label {
+    -fx-padding: 5 6 5 6;
+}
+
 .browser .tab-loading-indicator {
-    -fx-min-width: 2.5em;
-    -fx-pref-width: 2.5em;
-    -fx-max-width: 2.5em;
-    -fx-min-height: 2.5em;
-    -fx-pref-height: 2.5em;
-    -fx-max-height: 2.5em;
+    -fx-min-width: 2.2em;
+    -fx-pref-width: 2.2em;
+    -fx-max-width: 2.2em;
+    -fx-min-height: 2.2em;
+    -fx-pref-height: 2.2em;
+    -fx-max-height: 2.2em;
 }
 
 .browser.chooser .left {
@@ -401,5 +396,15 @@
 .browser .quick-access-button .context-menu .leaf > * > .arrow {
     -fx-pref-width: 0;
     -fx-opacity: 0;
+}
+
+.browser .table-view .scroll-bar:horizontal {
+    -fx-min-width: 0;
+    -fx-pref-width: 0;
+    -fx-max-width: 0;
+
+    -fx-min-height: 0;
+    -fx-pref-height: 0;
+    -fx-max-height: 0;
 }
 

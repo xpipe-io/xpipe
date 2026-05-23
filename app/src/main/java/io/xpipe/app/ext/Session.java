@@ -32,6 +32,10 @@ public abstract class Session implements AutoCloseable {
                 if (!checkAliveQuiet()) {
                     handleSessionDeath();
                 }
+
+                if (checkInactive()) {
+                    handleSessionDeath();
+                }
             });
             return false;
         });
@@ -59,6 +63,8 @@ public abstract class Session implements AutoCloseable {
             return false;
         }
     }
+
+    public abstract boolean checkInactive();
 
     public abstract boolean checkAlive() throws Exception;
 

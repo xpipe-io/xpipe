@@ -11,18 +11,8 @@ public interface GhosttyTerminalType extends ExternalTerminalType, TrackableTerm
     ExternalTerminalType GHOSTTY_MACOS = new MacOs();
 
     @Override
-    default TerminalOpenFormat getOpenFormat() {
-        return TerminalOpenFormat.NEW_WINDOW;
-    }
-
-    @Override
     default String getWebsite() {
         return "https://ghostty.org";
-    }
-
-    @Override
-    default boolean isRecommended() {
-        return AppPrefs.get().terminalMultiplexer().getValue() != null;
     }
 
     @Override
@@ -31,6 +21,16 @@ public interface GhosttyTerminalType extends ExternalTerminalType, TrackableTerm
     }
 
     class Linux implements GhosttyTerminalType, ExternalApplicationType.PathApplication {
+
+        @Override
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW;
+        }
+
+        @Override
+        public boolean isRecommended() {
+            return AppPrefs.get().terminalMultiplexer().getValue() != null;
+        }
 
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
@@ -58,13 +58,28 @@ public interface GhosttyTerminalType extends ExternalTerminalType, TrackableTerm
     class MacOs implements ExternalApplicationType.MacApplication, GhosttyTerminalType {
 
         @Override
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
+        }
+
+        @Override
+        public boolean isRecommended() {
+            return true;
+        }
+
+        @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-            LocalShell.getShell()
-                    .executeSimpleCommand(CommandBuilder.of()
+            CommandBuilder b = configuration.isPreferTabs()
+                    ? CommandBuilder.of()
+                            .add("open", "-a")
+                            .addQuoted(getApplicationName())
+                            .addFile(configuration.single().getScriptFile())
+                    : CommandBuilder.of()
                             .add("open", "-n", "-a")
                             .addQuoted(getApplicationName())
                             .add("--args", "-e")
-                            .add(configuration.single().getDialectLaunchCommand()));
+                            .add(configuration.single().getDialectLaunchCommand());
+            LocalShell.getShell().command(b).execute();
         }
 
         @Override

@@ -29,7 +29,8 @@ public class SyncErrorHandler implements ErrorHandler {
         errorHandler.handle(event);
         synchronized (eventQueue) {
             eventQueue.forEach(errorEvent -> {
-                System.out.println("Event happened during error handling: " + errorEvent.toString());
+                var te = EventHandlerImpl.fromErrorEvent(errorEvent);
+                System.out.println("Event happened during error handling: " + te.toString());
             });
             eventQueue.clear();
         }

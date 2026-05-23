@@ -59,7 +59,7 @@ dependencies {
     compileOnly 'commons-io:commons-io:2.21.0'
     compileOnly "org.kordamp.ikonli:ikonli-javafx:12.4.0"
 
-    if (project != project(':base')) {
+    if (project.name != 'base') {
         compileOnly project(':base')
     }
 }

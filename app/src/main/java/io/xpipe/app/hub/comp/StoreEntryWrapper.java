@@ -73,6 +73,7 @@ public class StoreEntryWrapper {
     private final BooleanProperty pinToTop = new SimpleBooleanProperty();
     private final IntegerProperty orderIndex = new SimpleIntegerProperty();
     private final BooleanProperty effectiveBusy = new SimpleBooleanProperty();
+    private final Property<StoreCategoryWrapper> lastInformationCategory = new SimpleObjectProperty<>();
     private final ObservableList<String> tags = FXCollections.observableArrayList();
     private boolean effectiveBusyProviderBound = false;
 
@@ -96,6 +97,7 @@ public class StoreEntryWrapper {
                     var n = summary.getValue();
                     return n != null && AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
                 },
+                AppI18n.activeLanguage(),
                 AppPrefs.get().censorMode(),
                 summary);
         this.shownDescription = Bindings.createStringBinding(
@@ -121,8 +123,17 @@ public class StoreEntryWrapper {
     }
 
     public void moveTo(DataStoreCategory category) {
+        var oldCat = getCategory().getValue();
+        var newCat = StoreViewState.get().getCategoryWrapper(category);
+
         ThreadHelper.runAsync(() -> {
-            DataStorage.get().moveEntryToCategory(entry, category);
+            synchronized (this) {
+                DataStorage.get().moveEntryToCategory(entry, category);
+            }
+            Platform.runLater(() -> {
+                oldCat.update();
+                newCat.update();
+            });
         });
     }
 
@@ -140,7 +151,9 @@ public class StoreEntryWrapper {
 
     public void delete() {
         ThreadHelper.runAsync(() -> {
-            DataStorage.get().deleteWithChildren(this.entry);
+            synchronized (this) {
+                DataStorage.get().deleteWithChildren(this.entry);
+            }
         });
     }
 
@@ -168,7 +181,7 @@ public class StoreEntryWrapper {
 
     public synchronized void update() {
         // We are probably in shutdown then
-        if (StoreViewState.get() == null) {
+        if (AppOperationMode.isInShutdown() || StoreViewState.get() == null) {
             return;
         }
 
@@ -212,11 +225,12 @@ public class StoreEntryWrapper {
         sessionActive.setValue(entry.getStore() instanceof SingletonSessionStore<?> ss
                 && entry.getStore() instanceof ShellStore
                 && ss.isSessionRunning());
-        category.setValue(StoreViewState.get().getCategories().getList().stream()
+        var newCat = StoreViewState.get().getCategories().getList().stream()
                 .filter(storeCategoryWrapper ->
                         storeCategoryWrapper.getCategory().getUuid().equals(entry.getCategoryUuid()))
                 .findFirst()
-                .orElse(StoreViewState.get().getAllConnectionsCategory()));
+                .orElse(StoreViewState.get().getAllConnectionsCategory());
+        category.setValue(newCat);
         perUser.setValue(
                 !category.getValue().getRoot().equals(StoreViewState.get().getAllIdentitiesCategory())
                         && entry.isPerUserStore());
@@ -227,7 +241,14 @@ public class StoreEntryWrapper {
 
         var storeChanged = store.getValue() != entry.getStore();
         store.setValue(entry.getStore());
-        if (storeChanged || !information.isBound()) {
+
+        var selectedCat = StoreViewState.get().getActiveCategory().getValue();
+        var switchedCat = !selectedCat.equals(lastInformationCategory.getValue());
+        lastInformationCategory.setValue(selectedCat);
+
+        // Some infos depend on the section info, which might change the top level state based
+        // on the selected category
+        if (StoreViewState.get().isInitialized() && (storeChanged || !information.isBound() || switchedCat)) {
             information.unbind();
             shownInformation.unbind();
             if (entry.getValidity().isUsable()
@@ -256,6 +277,7 @@ public class StoreEntryWrapper {
                                             ? "*".repeat(n.length())
                                             : n;
                                 },
+                                AppI18n.activeLanguage(),
                                 AppPrefs.get().censorMode(),
                                 information));
                     } catch (Exception e) {

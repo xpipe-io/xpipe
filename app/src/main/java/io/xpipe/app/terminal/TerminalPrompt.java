@@ -47,11 +47,14 @@ public interface TerminalPrompt {
                 checkCanInstall(sc);
                 install(sc);
             } catch (Exception e) {
-                var name = sc.getSourceStoreId().flatMap(uuid -> DataStorage.get().getStoreEntryIfPresent(uuid))
-                        .map(DataStoreEntry::getName).orElse(null);
+                var name = sc.getSourceStoreId()
+                        .flatMap(uuid -> DataStorage.get().getStoreEntryIfPresent(uuid))
+                        .map(DataStoreEntry::getName)
+                        .orElse(null);
                 ErrorEventFactory.fromThrowable(e)
                         .omit()
-                        .description("Prompt installation for " + getId() + " failed on remote system" + (name != null ? " " + name : ""))
+                        .description("Prompt installation for " + getId() + " failed on remote system"
+                                + (name != null ? " " + name : ""))
                         .expected()
                         .handle();
                 return false;

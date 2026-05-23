@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 public class TerminalLauncher {
@@ -110,8 +109,8 @@ public class TerminalLauncher {
                             TerminalInitFunction.none()),
                     true);
             var singlePane = new TerminalPaneConfiguration(UUID.randomUUID(), title, 0, script, sc.getShellDialect());
-            var config = new TerminalLaunchConfiguration(null, title, title, true, List.of(singlePane));
-            launch(type, config, new CountDownLatch(0));
+            var config = new TerminalLaunchConfiguration(null, title, title, true, false, List.of(singlePane));
+            launch(type, config);
         }
     }
 
@@ -127,7 +126,6 @@ public class TerminalLauncher {
     }
 
     public static void open(List<Config> configs, boolean preferTabs, ExternalTerminalType type) throws Exception {
-        var latch = new CountDownLatch(configs.size());
         var paneList = new ArrayList<TerminalPaneConfiguration>();
         for (Config config : configs) {
             var entry = config.getEntry();
@@ -149,7 +147,7 @@ public class TerminalLauncher {
                             ? type.additionalInitCommands()
                             : TerminalInitFunction.none());
             TerminalLauncherManager.submitAsync(
-                    config.getRequest(), config.getProcessControl(), terminalConfig, config.getDirectory(), latch);
+                    config.getRequest(), config.getProcessControl(), terminalConfig, config.getDirectory());
 
             var paneIndex = configs.indexOf(config);
             var paneConfig = TerminalPaneConfiguration.create(
@@ -165,15 +163,15 @@ public class TerminalLauncher {
         var prefix = entry != null && color != null && type.useColoredTitle() ? color.getEmoji() + " " : "";
         var cleanTitle = (title != null ? title : entry != null ? entry.getName() : "Unknown");
         var adjustedTitle = prefix + cleanTitle;
-
         var effectivePreferTabs =
                 preferTabs && AppPrefs.get().preferTerminalTabs().get();
-        var launchConfig =
-                new TerminalLaunchConfiguration(color, adjustedTitle, cleanTitle, effectivePreferTabs, paneList);
-
-        if (effectivePreferTabs
+        var dock = effectivePreferTabs
                 && AppPrefs.get().enableConnectionHubTerminalDocking().get()
-                && TerminalDockHubManager.isAvailable()) {
+                && TerminalDockHubManager.isAvailable();
+        var launchConfig =
+                new TerminalLaunchConfiguration(color, adjustedTitle, cleanTitle, effectivePreferTabs, dock, paneList);
+
+        if (dock) {
             // Dock terminal if needed
             for (TerminalPaneConfiguration pane : launchConfig.getPanes()) {
                 TerminalDockHubManager.get().openTerminal(pane.getRequest());
@@ -199,35 +197,32 @@ public class TerminalLauncher {
             TerminalMultiplexerManager.registerSessionLaunch(launchConfig);
 
             if (launchMultiplexerTabInExistingTerminal(launchConfig)) {
-                latch.await();
                 return;
             }
 
             var multiplexerConfig = launchMultiplexerTabInNewTerminal(launchConfig);
             if (multiplexerConfig.isPresent()) {
-                launch(type, multiplexerConfig.get(), latch);
+                launch(type, multiplexerConfig.get());
                 return;
             }
         }
 
         var proxyConfig = launchProxy(launchConfig);
         if (proxyConfig.isPresent()) {
-            launch(type, proxyConfig.get(), latch);
+            launch(type, proxyConfig.get());
             return;
         }
 
-        launch(type, launchConfig, latch);
+        launch(type, launchConfig);
     }
 
-    private static void launch(ExternalTerminalType type, TerminalLaunchConfiguration config, CountDownLatch latch)
-            throws Exception {
+    private static void launch(ExternalTerminalType type, TerminalLaunchConfiguration config) throws Exception {
         if (type == null) {
             return;
         }
 
         try {
             type.launch(config);
-            latch.await();
         } catch (Exception ex) {
             var modMsg = ex.getMessage() != null && ex.getMessage().contains("Unable to find application named")
                     ? ex.getMessage() + " in installed /Applications on this system"
@@ -321,7 +316,12 @@ public class TerminalLauncher {
                     fullLocalCommand,
                     LocalShell.getDialect());
             return Optional.of(new TerminalLaunchConfiguration(
-                    null, AppNames.ofCurrent().getName(), AppNames.ofCurrent().getName(), false, List.of(pane)));
+                    null,
+                    AppNames.ofCurrent().getName(),
+                    AppNames.ofCurrent().getName(),
+                    false,
+                    launchConfiguration.isDock(),
+                    List.of(pane)));
         } else {
             var multiplexerCommand = multiplexer
                     .get()
@@ -341,7 +341,12 @@ public class TerminalLauncher {
                     fullLocalCommand,
                     LocalShell.getDialect());
             return Optional.of(new TerminalLaunchConfiguration(
-                    null, AppNames.ofCurrent().getName(), AppNames.ofCurrent().getName(), false, List.of(pane)));
+                    null,
+                    AppNames.ofCurrent().getName(),
+                    AppNames.ofCurrent().getName(),
+                    false,
+                    launchConfiguration.isDock(),
+                    List.of(pane)));
         }
     }
 

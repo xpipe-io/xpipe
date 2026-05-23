@@ -4,12 +4,14 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.Validator;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.DocumentationLink;
+import io.xpipe.app.util.Validators;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
@@ -85,7 +87,7 @@ public class CustomAgentStrategy implements SshIdentityAgentStrategy {
                         }))
                 .nameAndDescription("publicKey")
                 .documentationLink(DocumentationLink.SSH_AGENT_PUBLIC_KEYS)
-                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false), publicKey)
+                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false, false), publicKey)
                 .bind(
                         () -> {
                             return new CustomAgentStrategy(publicKey.get());
@@ -94,6 +96,11 @@ public class CustomAgentStrategy implements SshIdentityAgentStrategy {
     }
 
     String publicKey;
+
+    @Override
+    public void checkComplete() throws ValidationException {
+        Validators.nonNull(AppPrefs.get().defaultSshAgentSocket().getValue());
+    }
 
     @Override
     public void prepareParent(ShellControl parent) throws Exception {
@@ -107,7 +114,7 @@ public class CustomAgentStrategy implements SshIdentityAgentStrategy {
     }
 
     @Override
-    public FilePath determinetAgentSocketLocation(ShellControl sc) throws Exception {
+    public FilePath determineAgentSocketLocation(ShellControl sc) throws Exception {
         if (!sc.isLocal() || sc.getOsType() == OsType.WINDOWS) {
             return null;
         }
@@ -132,13 +139,13 @@ public class CustomAgentStrategy implements SshIdentityAgentStrategy {
     public List<KeyValue> configOptions(ShellControl sc) throws Exception {
         var file = SshIdentityStrategy.getPublicKeyPath(sc, publicKey);
         var l = new ArrayList<>(List.of(
-                new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
-                new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
-                new KeyValue("PKCS11Provider", "none")));
+                KeyValue.raw("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
+                KeyValue.raw("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
+                KeyValue.raw("PKCS11Provider", "none")));
 
-        var agent = determinetAgentSocketLocation(sc);
+        var agent = determineAgentSocketLocation(sc);
         if (agent != null) {
-            l.add(new KeyValue("IdentityAgent", "\"" + agent + "\""));
+            l.add(KeyValue.escape("IdentityAgent", agent));
         }
 
         return l;

@@ -139,7 +139,7 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
             return;
         }
 
-        StoreCreationDialog.showEdit(id.get());
+        StoreCreationDialog.showEdit(id.get(), id.get().getStore(), true, false, ignored -> {});
     }
 
     @Override
@@ -177,6 +177,10 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
     }
 
     private String formatName(DataStoreEntry storeEntry) {
+        if (storeEntry.getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
+            return null;
+        }
+
         IdentityStore id = storeEntry.getStore().asNeeded();
         var suffix = id instanceof LocalIdentityStore
                 ? AppI18n.get("localIdentity")
@@ -200,15 +204,23 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
             }
         }
 
+        Runnable updateMap = () -> {
+            map.clear();
+            for (DataStoreEntry storeEntry : DataStorage.get().getStoreEntries()) {
+                if (storeEntry.getValidity().isUsable() && storeEntry.getStore() instanceof IdentityStore) {
+                    map.put(formatName(storeEntry), storeEntry.ref());
+                }
+            }
+        };
+
         StoreViewState.get().getAllEntries().getList().addListener((ListChangeListener<? super StoreEntryWrapper>)
                 c -> {
-                    map.clear();
-                    for (DataStoreEntry storeEntry : DataStorage.get().getStoreEntries()) {
-                        if (storeEntry.getValidity().isUsable() && storeEntry.getStore() instanceof IdentityStore) {
-                            map.put(formatName(storeEntry), storeEntry.ref());
-                        }
-                    }
+                    updateMap.run();
                 });
+
+        selectedReference.addListener((observable, oldValue, newValue) -> {
+            updateMap.run();
+        });
 
         var prop = new SimpleStringProperty();
         if (inPlaceUser.getValue() != null) {
@@ -218,10 +230,16 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
         }
 
         prop.addListener((observable, oldValue, newValue) -> {
-            var ex = map.get(newValue);
-            applyRef(ex);
+            var newRef = map.get(newValue);
 
-            if (ex == null) {
+            // Ugly fix to handle selection of an entry with the same name as another
+            // Using the map would lead the sometimes selecting the wrong one
+            var sameName = selectedReference.getValue() != null && formatName(selectedReference.get().get()).equals(newValue);
+            if (!sameName) {
+                applyRef(newRef);
+            }
+
+            if (newRef == null) {
                 inPlaceUser.setValue(newValue);
             } else {
                 inPlaceUser.setValue(null);
@@ -302,7 +320,8 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
                     null,
                     true,
                     "selectIdentity",
-                    "noCompatibleIdentity");
+                    "noCompatibleIdentity",
+                    DataStoreCreationCategory.IDENTITY);
 
             popover.withPopover(po -> {
                 ((Region) po.getContentNode()).setMaxHeight(350);

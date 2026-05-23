@@ -81,7 +81,7 @@ public class StoreQuickConnect {
             return true;
         }
 
-        StoreCreationDialog.showEdit(quickConnectEntry, newStore, false, finished -> {
+        StoreCreationDialog.showEdit(quickConnectEntry, newStore, false, true, finished -> {
             update(finished.getStore());
             ThreadHelper.runAsync(() -> {
                 try {

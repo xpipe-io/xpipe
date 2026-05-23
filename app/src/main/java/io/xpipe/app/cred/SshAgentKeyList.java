@@ -2,7 +2,6 @@ package io.xpipe.app.cred;
 
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
@@ -30,7 +29,8 @@ public class SshAgentKeyList {
     }
 
     public static Entry findAgentIdentity(
-            DataStoreEntryRef<ShellStore> ref, SshIdentityAgentStrategy strategy, String identifier) throws Exception {
+            DataStoreEntryRef<ShellStore> ref, SshIdentityKeyListStrategy strategy, String identifier)
+            throws Exception {
         var all = listAgentIdentities(ref, strategy);
         var list = all.stream()
                 .filter(entry -> {
@@ -73,16 +73,14 @@ public class SshAgentKeyList {
         return list.getFirst();
     }
 
-    public static List<Entry> listAgentIdentities(DataStoreEntryRef<ShellStore> ref, SshIdentityAgentStrategy strategy)
-            throws Exception {
+    public static List<Entry> listAgentIdentities(
+            DataStoreEntryRef<ShellStore> ref, SshIdentityKeyListStrategy strategy) throws Exception {
         var session = ref != null ? ref.getStore().getOrStartSession() : LocalShell.getShell();
         strategy.prepareParent(session);
 
-        var socket = strategy.determinetAgentSocketLocation(session);
-        var out = session.command(CommandBuilder.of()
-                        .add("ssh-add", "-L")
-                        .fixedEnvironment("SSH_AUTH_SOCK", socket != null ? socket.toString() : null))
-                .readStdoutOrThrow();
+        var cmd = strategy.createListCommand();
+        strategy.buildCommand(cmd);
+        var out = session.command(cmd).readStdoutOrThrow();
         var pattern = Pattern.compile("([^ ]+) ([^ ]+)\\s*(?: (.+))?");
         var lines = out.lines().toList();
         var list = new ArrayList<Entry>();

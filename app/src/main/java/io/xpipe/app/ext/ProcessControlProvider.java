@@ -1,8 +1,5 @@
 package io.xpipe.app.ext;
 
-import io.modelcontextprotocol.spec.McpSchema;
-import io.xpipe.app.browser.BrowserFullSessionModel;
-import io.xpipe.app.browser.BrowserStoreSessionTab;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandControl;
@@ -10,14 +7,20 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.HttpProxy;
+import io.xpipe.app.util.RemoteDesktopDockContentEntry;
 import io.xpipe.app.vnc.VncBaseStore;
 import io.xpipe.core.SecretValue;
 
 import javafx.beans.property.Property;
 
+import io.modelcontextprotocol.spec.McpSchema;
+
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.ServiceLoader;
+import java.util.UUID;
 
 public abstract class ProcessControlProvider {
 
@@ -40,8 +43,8 @@ public abstract class ProcessControlProvider {
 
     public abstract ShellStore subShellEnvironment(DataStoreEntryRef<ShellStore> s, ShellDialect dialect);
 
-    public abstract BrowserStoreSessionTab<?> createVncSession(
-            BrowserFullSessionModel model, DataStoreEntryRef<VncBaseStore> ref);
+    public abstract RemoteDesktopDockContentEntry createVncSession(
+            DataStoreEntryRef<VncBaseStore> ref, Runnable onKill);
 
     public abstract DataStoreEntryRef<ShellStore> elevated(DataStoreEntryRef<ShellStore> e);
 
@@ -79,4 +82,11 @@ public abstract class ProcessControlProvider {
     public abstract void cloneRepository(String url, Path target) throws Exception;
 
     public abstract void pullRepository(Path target) throws Exception;
+
+    public abstract Optional<HttpProxy> getHttpProxy(DataStoreEntryRef<?> store);
+
+    public abstract void addAskpassEnvironment(
+            CommandBuilder b, String prefix, UUID requestId, UUID secretId, String... askpassName);
+
+    public abstract void refreshWsl();
 }

@@ -64,6 +64,7 @@ public class AppBaseMode extends AppOperationMode {
         // if (true) throw new IllegalStateException();
 
         TrackEvent.info("Initializing base mode components ...");
+        AppCertStore.init();
         AppMainWindow.loadingText("checkingLicense");
         LicenseProvider.get().init();
         AppMainWindow.loadingText("initializingApp");
@@ -157,6 +158,7 @@ public class AppBaseMode extends AppOperationMode {
                     TerminalView.init();
                     TerminalLauncherManager.init();
                     TerminalDockHubManager.init();
+                    RemoteDesktopWindow.init();
                     TrackEvent.info("File/Terminal initialization thread completed");
                 },
                 () -> {
@@ -182,7 +184,7 @@ public class AppBaseMode extends AppOperationMode {
                     TrackEvent.info("Browser initialization thread completed");
                 });
 
-        AppGreetingsDialog.showAndWaitIfNeeded();
+        // AppGreetingsDialog.showAndWaitIfNeeded();
         TrackEvent.info("Waiting for startup dialogs to close");
         AppDialog.waitForAllDialogsClose();
         UpdateChangelogDialog.showIfNeeded();
@@ -206,6 +208,7 @@ public class AppBaseMode extends AppOperationMode {
         AbstractAction.reset();
         AppMcpServer.reset();
         WorkspaceManager.reset();
+        RemoteDesktopWindow.reset();
         AppPrefs.reset();
         DataStorage.reset();
         DataStorageSyncHandler.getInstance().reset();
@@ -227,6 +230,7 @@ public class AppBaseMode extends AppOperationMode {
         AppDataLock.unlock();
         BlobManager.reset();
         FileBridge.reset();
+        AppCertStore.reset();
         AppFileWatcher.reset();
         GlobalTimer.reset();
         LocalFileTracker.reset();

@@ -1,18 +1,16 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
+import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreDependencies;
 import io.xpipe.app.ext.ShellDialectChoiceComp;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellScript;
@@ -48,8 +46,8 @@ import java.util.List;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = ScriptTextSource.InPlace.class),
-    @JsonSubTypes.Type(value = ScriptTextSource.SourceReference.class),
-    @JsonSubTypes.Type(value = ScriptTextSource.Url.class)
+    @JsonSubTypes.Type(value = ScriptTextSource.Url.class),
+    @JsonSubTypes.Type(value = ScriptTextSource.SourceReference.class)
 })
 public interface ScriptTextSource {
 
@@ -93,7 +91,8 @@ public interface ScriptTextSource {
                                                         ? dialect.getValue().getScriptFileEnding()
                                                         : "sh";
                                             },
-                                            dialect)),
+                                            dialect),
+                                    true),
                             text)
                     .bind(
                             () -> InPlace.builder()
@@ -159,7 +158,10 @@ public interface ScriptTextSource {
                     .documentationLink(DocumentationLink.SCRIPTING_COMPATIBILITY)
                     .addComp(choice, dialect)
                     .nameAndDescription("scriptTextSourceUrl")
-                    .addString(url)
+                    .addComp(
+                            new TextFieldComp(url)
+                                    .apply(textField -> textField.setPromptText("https://example.com/my-script.sh")),
+                            url)
                     .nonNull()
                     .bind(
                             () -> Url.builder()
@@ -177,9 +179,7 @@ public interface ScriptTextSource {
 
             var req = HttpRequest.newBuilder().GET().uri(URI.create(url)).build();
             var r = HttpHelper.client().send(req, HttpResponse.BodyHandlers.ofString());
-            if (r.statusCode() >= 400) {
-                throw ErrorEventFactory.expected(new IOException(r.body()));
-            }
+            HttpHelper.checkOrThrow(r);
 
             Files.createDirectories(path.getParent());
             Files.writeString(path, r.body());
@@ -219,16 +219,14 @@ public interface ScriptTextSource {
 
         @Override
         public String toSummary() {
-            var cleaned = url
-                    .replace("http://", "")
+            var cleaned = url.replace("http://", "")
                     .replace("https://", "")
                     .replace("file://", "")
                     .replace("ssh://", "")
                     .replace("raw.githubusercontent.com/", "")
                     .replace("github.com/", "")
                     .replace("refs/heads/", "");
-            return AppI18n.get(
-                    "sourcedFrom", cleaned);
+            return AppI18n.get("sourcedFrom", cleaned);
         }
 
         @Override
@@ -281,20 +279,12 @@ public interface ScriptTextSource {
                     ignored -> true,
                     StoreViewState.get().getAllScriptsCategory(),
                     StoreViewState.get().getScriptSourcesCategory(),
-                    true);
-
-            var importButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2i-import"), () -> {
-                var current = AppDialog.getCurrentModalOverlay();
-                current.ifPresent(modalOverlay -> modalOverlay.close());
-
-                var dialog = new ScriptCollectionSourceImportDialog(ref.get());
-                dialog.show();
-            });
-            importButton.disable(ref.isNull());
+                    true,
+                    DataStoreCreationCategory.SCRIPT_SOURCE);
 
             return new OptionsBuilder()
                     .nameAndDescription("scriptCollectionSourceEntry")
-                    .addComp(new InputGroupComp(List.of(sourceChoice, importButton)).setMainReference(0), ref)
+                    .addComp(sourceChoice, ref)
                     .nonNull()
                     .nameAndDescription("scriptSourceName")
                     .addString(name)
@@ -344,7 +334,7 @@ public interface ScriptTextSource {
 
         @Override
         public String toSummary() {
-            return AppI18n.get("sourcedFrom", ref.get().getName());
+            return AppI18n.get("sourcedFrom", ref.get().getName() + "/" + name);
         }
 
         @Override

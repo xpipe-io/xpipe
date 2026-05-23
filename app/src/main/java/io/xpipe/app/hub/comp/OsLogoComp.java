@@ -57,7 +57,7 @@ public class OsLogoComp extends SimpleRegionBuilder {
                 .build();
     }
 
-    private String getImage(String name, OsType.Any type) {
+    public static String getImage(String name, OsType.Any type) {
         if (name == null) {
             return null;
         }

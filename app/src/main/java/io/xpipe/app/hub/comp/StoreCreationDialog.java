@@ -2,9 +2,11 @@ package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProvider;
@@ -31,11 +33,15 @@ public class StoreCreationDialog {
     }
 
     public static StoreCreationModel showEdit(DataStoreEntry e, Consumer<DataStoreEntry> c) {
-        return showEdit(e, e.getStore(), true, c);
+        return showEdit(e, e.getStore(), true, true, c);
     }
 
     public static StoreCreationModel showEdit(
-            DataStoreEntry e, DataStore base, boolean addToStorage, Consumer<DataStoreEntry> c) {
+            DataStoreEntry e,
+            DataStore base,
+            boolean addToStorage,
+            boolean switchCategory,
+            Consumer<DataStoreEntry> c) {
         StoreCreationConsumer consumer = (newE, validated) -> {
             ThreadHelper.runAsync(() -> {
                 if (!addToStorage) {
@@ -48,32 +54,36 @@ public class StoreCreationDialog {
                         || DataStorage.get().getEffectiveReadOnlyState(e)) {
                     DataStorage.get().addStoreEntryIfNotPresent(newE);
                 } else {
-                    // We didn't change anything
-                    if (e.getStore().equals(newE.getStore())) {
-                        e.setName(newE.getName());
-                    } else {
-                        var madeValid = !e.getValidity().isUsable()
-                                && newE.getValidity().isUsable();
-                        DataStorage.get().updateEntry(e, newE);
-                        if (madeValid
-                                && validated
-                                && e.getProvider().shouldShowScan()
-                                && AppPrefs.get()
-                                        .openConnectionSearchWindowOnConnectionCreation()
-                                        .get()) {
-                            ScanDialog.showSingleAsync(e);
-                        }
+                    var wasChanged = !e.getStore().equals(newE.getStore());
+                    var madeValid =
+                            !e.getValidity().isUsable() && newE.getValidity().isUsable();
+
+                    // We might still have changed some auxiliary config value
+                    // So, always force an update, regardless of wasChanged
+                    DataStorage.get().updateEntry(e, newE);
+
+                    if (wasChanged
+                            && madeValid
+                            && validated
+                            && e.getProvider().shouldShowScan()
+                            && AppPrefs.get()
+                                    .openConnectionSearchWindowOnConnectionCreation()
+                                    .get()) {
+                        ScanDialog.showSingleAsync(e);
                     }
                 }
 
-                // Select new category if needed
-                var cat = DataStorage.get()
-                        .getStoreCategoryIfPresent(e.getCategoryUuid())
-                        .orElseThrow();
-                PlatformThread.runLaterIfNeeded(() -> {
-                    StoreViewState.get()
-                            .selectCategoryIntoViewIfNeeded(StoreViewState.get().getCategoryWrapper(cat));
-                });
+                if (switchCategory) {
+                    // Select new category if needed
+                    var cat = DataStorage.get()
+                            .getStoreCategoryIfPresent(e.getCategoryUuid())
+                            .orElseThrow();
+                    PlatformThread.runLaterIfNeeded(() -> {
+                        StoreViewState.get()
+                                .selectCategoryIntoViewIfNeeded(
+                                        StoreViewState.get().getCategoryWrapper(cat));
+                    });
+                }
 
                 c.accept(e);
             });
@@ -159,6 +169,14 @@ public class StoreCreationDialog {
         return model;
     }
 
+    private static void showNotice() {
+        var shown = AppCache.getBoolean("creationMinimizeDialogShown", false);
+        if (!shown) {
+            AppDialog.information("creationMinimizeNotice");
+            AppCache.update("creationMinimizeDialogShown", true);
+        }
+    }
+
     private static ModalOverlay createModalOverlay(StoreCreationModel model) {
         var comp = new StoreCreationComp(model);
         comp.prefWidth(650);
@@ -178,7 +196,12 @@ public class StoreCreationDialog {
 
         if (!model.isQuickConnect()) {
             var queueEntry = StoreCreationQueueEntry.of(model, modal);
-            modal.hideable(queueEntry);
+
+            modal.setHideAction(() -> {
+                AppLayoutModel.get().getQueueEntries().add(queueEntry);
+                showNotice();
+            });
+
             AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
                 if (model.getFinished().get() || !modal.isShowing()) {
                     return;
@@ -186,6 +209,7 @@ public class StoreCreationDialog {
 
                 modal.hide();
                 AppLayoutModel.get().getQueueEntries().add(queueEntry);
+                showNotice();
             });
             modal.setRequireCloseButtonForClose(true);
         }
@@ -246,7 +270,7 @@ public class StoreCreationDialog {
                                     () -> {
                                         return model.getBusy().get()
                                                 ? new LoadingIconComp(model.getBusy(), AppFontSizes::base)
-                                                        .style("store-creator-busy")
+                                                        .style("busy-loading-icon")
                                                         .build()
                                                 : null;
                                     },

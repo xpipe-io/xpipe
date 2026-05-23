@@ -1,5 +1,6 @@
 package io.xpipe.app.core.mode;
 
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.PlatformInit;
@@ -25,16 +26,23 @@ public class AppGuiMode extends AppOperationMode {
 
     @Override
     public void onSwitchFrom() {
-        // If we are in an externally started shutdown hook, don't close the windows until the platform exits
-        // That way, it is kept open to block for shutdowns on Windows systems
-        if (OsType.ofLocal() != OsType.WINDOWS || !AppOperationMode.isInShutdownHook()) {
-            PlatformThread.runLaterIfNeededBlocking(() -> {
-                TrackEvent.info("Closing windows");
-                Stage.getWindows().stream().toList().forEach(w -> {
-                    w.hide();
-                });
-            });
-        }
+        TrackEvent.info("Closing windows");
+        PlatformThread.runLaterIfNeededBlocking(() -> {
+            // Close dialogs
+            AppDialog.getModalOverlays().clear();
+
+            // Close other windows
+            Stage.getWindows().stream()
+                    .filter(w -> !w.equals(AppMainWindow.get().getStage()))
+                    .toList()
+                    .forEach(w -> w.hide());
+
+            // If we are in an externally started shutdown hook, don't close the windows until the platform exits
+            // That way, it is kept open to block for shutdowns on Windows systems
+            if (OsType.ofLocal() != OsType.WINDOWS || !AppOperationMode.isInShutdownHook()) {
+                AppMainWindow.get().hide();
+            }
+        });
     }
 
     @Override

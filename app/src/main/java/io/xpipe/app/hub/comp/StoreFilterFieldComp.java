@@ -11,19 +11,17 @@ import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ObservableSubscriber;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
-import javafx.scene.control.skin.TextFieldSkin;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.controls.CustomTextField;
 import atlantafx.base.controls.Popover;
 import atlantafx.base.theme.Styles;
-import javafx.scene.shape.Rectangle;
 
 import java.util.List;
 import java.util.Objects;
@@ -55,6 +53,9 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
         field.focusedProperty().subscribe(focus -> {
             if (focus) {
                 popover.hide();
+                Platform.runLater(() -> {
+                    field.selectAll();
+                });
             } else {
                 state.onFocusLost();
             }
@@ -143,15 +144,6 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
         field.textProperty().addListener((observable, oldValue, n) -> {
             state.getFieldText().setValue(n != null && n.length() > 0 ? n : null);
         });
-
-        // Fix caret not being visible on right side when overflowing
-        field.setSkin(field.createDefaultSkin());
-        Pane pane = (Pane) field.getChildrenUnmodifiable().getFirst();
-        var rec = new Rectangle();
-        rec.widthProperty().bind(pane.widthProperty().add(2));
-        rec.heightProperty().bind(pane.heightProperty());
-        rec.setSmooth(false);
-        field.getChildrenUnmodifiable().getFirst().setClip(rec);
 
         var menuButton = new IconButtonComp("mdi2a-animation-play", () -> {
             Bounds bounds = field.localToScreen(field.getBoundsInLocal());

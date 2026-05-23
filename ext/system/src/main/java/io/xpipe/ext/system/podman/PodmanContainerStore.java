@@ -136,9 +136,18 @@ public class PodmanContainerStore
             @Override
             public ShellControl control(ShellControl parent) throws Exception {
                 refreshContainerState(getCmd().getStore().getHost().getStore().getOrStartSession());
-                var pc = new PodmanCommandView(parent).container().exec(containerName);
+                var pc = new PodmanCommandView(parent).container().exec(containerName, getState()::getEffectiveDialect);
                 pc.withSourceStore(PodmanContainerStore.this);
                 pc.withShellStateInit(PodmanContainerStore.this);
+                pc.onInit(sc -> {
+                    var s = getState();
+                    if (s.getAvailableShellDialect() == null) {
+                        setState(s.toBuilder()
+                                .availableShellDialect(ContainerStoreState.findSuitableDialect(sc))
+                                .build());
+                    }
+                    sc.setOriginalShellDialect(s.getEffectiveDialect(sc));
+                });
                 pc.onStartupFail(throwable -> {
                     if (throwable instanceof LicenseRequiredException) {
                         return;

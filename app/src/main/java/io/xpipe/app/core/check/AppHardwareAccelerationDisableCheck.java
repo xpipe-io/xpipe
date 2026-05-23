@@ -2,7 +2,6 @@ package io.xpipe.app.core.check;
 
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.util.LocalExec;
 import io.xpipe.core.OsType;
 
 public class AppHardwareAccelerationDisableCheck {

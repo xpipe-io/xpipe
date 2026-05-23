@@ -1,12 +1,16 @@
 package io.xpipe.app.pwman;
 
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.process.ShellControl;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.OsType;
 import io.xpipe.core.SecretValue;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -16,6 +20,15 @@ import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface PasswordManager {
+
+    default String getDisplayName() {
+        var a = getClass().getAnnotation(JsonTypeName.class);
+        if (a != null) {
+            return AppI18n.get(a.value());
+        } else {
+            return "?";
+        }
+    }
 
     @SneakyThrows
     static PasswordManager determineDefault(PasswordManager existing) {
@@ -73,6 +86,7 @@ public interface PasswordManager {
         l.add(KeeperPasswordManager.class);
         l.add(ProtonPasswordManager.class);
         l.add(HashicorpVaultPasswordManager.class);
+        l.add(OpenBaoPasswordManager.class);
         if (OsType.ofLocal() != OsType.WINDOWS) {
             l.add(LastpassPasswordManager.class);
             l.add(EnpassPasswordManager.class);
@@ -102,6 +116,10 @@ public interface PasswordManager {
 
     default Duration getCacheDuration() {
         return Duration.ofSeconds(30);
+    }
+
+    default ShellControl getShell() throws Exception {
+        return LocalShell.get(getClass());
     }
 
     @Getter

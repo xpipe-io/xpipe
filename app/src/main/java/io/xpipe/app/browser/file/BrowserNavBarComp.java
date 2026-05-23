@@ -103,9 +103,7 @@ public class BrowserNavBarComp extends RegionStructureBuilder<HBox, BrowserNavBa
         pathRegion.prefHeightProperty().bind(stack.heightProperty());
 
         stack.widthProperty().addListener((observable, oldValue, newValue) -> {
-            Platform.runLater(() -> {
-                setAlignment(stack, breadcrumbsRegion);
-            });
+            setAlignment(stack, breadcrumbsRegion);
         });
         model.getCurrentPath().addListener((observable, oldValue, newValue) -> {
             PlatformThread.runLaterIfNeeded(() -> {

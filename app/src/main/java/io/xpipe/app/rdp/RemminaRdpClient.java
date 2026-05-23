@@ -21,12 +21,16 @@ public class RemminaRdpClient implements ExternalApplicationType.LinuxApplicatio
         return List.of("auto connect", "password 51", "prompt for credentials", "smart sizing");
     }
 
+    private boolean containsOnlyRecognizedOptions(RdpLaunchConfig configuration) {
+        var l = new HashSet<>(configuration.getConfig().getContent().keySet());
+        toStrip().forEach(l::remove);
+        return l.size() == 2 && l.contains("username") && l.contains("full address");
+    }
+
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
-        RdpConfig c = configuration.getConfig();
-
         // Remmina does not support RemoteApps
-        if (c.get("remoteapplicationprogram").isPresent()) {
+        if (configuration.isRemoteApp()) {
             var freerdp = new FreeRdpClient();
             if (freerdp.isAvailable()) {
                 freerdp.launch(configuration);
@@ -34,9 +38,7 @@ public class RemminaRdpClient implements ExternalApplicationType.LinuxApplicatio
             }
         }
 
-        var l = new HashSet<>(c.getContent().keySet());
-        toStrip().forEach(l::remove);
-        if (l.size() == 2 && l.contains("username") && l.contains("full address")) {
+        if (containsOnlyRecognizedOptions(configuration)) {
             var encrypted = RemminaHelper.encryptPassword(configuration.getPassword());
             if (encrypted.isPresent()) {
                 var file = RemminaHelper.writeRemminaRdpConfigFile(configuration, encrypted.get());
@@ -45,14 +47,15 @@ public class RemminaRdpClient implements ExternalApplicationType.LinuxApplicatio
             }
         }
 
+        RdpConfig c = configuration.getConfig();
         var file = writeRdpConfigFile(configuration.getTitle(), c);
         launch(CommandBuilder.of().add("-c").addFile(file.toString()));
         LocalFileTracker.deleteOnExit(file);
     }
 
     @Override
-    public boolean supportsPasswordPassing() {
-        return false;
+    public boolean supportsPasswordPassing(RdpLaunchConfig config) {
+        return config.isRemoteApp() || containsOnlyRecognizedOptions(config);
     }
 
     @Override

@@ -23,15 +23,21 @@ import javafx.stage.Window;
 public class AskpassAlert {
 
     public static SecretQueryResult queryRaw(String prompt, InPlaceSecretValue secretValue, boolean stealFocus) {
+        prompt = prompt.strip();
+        if (prompt.endsWith(":") || prompt.endsWith("?")) {
+            prompt = prompt.substring(0, prompt.length() - 1);
+        }
+
         var prop = new SimpleObjectProperty<>(secretValue);
+        var finalPrompt = prompt;
         var r = AppSideWindow.showBlockingAlert(alert -> {
                     alert.initModality(Modality.NONE);
                     alert.setTitle(AppI18n.get("askpassAlertTitle"));
-                    alert.setHeaderText(prompt);
+                    alert.setHeaderText(finalPrompt);
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
 
                     // Link to help page for double prompt
-                    if (SecretManager.disableCachingForPrompt(prompt)) {
+                    if (SecretManager.disableCachingForPrompt(finalPrompt)) {
                         var type = new ButtonType("Help", ButtonBar.ButtonData.HELP);
                         alert.getButtonTypes().add(type);
                         var button = alert.getDialogPane().lookupButton(type);

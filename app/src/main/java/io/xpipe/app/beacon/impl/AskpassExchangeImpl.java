@@ -1,6 +1,8 @@
 package io.xpipe.app.beacon.impl;
 
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.secret.SecretManager;
@@ -32,6 +34,12 @@ public class AskpassExchangeImpl extends AskpassExchange {
             var shown = AppLayoutModel.get().getQueueEntries().stream().anyMatch(queueEntry -> msg.getPrompt()
                     .equals(queueEntry.getName().getValue()));
             if (!shown) {
+                var dialogShown = AppCache.getBoolean("touchDialogShown", false);
+                if (!dialogShown) {
+                    AppDialog.information("touchNotice");
+                    AppCache.update("touchDialogShown", true);
+                }
+
                 var qe = new AppLayoutModel.QueueEntry(
                         new SimpleStringProperty(msg.getPrompt()),
                         new LabelGraphic.IconGraphic("mdi2f-fingerprint"),
@@ -41,7 +49,7 @@ public class AskpassExchangeImpl extends AskpassExchange {
                         () -> {
                             AppLayoutModel.get().getQueueEntries().remove(qe);
                         },
-                        Duration.ofSeconds(10));
+                        Duration.ofSeconds(15));
             }
             return Response.builder().value(InPlaceSecretValue.of("")).build();
         }

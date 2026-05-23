@@ -10,7 +10,6 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.MenuHelper;
-import io.xpipe.app.util.ObservableSubscriber;
 import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;
@@ -31,8 +30,6 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import java.util.function.Function;
 
 public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
-
-    private final ObservableSubscriber quickConnectTrigger = new ObservableSubscriber();
 
     private Region createHeaderBar() {
         var label = new Label();
@@ -110,7 +107,7 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
         menu.setGraphic(new FontIcon("mdi2p-plus-thick"));
         menu.setOnShowing(event -> {
             menu.getItems().clear();
-            StoreCreationMenu.addButtons(menu, true);
+            StoreCreationMenu.addButtons(menu.getItems(), true);
             event.consume();
         });
         menu.textProperty().bind(AppI18n.observable("new"));
@@ -171,6 +168,17 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
                             sortMode));
         });
         button.describe(d -> d.nameKey("sortIndexed"));
+        button.show(Bindings.createBooleanBinding(
+                () -> {
+                    var hasIndex = StoreViewState.get().getAllEntries().getList().stream()
+                            .anyMatch(w -> w.getOrderIndex().get() != 0);
+                    return hasIndex;
+                },
+                StoreViewState.get().getAllEntries().getList(),
+                StoreViewState.get()
+                        .getCurrentTopLevelSection()
+                        .getAllChildren()
+                        .getList()));
         return button;
     }
 

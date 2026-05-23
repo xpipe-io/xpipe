@@ -4,7 +4,9 @@ import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.*;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
 import javafx.beans.binding.Bindings;
@@ -24,17 +26,23 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleRegionBuilde
     private final Class<T> storeClass;
     private final Predicate<DataStoreEntryRef<T>> applicableCheck;
     private final StoreCategoryWrapper initialCategory;
+    private final DataStoreCreationCategory creationCategory;
+    private final Predicate<DataStoreEntryRef<T>> activeCheck;
     private boolean editable;
 
     public StoreListChoiceComp(
             ListProperty<DataStoreEntryRef<T>> selectedList,
             Class<T> storeClass,
             Predicate<DataStoreEntryRef<T>> applicableCheck,
-            StoreCategoryWrapper initialCategory) {
+            StoreCategoryWrapper initialCategory,
+            DataStoreCreationCategory creationCategory, Predicate<DataStoreEntryRef<T>> activeCheck
+    ) {
         this.selectedList = selectedList;
         this.storeClass = storeClass;
         this.applicableCheck = applicableCheck;
         this.initialCategory = initialCategory;
+        this.creationCategory = creationCategory;
+        this.activeCheck = activeCheck;
         this.editable = true;
     }
 
@@ -53,7 +61,13 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleRegionBuilde
                                 return null;
                             }
 
-                            var label = new LabelComp(t.get().getName()).apply(struc -> {
+                            var labelName = Bindings.createStringBinding(() -> {
+                                var base = t.get().getName();
+                                var active = activeCheck != null && activeCheck.test(t);
+                                return base + (active ? " (" + AppI18n.get("active") + ")" : "");
+                            }, selectedList, AppI18n.activeLanguage());
+
+                            var label = new LabelComp(labelName).apply(struc -> {
                                 struc.setGraphic(PrettyImageHelper.ofFixedSizeSquare(
                                                 t.get().getEffectiveIconFile(), 16)
                                         .build());
@@ -102,7 +116,7 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleRegionBuilde
                 .apply(struc -> struc.setMinHeight(0))
                 .apply(struc -> ((VBox) struc.getContent()).setSpacing(5));
         var selected = new SimpleObjectProperty<DataStoreEntryRef<T>>();
-        var add = new StoreChoiceComp<>(null, selected, storeClass, applicableCheck, initialCategory);
+        var add = new StoreChoiceComp<>(null, selected, storeClass, applicableCheck, initialCategory, creationCategory);
         selected.addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 if (!selectedList.contains(newValue) && (applicableCheck == null || applicableCheck.test(newValue))) {

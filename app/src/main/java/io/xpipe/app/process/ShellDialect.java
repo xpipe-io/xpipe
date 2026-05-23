@@ -70,7 +70,7 @@ public interface ShellDialect {
 
     String quoteArgument(String s);
 
-    String prepareTerminalEnvironmentCommands();
+    String prepareTerminalEnvironmentCommands(boolean local);
 
     String addToPathVariableCommand(List<String> entries, boolean append);
 
@@ -89,7 +89,7 @@ public interface ShellDialect {
 
     String getScriptFileEnding();
 
-    String assembleCommand(String command, Map<String, String> variables) throws Exception;
+    String assembleCommand(String command, Map<String, String> variables);
 
     Stream<FileEntry> listFiles(FileSystem fs, ShellControl control, String path, boolean sub) throws Exception;
 

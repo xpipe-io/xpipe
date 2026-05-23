@@ -63,19 +63,25 @@ public class ChocoUpdater extends UpdateHandler {
                 var systemWide = Files.exists(
                         AppInstallation.ofCurrent().getBaseInstallationPath().resolve("system"));
                 var propertiesArguments = systemWide ? ", --install-arguments=\"'ALLUSERS=1'\"" : "";
-                TerminalLaunch.builder().title("XPipe Updater").localScript(sc -> {
-                    var pkg = "xpipe";
-                    var commandToRun = "Start-Process -Wait -Verb runAs -FilePath choco -ArgumentList upgrade, " + pkg
-                            + ", -y" + propertiesArguments;
-                    var powershell = ShellDialects.isPowershell(sc);
-                    var powershellCommand = powershell
-                            ? "powershell -Command " + sc.getShellDialect().quoteArgument(commandToRun)
-                            : "powershell -Command " + commandToRun;
-                    return ShellScript.lines(
-                            ShellDialects.isPowershell(sc) ? "echo \"Running choco command ...\"" : "echo Running choco command ...",
-                            powershellCommand,
-                            AppRestart.getTerminalRestartCommand());
-                }).launch();
+                TerminalLaunch.builder()
+                        .title("XPipe Updater")
+                        .localScript(sc -> {
+                            var pkg = "xpipe";
+                            var commandToRun = "Start-Process -Wait -Verb runAs -FilePath choco -ArgumentList upgrade, "
+                                    + pkg + ", -y" + propertiesArguments;
+                            var powershell = ShellDialects.isPowershell(sc);
+                            var powershellCommand = powershell
+                                    ? "powershell -Command "
+                                            + sc.getShellDialect().quoteArgument(commandToRun)
+                                    : "powershell -Command " + commandToRun;
+                            return ShellScript.lines(
+                                    ShellDialects.isPowershell(sc)
+                                            ? "echo \"Running choco command ...\""
+                                            : "echo Running choco command ...",
+                                    powershellCommand,
+                                    AppRestart.getTerminalRestartCommand());
+                        })
+                        .launch();
             });
         } catch (Throwable t) {
             ErrorEventFactory.fromThrowable(t).handle();
@@ -89,7 +95,9 @@ public class ChocoUpdater extends UpdateHandler {
 
         var chocoRelease = getOutdatedPackageUpdateVersion();
         // Use current release if the update is not available for choco yet
-        if (chocoRelease.isEmpty() || (!chocoRelease.get().equals(rel.getTag()) && !chocoRelease.get().equals(rel.getTag() + ".0"))) {
+        if (chocoRelease.isEmpty()
+                || (!chocoRelease.get().equals(rel.getTag())
+                        && !chocoRelease.get().equals(rel.getTag() + ".0"))) {
             rel = AppRelease.of(AppProperties.get().getVersion());
         }
 

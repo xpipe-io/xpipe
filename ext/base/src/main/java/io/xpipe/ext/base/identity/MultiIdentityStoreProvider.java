@@ -1,9 +1,10 @@
 package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.hub.comp.StoreCreationModel;
 import io.xpipe.app.hub.comp.StoreListChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -15,24 +16,31 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
 
 public class MultiIdentityStoreProvider extends IdentityStoreProvider {
 
     @Override
-    public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
+    public boolean allowCreation() {
+        return DataStorage.get().getStoreEntries().stream().anyMatch(e -> e.getStore() instanceof IdentityStore);
+    }
+
+    @Override
+    public GuiDialog guiDialog(StoreCreationModel model, Property<DataStore> store) {
         MultiIdentityStore st = (MultiIdentityStore) store.getValue();
 
         var initialAvailableIdentities = st.getAvailableIdentities();
         var identities = new SimpleListProperty<DataStoreEntryRef<IdentityStore>>(FXCollections.observableArrayList());
         for (UUID uuid : st.getIdentities()) {
-            var available = initialAvailableIdentities.stream().filter(id -> id.get().getUuid().equals(uuid)).findFirst();
+            var available = initialAvailableIdentities.stream()
+                    .filter(id -> id.get().getUuid().equals(uuid))
+                    .findFirst();
             if (available.isPresent()) {
                 identities.add(available.get());
             } else {
-                identities.add(new DataStoreEntryRef<>(DataStoreEntry.createNew(uuid, DataStorage.DEFAULT_CATEGORY_UUID, AppI18n.get("unknown"), null)));
+                identities.add(new DataStoreEntryRef<>(DataStoreEntry.createNew(
+                        uuid, DataStorage.DEFAULT_CATEGORY_UUID, AppI18n.get("unknown"), null)));
             }
         }
         var perUser = new SimpleBooleanProperty(st.isPerUser());
@@ -44,7 +52,12 @@ public class MultiIdentityStoreProvider extends IdentityStoreProvider {
                                 identities,
                                 IdentityStore.class,
                                 ref -> !(ref.getStore() instanceof MultiIdentityStore) && !identities.contains(ref),
-                                StoreViewState.get().getAllIdentitiesCategory()),
+                                StoreViewState.get().getAllIdentitiesCategory(),
+                                DataStoreCreationCategory.IDENTITY,
+                                ref -> {
+                                    var l = identities.stream().filter(r -> r.getStore() != null).toList();
+                                    return l.size() > 0 && l.getFirst() == ref;
+                                }),
                         identities)
                 .nameAndDescription(
                         DataStorageUserHandler.getInstance().getActiveUser() != null
@@ -55,7 +68,9 @@ public class MultiIdentityStoreProvider extends IdentityStoreProvider {
                 .bind(
                         () -> {
                             // User made no changes in GUI
-                            if (identities.getValue().stream().map(ref -> ref.get().getUuid()).toList()
+                            if (identities.getValue().stream()
+                                    .map(ref -> ref.get().getUuid())
+                                    .toList()
                                     .equals(st.getIdentities())) {
                                 return MultiIdentityStore.builder()
                                         .identities(st.getIdentities())

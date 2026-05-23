@@ -1,8 +1,5 @@
 package io.xpipe.app.pwman;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.core.AppFontSizes;
@@ -17,13 +14,14 @@ import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
-
 import io.xpipe.core.JacksonMapper;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.MenuItem;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -83,7 +81,7 @@ public class PasswordManagerCommand implements PasswordManager {
         });
 
         var area = IntegratedTextAreaComp.script(
-                new SimpleObjectProperty<>(DataStorage.get().local().ref()), script);
+                new SimpleObjectProperty<>(DataStorage.get().local().ref()), script, true);
         area.maxWidth(600);
 
         return new OptionsBuilder()
@@ -156,7 +154,9 @@ public class PasswordManagerCommand implements PasswordManager {
 
         if (fieldMap == null && out.startsWith("{")) {
             ErrorEventFactory.fromThrowable(new IllegalArgumentException(
-                    "Returned output is json, but no field mapping has been specified")).expected().handle();
+                            "Returned output is json, but no field mapping has been specified"))
+                    .expected()
+                    .handle();
             return null;
         }
 
@@ -164,13 +164,22 @@ public class PasswordManagerCommand implements PasswordManager {
             JsonNode json = null;
             try {
                 json = JacksonMapper.getDefault().readTree(out);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
 
             if (json != null && json.isObject()) {
-                var username = Optional.ofNullable(json.get(fieldMap.get("user"))).map(JsonNode::textValue).orElse(null);
-                var password = Optional.ofNullable(json.get(fieldMap.get("pass"))).map(JsonNode::textValue).orElse(null);
-                var publicKey = Optional.ofNullable(json.get(fieldMap.get("public-key"))).map(JsonNode::textValue).orElse(null);
-                var privateKey = Optional.ofNullable(json.get(fieldMap.get("private-key"))).map(JsonNode::textValue).orElse(null);
+                var username = Optional.ofNullable(json.get(fieldMap.get("user")))
+                        .map(JsonNode::textValue)
+                        .orElse(null);
+                var password = Optional.ofNullable(json.get(fieldMap.get("pass")))
+                        .map(JsonNode::textValue)
+                        .orElse(null);
+                var publicKey = Optional.ofNullable(json.get(fieldMap.get("public-key")))
+                        .map(JsonNode::textValue)
+                        .orElse(null);
+                var privateKey = Optional.ofNullable(json.get(fieldMap.get("private-key")))
+                        .map(JsonNode::textValue)
+                        .orElse(null);
                 var creds = Credentials.of(username, password);
                 var sshKey = SshKey.of(publicKey, privateKey);
                 var r = Result.of(creds, sshKey);
@@ -181,16 +190,19 @@ public class PasswordManagerCommand implements PasswordManager {
 
                     var l = new ArrayList<String>();
                     json.fieldNames().forEachRemaining(l::add);
-                    throw ErrorEventFactory.expected(
-                            new IllegalArgumentException("Found no data for specified fields, but only found the following unmapped fields: " + l));
+                    throw ErrorEventFactory.expected(new IllegalArgumentException(
+                            "Found no data for specified fields, but only found the following unmapped fields: " + l));
                 }
                 return r;
             }
         }
 
         if (out.contains("\n")) {
-            ErrorEventFactory.fromThrowable(new IllegalArgumentException(
-                    "Returned secret output contains multiple lines. For raw secrets, the output should only be a single line string")).expected().handle();
+            ErrorEventFactory.fromThrowable(
+                            new IllegalArgumentException(
+                                    "Returned secret output contains multiple lines. For raw secrets, the output should only be a single line string"))
+                    .expected()
+                    .handle();
             return null;
         }
 

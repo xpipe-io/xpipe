@@ -4,7 +4,6 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.check.AppSystemFontCheck;
-import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
@@ -86,21 +85,24 @@ public enum PlatformState {
                 "java.lang.InternalError: Error loading stock shader",
                 "java.lang.RuntimeException: Error creating vertex shader",
                 "java.lang.RuntimeException: Error creating fragment shader",
-                "java.lang.RuntimeException: Error creating shader program"
-        );
-        if (AppPrefs.get() != null && AppPrefs.get().canSaveLocal() &&
-                !AppPrefs.get().disableHardwareAcceleration().get() && l.stream().anyMatch(msg::contains)) {
+                "java.lang.RuntimeException: Error creating shader program");
+        if (AppPrefs.get() != null
+                && AppPrefs.get().canSaveLocal()
+                && !AppPrefs.get().disableHardwareAcceleration().get()
+                && l.stream().anyMatch(msg::contains)) {
             restartQueued = true;
             AppCache.update("hardwareAccelerationDisabled", true);
             // Delay this to guarantee that the application starts up as much as possible
             // This is to ensure that any initialization on initial startup is run
             // It will get stuck at the first dialog if the graphics pipeline does not work
-            GlobalTimer.delay(() -> {
-                teardown();
-                AppPrefs.get().disableHardwareAcceleration().set(true);
-                AppPrefs.get().save();
-                AppRestart.restart();
-            }, Duration.ofSeconds(5));
+            GlobalTimer.delay(
+                    () -> {
+                        teardown();
+                        AppPrefs.get().disableHardwareAcceleration().set(true);
+                        AppPrefs.get().save();
+                        AppRestart.restart();
+                    },
+                    Duration.ofSeconds(5));
         }
     }
 
@@ -139,7 +141,7 @@ public enum PlatformState {
         if (AppPrefs.get() != null) {
             var s = AppPrefs.get().uiScale().getValue();
             if (s != null) {
-                var i = Math.min(300, Math.max(25, s));
+                var i = Math.clamp(s, 25, 300);
                 var value = i + "%";
                 switch (OsType.ofLocal()) {
                     case OsType.Linux ignored -> {
@@ -163,8 +165,11 @@ public enum PlatformState {
         }
 
         // Assume that someone who has set this env variable wants to use the software renderer
-        var overrideDisableHardwareAcceleration = OsType.ofLocal() == OsType.LINUX && "1".equals(System.getenv("LIBGL_ALWAYS_SOFTWARE"));
-        if (overrideDisableHardwareAcceleration || (AppPrefs.get() != null && AppPrefs.get().disableHardwareAcceleration().get())) {
+        var overrideDisableHardwareAcceleration =
+                OsType.ofLocal() == OsType.LINUX && "1".equals(System.getenv("LIBGL_ALWAYS_SOFTWARE"));
+        if (overrideDisableHardwareAcceleration
+                || (AppPrefs.get() != null
+                        && AppPrefs.get().disableHardwareAcceleration().get())) {
             System.setProperty("prism.order", "sw");
         }
 

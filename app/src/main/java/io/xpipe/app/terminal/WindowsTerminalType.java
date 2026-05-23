@@ -9,6 +9,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.JacksonMapper;
 
@@ -40,9 +41,15 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
     }
 
     private static CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
+        var cmd = CommandBuilder.of();
+
+        if (configuration.isDock()) {
+            var bounds = NativeWinWindowControl.MAIN_WINDOW.getBounds();
+            cmd.add("--pos").addQuoted(bounds.getX() + "," + (bounds.getY() + 20));
+        }
+
         // Start from high window index to guarantee that xpipe uses its own window
-        var cmd = CommandBuilder.of()
-                .addIf(configuration.isPreferTabs(), "-w", "100", "nt")
+        cmd.addIf(configuration.isPreferTabs(), "-w", "100", "nt")
                 .addIf(!configuration.isPreferTabs(), "-w", "" + windowCounter.getAndIncrement());
 
         if (configuration.getColor() != null) {

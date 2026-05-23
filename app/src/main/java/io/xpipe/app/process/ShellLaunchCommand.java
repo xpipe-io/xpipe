@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ShellLaunchCommand {
 
-    String inlineCdCommand(String cd);
+    String inlineCdCommand(OsType.Any os, String cd);
 
     List<String> localCommand();
 

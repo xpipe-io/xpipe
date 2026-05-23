@@ -2,6 +2,7 @@ package io.xpipe.app.hub.action.impl;
 
 import io.xpipe.app.action.*;
 import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.SingletonSessionStore;
 import io.xpipe.app.hub.action.StoreAction;
 
 import lombok.experimental.SuperBuilder;
@@ -18,7 +19,10 @@ public class RefreshActionProvider implements ActionProvider {
     @SuperBuilder
     public static class Action extends StoreAction<DataStore> {
         @Override
-        public void executeImpl() {
+        public void executeImpl() throws Exception {
+            if (ref.getStore() instanceof SingletonSessionStore<?> sss) {
+                sss.stopSessionIfNeeded();
+            }
             ref.get().validate();
         }
     }

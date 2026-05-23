@@ -31,11 +31,14 @@ public class ScriptDataStorageProvider extends DataStorageExtensionProvider {
             return;
         }
 
-        if (DataStorage.get().getStoreCategoryIfPresent(DataStorage.PREDEFINED_SCRIPTS_CATEGORY_UUID).isPresent()) {
+        if (DataStorage.get()
+                .getStoreCategoryIfPresent(DataStorage.PREDEFINED_SCRIPTS_CATEGORY_UUID)
+                .isPresent()) {
             return;
         }
 
-        var cat = DataStoreCategory.createNew(DataStorage.ALL_SCRIPTS_CATEGORY_UUID, DataStorage.PREDEFINED_SCRIPTS_CATEGORY_UUID, "Samples");
+        var cat = DataStoreCategory.createNew(
+                DataStorage.ALL_SCRIPTS_CATEGORY_UUID, DataStorage.PREDEFINED_SCRIPTS_CATEGORY_UUID, "Samples");
         DataStorage.get().addStoreCategory(cat);
 
         for (PredefinedScriptStore value : PredefinedScriptStore.values()) {

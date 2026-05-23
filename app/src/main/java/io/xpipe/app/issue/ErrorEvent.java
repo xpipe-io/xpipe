@@ -85,6 +85,25 @@ public class ErrorEvent {
 
     public static class ErrorEventBuilder {
 
+        public void apply(ErrorEventBuilder other) {
+            var e = other.build();
+            if (!e.reportable) {
+                expected();
+            }
+            if (e.terminal) {
+                term();
+            }
+            if (e.link != null) {
+                link = e.link;
+            }
+            if (e.description != null) {
+                description = e.description;
+            }
+            if (e.omitted) {
+                omit();
+            }
+        }
+
         public ErrorEventBuilder documentationLink(DocumentationLink documentationLink) {
             return link(documentationLink.getLink());
         }
@@ -132,10 +151,6 @@ public class ErrorEvent {
 
         Throwable getThrowable() {
             return throwable;
-        }
-
-        String getLink() {
-            return link;
         }
     }
 }

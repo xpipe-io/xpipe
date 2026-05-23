@@ -2,9 +2,11 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
 
+import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -16,8 +18,11 @@ import javafx.util.StringConverter;
 
 import lombok.Setter;
 
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class ChoicePaneComp extends RegionBuilder<VBox> {
 
@@ -44,7 +49,8 @@ public class ChoicePaneComp extends RegionBuilder<VBox> {
             }
         });
         cb.getSelectionModel().select(selected.getValue());
-        cb.setConverter(new StringConverter<>() {
+
+        Supplier<StringConverter<Entry>> converter = () -> new StringConverter<>() {
             @Override
             public String toString(Entry object) {
                 if (object == null || object.name() == null) {
@@ -58,6 +64,19 @@ public class ChoicePaneComp extends RegionBuilder<VBox> {
             public Entry fromString(String string) {
                 throw new UnsupportedOperationException();
             }
+        };
+        cb.setConverter(converter.get());
+
+        // Reset converter on language change to force an update
+        // This does not work properly in older JFX versions, see JDK-8384006
+        var ref = new WeakReference<>(cb);
+        AppI18n.activeLanguage().subscribe((v) -> {
+            var refValue = ref.get();
+            if (refValue != null) {
+                Platform.runLater(() -> {
+                    refValue.setConverter(converter.get());
+                });
+            }
         });
 
         var vbox = new VBox(transformer.apply(cb));
@@ -69,13 +88,15 @@ public class ChoicePaneComp extends RegionBuilder<VBox> {
         });
 
         cb.prefWidthProperty().bind(vbox.widthProperty());
+
+        var regionMap = new HashMap<Entry, Region>();
         cb.valueProperty().subscribe(n -> {
             if (n == null) {
                 if (vbox.getChildren().size() > 1) {
                     vbox.getChildren().remove(1);
                 }
             } else {
-                var region = n.comp().build();
+                var region = regionMap.computeIfAbsent(n, entry -> entry.comp().build());
                 if (vbox.getChildren().size() == 1) {
                     vbox.getChildren().add(region);
                 } else {

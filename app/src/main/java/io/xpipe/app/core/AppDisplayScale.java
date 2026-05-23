@@ -52,7 +52,7 @@ public class AppDisplayScale {
         if (AppPrefs.get() != null) {
             var s = AppPrefs.get().uiScale().getValue();
             if (s != null) {
-                var i = Math.min(300, Math.max(25, s));
+                var i = Math.clamp(s, 25, 300);
                 var percent = i / 100.0;
                 return percent;
             }

@@ -4,6 +4,7 @@ import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.comp.base.ScrollComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppRestart;
@@ -20,6 +21,7 @@ import javafx.scene.text.TextAlignment;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class AppPrefsSidebarComp extends SimpleRegionBuilder {
@@ -50,17 +52,8 @@ public class AppPrefsSidebarComp extends SimpleRegionBuilder {
                 })
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        var restartButton = new ButtonComp(AppI18n.observable("restartApp"), new FontIcon("mdi2r-restart"), () -> {
-            AppRestart.restart();
-        });
-        restartButton.maxWidth(2000);
-        restartButton.visible(AppPrefs.get().getRequiresRestart());
-        restartButton.padding(new Insets(6, 10, 6, 6));
-        buttons.add(RegionBuilder.vspacer());
-        buttons.add(restartButton);
-
-        var vbox = new VerticalComp(buttons).style("sidebar").style("color-box").style("gray");
-        vbox.apply(struc -> {
+        var categoryButtons = new VerticalComp(buttons);
+        categoryButtons.apply(struc -> {
             AppPrefs.get().getSelectedCategory().subscribe(val -> {
                 PlatformThread.runLaterIfNeeded(() -> {
                     var index = val != null ? effectiveCategories.indexOf(val) : 0;
@@ -72,6 +65,17 @@ public class AppPrefsSidebarComp extends SimpleRegionBuilder {
                 });
             });
         });
+
+        var restartButton = new ButtonComp(AppI18n.observable("restartApp"), new FontIcon("mdi2r-restart"), () -> {
+            AppRestart.restart();
+        });
+        restartButton.maxWidth(2000);
+        restartButton.show(AppPrefs.get().getRequiresRestart());
+        restartButton.padding(new Insets(6, 10, 6, 6));
+
+        var vbox = new VerticalComp(List.of(new ScrollComp(categoryButtons), RegionBuilder.vspacer(), restartButton));
+        vbox.style("sidebar").style("color-box").style("gray");
+
         return vbox.build();
     }
 }

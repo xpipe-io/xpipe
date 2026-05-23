@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class PodmanCommandView extends CommandViewBase {
 
@@ -23,6 +24,13 @@ public class PodmanCommandView extends CommandViewBase {
     }
 
     private static <T extends Throwable> T convertException(T s) {
+        if (s instanceof ProcessOutputException pex) {
+            if (pex.getOutput().contains("OCI runtime exec failed")) {
+                ErrorEventFactory.preconfigure(
+                        ErrorEventFactory.fromThrowable(s).description("Container does not contain a usable shell"));
+            }
+        }
+
         return ErrorEventFactory.expectedIfContains(
                 s,
                 "Error: unable to connect to Podman.",
@@ -124,20 +132,21 @@ public class PodmanCommandView extends CommandViewBase {
             }
         }
 
-        public ShellControl exec(String container) {
+        public ShellControl exec(String container, Function<ShellControl, ShellDialect> dialect) {
             var sub = shellControl.subShell();
-            sub.setDumbOpen(createOpenFunction(container, false));
-            sub.setTerminalOpen(createOpenFunction(container, true));
+            sub.setDumbOpen(createOpenFunction(container, dialect, false));
+            sub.setTerminalOpen(createOpenFunction(container, dialect, true));
             return sub.withExceptionConverter(PodmanCommandView::convertException);
         }
 
-        private ShellOpenFunction createOpenFunction(String containerName, boolean terminal) {
+        private ShellOpenFunction createOpenFunction(
+                String containerName, Function<ShellControl, ShellDialect> dialect, boolean terminal) {
             return new ShellOpenFunction() {
                 @Override
                 public CommandBuilder prepareWithoutInitCommand() {
                     return execCommand(terminal)
                             .addQuoted(containerName)
-                            .add(ShellDialects.SH.getLaunchCommand().loginCommand());
+                            .add(sc -> dialect.apply(sc).getLaunchCommand().loginCommand());
                 }
 
                 @Override

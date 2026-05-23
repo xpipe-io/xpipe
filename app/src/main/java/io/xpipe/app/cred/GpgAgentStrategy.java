@@ -36,12 +36,7 @@ public class GpgAgentStrategy implements SshIdentityAgentStrategy {
         return new OptionsBuilder()
                 .nameAndDescription("publicKey")
                 .documentationLink(DocumentationLink.SSH_AGENT_PUBLIC_KEYS)
-                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false), publicKey)
-                .addComp(
-                        new TextFieldComp(publicKey)
-                                .apply(struc -> struc.setPromptText(
-                                        "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")),
-                        publicKey)
+                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false, false), publicKey)
                 .bind(
                         () -> {
                             return new GpgAgentStrategy(publicKey.get());
@@ -68,15 +63,17 @@ public class GpgAgentStrategy implements SshIdentityAgentStrategy {
     String publicKey;
 
     @Override
+    public void checkComplete() {}
+
+    @Override
     public void prepareParent(ShellControl parent) throws Exception {
-        parent.requireLicensedFeature(LicenseProvider.get().getFeature("gpgAgent"));
         if (parent.isLocal()) {
             SshIdentityStateManager.prepareLocalGpgAgent();
         }
     }
 
     @Override
-    public FilePath determinetAgentSocketLocation(ShellControl sc) throws Exception {
+    public FilePath determineAgentSocketLocation(ShellControl sc) throws Exception {
         if (sc.getOsType() == OsType.WINDOWS) {
             return null;
         }
@@ -96,13 +93,13 @@ public class GpgAgentStrategy implements SshIdentityAgentStrategy {
     public List<KeyValue> configOptions(ShellControl sc) throws Exception {
         var file = SshIdentityStrategy.getPublicKeyPath(sc, publicKey);
         var l = new ArrayList<>(List.of(
-                new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
-                new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
-                new KeyValue("PKCS11Provider", "none")));
+                KeyValue.raw("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
+                KeyValue.escape("IdentityFile", file.isPresent() ? file.get() : "none"),
+                KeyValue.raw("PKCS11Provider", "none")));
 
-        var agent = determinetAgentSocketLocation(sc);
+        var agent = determineAgentSocketLocation(sc);
         if (agent != null) {
-            l.add(new KeyValue("IdentityAgent", "\"" + agent + "\""));
+            l.add(KeyValue.escape("IdentityAgent", agent));
         }
 
         return l;

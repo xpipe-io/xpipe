@@ -39,6 +39,8 @@ public class ScanDialogBase {
     private final boolean showButton;
     private final ObservableList<ScanProvider.ScanOpportunity> available =
             FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
+
+    @Getter
     private final ListProperty<ScanProvider.ScanOpportunity> selected =
             new SimpleListProperty<>(FXCollections.synchronizedObservableList(FXCollections.observableArrayList()));
 
@@ -159,7 +161,7 @@ public class ScanDialogBase {
                         so -> null,
                         selected,
                         scanOperation -> scanOperation.isDisabled(),
-                        () -> available.size() > 3)
+                        () -> available.stream().filter(sa -> !sa.isDisabled()).count() >= 2)
                 .build();
         stackPane.getChildren().add(r);
 
@@ -183,7 +185,9 @@ public class ScanDialogBase {
             entries.addListener((ListChangeListener<? super DataStoreEntryRef<ShellStore>>) c -> onUpdate());
         }
 
-        var comp = new LoadingOverlayComp(RegionBuilder.of(() -> stackPane), busy, true).vgrow();
+        var comp = new LoadingOverlayComp(RegionBuilder.of(() -> stackPane), busy, true)
+                .minHeight(100)
+                .vgrow();
         return comp;
     }
 }

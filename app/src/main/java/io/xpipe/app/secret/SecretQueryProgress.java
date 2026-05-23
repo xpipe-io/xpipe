@@ -21,7 +21,8 @@ public class SecretQueryProgress {
     private final SecretQuery fallback;
     private final List<SecretQueryFilter> filters;
     private final List<SecretQueryFormatter> formatters;
-    private final List<String> seenPrompts;
+    private final List<String> seenAllPrompts;
+    private final List<String> seenHandledPrompts;
     private final CountDown countDown;
     private final boolean interactive;
     private final boolean forceFocus;
@@ -46,12 +47,13 @@ public class SecretQueryProgress {
         this.countDown = countDown;
         this.interactive = interactive;
         this.forceFocus = forceFocus;
-        this.seenPrompts = new ArrayList<>();
+        this.seenAllPrompts = new ArrayList<>();
+        this.seenHandledPrompts = new ArrayList<>();
     }
 
     public void preAdvance(int count) {
         for (int i = 0; i < count; i++) {
-            seenPrompts.addFirst(null);
+            seenHandledPrompts.addFirst(null);
             suppliers.addFirst(SecretQuery.prompt(false));
         }
     }
@@ -62,13 +64,6 @@ public class SecretQueryProgress {
             return null;
         }
 
-        for (SecretQueryFilter filter : filters) {
-            var o = filter.filter(this, prompt);
-            if (o.isPresent()) {
-                return o.get();
-            }
-        }
-
         for (var formatter : formatters) {
             var r = formatter.format(prompt);
             if (r.isPresent()) {
@@ -76,12 +71,24 @@ public class SecretQueryProgress {
             }
         }
 
-        var seenBefore = seenPrompts.contains(prompt);
-        if (!seenBefore) {
-            seenPrompts.add(prompt);
+        var seenBeforeFilter = seenAllPrompts.contains(prompt);
+        if (!seenBeforeFilter) {
+            seenAllPrompts.add(prompt);
         }
 
-        var firstSeenIndex = seenPrompts.indexOf(prompt);
+        for (SecretQueryFilter filter : filters) {
+            var o = filter.filter(this, prompt, seenBeforeFilter);
+            if (o.isPresent()) {
+                return o.get();
+            }
+        }
+
+        var seenBefore = seenHandledPrompts.contains(prompt);
+        if (!seenBefore) {
+            seenHandledPrompts.add(prompt);
+        }
+
+        var firstSeenIndex = seenHandledPrompts.indexOf(prompt);
         if (firstSeenIndex >= suppliers.size()) {
             // Check whether we can have user inputs
             if (!interactive && fallback.requiresUserInteraction()) {
@@ -103,7 +110,7 @@ public class SecretQueryProgress {
         var ref = new SecretReference(storeId, firstSeenIndex);
         var sup = suppliers.get(firstSeenIndex);
         var shouldCache = shouldCache(sup, prompt);
-        var wasLastPrompt = firstSeenIndex == seenPrompts.size() - 1;
+        var wasLastPrompt = firstSeenIndex == seenHandledPrompts.size() - 1;
 
         // Check whether we can have user inputs
         if (!interactive && sup.requiresUserInteraction()) {

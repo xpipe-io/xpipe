@@ -8,7 +8,7 @@ public class ITerm2TerminalType implements ExternalApplicationType.MacApplicatio
 
     @Override
     public TerminalOpenFormat getOpenFormat() {
-        return TerminalOpenFormat.TABBED;
+        return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
     }
 
     @Override
@@ -30,7 +30,9 @@ public class ITerm2TerminalType implements ExternalApplicationType.MacApplicatio
     public void launch(TerminalLaunchConfiguration configuration) throws Exception {
         LocalShell.getShell()
                 .executeSimpleCommand(CommandBuilder.of()
-                        .add("open", "-a")
+                        .add("open")
+                        .addIf(!configuration.isPreferTabs(), "-n")
+                        .add("-a")
                         .addQuoted("iTerm.app")
                         .addFile(configuration.single().getScriptFile()));
     }

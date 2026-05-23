@@ -8,10 +8,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ValidationException;
-import io.xpipe.app.platform.ClipboardHelper;
-import io.xpipe.app.platform.LabelGraphic;
-import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.platform.OptionsChoiceBuilder;
+import io.xpipe.app.platform.*;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
@@ -24,6 +21,7 @@ import io.xpipe.core.*;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AllArgsConstructor;
@@ -33,8 +31,7 @@ import lombok.extern.jackson.Jacksonized;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Value
@@ -43,6 +40,12 @@ import java.util.stream.Collectors;
 @JsonTypeName("inPlaceKey")
 @AllArgsConstructor
 public class InPlaceKeyStrategy implements SshIdentityStrategy {
+
+    private static final Set<String> KEYS = new HashSet<>();
+
+    public static boolean isInPlaceKey(String keyName) {
+        return KEYS.contains(keyName);
+    }
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<InPlaceKeyStrategy> p, SshIdentityStrategyChoiceConfig config) {
@@ -71,17 +74,26 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                             AppI18n.activeLanguage()));
             struc.setEditable(false);
         });
+        var generatedKeyBase = new SimpleObjectProperty<>(key.get());
+        var generateButtonDisabled = Bindings.createBooleanBinding(
+                () -> {
+                    return key.get() == null
+                            || (publicKey.get() != null && key.get().equals(generatedKeyBase.get()));
+                },
+                key,
+                publicKey);
         var generateButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2c-cog-refresh-outline"), () -> {
                     ThreadHelper.runAsync(() -> {
                         var generated = ProcessControlProvider.get()
                                 .generatePublicSshKey(InPlaceSecretValue.of(key.get()), keyPasswordProperty.get());
                         if (generated != null) {
                             publicKey.set(generated);
+                            generatedKeyBase.set(key.getValue());
                         }
                     });
                 })
                 .describe(d -> d.nameKey("generatePublicKey"))
-                .disable(key.isNull().or(publicKey.isNotNull()).or(keyPasswordProperty.isNull()));
+                .disable(generateButtonDisabled);
         var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
                     ClipboardHelper.copyText(publicKey.get());
                 })
@@ -104,8 +116,7 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                         }),
                         key)
                 .nonNull()
-                .name("keyPassword")
-                .description("sshConfigHost.identityPassphraseDescription")
+                .nameAndDescription("keyPassphrase")
                 .sub(passwordChoice, keyPasswordProperty)
                 .nonNull()
                 .nameAndDescription("inPlacePublicKey")
@@ -167,10 +178,10 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
     @Override
     public List<KeyValue> configOptions(ShellControl sc) {
         return List.of(
-                new KeyValue("IdentitiesOnly", "yes"),
-                new KeyValue("IdentityAgent", "none"),
-                new KeyValue("IdentityFile", "\"" + getTargetFilePath(sc) + "\""),
-                new KeyValue("PKCS11Provider", "none"));
+                KeyValue.raw("IdentitiesOnly", "yes"),
+                KeyValue.raw("IdentityAgent", "none"),
+                KeyValue.escape("IdentityFile", getTargetFilePath(sc)),
+                KeyValue.raw("PKCS11Provider", "none"));
     }
 
     @Override
@@ -179,9 +190,9 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
     }
 
     private FilePath getTargetFilePath(ShellControl sc) {
-        var temp = sc.getSystemTemporaryDirectory()
-                .join("xpipe-"
-                        + Math.abs(Objects.hash(this, AppSystemInfo.ofCurrent().getUser())) + ".key");
+        var hash = Math.abs(Objects.hash(this, AppSystemInfo.ofCurrent().getUser()));
+        var temp = sc.getSystemTemporaryDirectory().join("xpipe-" + hash + ".key");
+        KEYS.add(temp.getFileName());
         return temp;
     }
 

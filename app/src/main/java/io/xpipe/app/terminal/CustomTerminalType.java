@@ -4,6 +4,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.prefs.ExternalApplicationType;
+import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.core.OsType;
 
@@ -34,16 +35,17 @@ public class CustomTerminalType implements ExternalApplicationType, ExternalTerm
         }
 
         var format = custom.toLowerCase(Locale.ROOT).contains("$cmd") ? custom : custom + " $CMD";
-        try (var pc = LocalShell.getShell()) {
+        try (var sc = LocalShell.getShell()) {
             var toExecute = ExternalApplicationHelper.replaceVariableArgument(
                     format, "CMD", configuration.single().getScriptFile().toString());
             // We can't be sure whether the command is blocking or not, so always make it not blocking
-            if (pc.getOsType() == OsType.WINDOWS) {
+            if (sc.getOsType() == OsType.WINDOWS) {
                 toExecute = "start \"" + configuration.getCleanTitle() + "\" " + toExecute;
             } else {
-                toExecute = "nohup " + toExecute + " </dev/null &>/dev/null & disown";
+                var async = sc.getShellDialect().launchAsync(CommandBuilder.of().add(toExecute), true);
+                toExecute = async.buildFull(sc);
             }
-            pc.executeSimpleCommand(toExecute);
+            sc.command(toExecute).execute();
         }
     }
 

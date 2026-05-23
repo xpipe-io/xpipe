@@ -89,6 +89,18 @@ public abstract class WindowsRegistry {
             }
         }
 
+        public void setIntegerValue(int hkey, String key, String valueName, int value) {
+            if (!isLibrarySupported()) {
+                return;
+            }
+
+            try {
+                Advapi32Util.registryCreateKey(hkey(hkey), key);
+                Advapi32Util.registrySetIntValue(hkey(hkey), key, valueName, value);
+            } catch (Win32Exception ignored) {
+            }
+        }
+
         public void setStringValue(int hkey, String key, String valueName, String value) {
             if (!isLibrarySupported()) {
                 return;

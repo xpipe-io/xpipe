@@ -114,8 +114,7 @@ public class VaultCategory extends AppPrefsCategory {
                 .addToggle(encryptVault)
                 .pref(prefs.hideVaultEntryNames)
                 .addToggle(prefs.hideVaultEntryNames)
-                .hide(encryptVault.not())
-        );
+                .hide(encryptVault.not()));
         return builder.buildComp();
     }
 }

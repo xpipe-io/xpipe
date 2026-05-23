@@ -10,6 +10,7 @@ import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.core.OsType;
 
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -65,10 +66,15 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
                     if (lastShowValue != null
                             && java.time.Duration.between(lastShowValue, Instant.now())
                                             .toMillis()
-                                    > 500) {
+                                    > 1000) {
                         mouseHandler.handle(event);
                     }
                 });
+            }
+
+            @Override
+            protected Timeline createCloseBlockedAnimation() {
+                return new Timeline();
             }
         });
         modal.setInTransitionFactory(
@@ -216,6 +222,7 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
                             newValue.getGraphic() != null
                                     ? newValue.getGraphic()
                                     : new LabelGraphic.IconGraphic("mdi2i-information-outline")));
+            l.style("title");
             l.apply(struc -> {
                 struc.setGraphicTextGap(8);
                 AppFontSizes.xl(struc);
@@ -235,7 +242,7 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
                 var node = o instanceof ModalButton mb ? toButton(mb) : ((BaseRegionBuilder<?, ?>) o).build();
                 if (o instanceof ModalButton) {
                     node.widthProperty().addListener((observable, oldValue, n) -> {
-                        var d = Math.min(Math.max(n.doubleValue(), 70.0), 200.0);
+                        var d = Math.clamp(n.doubleValue(), 70.0, 200.0);
                         if (d > max.get()) {
                             max.set(d);
                         }

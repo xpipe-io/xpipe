@@ -53,7 +53,8 @@ public class ShellTemp {
             // This is quite inefficient but there is no way to synchronize access on a
             // specific system when multiple shell controls access it
             synchronized (ShellTemp.class) {
-                var sessionFile = systemTemp.join("xpipe-session-" + AppProperties.get().getSessionId().toString().substring(0, 8));
+                var sessionFile = systemTemp.join("xpipe-session-"
+                        + AppProperties.get().getSessionId().toString().substring(0, 8));
                 var newSession = !sc.view().fileExists(sessionFile);
                 if (newSession) {
                     clearTemp(sc);
@@ -86,6 +87,9 @@ public class ShellTemp {
                             .add(
                                     "|",
                                     "Where-Object",
+                                    "{-not $_.PSIsContainer}",
+                                    "|",
+                                    "Where-Object",
                                     "{$_.Name.StartsWith(\"" + prefix.getFileName() + "\")}",
                                     "|",
                                     "Remove-Item",
@@ -94,7 +98,7 @@ public class ShellTemp {
                     .executeAndCheck();
         } else {
             sc.command(CommandBuilder.of()
-                            .add("rm", "-rf")
+                            .add("rm", "-f")
                             .add("\"" + prefix.toString() + "\"*")
                             .add("2>/dev/null"))
                     .executeAndCheck();

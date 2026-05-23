@@ -10,6 +10,8 @@ import lombok.Getter;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -84,6 +86,16 @@ public class WrapperShellControl implements ShellControl {
     @Override
     public Charset getCharset() {
         return parent.getCharset();
+    }
+
+    @Override
+    public void setLastActivity(Instant v) {
+        parent.setLastActivity(v);
+    }
+
+    @Override
+    public boolean isInactive(Duration max) {
+        return false;
     }
 
     @Override

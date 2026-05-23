@@ -6,6 +6,8 @@ import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ThreadHelper;
 
+import javafx.application.Platform;
+
 public abstract class InitHubLeafProvider<T extends DataStore, O> implements HubLeafProvider<T> {
 
     protected O available;
@@ -14,7 +16,9 @@ public abstract class InitHubLeafProvider<T extends DataStore, O> implements Hub
     public void init() {
         ThreadHelper.runFailableAsync(() -> {
             available = check();
-            StoreViewState.get().updateWrappers();
+            Platform.runLater(() -> {
+                StoreViewState.get().updateWrappers();
+            });
         });
     }
 

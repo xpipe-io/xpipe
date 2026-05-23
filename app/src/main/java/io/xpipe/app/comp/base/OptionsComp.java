@@ -28,6 +28,7 @@ import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
 import lombok.Getter;
 import org.int4.fx.builders.common.AbstractRegionBuilder;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -116,7 +117,9 @@ public class OptionsComp extends RegionBuilder<VBox> {
                     vbox.accessibleTextProperty().bind(joined);
 
                     if (entry.documentationLink() != null) {
-                        var link = new Button("... ?");
+                        var fi = new FontIcon("mdi2b-book-open-variant");
+                        fi.getStyleClass().add("graphic");
+                        var link = new Button("?", fi);
                         link.setMinWidth(Region.USE_PREF_SIZE);
                         link.getStyleClass().add(Styles.BUTTON_OUTLINED);
                         link.getStyleClass().add(Styles.ACCENT);
@@ -149,9 +152,13 @@ public class OptionsComp extends RegionBuilder<VBox> {
                         descriptionBox.visibleProperty().bind(compRegion.visibleProperty());
                         descriptionBox.managedProperty().bind(compRegion.managedProperty());
                     } else {
-                        vbox.getChildren().add(description);
+                        var descriptionBox = new HBox(description);
+                        descriptionBox.getStyleClass().add("description-box");
+                        vbox.getChildren().add(descriptionBox);
                         vbox.getChildren().add(new Spacer(2, Orientation.VERTICAL));
-                        VBox.setMargin(description, new Insets(0, 0, 0, 1));
+                        VBox.setMargin(descriptionBox, new Insets(0, 0, 0, 1));
+                        descriptionBox.visibleProperty().bind(compRegion.visibleProperty());
+                        descriptionBox.managedProperty().bind(compRegion.managedProperty());
                     }
 
                     line.getChildren().add(vbox);

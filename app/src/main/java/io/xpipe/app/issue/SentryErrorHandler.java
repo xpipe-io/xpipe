@@ -1,5 +1,6 @@
 package io.xpipe.app.issue;
 
+import io.xpipe.app.core.AppCertStore;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppSystemInfo;
@@ -7,10 +8,12 @@ import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.update.AppDistributionType;
+import io.xpipe.app.util.HttpProxy;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LicenseRequiredException;
 
 import io.sentry.*;
+import io.sentry.protocol.Feedback;
 import io.sentry.protocol.Geo;
 import io.sentry.protocol.SentryId;
 import io.sentry.protocol.User;
@@ -19,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.Proxy;
 import java.net.URISyntaxException;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
@@ -245,6 +249,22 @@ public class SentryErrorHandler implements ErrorHandler {
                         : "unknown");
         s.setTag("initial", AppProperties.get() != null ? AppProperties.get().isInitialLaunch() + "" : "false");
 
+        var httpProxy = HttpProxy.getActiveProxy();
+        var doProxy = httpProxy.isPresent()
+                && !HttpProxy.disableTlsVerification()
+                && AppCertStore.get().getCertificates().isEmpty();
+        if (doProxy) {
+            var sentryProxy = new SentryOptions.Proxy(
+                    httpProxy.get().getHost(),
+                    "" + httpProxy.get().getPort(),
+                    httpProxy.get().isSocks5() ? Proxy.Type.SOCKS : Proxy.Type.HTTP,
+                    httpProxy.get().getUser(),
+                    httpProxy.get().getPassword().getSecretValue());
+            s.getOptions().setProxy(sentryProxy);
+        } else {
+            s.getOptions().setProxy(new SentryOptions.Proxy());
+        }
+
         var exMessage = ee.getThrowable() != null ? ee.getThrowable().getMessage() : null;
         if (ee.getDescription() != null
                 && !ee.getDescription().equals(exMessage)
@@ -294,16 +314,12 @@ public class SentryErrorHandler implements ErrorHandler {
         var hasEmail = email != null && !email.isBlank();
         var text = ee.getUserReport();
         if (hasUserReport(ee)) {
-            var fb = new UserFeedback(id);
+            var fb = new Feedback(doesExceedCommentSize(text) ? "<Attachment>" : text);
+            fb.setAssociatedEventId(id);
             if (hasEmail) {
-                fb.setEmail(email);
+                fb.setContactEmail(email);
             }
-            if (doesExceedCommentSize(text)) {
-                fb.setComments("<Attachment>");
-            } else {
-                fb.setComments(text);
-            }
-            Sentry.captureUserFeedback(fb);
+            Sentry.feedback().capture(fb);
         }
         Sentry.flush(3000);
     }

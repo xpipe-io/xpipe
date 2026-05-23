@@ -320,7 +320,7 @@ public class StoreViewState {
         });
 
         batchMode.addListener((observable, oldValue, newValue) -> {
-            batchModeSelection.getList().clear();
+            batchModeSelectionSet.clear();
         });
     }
 
@@ -338,6 +338,12 @@ public class StoreViewState {
 
         activeCategory.addListener((observable, oldValue, newValue) -> {
             DataStorage.get().setSelectedCategory(newValue.getCategory());
+            batchModeSelection.getList().clear();
+            batchModeSelectionSet.clear();
+
+            Platform.runLater(() -> {
+                updateWrappers();
+            });
         });
         var selected = AppCache.getNonNull("selectedCategory", UUID.class, () -> DataStorage.DEFAULT_CATEGORY_UUID);
         activeCategory.setValue(categories.getList().stream()
@@ -397,6 +403,10 @@ public class StoreViewState {
                 });
             });
         }
+
+        AppI18n.activeLanguage().addListener((observable, oldValue, newValue) -> {
+            updateWrappers();
+        });
 
         getActiveCategory().addListener((observable, oldValue, newValue) -> {
             refreshActiveCategory();

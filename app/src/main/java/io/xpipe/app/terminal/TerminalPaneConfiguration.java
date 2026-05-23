@@ -76,7 +76,8 @@ public class TerminalPaneConfiguration {
 
         if (sc.getOsType() == OsType.WINDOWS) {
             if (LocalShell.getLocalPowershell().isEmpty()) {
-                throw ErrorEventFactory.expected(new IllegalStateException("PowerShell is required for terminal logging but it failed to start"));
+                throw ErrorEventFactory.expected(new IllegalStateException(
+                        "PowerShell is required for terminal logging but it failed to start"));
             }
 
             var launcherScript = ScriptHelper.createExecScript(
@@ -85,11 +86,11 @@ public class TerminalPaneConfiguration {
                     ShellDialects.POWERSHELL.terminalLauncherScript(request, title, alwaysPromptRestart));
             var content = """
                           %s
-                          echo 'Transcript started, output file is "sessions\\%s"'
-                          Start-Transcript -Force -LiteralPath "%s" > $Out-Null
+                          echo 'Session logging is active, output file is "sessions\\%s"'
+                          Start-Transcript -Force -LiteralPath "%s" | Out-Null
                           & "%s"
-                          Stop-Transcript > $Out-Null
-                          echo 'Transcript stopped, output file is "sessions\\%s"'
+                          Stop-Transcript | Out-Null
+                          echo 'Session logging is finished, output file is "sessions\\%s"'
                           """.formatted(
                             TerminalLauncher.getTerminalRegisterCommand(
                                     request, LocalShell.getLocalPowershell().orElseThrow()),
@@ -130,9 +131,9 @@ public class TerminalPaneConfiguration {
                     : "script --quiet --command '%s' \"%s\"".formatted(command, logFile);
             var content = """
                           %s
-                          echo "Transcript started, output file is sessions/%s"
+                          echo "Session logging is active, output file is sessions/%s"
                           %s
-                          echo "Transcript stopped, output file is sessions/%s"
+                          echo "Session logging is finished, output file is sessions/%s"
                           cat "%s" | "%s" terminal-clean > "%s.txt"
                           """.formatted(
                             TerminalLauncher.getTerminalRegisterCommand(request, sc),

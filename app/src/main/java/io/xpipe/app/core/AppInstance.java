@@ -4,15 +4,20 @@ import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.BeaconClient;
 import io.xpipe.beacon.BeaconClientInformation;
+import io.xpipe.beacon.BeaconConfig;
 import io.xpipe.beacon.BeaconServer;
 import io.xpipe.beacon.api.DaemonFocusExchange;
 import io.xpipe.beacon.api.DaemonOpenExchange;
 import io.xpipe.core.OsType;
 
 import java.awt.*;
+import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,8 +38,42 @@ public class AppInstance {
     }
 
     private static void checkStart(int attemptCounter) {
-        var port = AppBeaconServer.get().getPort();
+        var port = BeaconConfig.getUsedPort();
         var reachable = BeaconServer.isReachable(port);
+
+        if (reachable) {
+            // If an instance is running as another user, we cannot connect to it as the xpipe_auth file is inaccessible
+            var authFile = BeaconConfig.getLocalBeaconAuthFile();
+            var hasAuthFile = Files.exists(authFile);
+
+            // Make sure that it is not a leftover
+            if (hasAuthFile) {
+                try (var channel = new RandomAccessFile(BeaconConfig.getLocalBeaconLockFile().toFile(), "rw").getChannel()) {
+                    var lock = channel.tryLock();
+                    if (lock != null) {
+                        lock.release();
+                        Files.delete(authFile);
+                        hasAuthFile = false;
+                    }
+                } catch (Exception ignored) {}
+            }
+
+            if (!hasAuthFile) {
+                var replacement = BeaconConfig.fallBackToAnotherPort();
+                if (replacement.isEmpty()) {
+                    ErrorEventFactory.fromMessage("Unable to find free beacon port")
+                            .term()
+                            .documentationLink(DocumentationLink.BEACON_PORT_BIND)
+                            .expected()
+                            .handle();
+                    AppOperationMode.halt(1);
+                } else {
+                    port = replacement.getAsInt();
+                    reachable = false;
+                }
+            }
+        }
+
         if (!reachable) {
             // Even in case we are unable to reach another beacon server
             // there might be another instance running, for example
@@ -52,11 +91,9 @@ public class AppInstance {
 
         var client = tryEstablishConnection(port);
         if (client.isEmpty()) {
-            // If an instance is running as another user, we cannot connect to it as the xpipe_auth file is inaccessible
-            // Therefore the beacon client is not present.
             // We still should check whether it is somehow occupied, otherwise beacon server startup will fail
             TrackEvent.info(
-                    "Another instance is already running on this port as another user or is not reachable. Quitting ...");
+                    "Another instance is already running on this port but is not reachable. Quitting ...");
             AppOperationMode.halt(1);
             return;
         }

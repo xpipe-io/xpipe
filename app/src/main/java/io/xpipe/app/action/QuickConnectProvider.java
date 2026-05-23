@@ -38,7 +38,7 @@ public interface QuickConnectProvider extends ActionProvider {
 
     boolean skipDialogIfPossible();
 
-    default void open(DataStoreEntry e) throws Exception {
+    default void open(DataStoreEntry e) {
         OpenHubMenuLeafProvider.Action.builder().ref(e.ref()).build().executeSync();
     }
 }

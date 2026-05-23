@@ -51,7 +51,7 @@ public class MobaXTermTerminalType implements ExternalApplicationType.WindowsTyp
         var rawCommand = command.buildSimple();
         var script = AppLocalTemp.getLocalTempDataDirectory().resolve("mobaxpipe.sh");
         Files.writeString(Path.of(script.toString()), "#!/usr/bin/env bash\n" + rawCommand);
-        var fixedFile = script.toString().replaceAll("\\\\", "/").replaceAll("\\s", "\\$0");
+        var fixedFile = script.toString().replaceAll("\\\\", "/").replaceAll("\\s", "\\\\$0");
         launch(CommandBuilder.of().add("-newtab").add(fixedFile));
     }
 

@@ -8,7 +8,6 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
-import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.StoreStateFormat;
 
@@ -45,18 +44,18 @@ public class ScriptCollectionSourceStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
+    public BaseRegionBuilder<?, ?> stateDisplay(StoreSection section) {
         return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
     }
 
     @Override
     public DataStoreCreationCategory getCreationCategory() {
-        return DataStoreCreationCategory.SCRIPT;
+        return DataStoreCreationCategory.SCRIPT_SOURCE;
     }
 
     @SneakyThrows
     @Override
-    public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
+    public GuiDialog guiDialog(StoreCreationModel model, Property<DataStore> store) {
         ScriptCollectionSourceStore st = store.getValue().asNeeded();
 
         var source = new SimpleObjectProperty<>(st.getSource());

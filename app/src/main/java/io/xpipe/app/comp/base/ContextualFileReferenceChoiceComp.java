@@ -5,6 +5,7 @@ import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.cred.SshIdentityStrategy;
 import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -126,9 +127,10 @@ public class ContextualFileReferenceChoiceComp extends RegionBuilder<HBox> {
                                 source.toString().substring(0, source.toString().length() - 4))
                         : source;
 
-                var pubSource = Path.of(sourceBase + ".pub");
+                var pubSource = SshIdentityStrategy.getPublicKeyPath(FilePath.of(source))
+                        .asLocalPath();
                 if (Files.exists(pubSource)) {
-                    var pubTarget = Path.of(target.toString() + ".pub");
+                    var pubTarget = sync.getTargetLocation().apply(pubSource);
                     handler.addDataFile(pubSource, pubTarget, sync.getPerUser().get());
                 }
 
@@ -216,20 +218,30 @@ public class ContextualFileReferenceChoiceComp extends RegionBuilder<HBox> {
         filePath.subscribe(s -> PlatformThread.runLaterIfNeeded(() -> {
             prop.set(s != null ? s.toString() : null);
         }));
-        prop.addListener((observable, oldValue, newValue) -> {
-            filePath.setValue(newValue != null && !newValue.isBlank() ? FilePath.of(newValue.strip()) : null);
-        });
         var fileNameComp = new TextFieldComp(prop).apply(struc -> HBox.setHgrow(struc, Priority.ALWAYS));
 
-        if (prompt != null) {
-            fileNameComp.apply(struc -> {
+        fileNameComp.apply(struc -> {
+            if (prompt != null) {
                 prompt.subscribe(filePath -> {
                     PlatformThread.runLaterIfNeeded(() -> {
                         struc.setPromptText(filePath != null ? filePath.toString() : null);
                     });
                 });
+            }
+
+            prop.addListener((observable, oldValue, newValue) -> {
+                if (!struc.isFocused()) {
+                    filePath.setValue(newValue != null && !newValue.isBlank() ? FilePath.of(newValue.strip()) : null);
+                }
             });
-        }
+
+            struc.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue) {
+                    var v = prop.getValue();
+                    filePath.setValue(v != null && !v.isBlank() ? FilePath.of(v.strip()) : null);
+                }
+            });
+        });
 
         return fileNameComp;
     }

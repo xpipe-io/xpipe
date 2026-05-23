@@ -5,7 +5,6 @@ import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.hub.comp.StoreEntryComp;
-import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.hub.comp.StoreSection;
 import io.xpipe.app.hub.comp.StoreToggleComp;
 import io.xpipe.app.hub.comp.SystemStateComp;
@@ -33,8 +32,8 @@ public class PodmanCmdStoreProvider implements DataStoreProvider {
         return StoreEntryComp.create(sec, nonRunning, preferLarge);
     }
 
-    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
-        return new SystemStateComp(BindingsHelper.map(w.getPersistentState(), o -> {
+    public BaseRegionBuilder<?, ?> stateDisplay(StoreSection section) {
+        return new SystemStateComp(BindingsHelper.map(section.getWrapper().getPersistentState(), o -> {
             var state = (PodmanCmdStore.State) o;
             if (state.isRunning()) {
                 return SystemStateComp.State.SUCCESS;

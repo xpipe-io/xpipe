@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.comp.base.ModalOverlayContentComp;
+import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
@@ -13,10 +14,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.Region;
 
+import lombok.Getter;
+
 class ScanSingleDialogComp extends ModalOverlayContentComp {
 
     private final DataStoreEntryRef<ShellStore> initialStore;
     private final ObjectProperty<DataStoreEntryRef<ShellStore>> entry;
+
+    @Getter
     private final ScanDialogBase base;
 
     @SuppressWarnings("unchecked")
@@ -69,7 +74,8 @@ class ScanSingleDialogComp extends ModalOverlayContentComp {
                                 entry,
                                 ShellStore.class,
                                 null,
-                                StoreViewState.get().getAllConnectionsCategory())
+                                StoreViewState.get().getAllConnectionsCategory(),
+                                DataStoreCreationCategory.HOST)
                         .disable(base.getBusy().or(new SimpleBooleanProperty(initialStore != null))))
                 .name("scanAlertHeader")
                 .description("scanAlertHeaderDescription")

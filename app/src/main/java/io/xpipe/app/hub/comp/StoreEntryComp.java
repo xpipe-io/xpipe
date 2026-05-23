@@ -641,25 +641,55 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
 
                 if (getWrapper().getEntry().getProvider() != null
                         && getWrapper().getEntry().getProvider().canMoveCategories()) {
-                    var move = new Menu(AppI18n.get("category"), new FontIcon("mdi2f-folder-move-outline"));
+                    var move = new Menu(AppI18n.get("move"), new FontIcon("mdi2f-folder-move-outline"));
                     StoreViewState.get()
                             .getSortedCategories(
                                     getWrapper().getCategory().getValue().getRoot(), true)
                             .getList()
                             .stream()
                             .filter(w -> {
-                                var isSource = DataStorage.get().getCategoryParentHierarchy(DataStorage.get().getStoreCategory(getWrapper().getEntry()))
-                                        .stream().anyMatch(h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
+                                var isSource = DataStorage.get()
+                                        .getCategoryParentHierarchy(DataStorage.get()
+                                                .getStoreCategory(getWrapper().getEntry()))
+                                        .stream()
+                                        .anyMatch(h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
                                 if (isSource) {
                                     return DataStorage.get().getCategoryParentHierarchy(w.getCategory()).stream()
-                                            .anyMatch(h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
+                                            .anyMatch(
+                                                    h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
                                 }
 
-                                var isScript = DataStorage.get().getCategoryParentHierarchy(DataStorage.get().getStoreCategory(getWrapper().getEntry()))
-                                        .stream().anyMatch(h -> h.getUuid().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID));
+                                var isScript = DataStorage.get()
+                                        .getCategoryParentHierarchy(DataStorage.get()
+                                                .getStoreCategory(getWrapper().getEntry()))
+                                        .stream()
+                                        .anyMatch(h -> h.getUuid().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID));
                                 if (isScript) {
                                     return DataStorage.get().getCategoryParentHierarchy(w.getCategory()).stream()
-                                            .noneMatch(h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
+                                            .noneMatch(
+                                                    h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
+                                }
+
+                                var isLocalIdentity = DataStorage.get()
+                                        .getCategoryParentHierarchy(DataStorage.get()
+                                                .getStoreCategory(getWrapper().getEntry()))
+                                        .stream()
+                                        .anyMatch(h -> h.getUuid().equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID));
+                                if (isLocalIdentity) {
+                                    return DataStorage.get().getCategoryParentHierarchy(w.getCategory()).stream()
+                                            .noneMatch(h ->
+                                                    h.getUuid().equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID));
+                                }
+
+                                var isSyncedIdentity = DataStorage.get()
+                                        .getCategoryParentHierarchy(DataStorage.get()
+                                                .getStoreCategory(getWrapper().getEntry()))
+                                        .stream()
+                                        .anyMatch(h -> h.getUuid().equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID));
+                                if (isSyncedIdentity) {
+                                    return DataStorage.get().getCategoryParentHierarchy(w.getCategory()).stream()
+                                            .noneMatch(h ->
+                                                    h.getUuid().equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID));
                                 }
 
                                 return true;
@@ -685,7 +715,9 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                                     getWrapper().moveTo(storeCategoryWrapper.getCategory());
                                     event.consume();
                                 });
-                                if (storeCategoryWrapper.getParent() == null || storeCategoryWrapper.equals(getWrapper().getCategory().getValue())) {
+                                if (storeCategoryWrapper.getParent() == null
+                                        || storeCategoryWrapper.equals(
+                                                getWrapper().getCategory().getValue())) {
                                     m.setDisable(true);
                                 }
 

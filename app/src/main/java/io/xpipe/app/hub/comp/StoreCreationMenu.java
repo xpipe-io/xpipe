@@ -8,8 +8,8 @@ import io.xpipe.app.util.ScanDialog;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Menu;
-import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 
@@ -20,7 +20,7 @@ import java.util.Comparator;
 
 public class StoreCreationMenu {
 
-    public static void addButtons(MenuButton menu, boolean allowSearch) {
+    public static void addButtons(ObservableList<MenuItem> items, boolean allowSearch) {
         if (allowSearch) {
             var automatically = new MenuItem();
             automatically.setGraphic(new FontIcon("mdi2e-eye-plus-outline"));
@@ -29,9 +29,9 @@ public class StoreCreationMenu {
                 ScanDialog.showSingleAsync(null);
                 event.consume();
             });
-            menu.getItems().add(automatically);
-            menu.getItems().add(networkScanMenu());
-            menu.getItems().add(new SeparatorMenuItem());
+            items.add(automatically);
+            items.add(networkScanMenu());
+            items.add(new SeparatorMenuItem());
 
             var disableSearch = Bindings.createBooleanBinding(
                     () -> {
@@ -51,40 +51,35 @@ public class StoreCreationMenu {
             automatically.disableProperty().bind(disableSearch);
         }
 
-        menu.getItems().add(categoryMenu("addHost", "mdi2h-home-plus", "ssh", DataStoreCreationCategory.HOST));
+        items.add(categoryMenu("addHost", "mdi2h-home-plus", DataStoreCreationCategory.HOST));
 
-        menu.getItems().add(categoryMenu("addDesktop", "mdi2c-camera-plus", null, DataStoreCreationCategory.DESKTOP));
+        items.add(categoryMenu("addDesktop", "mdi2c-camera-plus", DataStoreCreationCategory.DESKTOP));
 
-        menu.getItems().add(cloudMenu());
+        items.add(cloudMenu());
 
-        menu.getItems().add(new SeparatorMenuItem());
+        items.add(new SeparatorMenuItem());
 
-        menu.getItems()
-                .add(categoryMenu(
-                        "addIdentity",
-                        "mdi2a-account-multiple-plus", "localIdentity", DataStoreCreationCategory.IDENTITY));
+        items.add(categoryMenu("addIdentity", "mdi2a-account-multiple-plus", DataStoreCreationCategory.IDENTITY));
 
-        menu.getItems().add(new SeparatorMenuItem());
+        items.add(new SeparatorMenuItem());
 
-        menu.getItems()
-                .add(categoryMenu("addService", "mdi2l-link-plus", "customService", DataStoreCreationCategory.SERVICE));
+        items.add(categoryMenu("addService", "mdi2l-link-plus", DataStoreCreationCategory.SERVICE));
 
-        menu.getItems()
-                .add(categoryMenu(
-                        "addTunnel", "mdi2v-vector-polyline-plus", "sshLocalTunnel", DataStoreCreationCategory.TUNNEL));
+        items.add(categoryMenu("addTunnel", "mdi2v-vector-polyline-plus", DataStoreCreationCategory.TUNNEL));
 
-        menu.getItems().add(new SeparatorMenuItem());
+        items.add(new SeparatorMenuItem());
 
-        menu.getItems()
-                .add(categoryMenu("addCommand", "mdi2c-code-greater-than", null, DataStoreCreationCategory.COMMAND));
+        items.add(categoryMenu("addCommand", "mdi2c-code-greater-than", DataStoreCreationCategory.COMMAND));
 
-        menu.getItems()
-                .add(categoryMenu(
-                        "addScript", "mdi2s-script-text-outline", "script", DataStoreCreationCategory.SCRIPT));
+        items.add(categoryMenu(
+                "addScript",
+                "mdi2s-script-text-outline",
+                DataStoreCreationCategory.SCRIPT,
+                DataStoreCreationCategory.SCRIPT_SOURCE));
 
-        menu.getItems().add(new SeparatorMenuItem());
+        items.add(new SeparatorMenuItem());
 
-        var actionMenu = categoryMenu("addMacro", "mdmz-miscellaneous_services", null, DataStoreCreationCategory.MACRO);
+        var actionMenu = categoryMenu("addMacro", "mdmz-miscellaneous_services", DataStoreCreationCategory.MACRO);
         var item = new MenuItem();
         item.setGraphic(PrettyImageHelper.ofFixedSize("action.png", 16, 16).build());
         item.textProperty().bind(AppI18n.observable("actionShortcut"));
@@ -98,21 +93,25 @@ public class StoreCreationMenu {
         });
         actionMenu.getItems().addFirst(item);
 
-        menu.getItems()
-                .add(categoryMenu(
-                        "addOther",
-                        "mdi2f-folder-plus-outline", null, DataStoreCreationCategory.CLUSTER, DataStoreCreationCategory.FILE_SYSTEM, DataStoreCreationCategory.SERIAL));
+        items.add(categoryMenu(
+                "addOther",
+                "mdi2f-folder-plus-outline",
+                DataStoreCreationCategory.NETWORK,
+                DataStoreCreationCategory.CLUSTER,
+                DataStoreCreationCategory.FILE_SYSTEM,
+                DataStoreCreationCategory.SERIAL));
 
-        menu.getItems().add(new SeparatorMenuItem());
+        items.add(new SeparatorMenuItem());
 
-        menu.getItems().add(actionMenu);
+        items.add(actionMenu);
     }
 
-    private static Menu categoryMenu(
-            String name, String graphic, String defaultProvider, DataStoreCreationCategory... categories) {
+    private static Menu categoryMenu(String name, String graphic, DataStoreCreationCategory... categories) {
         var providers = DataStoreProviders.getAll().stream()
-                .filter(dataStoreProvider -> Arrays.asList(categories).contains(dataStoreProvider.getCreationCategory()))
-                .sorted(Comparator.<DataStoreProvider>comparingInt(p -> Arrays.asList(categories).indexOf(p.getCreationCategory()))
+                .filter(dataStoreProvider ->
+                        Arrays.asList(categories).contains(dataStoreProvider.getCreationCategory()))
+                .sorted(Comparator.<DataStoreProvider>comparingInt(
+                                p -> Arrays.asList(categories).indexOf(p.getCreationCategory()))
                         .thenComparingInt(dataStoreProvider -> dataStoreProvider.getOrderPriority()))
                 .toList();
 
@@ -130,10 +129,10 @@ public class StoreCreationMenu {
             }
 
             Platform.runLater(() -> {
-                if (defaultProvider != null) {
+                if (categories.length == 1 && categories[0].getDefaultProvider() != null) {
                     providers.stream()
                             .filter(dataStoreProvider ->
-                                    dataStoreProvider.getId().equals(defaultProvider))
+                                    dataStoreProvider.getId().equals(categories[0].getDefaultProvider()))
                             .findFirst()
                             .ifPresent(dataStoreProvider -> {
                                 var index = providers.indexOf(dataStoreProvider);
@@ -153,7 +152,8 @@ public class StoreCreationMenu {
         int lastOrder = providers.getFirst().getOrderPriority();
         DataStoreCreationCategory lastCategory = providers.getFirst().getCreationCategory();
         for (var dataStoreProvider : providers) {
-            if (dataStoreProvider.getOrderPriority() != lastOrder || dataStoreProvider.getCreationCategory() != lastCategory) {
+            if (dataStoreProvider.getOrderPriority() != lastOrder
+                    || dataStoreProvider.getCreationCategory() != lastCategory) {
                 menu.getItems().add(new SeparatorMenuItem());
                 lastOrder = dataStoreProvider.getOrderPriority();
             }

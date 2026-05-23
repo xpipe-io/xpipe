@@ -22,7 +22,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.crypto.SecretKey;
 
 public abstract class DataStorage {
 
@@ -113,7 +112,7 @@ public abstract class DataStorage {
 
     public abstract void reloadContent();
 
-    public abstract SecretKey getVaultKey();
+    public abstract DataStorageVaultKey getVaultKey();
 
     public DataStoreCategory getDefaultConnectionsCategory() {
         return getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).orElseThrow();
@@ -431,7 +430,7 @@ public abstract class DataStorage {
         entry.finalizeEntry();
     }
 
-    private Collection<DataStoreEntryRef<?>> getDependencies(DataStoreEntry entry) {
+    public Collection<DataStoreEntryRef<?>> getDependencies(DataStoreEntry entry) {
         var l = new HashSet<DataStoreEntryRef<?>>();
 
         var store = entry.getStore();
@@ -909,6 +908,10 @@ public abstract class DataStorage {
     }
 
     public void addStoreEntryInProgress(@NonNull DataStoreEntry e) {
+        // Due to the uuid equality of entries, using multiple variants of the same
+        // entry with a different store wouldn't update properly if we don't remove it first
+        this.storeEntriesInProgress.remove(e);
+
         this.storeEntriesInProgress.put(e, e);
     }
 
@@ -1069,7 +1072,8 @@ public abstract class DataStorage {
         }
 
         // There is no proper fallback for these cases
-        if (cat.getParentCategory().equals(ALL_SCRIPTS_CATEGORY_UUID) || cat.getParentCategory().equals(ALL_IDENTITIES_CATEGORY_UUID)) {
+        if (cat.getParentCategory().equals(ALL_SCRIPTS_CATEGORY_UUID)
+                || cat.getParentCategory().equals(ALL_IDENTITIES_CATEGORY_UUID)) {
             deleteEntries = true;
         }
 

@@ -6,7 +6,6 @@ import io.xpipe.app.action.StoreContextAction;
 import io.xpipe.app.browser.file.BrowserFileTransferOperation;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.ext.ConnectionFileSystem;
 import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.app.process.ParentSystemAccess;
 import io.xpipe.app.process.ShellControl;
@@ -53,12 +52,16 @@ public class TransferFilesActionProvider implements ActionProvider {
             }
 
             var sourceFs = operation.getFiles().getFirst().getFileSystem();
-            var sourceAccess = sourceFs.getShell().map(ShellControl::getLocalSystemAccess).orElse(null);
-            var sourceSlowRemote = sourceAccess != null && ParentSystemAccess.isEquivalent(sourceAccess, ParentSystemAccess.none());
+            var sourceAccess =
+                    sourceFs.getShell().map(ShellControl::getLocalSystemAccess).orElse(null);
+            var sourceSlowRemote =
+                    sourceAccess != null && ParentSystemAccess.isEquivalent(sourceAccess, ParentSystemAccess.none());
 
             var targetFs = operation.getTarget().getFileSystem();
-            var targetAccess = targetFs.getShell().map(ShellControl::getLocalSystemAccess).orElse(null);
-            var targetSlowRemote = targetAccess != null && ParentSystemAccess.isEquivalent(targetAccess, ParentSystemAccess.none());
+            var targetAccess =
+                    targetFs.getShell().map(ShellControl::getLocalSystemAccess).orElse(null);
+            var targetSlowRemote =
+                    targetAccess != null && ParentSystemAccess.isEquivalent(targetAccess, ParentSystemAccess.none());
 
             if (!sourceSlowRemote && !targetSlowRemote) {
                 return true;

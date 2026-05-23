@@ -196,8 +196,8 @@ are not able to resolve and install any dependency packages.
 
 ### RHEL-based distros
 
-The rpm releases are signed with the GPG key https://xpipe.io/signatures/crschnick.asc.
-You can import it via `rpm --import https://xpipe.io/signatures/crschnick.asc` to allow your rpm-based package manager to verify the release signature. 
+The rpm releases are signed with the GPG key https://xpipe.io/signatures/0xDD3E0AD0.asc.
+You can import it via `rpm --import https://xpipe.io/signatures/0xDD3E0AD0.asc` to allow your rpm-based package manager to verify the release signature. 
 
 The following rpm installers are available:
 

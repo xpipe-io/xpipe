@@ -30,6 +30,7 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
 
         sc.view().isInPath("tar", true);
         sc.view().isInPath("zip", true);
+        sc.view().isInPath("gzip", true);
     }
 
     @Override
@@ -53,7 +54,7 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
             return false;
         }
 
-        var ext = List.of("zip", "tar", "tar.gz", "tgz", "rar", "xar");
+        var ext = List.of("zip", "tar", "tar.gz", "tgz", "rar", "xar", "gz", "gzip");
         if (entries.stream().anyMatch(browserEntry -> ext.stream().anyMatch(s -> browserEntry
                 .getRawFileEntry()
                 .getPath()
@@ -89,7 +90,8 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
                     protected String getExtension() {
                         return "tar";
                     }
-                });
+                },
+                new GzipActionProvider(false));
     }
 
     private abstract static class LeafProvider implements BrowserMenuLeafProvider {
@@ -107,7 +109,7 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
 
         @Override
         public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            var name = new SimpleStringProperty(directory ? entries.getFirst().getFileName() : null);
+            var name = new SimpleStringProperty(entries.size() == 1 ? entries.getFirst().getFileName() + "." + getExtension() : null);
             var modal = ModalOverlay.of(
                     "archiveName",
                     RegionBuilder.of(() -> {
@@ -178,7 +180,28 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
                         protected String getExtension() {
                             return "tar";
                         }
-                    });
+                    },
+                    new GzipActionProvider(directory));
+        }
+    }
+
+    private class GzipActionProvider extends LeafProvider {
+
+        private GzipActionProvider(boolean directory) {
+            super(directory);
+        }
+
+        @Override
+        protected void create(String fileName, BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+            var builder = io.xpipe.app.browser.menu.impl.compress.GzipActionProvider.Action.builder();
+            builder.initEntries(model, entries);
+            builder.target(model.getTargetDirectoryPath(entries.getFirst()).join(fileName));
+            builder.build().executeAsync();
+        }
+
+        @Override
+        protected String getExtension() {
+            return "gz";
         }
     }
 

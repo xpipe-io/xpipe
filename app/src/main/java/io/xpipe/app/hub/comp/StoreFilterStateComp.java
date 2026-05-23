@@ -43,10 +43,10 @@ public class StoreFilterStateComp extends SimpleRegionBuilder {
         var searchesList = new ListBoxViewComp<>(searches, searches, s -> createButton(s, s), false);
 
         var searchesPlaceholders = FXCollections.observableList(List.of(
-                AppI18n.get("recentSearchesDescriptionNames"),
-                AppI18n.get("recentSearchesDescriptionTags"),
-                AppI18n.get("recentSearchesDescriptionTypes"),
-                AppI18n.get("recentSearchesDescriptionState"),
+                AppI18n.get("recentSearchesDescriptionNames", "Local machine"),
+                AppI18n.get("recentSearchesDescriptionTags", "my-custom-tag"),
+                AppI18n.get("recentSearchesDescriptionTypes", "Docker container"),
+                AppI18n.get("recentSearchesDescriptionState", "Running"),
                 AppI18n.get("recentSearchesDescriptionJoin")));
         var searchesEmptyList =
                 new ListBoxViewComp<>(searchesPlaceholders, searchesPlaceholders, s -> createButton(s, null), false);
@@ -66,18 +66,18 @@ public class StoreFilterStateComp extends SimpleRegionBuilder {
                 false);
 
         var options = new OptionsBuilder()
-                .addComp(new LabelComp(AppI18n.observable("recentSearches")))
+                .addComp(new LabelComp(AppI18n.observable("recentSearches")).style(Styles.TEXT_BOLD))
                 .hide(searchesEmpty)
                 .addComp(searchesList)
                 .hide(searchesEmpty)
-                .addComp(new LabelComp(AppI18n.observable("recentQuickConnections")))
+                .addComp(new LabelComp(AppI18n.observable("recentQuickConnections")).style(Styles.TEXT_BOLD))
                 .hide(quickConnectionsEmpty)
                 .addComp(quickConnectionsList)
                 .hide(quickConnectionsEmpty)
                 .addComp(RegionBuilder.hseparator())
-                .addComp(new LabelComp(AppI18n.observable("recentSearchesDescription")))
+                .addComp(new LabelComp(AppI18n.observable("recentSearchesDescription")).style(Styles.TEXT_BOLD))
                 .addComp(searchesEmptyList)
-                .addComp(new LabelComp(AppI18n.observable("recentQuickConnectionsDescription")))
+                .addComp(new LabelComp(AppI18n.observable("recentQuickConnectionsDescription")).style(Styles.TEXT_BOLD))
                 .addComp(quickConnectionsEmptyList)
                 .build();
         options.getStyleClass().add("store-filter-state-comp");

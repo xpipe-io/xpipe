@@ -31,7 +31,7 @@ public class StoreLayoutComp extends SimpleRegionBuilder {
         var filterTrigger = new ObservableSubscriber();
         var left = new StoreSidebarComp(filterTrigger);
         left.hide(AppMainWindow.get().getStage().widthProperty().lessThan(1000));
-        left.minWidth(270);
+        left.minWidth(285);
         left.maxWidth(500);
         left.minHeight(0);
         var comp = new LeftSplitPaneComp(left, new StoreEntryListComp())

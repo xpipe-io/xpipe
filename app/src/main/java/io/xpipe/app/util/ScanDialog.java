@@ -10,6 +10,8 @@ import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
+import javafx.beans.binding.Bindings;
+
 import java.util.List;
 
 public class ScanDialog {
@@ -37,7 +39,14 @@ public class ScanDialog {
                 },
                 true,
                 true);
-        button.augment(r -> r.disableProperty().bind(PlatformThread.sync(comp.getBusy())));
+        var list = comp.getBase().getSelected();
+        button.augment(r -> r.disableProperty()
+                .bind(PlatformThread.sync(Bindings.createBooleanBinding(
+                        () -> {
+                            return comp.getBusy().get() || list.isEmpty();
+                        },
+                        comp.getBusy(),
+                        list))));
         modal.addButton(button);
         modal.show();
     }

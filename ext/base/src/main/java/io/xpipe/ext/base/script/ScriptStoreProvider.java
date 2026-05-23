@@ -1,7 +1,6 @@
 package io.xpipe.ext.base.script;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
-import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.CheckBoxComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.core.AppI18n;
@@ -21,7 +20,6 @@ import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 
-import javafx.scene.control.CheckBox;
 import lombok.SneakyThrows;
 
 import java.util.ArrayList;
@@ -62,17 +60,12 @@ public class ScriptStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public boolean showProviderChoice() {
-        return false;
-    }
-
-    @Override
     public boolean shouldShowScan() {
         return false;
     }
 
     @Override
-    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
+    public BaseRegionBuilder<?, ?> stateDisplay(StoreSection section) {
         return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
     }
 
@@ -83,7 +76,7 @@ public class ScriptStoreProvider implements DataStoreProvider {
 
     @SneakyThrows
     @Override
-    public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
+    public GuiDialog guiDialog(StoreCreationModel model, Property<DataStore> store) {
         ScriptStore st = store.getValue().asNeeded();
 
         var textSource = new SimpleObjectProperty<>(
@@ -140,42 +133,47 @@ public class ScriptStoreProvider implements DataStoreProvider {
         var selectorComp = new ListSelectorComp<>(
                 FXCollections.observableList(vals), name, ignored -> null, selectedExecTypes, v -> false, () -> false);
 
-        return new GuiDialog(new OptionsBuilder()
-                .nameAndDescription("scriptSourceType")
-                .sub(textSourceChoice.build(), textSource)
-                .nameAndDescription("executionType")
-                .documentationLink(DocumentationLink.SCRIPTING_TYPES)
-                .addComp(selectorComp, selectedExecTypes)
-                .check(validator ->
-                        Validator.nonEmpty(validator, AppI18n.observable("executionType"), selectedExecTypes))
-                .name("snippets")
-                .description("snippetsDescription")
-                .documentationLink(DocumentationLink.SCRIPTING_DEPENDENCIES)
-                .addComp(
-                        new StoreListChoiceComp<>(
-                                others,
-                                ScriptStore.class,
-                                scriptStore -> !scriptStore.get().equals(entry) && !others.contains(scriptStore),
-                                StoreViewState.get().getAllScriptsCategory()),
-                        others)
-                .bind(
-                        () -> {
-                            return ScriptStore.builder()
-                                    .textSource(textSource.get())
-                                    .scripts(new ArrayList<>(others.get()))
-                                    .description(st.getDescription())
-                                    .initScript(selectedExecTypes.contains(0))
-                                    .runnableScript(selectedExecTypes.contains(1))
-                                    .fileScript(selectedExecTypes.contains(2))
-                                    .shellScript(selectedExecTypes.contains(3))
-                                    .build();
-                        },
-                        store), (finished) -> {
-            if (entry == null) {
-                finished.setStorePersistentState(EnabledStoreState.builder().enabled(true).build());
-            }
-
-        });
+        return new GuiDialog(
+                new OptionsBuilder()
+                        .nameAndDescription("scriptSourceType")
+                        .sub(textSourceChoice.build(), textSource)
+                        .nameAndDescription("executionType")
+                        .documentationLink(DocumentationLink.SCRIPTING_TYPES)
+                        .addComp(selectorComp, selectedExecTypes)
+                        .check(validator ->
+                                Validator.nonEmpty(validator, AppI18n.observable("executionType"), selectedExecTypes))
+                        .name("snippets")
+                        .description("snippetsDescription")
+                        .documentationLink(DocumentationLink.SCRIPTING_DEPENDENCIES)
+                        .addComp(
+                                new StoreListChoiceComp<>(
+                                        others,
+                                        ScriptStore.class,
+                                        scriptStore -> !scriptStore.get().equals(model.getExistingEntry())
+                                                && !others.contains(scriptStore),
+                                        StoreViewState.get().getAllScriptsCategory(),
+                                        DataStoreCreationCategory.SCRIPT,
+                                        null),
+                                others)
+                        .bind(
+                                () -> {
+                                    return ScriptStore.builder()
+                                            .textSource(textSource.get())
+                                            .scripts(new ArrayList<>(others.get()))
+                                            .description(st.getDescription())
+                                            .initScript(selectedExecTypes.contains(0))
+                                            .runnableScript(selectedExecTypes.contains(1))
+                                            .fileScript(selectedExecTypes.contains(2))
+                                            .shellScript(selectedExecTypes.contains(3))
+                                            .build();
+                                },
+                                store),
+                (finished) -> {
+                    if (model.getExistingEntry() == null) {
+                        finished.setStorePersistentState(
+                                EnabledStoreState.builder().enabled(true).build());
+                    }
+                });
     }
 
     @Override

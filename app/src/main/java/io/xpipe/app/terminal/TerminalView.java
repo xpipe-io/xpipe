@@ -1,9 +1,11 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
+import io.xpipe.app.util.ControllableWindowProcess;
+import io.xpipe.app.util.ControllableWindowsProcess;
+import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.OsType;
 
@@ -26,10 +28,9 @@ public class TerminalView {
     }
 
     public static void focus(TerminalSession term) {
-        var control = term.controllable();
-        if (control.isPresent()) {
-            control.get().show();
-            control.get().focus();
+        if (term instanceof TerminalView.ControllableTerminalSession c) {
+            c.getControllable().show();
+            c.getControllable().focus();
         } else {
             if (OsType.ofLocal() == OsType.MACOS) {
                 // Just focus the app, this is correct most of the time
@@ -159,7 +160,8 @@ public class TerminalView {
                     }
                 }
 
-                yield Optional.of(new WindowsTerminalSession(terminalProcess, type, controls.getFirst()));
+                yield Optional.of(new ControllableTerminalSession(
+                        terminalProcess, type, new ControllableWindowsProcess(terminalProcess, controls.getFirst())));
             }
         };
     }
@@ -207,7 +209,9 @@ public class TerminalView {
         }
 
         for (TerminalSession terminalInstance : new ArrayList<>(terminalInstances)) {
-            var alive = terminalInstance.isRunning();
+            var alive = terminalInstance.isRunning()
+                    && sessions.stream()
+                            .anyMatch(shellSession -> shellSession.getTerminal().equals(terminalInstance));
             if (!alive) {
                 terminalInstances.remove(terminalInstance);
                 TrackEvent.withTrace("Terminal session is dead")
@@ -251,10 +255,6 @@ public class TerminalView {
             return terminalProcess.isAlive();
         }
 
-        public Optional<ControllableTerminalSession> controllable() {
-            return Optional.ofNullable(this instanceof ControllableTerminalSession c ? c : null);
-        }
-
         @Override
         public boolean equals(Object o) {
             if (!(o instanceof TerminalSession that)) {
@@ -266,6 +266,45 @@ public class TerminalView {
         @Override
         public int hashCode() {
             return Objects.hashCode(terminalProcess.pid());
+        }
+    }
+
+    @Getter
+    public static class ControllableTerminalSession extends TerminalSession {
+
+        private final ControllableWindowProcess controllable;
+
+        protected ControllableTerminalSession(
+                ProcessHandle terminalProcess,
+                ExternalTerminalType terminalType,
+                ControllableWindowProcess controllable) {
+            super(terminalProcess, terminalType);
+            this.controllable = controllable;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof ControllableTerminalSession that)) {
+                return false;
+            }
+            return Objects.equals(terminalProcess.pid(), that.terminalProcess.pid())
+                    && Objects.equals(controllable.getRawHandle(), that.controllable.getRawHandle());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(terminalProcess.pid(), controllable.getRawHandle());
+        }
+
+        @Override
+        public boolean isRunning() {
+            return super.isRunning() && !controllable.isDestroyed();
+        }
+
+        public boolean manageBorders() {
+            return terminalType != null
+                    && terminalType instanceof TrackableTerminalType t
+                    && t.getDockMode() == TerminalDockMode.BORDERLESS;
         }
     }
 }

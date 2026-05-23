@@ -1,24 +1,19 @@
 package io.xpipe.ext.base.host;
 
-import io.xpipe.app.comp.BaseRegionBuilder;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStoreCategory;
-import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DocumentationLink;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
 
 import lombok.SneakyThrows;
 
 import java.util.List;
 
-public class AbstractHostStoreProvider implements DataStoreProvider {
+public class AbstractHostStoreProvider implements CountGroupStoreProvider {
 
     @Override
     public DocumentationLink getHelpLink() {
@@ -31,11 +26,6 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
-        return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
-    }
-
-    @Override
     public DataStoreCreationCategory getCreationCategory() {
         return DataStoreCreationCategory.HOST;
     }
@@ -45,31 +35,9 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
         return DataStoreUsageCategory.GROUP;
     }
 
-    @Override
-    public ObservableValue<String> informationString(StoreSection section) {
-        return Bindings.createStringBinding(
-                () -> {
-                    var all = section.getAllChildren().getList();
-                    var shown = section.getShownChildren().getList();
-                    if (shown.size() == 0) {
-                        return null;
-                    }
-
-                    var string = all.size() == shown.size() ? all.size() : shown.size() + "/" + all.size();
-                    return all.size() > 0
-                            ? (all.size() == 1
-                                    ? AppI18n.get("hostHasConnection", string)
-                                    : AppI18n.get("hostHasConnections", string))
-                            : AppI18n.get("hostNoConnections");
-                },
-                section.getShownChildren().getList(),
-                section.getAllChildren().getList(),
-                AppI18n.activeLanguage());
-    }
-
     @SneakyThrows
     @Override
-    public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
+    public GuiDialog guiDialog(StoreCreationModel model, Property<DataStore> store) {
         AbstractHostStore st = store.getValue().asNeeded();
 
         var host = new SimpleObjectProperty<>(st.getHost());
@@ -82,11 +50,12 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
                 .nameAndDescription("abstractHostGateway")
                 .addComp(
                         new StoreChoiceComp<>(
-                                entry,
+                                model.getExistingEntry(),
                                 gateway,
                                 NetworkTunnelStore.class,
                                 null,
-                                StoreViewState.get().getAllConnectionsCategory()),
+                                StoreViewState.get().getAllConnectionsCategory(),
+                                DataStoreCreationCategory.HOST),
                         gateway)
                 .bind(
                         () -> {
@@ -123,5 +92,10 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
     @Override
     public List<Class<?>> getStoreClasses() {
         return List.of(AbstractHostStore.class);
+    }
+
+    @Override
+    public String getCountTranslationKey() {
+        return "Connection";
     }
 }

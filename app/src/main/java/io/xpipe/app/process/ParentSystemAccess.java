@@ -5,14 +5,14 @@ import io.xpipe.core.FilePath;
 public interface ParentSystemAccess {
 
     static boolean isEquivalent(ParentSystemAccess access1, ParentSystemAccess access2) throws Exception {
-        return access1.supportsAnyAccess() == access2.supportsAnyAccess() &&
-                access1.samePermissions() ==  access2.samePermissions() &&
-                access1.supportsSameUsers() ==  access2.supportsSameUsers() &&
-                access1.supportsFileSystemAccess() == access2.supportsFileSystemAccess() &&
-                access1.supportsFileSystemAccess() == access2.supportsFileSystemAccess() &&
-                access1.supportsExecutables() == access2.supportsExecutables() &&
-                access1.supportsExecutableEnvironment() == access2.supportsExecutableEnvironment() &&
-                access1.isIdentity() ==  access2.isIdentity();
+        return access1.supportsAnyAccess() == access2.supportsAnyAccess()
+                && access1.samePermissions() == access2.samePermissions()
+                && access1.supportsSameUsers() == access2.supportsSameUsers()
+                && access1.supportsFileSystemAccess() == access2.supportsFileSystemAccess()
+                && access1.supportsFileSystemAccess() == access2.supportsFileSystemAccess()
+                && access1.supportsExecutables() == access2.supportsExecutables()
+                && access1.supportsExecutableEnvironment() == access2.supportsExecutableEnvironment()
+                && access1.isIdentity() == access2.isIdentity();
     }
 
     static ParentSystemAccess none() {

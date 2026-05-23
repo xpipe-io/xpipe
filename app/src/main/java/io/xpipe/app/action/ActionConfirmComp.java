@@ -54,7 +54,7 @@ public class ActionConfirmComp extends SimpleRegionBuilder {
         }
 
         var choice = new StoreListChoiceComp<>(
-                listProp, DataStore.class, null, StoreViewState.get().getAllConnectionsCategory());
+                listProp, DataStore.class, null, StoreViewState.get().getAllConnectionsCategory(), null, null);
         choice.maxHeight(450);
         choice.setEditable(false);
         choice.hide(listProp.emptyProperty());

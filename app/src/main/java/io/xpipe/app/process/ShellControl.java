@@ -12,6 +12,8 @@ import io.xpipe.core.OsType;
 import lombok.NonNull;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,6 +21,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 public interface ShellControl extends ProcessControl {
+
+    void setLastActivity(Instant v);
+
+    boolean isInactive(Duration max);
 
     void setExitTimeout(int timeout);
 

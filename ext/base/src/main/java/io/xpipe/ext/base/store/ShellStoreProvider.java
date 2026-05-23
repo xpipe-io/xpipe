@@ -4,7 +4,6 @@ import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.OsLogoComp;
-import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.hub.comp.StoreSection;
 import io.xpipe.app.hub.comp.SystemStateComp;
 import io.xpipe.app.process.SystemState;
@@ -49,8 +48,8 @@ public interface ShellStoreProvider extends DataStoreProvider {
         };
     }
 
-    default BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
-        return new OsLogoComp(w, SystemStateComp.State.shellState(w));
+    default BaseRegionBuilder<?, ?> stateDisplay(StoreSection section) {
+        return new OsLogoComp(section.getWrapper(), SystemStateComp.State.shellState(section.getWrapper()));
     }
 
     @Override

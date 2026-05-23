@@ -73,8 +73,7 @@ public interface ExternalApplicationType extends PrefsValue {
 
         default void focus() {
             try (ShellControl pc = LocalShell.getShell().start()) {
-                pc.command(String.format("open -a \"%s.app\"", getApplicationName()))
-                        .execute();
+                pc.osascriptCommand("tell application \"%s\" to activate".formatted(getApplicationName())).execute();
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).handle();
             }
@@ -133,9 +132,8 @@ public interface ExternalApplicationType extends PrefsValue {
 
             var app = FlatpakCache.getApp(getFlatpakId());
             if (app.isEmpty()) {
-                throw ErrorEventFactory.expected(new IOException(
-                        "Executable " + getExecutable() + " not found in PATH nor as a flatkpak " + getFlatpakId()
-                                + " not installed. Install it and refresh the environment by restarting XPipe"));
+                throw ErrorEventFactory.expected(new IOException("Executable " + getExecutable()
+                        + " not found in PATH and flatpak package " + getFlatpakId() + " not installed."));
             }
 
             return FlatpakCache.getRunCommand(getFlatpakId());

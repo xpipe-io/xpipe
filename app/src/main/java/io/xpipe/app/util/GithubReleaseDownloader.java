@@ -5,11 +5,9 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.core.JacksonMapper;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Predicate;
@@ -28,9 +26,7 @@ public class GithubReleaseDownloader {
                 .uri(URI.create(getDownloadUrl(repository, filter)))
                 .build();
         var r = HttpHelper.client().send(request, HttpResponse.BodyHandlers.ofByteArray());
-        if (r.statusCode() >= 400) {
-            throw new IOException(new String(r.body(), StandardCharsets.UTF_8));
-        }
+        HttpHelper.checkOrThrow(r);
 
         Files.createDirectories(tempDir);
         Files.write(temp, r.body());
@@ -55,9 +51,7 @@ public class GithubReleaseDownloader {
                 .uri(URI.create("https://api.github.com/repos/" + repository + "/releases"))
                 .build();
         var r = HttpHelper.client().send(request, HttpResponse.BodyHandlers.ofString());
-        if (r.statusCode() >= 400) {
-            throw new IOException(r.body());
-        }
+        HttpHelper.checkOrThrow(r);
 
         var json = JacksonMapper.getDefault().readTree(r.body());
         var latest = json.get(0);
