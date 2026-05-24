@@ -270,6 +270,10 @@ public class TerminalDockHubManager {
     }
 
     public void refreshDockStatus() {
+        if (AppOperationMode.isInShutdown()) {
+            return;
+        }
+
         dockModel.updateCustomBounds();
 
         var running = dockModel.isRunning();
