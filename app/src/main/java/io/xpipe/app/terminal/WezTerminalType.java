@@ -1,6 +1,7 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppSystemInfo;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
@@ -136,12 +137,19 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
 
             if (configuration.isDock()) {
                 var bounds = NativeWinWindowControl.MAIN_WINDOW.getBounds();
-                command.add("--position").addQuoted(bounds.getX() + "," + (bounds.getY() + 20));
+                // WezTerm does not launch with negative coordinates
+                var x = Math.max(bounds.getX(), 0);
+                var y = Math.max(bounds.getY() + 28, 0);
+                command.add("--position").addQuoted(x + "," + y);
             }
 
             command.add("--always-new-process")
                     .add(configuration.getPanes().getFirst().getDialectLaunchCommand());
-            ExternalApplicationHelper.startAsync(command);
+            ThreadHelper.runFailableAsync(() -> {
+                try (var sc = ProcessControlProvider.get().createLocalProcessControl(true).start()) {
+                    sc.command(command).execute();
+                }
+            });
             activeSocket = waitForInstanceStart(50);
             if (activeSocket.isEmpty()) {
                 return;
