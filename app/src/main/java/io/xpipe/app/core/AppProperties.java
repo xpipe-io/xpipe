@@ -3,11 +3,17 @@ package io.xpipe.app.core;
 import io.xpipe.app.core.check.AppDirectoryPermissionsCheck;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.beacon.BeaconServer;
+import io.xpipe.core.OsType;
 import io.xpipe.core.XPipeDaemonMode;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.Value;
+import lombok.experimental.NonFinal;
 
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -56,6 +62,15 @@ public class AppProperties {
     boolean logPlatformDebug;
     String logLevel;
     String loginTarget;
+    int defaultBeaconPort;
+    Path beaconAuthFile;
+    Path beaconLockFile;
+    boolean debugCli;
+    boolean isDaemon;
+    boolean isCli;
+    @NonFinal
+    @Getter(AccessLevel.PRIVATE)
+    Integer effectiveBeaconPort;
 
     public AppProperties(String[] args) {
         var appDir = Path.of(System.getProperty("user.dir")).resolve("app");
@@ -158,6 +173,12 @@ public class AppProperties {
                 .orElse("info");
         loginTarget = Optional.ofNullable(System.getProperty(AppNames.propertyName("login")))
                 .orElse(null);
+        isCli = Optional.ofNullable(System.getProperty(AppNames.propertyName("isCli")))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
+        isDaemon = Optional.ofNullable(System.getProperty(AppNames.propertyName("isDaemon")))
+                .map(Boolean::parseBoolean)
+                .orElse(!isCli);
 
         // We require the user dir from here
         AppDirectoryPermissionsCheck.checkDirectory(dataDir);
@@ -180,6 +201,93 @@ public class AppProperties {
                 .orElse(false);
         explicitMode = XPipeDaemonMode.getIfPresent(System.getProperty(AppNames.propertyName("mode")))
                 .orElse(null);
+        defaultBeaconPort = getDefaultBeaconPort(staging);
+        beaconAuthFile = getLocalBeaconAuthFile(staging);
+        beaconLockFile = beaconAuthFile.getParent().resolve("lock");
+        clearLeftoverAuthFile();
+        debugCli = Optional.ofNullable(System.getProperty(AppNames.propertyName("debugCli")))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
+    }
+
+    public OptionalInt queryEffectiveBeaconPort(boolean reachable) {
+        if (!reachable) {
+            effectiveBeaconPort = getDefaultBeaconPort();
+            return OptionalInt.of(effectiveBeaconPort);
+        }
+
+        var authFile = getBeaconAuthFile();
+        if (!Files.exists(authFile)) {
+            effectiveBeaconPort = getDefaultBeaconPort();
+            return OptionalInt.of(effectiveBeaconPort);
+        }
+
+        if (effectiveBeaconPort != null) {
+            return OptionalInt.of(effectiveBeaconPort);
+        }
+
+        var hasEnv = System.getenv("BEACON_PORT") != null || System.getenv("XPIPE_BEACON_PORT") != null;
+        if (hasEnv) {
+            return OptionalInt.empty();
+        }
+
+        var start = 21723;
+        for (int i = 0; i < 20; i++) {
+            var p = start + i;
+            var occupied = BeaconServer.isReachable(p);
+            if (!occupied) {
+                effectiveBeaconPort = p;
+                return OptionalInt.of(p);
+            }
+        }
+        return OptionalInt.empty();
+    }
+
+    private void clearLeftoverAuthFile() {
+        var hasAuthFile = Files.exists(beaconAuthFile);
+        if (hasAuthFile) {
+            try (var channel = new RandomAccessFile(beaconLockFile.toFile(), "rw").getChannel()) {
+                var lock = channel.tryLock();
+                if (lock != null) {
+                    lock.release();
+                    Files.delete(beaconAuthFile);
+                }
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    private static int getDefaultBeaconPort(boolean staging) {
+        var customPortVar = System.getenv("XPIPE_BEACON_PORT");
+        Integer customPort = null;
+        if (customPortVar != null) {
+            try {
+                customPort = Integer.parseInt(customPortVar);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        var rawPortProp = System.getProperty(AppNames.propertyName("beaconPort"));
+        if (customPort == null && rawPortProp != null) {
+            try {
+                var parsed = Integer.parseInt(rawPortProp);
+                customPort = parsed;
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        var effectivePort = customPort != null ? customPort : 21721 + (staging ? 1 : 0);;
+        return effectivePort;
+    }
+
+    private static Path getLocalBeaconAuthFile(boolean staging) {
+        if (OsType.ofLocal() == OsType.LINUX) {
+            var name = AppSystemInfo.ofCurrent().getUser();
+            return AppSystemInfo.ofCurrent().getTemp().resolve(staging ? "xpipe-ptb" : "xpipe", name, "beacon-auth");
+        } else {
+            var path = AppSystemInfo.ofCurrent().getTemp().resolve(staging ? "xpipe-ptb" : "xpipe", "beacon-auth");
+            return path;
+        }
     }
 
     private static boolean isJUnitTest() {

@@ -1,24 +1,4 @@
 extraJavaModuleInfo {
-    module("de.vandermeer:asciitable", "de.vandermeer.asciitable") {
-        exportAllPackages()
-        requires('de.vandermeer.skb_interfaces')
-        requires('de.vandermeer.ascii_utf_themes')
-        requires('org.apache.commons.lang3')
-    }
-
-    module("de.vandermeer:skb-interfaces", "de.vandermeer.skb_interfaces") {
-        exportAllPackages()
-        requires('org.apache.commons.lang3')
-    }
-
-    module("de.vandermeer:ascii-utf-themes", "de.vandermeer.ascii_utf_themes") {
-        exportAllPackages()
-        requires('org.apache.commons.lang3')
-        requires('de.vandermeer.skb_interfaces')
-    }
-}
-
-extraJavaModuleInfo {
     module("com.vladsch.flexmark:flexmark", "com.vladsch.flexmark") {
         mergeJar('com.vladsch.flexmark:flexmark-util')
         mergeJar('com.vladsch.flexmark:flexmark-util-options')

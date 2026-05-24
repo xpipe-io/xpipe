@@ -224,7 +224,7 @@ project.ext {
     ci = System.getenv('CI') != null
     obfuscate = true
     fullVersion = file("$rootDir/private_files.txt").exists()
-    bundleCds = ci && fullVersion
+    bundleCds = true
 
     // Names
     productName = isStage ? 'XPipe PTB' : 'XPipe'

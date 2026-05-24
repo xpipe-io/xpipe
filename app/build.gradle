@@ -123,6 +123,10 @@ run {
     def exts = files(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0].outputs.files.singleFile).toList())
     classpath += exts
 
+    def cli = project(':cli').getTasksByName('jar', true)[0].outputs.files.singleFile
+    classpath += files(cli)
+
+    dependsOn(project(':cli').getTasksByName('jar', true)[0])
     dependsOn(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0]).toList())
 }
 

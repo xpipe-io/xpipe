@@ -12,9 +12,19 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 
 public class BeaconClient {
+
+    private static final String PRINT_MESSAGES_PROPERTY = "io.xpipe.beacon.printMessages";
+
+    private static boolean printMessages() {
+        if (System.getProperty(PRINT_MESSAGES_PROPERTY) != null) {
+            return Boolean.parseBoolean(System.getProperty(PRINT_MESSAGES_PROPERTY));
+        }
+        return false;
+    }
 
     private final int port;
     private String token;
@@ -23,9 +33,9 @@ public class BeaconClient {
         this.port = port;
     }
 
-    public static BeaconClient establishConnection(int port, BeaconClientInformation information) throws Exception {
+    public static BeaconClient establishConnection(int port, BeaconClientInformation information, Path authFile) throws Exception {
         var client = new BeaconClient(port);
-        var auth = Files.readString(BeaconConfig.getLocalBeaconAuthFile());
+        var auth = Files.readString(authFile);
         HandshakeExchange.Response response = client.performRequest(HandshakeExchange.Request.builder()
                 .client(information)
                 .auth(BeaconAuthMethod.Local.builder().authFileContent(auth).build())
@@ -34,19 +44,11 @@ public class BeaconClient {
         return client;
     }
 
-    public static Optional<BeaconClient> tryEstablishConnection(int port, BeaconClientInformation information) {
-        try {
-            return Optional.of(establishConnection(port, information));
-        } catch (Exception ex) {
-            return Optional.empty();
-        }
-    }
-
     @SuppressWarnings("unchecked")
     public <RES> RES performRequest(BeaconInterface<?> prov, String rawNode)
             throws BeaconConnectorException, BeaconClientException, BeaconServerException {
         var content = rawNode;
-        if (BeaconConfig.printMessages()) {
+        if (printMessages()) {
             System.out.println("Sending raw request:");
             System.out.println(content);
         }
@@ -70,7 +72,7 @@ public class BeaconClient {
             throw new BeaconConnectorException("Couldn't send request", ex);
         }
 
-        if (BeaconConfig.printMessages()) {
+        if (printMessages()) {
             System.out.println("Received raw response:");
             System.out.println(response.body());
         }
@@ -117,7 +119,7 @@ public class BeaconClient {
         if (prov.isEmpty()) {
             throw new IllegalArgumentException("Unknown request class " + req.getClass());
         }
-        if (BeaconConfig.printMessages()) {
+        if (printMessages()) {
             System.out.println(
                     "Sending request to server of type " + req.getClass().getName());
         }

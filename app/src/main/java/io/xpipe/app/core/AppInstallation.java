@@ -185,13 +185,13 @@ public abstract class AppInstallation {
         }
 
         @Override
-        public Path getLangPath() {
-            return getBaseInstallationPath().resolve("lang");
+        public Path getCliExecutablePath() {
+            return getBaseInstallationPath().resolve("xpipe.exe");
         }
 
         @Override
-        public Path getCliExecutablePath() {
-            return getBaseInstallationPath().resolve("bin", "xpipe.exe");
+        public Path getLangPath() {
+            return getBaseInstallationPath().resolve("lang");
         }
 
         @Override
@@ -243,13 +243,13 @@ public abstract class AppInstallation {
         }
 
         @Override
-        public Path getLangPath() {
-            return getBaseInstallationPath().resolve("lang");
+        public Path getCliExecutablePath() {
+            return getBaseInstallationPath().resolve("bin", "xpipe");
         }
 
         @Override
-        public Path getCliExecutablePath() {
-            return getBaseInstallationPath().resolve("bin", "xpipe");
+        public Path getLangPath() {
+            return getBaseInstallationPath().resolve("lang");
         }
 
         @Override
@@ -304,17 +304,17 @@ public abstract class AppInstallation {
         }
 
         @Override
+        public Path getCliExecutablePath() {
+            return getBaseInstallationPath().resolve("Contents", "MacOS", "xpipe");
+        }
+
+        @Override
         public Path getLangPath() {
             if (!AppProperties.get().isImage()) {
                 return getBaseInstallationPath().resolve("lang");
             }
 
             return getBaseInstallationPath().resolve("Contents", "Resources", "lang");
-        }
-
-        @Override
-        public Path getCliExecutablePath() {
-            return getBaseInstallationPath().resolve("Contents", "MacOS", "xpipe");
         }
 
         @Override

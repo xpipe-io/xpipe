@@ -18,7 +18,6 @@ testing {
                     testTask.configure {
                         workingDir = projectDir
 
-                        jvmArgs += ["-Xmx2g"]
                         jvmArgs += jvmRunArgs
 
                         def daemonArgs = Map.of(

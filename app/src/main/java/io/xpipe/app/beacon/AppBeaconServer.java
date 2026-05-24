@@ -2,11 +2,11 @@ package io.xpipe.app.beacon;
 
 import io.xpipe.app.beacon.mcp.AppMcpServer;
 import io.xpipe.app.core.AppLocalTemp;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.beacon.BeaconConfig;
 import io.xpipe.beacon.BeaconInterface;
 import io.xpipe.core.OsType;
 
@@ -56,7 +56,8 @@ public class AppBeaconServer {
 
     public static void init() {
         try {
-            INSTANCE = new AppBeaconServer(BeaconConfig.getUsedPort());
+            // We already queried the beacon port at this point, so this will always work
+            INSTANCE = new AppBeaconServer(AppProperties.get().queryEffectiveBeaconPort(false).orElse(AppProperties.get().getDefaultBeaconPort()));
             INSTANCE.initAuthSecret();
             INSTANCE.start();
             TrackEvent.withInfo("Started http server")
@@ -111,7 +112,7 @@ public class AppBeaconServer {
     }
 
     private void initAuthSecret() throws IOException {
-        var file = BeaconConfig.getLocalBeaconAuthFile();
+        var file = AppProperties.get().getBeaconAuthFile();
         // Create and set temp dir permissions for Linux
         AppLocalTemp.getLocalTempDataDirectory();
 
@@ -122,13 +123,13 @@ public class AppBeaconServer {
         }
         localAuthSecret = id;
 
-        var lockFile = BeaconConfig.getLocalBeaconLockFile();
+        var lockFile = AppProperties.get().getBeaconLockFile();
         localLockFileChannel = new RandomAccessFile(lockFile.toFile(), "rw").getChannel();
         localLockFileLock = localLockFileChannel.tryLock();
     }
 
     private void deleteAuthSecret() {
-        var file = BeaconConfig.getLocalBeaconAuthFile();
+        var file = AppProperties.get().getBeaconAuthFile();
         try {
             Files.delete(file);
             localLockFileLock.release();

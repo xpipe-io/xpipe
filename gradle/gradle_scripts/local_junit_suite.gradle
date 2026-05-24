@@ -18,7 +18,6 @@ testing {
                     testTask.configure {
                         workingDir = rootDir
 
-                        jvmArgs += ["-Xmx2g"]
                         jvmArgs += jvmRunArgs
 
                         def exts = files(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0].outputs.files.singleFile).toList())

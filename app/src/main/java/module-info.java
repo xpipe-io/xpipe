@@ -128,6 +128,7 @@ open module io.xpipe.app {
     uses ProcessControlProvider;
     uses ShellDialect;
     uses CloudSetupProvider;
+    uses CliProvider;
 
     provides ActionProvider with
             GradleRunMenuProvider,

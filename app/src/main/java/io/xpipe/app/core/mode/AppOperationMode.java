@@ -4,6 +4,10 @@ import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppDebugModeCheck;
 import io.xpipe.app.core.window.AppMainWindow;
+import io.xpipe.app.core.window.AppSideWindow;
+import io.xpipe.app.core.window.AppWindowStyle;
+import io.xpipe.app.ext.CliProvider;
+import io.xpipe.app.ext.ExtensionException;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.app.platform.PlatformState;
@@ -109,10 +113,24 @@ public abstract class AppOperationMode {
                 ErrorEventFactory.fromThrowable(ex).unhandled(true).build().handle();
             });
 
+            AppProperties.init(args);
+            if (AppProperties.get().isCli()) {
+                CliProvider.init(ModuleLayer.boot());
+                var cli = CliProvider.get();
+                if (cli == null) {
+                    throw ExtensionException.corrupt("Missing cli module");
+                }
+                var r = cli.execute(args);
+                if (AppProperties.get().isAotTrainMode()) {
+                    r = 0;
+                }
+                halt(r);
+                return;
+            }
+
             TrackEvent.info("Initial setup");
             AppMainWindow.loadingText("initializingApp");
             GlobalTimer.init();
-            AppProperties.init(args);
             PlatformThreadWatcher.init();
             AppLogs.init();
             AppDebugModeCheck.printIfNeeded();
@@ -273,7 +291,6 @@ public abstract class AppOperationMode {
 
     public static void halt(int code) {
         synchronized (HALT_LOCK) {
-            TrackEvent.info("Halting now!");
             AppLogs.teardown();
             Runtime.getRuntime().halt(code);
         }
