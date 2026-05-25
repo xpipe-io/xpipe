@@ -59,5 +59,10 @@ public interface ActionProvider {
                     .map(p -> p.get())
                     .toList());
         }
+
+        @Override
+        public boolean initForCli() {
+            return false;
+        }
     }
 }

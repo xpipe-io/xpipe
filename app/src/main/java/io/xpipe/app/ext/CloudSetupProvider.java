@@ -32,5 +32,10 @@ public interface CloudSetupProvider {
                     .map(p -> p.get())
                     .toList());
         }
+
+        @Override
+        public boolean initForCli() {
+            return false;
+        }
     }
 }

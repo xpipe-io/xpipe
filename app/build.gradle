@@ -97,7 +97,7 @@ jar {
 application {
     mainModule = groupName + '.app'
     mainClass = groupName + '.app.Main'
-    applicationDefaultJvmArgs = jvmRunArgs
+    applicationDefaultJvmArgs = daemonJvmRunArgs
 }
 
 run {
@@ -136,7 +136,7 @@ tasks.register('runAttachedDebugger', JavaExec) {
     mainModule = groupName + '.app'
     mainClass = groupName + '.app.Main'
     modularity.inferModulePath = true
-    jvmArgs += jvmRunArgs
+    jvmArgs += daemonJvmRunArgs
     jvmArgs += List.of(
             "-javaagent:${System.getProperty("user.home")}/.attachme/attachme-agent-1.2.9.jar=port:7857,host:localhost".toString(),
             "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=127.0.0.1:0"

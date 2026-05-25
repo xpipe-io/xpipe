@@ -71,7 +71,7 @@ public class AppInstance {
         }
 
         try {
-            var inputs = AppProperties.get().getArguments().getOpenArgs();
+            var inputs = AppProperties.get().getArguments().getDaemonOpenArgs();
             // Assume that we want to open the GUI if we launched again
             client.get().performRequest(DaemonFocusExchange.Request.builder().build());
             if (!inputs.isEmpty()) {

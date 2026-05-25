@@ -97,6 +97,7 @@ public class AppProperties {
                 .getLocation()
                 .getProtocol()
                 .equals("jrt");
+        arguments = AppArguments.init(args);
         fullVersion = Optional.ofNullable(System.getProperty(AppNames.propertyName("fullVersion")))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
@@ -178,7 +179,6 @@ public class AppProperties {
         isDaemon = Optional.ofNullable(System.getProperty(AppNames.propertyName("isDaemon")))
                 .map(Boolean::parseBoolean)
                 .orElse(!isCli);
-        arguments = AppArguments.init(isDaemon ? args : new String[0]);
 
         // We require the user dir from here
         AppDirectoryPermissionsCheck.checkDirectory(dataDir);
@@ -211,24 +211,25 @@ public class AppProperties {
     }
 
     public OptionalInt queryEffectiveBeaconPort(boolean reachable) {
+        if (effectiveBeaconPort != null) {
+            return OptionalInt.of(effectiveBeaconPort);
+        }
+
         if (!reachable) {
             effectiveBeaconPort = getDefaultBeaconPort();
             return OptionalInt.of(effectiveBeaconPort);
         }
 
         var authFile = getBeaconAuthFile();
-        if (!Files.exists(authFile)) {
+        if (Files.exists(authFile)) {
             effectiveBeaconPort = getDefaultBeaconPort();
-            return OptionalInt.of(effectiveBeaconPort);
-        }
-
-        if (effectiveBeaconPort != null) {
             return OptionalInt.of(effectiveBeaconPort);
         }
 
         var hasEnv = System.getenv("BEACON_PORT") != null || System.getenv("XPIPE_BEACON_PORT") != null;
         if (hasEnv) {
-            return OptionalInt.empty();
+            effectiveBeaconPort = getDefaultBeaconPort();
+            return OptionalInt.of(effectiveBeaconPort);
         }
 
         var start = 21723;
@@ -330,7 +331,7 @@ public class AppProperties {
         TrackEvent.withInfo("Received arguments")
                 .tag("raw", arguments.getRawArgs())
                 .tag("resolved", arguments.getResolvedArgs())
-                .tag("resolvedCommand", arguments.getOpenArgs())
+                .tag("resolvedCommand", arguments.getDaemonOpenArgs())
                 .handle();
 
         for (var e : System.getProperties().entrySet()) {

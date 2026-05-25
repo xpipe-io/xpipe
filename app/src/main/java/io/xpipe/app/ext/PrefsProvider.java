@@ -36,5 +36,10 @@ public abstract class PrefsProvider {
                     .map(ServiceLoader.Provider::get)
                     .collect(Collectors.toList());
         }
+
+        @Override
+        public boolean initForCli() {
+            return false;
+        }
     }
 }

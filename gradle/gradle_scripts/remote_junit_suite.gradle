@@ -18,7 +18,7 @@ testing {
                     testTask.configure {
                         workingDir = projectDir
 
-                        jvmArgs += jvmRunArgs
+                        jvmArgs += daemonJvmRunArgs
 
                         def daemonArgs = Map.of(
                                 propertyName("dataDir"), "$projectDir/local/",

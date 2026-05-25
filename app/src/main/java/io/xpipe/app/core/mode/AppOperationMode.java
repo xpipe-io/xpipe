@@ -20,6 +20,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 import io.xpipe.core.FailableRunnable;
+import io.xpipe.core.ModuleLayerLoader;
 import io.xpipe.core.XPipeDaemonMode;
 
 import javafx.application.Platform;
@@ -115,12 +116,12 @@ public abstract class AppOperationMode {
 
             AppProperties.init(args);
             if (AppProperties.get().isCli()) {
-                CliProvider.init(ModuleLayer.boot());
+                ModuleLayerLoader.loadAll(ModuleLayer.boot(), throwable -> throwable.printStackTrace());
                 var cli = CliProvider.get();
                 if (cli == null) {
                     throw ExtensionException.corrupt("Missing cli module");
                 }
-                var r = cli.execute(args);
+                var r = cli.execute(AppProperties.get().getArguments().getResolvedArgs().toArray(String[]::new));
                 if (AppProperties.get().isAotTrainMode()) {
                     r = 0;
                 }

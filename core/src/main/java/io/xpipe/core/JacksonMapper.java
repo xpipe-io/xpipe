@@ -54,8 +54,7 @@ public class JacksonMapper {
 
     private static List<Module> findModules(ModuleLayer layer) {
         ArrayList<Module> modules = new ArrayList<>();
-        ServiceLoader<Module> loader =
-                layer != null ? ServiceLoader.load(layer, Module.class) : ServiceLoader.load(Module.class);
+        ServiceLoader<Module> loader = ServiceLoader.load(layer, Module.class);
         for (Module module : loader) {
             modules.add(module);
         }
@@ -149,6 +148,11 @@ public class JacksonMapper {
             List<Module> modules = findModules(layer);
             INSTANCE.registerModules(modules);
             init = true;
+        }
+
+        @Override
+        public boolean initForCli() {
+            return true;
         }
     }
 }

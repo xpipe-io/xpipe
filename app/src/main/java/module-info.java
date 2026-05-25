@@ -217,7 +217,8 @@ open module io.xpipe.app {
             LicenseProvider.Loader,
             ScanProvider.Loader,
             ShellDialects.Loader,
-            CloudSetupProvider.Loader;
+            CloudSetupProvider.Loader,
+            CliProvider.Loader;
     provides SLF4JServiceProvider with
             AppLogs.Slf4jProvider;
     provides EventHandler with

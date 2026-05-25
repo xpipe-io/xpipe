@@ -6,10 +6,8 @@ import java.util.function.Consumer;
 public interface ModuleLayerLoader {
 
     static void loadAll(ModuleLayer layer, Consumer<Throwable> errorHandler) {
-        var loaded = layer != null
-                ? ServiceLoader.load(layer, ModuleLayerLoader.class)
-                : ServiceLoader.load(ModuleLayerLoader.class);
-        loaded.stream().forEach(moduleLayerLoaderProvider -> {
+        var loaded = ServiceLoader.load(layer, ModuleLayerLoader.class);
+        loaded.stream().map(ServiceLoader.Provider::get).filter(p -> p.initForCli() || !AppPro).forEach(moduleLayerLoaderProvider -> {
             var instance = moduleLayerLoaderProvider.get();
             try {
                 instance.init(layer);
@@ -20,4 +18,6 @@ public interface ModuleLayerLoader {
     }
 
     default void init(ModuleLayer layer) {}
+
+    boolean initForCli();
 }

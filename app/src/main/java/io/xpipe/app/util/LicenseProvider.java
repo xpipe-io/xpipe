@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.ExtensionException;
 import io.xpipe.core.ModuleLayerLoader;
 
@@ -48,6 +49,11 @@ public abstract class LicenseProvider {
                     .map(ServiceLoader.Provider::get)
                     .findFirst()
                     .orElseThrow(() -> ExtensionException.corrupt("Missing license provider"));
+        }
+
+        @Override
+        public boolean initForCli() {
+            return false;
         }
     }
 }

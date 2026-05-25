@@ -90,5 +90,10 @@ public class DataStoreProviders {
                 });
             }
         }
+
+        @Override
+        public boolean initForCli() {
+            return false;
+        }
     }
 }

@@ -78,9 +78,7 @@ public abstract class BeaconInterface<T> {
 
         @Override
         public void init(ModuleLayer layer) {
-            var services = layer != null
-                    ? ServiceLoader.load(layer, BeaconInterface.class)
-                    : ServiceLoader.load(BeaconInterface.class);
+            var services = ServiceLoader.load(layer, BeaconInterface.class);
             ALL = services.stream()
                     .map(ServiceLoader.Provider::get)
                     .map(beaconInterface -> (BeaconInterface<?>) beaconInterface)
@@ -89,6 +87,11 @@ public abstract class BeaconInterface<T> {
             ALL.removeIf(beaconInterface -> ALL.stream()
                     .anyMatch(other -> !other.equals(beaconInterface)
                             && beaconInterface.getClass().isAssignableFrom(other.getClass())));
+        }
+
+        @Override
+        public boolean initForCli() {
+            return true;
         }
     }
 }

@@ -18,7 +18,7 @@ testing {
                     testTask.configure {
                         workingDir = rootDir
 
-                        jvmArgs += jvmRunArgs
+                        jvmArgs += daemonJvmRunArgs
 
                         def exts = files(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0].outputs.files.singleFile).toList())
                         classpath += exts

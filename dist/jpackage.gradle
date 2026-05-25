@@ -78,14 +78,14 @@ jlink {
         moduleName = packageName(null)
         mainClass = packageName('Main')
         name = jpackageExecutableName
-        jvmArgs = jpackageReleaseArguments + ["-Dio.xpipe.app.isDaemon=true"]
+        jvmArgs = jpackageReleaseDaemonArguments
     }
 
     secondaryLauncher {
         moduleName = packageName(null)
         mainClass = packageName('Main')
         name = "xpipe"
-        jvmArgs = jpackageReleaseArguments + ["-Dio.xpipe.app.isCli=true"]
+        jvmArgs = jpackageReleaseCliArguments
     }
 
     jpackage {

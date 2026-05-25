@@ -43,6 +43,11 @@ public abstract class ScanProvider {
                             scanProvider -> scanProvider.getClass().getName()))
                     .collect(Collectors.toList());
         }
+
+        @Override
+        public boolean initForCli() {
+            return false;
+        }
     }
 
     @Value

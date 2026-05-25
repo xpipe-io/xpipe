@@ -27,5 +27,10 @@ public abstract class DataStorageExtensionProvider {
                             scanProvider -> scanProvider.getClass().getName()))
                     .collect(Collectors.toList());
         }
+
+        @Override
+        public boolean initForCli() {
+            return false;
+        }
     }
 }

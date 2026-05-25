@@ -21,7 +21,7 @@ public class AppOpenArguments {
     private static final List<String> bufferedArguments = new ArrayList<>();
 
     public static synchronized void init() {
-        handleImpl(AppProperties.get().getArguments().getOpenArgs());
+        handleImpl(AppProperties.get().getArguments().getDaemonOpenArgs());
         handleImpl(bufferedArguments);
         bufferedArguments.clear();
     }

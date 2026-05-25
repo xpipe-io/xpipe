@@ -57,7 +57,7 @@ public class AppBeaconServer {
     public static void init() {
         try {
             // We already queried the beacon port at this point, so this will always work
-            INSTANCE = new AppBeaconServer(AppProperties.get().queryEffectiveBeaconPort(false).orElse(AppProperties.get().getDefaultBeaconPort()));
+            INSTANCE = new AppBeaconServer(AppProperties.get().queryEffectiveBeaconPort(false).orElseThrow());
             INSTANCE.initAuthSecret();
             INSTANCE.start();
             TrackEvent.withInfo("Started http server")
