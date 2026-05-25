@@ -11,7 +11,7 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.core.InPlaceSecretValue;
+import io.xpipe.app.util.InPlaceSecretValue;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;

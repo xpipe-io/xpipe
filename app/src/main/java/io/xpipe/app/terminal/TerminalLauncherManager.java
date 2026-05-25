@@ -6,9 +6,9 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.beacon.BeaconClientException;
-import io.xpipe.beacon.BeaconServerException;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.beacon.BeaconClientException;
+import io.xpipe.app.beacon.BeaconServerException;
+import io.xpipe.app.util.FilePath;
 
 import java.nio.file.Path;
 import java.util.*;

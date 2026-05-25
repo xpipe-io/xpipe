@@ -7,7 +7,6 @@ import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
-import io.xpipe.core.FilePath;
 
 import lombok.Getter;
 import lombok.Setter;

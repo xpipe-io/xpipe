@@ -1,7 +1,7 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.ext.FileSystem;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FilePath;
 
 import java.util.regex.Pattern;
 

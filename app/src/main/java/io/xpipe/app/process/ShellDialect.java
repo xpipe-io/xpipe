@@ -2,8 +2,8 @@ package io.xpipe.app.process;
 
 import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.ext.FileSystem;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.StreamCharset;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.StreamCharset;
 
 import java.nio.charset.Charset;
 import java.util.List;

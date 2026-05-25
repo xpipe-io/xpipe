@@ -2,7 +2,7 @@ package io.xpipe.app.cred;
 
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.core.KeyValue;
+import io.xpipe.app.util.KeyValue;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Value;

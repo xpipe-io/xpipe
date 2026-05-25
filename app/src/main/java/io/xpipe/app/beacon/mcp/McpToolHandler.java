@@ -6,8 +6,8 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageQuery;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.beacon.BeaconClientException;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.beacon.BeaconClientException;
+import io.xpipe.app.util.FilePath;
 
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;

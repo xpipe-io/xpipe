@@ -1,6 +1,6 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FilePath;
 
 import lombok.NonNull;
 import lombok.Setter;

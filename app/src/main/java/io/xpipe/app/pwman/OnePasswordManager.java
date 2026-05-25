@@ -10,8 +10,8 @@ import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.*;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.JacksonMapper;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.JacksonMapper;
+import io.xpipe.app.util.OsType;
 
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;

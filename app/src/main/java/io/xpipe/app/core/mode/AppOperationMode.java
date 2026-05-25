@@ -1,11 +1,8 @@
 package io.xpipe.app.core.mode;
 
-import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppDebugModeCheck;
 import io.xpipe.app.core.window.AppMainWindow;
-import io.xpipe.app.core.window.AppSideWindow;
-import io.xpipe.app.core.window.AppWindowStyle;
 import io.xpipe.app.ext.CliProvider;
 import io.xpipe.app.ext.ExtensionException;
 import io.xpipe.app.issue.*;
@@ -19,9 +16,9 @@ import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
-import io.xpipe.core.FailableRunnable;
-import io.xpipe.core.ModuleLayerLoader;
-import io.xpipe.core.XPipeDaemonMode;
+import io.xpipe.app.util.FailableRunnable;
+import io.xpipe.app.util.ModuleLayerLoader;
+import io.xpipe.app.util.XPipeDaemonMode;
 
 import javafx.application.Platform;
 

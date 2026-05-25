@@ -11,7 +11,7 @@ import io.xpipe.app.process.ElevationFunction;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FilePath;
 
 import javafx.beans.value.ObservableValue;
 

@@ -5,7 +5,7 @@ import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FilePath;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

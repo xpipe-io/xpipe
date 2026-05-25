@@ -5,7 +5,7 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.IntFieldComp;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Slider;

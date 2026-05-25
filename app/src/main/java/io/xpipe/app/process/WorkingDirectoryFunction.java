@@ -1,7 +1,7 @@
 package io.xpipe.app.process;
 
-import io.xpipe.core.FailableFunction;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FailableFunction;
+import io.xpipe.app.util.FilePath;
 
 public interface WorkingDirectoryFunction {
 

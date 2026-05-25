@@ -6,8 +6,6 @@ testing {
             useJUnitJupiter()
 
             dependencies {
-                implementation project(':core')
-                implementation project(':beacon')
                 implementation project(':app')
                 implementation project(':base')
                 implementation project()

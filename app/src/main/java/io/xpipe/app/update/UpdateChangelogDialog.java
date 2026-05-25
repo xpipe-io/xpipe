@@ -12,7 +12,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import java.nio.file.Files;
 

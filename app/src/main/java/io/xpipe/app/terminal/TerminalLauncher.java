@@ -8,9 +8,9 @@ import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FailableFunction;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.FailableFunction;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.OsType;
 
 import lombok.Value;
 

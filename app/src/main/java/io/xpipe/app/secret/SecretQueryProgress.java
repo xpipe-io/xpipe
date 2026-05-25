@@ -3,7 +3,7 @@ package io.xpipe.app.secret;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CountDown;
 import io.xpipe.app.process.SecretReference;
-import io.xpipe.core.SecretValue;
+import io.xpipe.app.util.SecretValue;
 
 import lombok.Getter;
 import lombok.NonNull;

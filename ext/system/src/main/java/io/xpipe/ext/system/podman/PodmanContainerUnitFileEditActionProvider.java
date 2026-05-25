@@ -8,7 +8,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.FileOpener;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FilePath;
 
 import javafx.beans.value.ObservableValue;
 

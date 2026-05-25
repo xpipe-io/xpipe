@@ -2,7 +2,7 @@ package io.xpipe.app.cred;
 
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FilePath;
 
 public interface SshIdentityAgentStrategy extends SshIdentityKeyListStrategy {
 

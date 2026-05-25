@@ -12,7 +12,7 @@ import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.DesktopShortcuts;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.JacksonMapper;
+import io.xpipe.app.util.JacksonMapper;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;

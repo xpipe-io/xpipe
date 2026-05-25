@@ -1,7 +1,7 @@
 package io.xpipe.app.process;
 
 import io.xpipe.app.util.GlobalTimer;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FilePath;
 
 import java.io.InputStream;
 import java.io.OutputStream;

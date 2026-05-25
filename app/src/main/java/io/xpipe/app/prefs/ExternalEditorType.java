@@ -7,7 +7,7 @@ import io.xpipe.app.process.*;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.FlatpakCache;
 import io.xpipe.app.util.WindowsRegistry;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;

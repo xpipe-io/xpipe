@@ -11,7 +11,7 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellTemp;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FilePath;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 

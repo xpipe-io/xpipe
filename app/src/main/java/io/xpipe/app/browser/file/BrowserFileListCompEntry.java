@@ -7,7 +7,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;

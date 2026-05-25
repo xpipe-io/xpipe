@@ -7,7 +7,7 @@ import io.xpipe.app.cred.SshAgentTestComp;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;

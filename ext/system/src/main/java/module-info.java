@@ -12,7 +12,6 @@ open module io.xpipe.ext.system {
     requires static lombok;
     requires static javafx.controls;
     requires static io.xpipe.app;
-    requires io.xpipe.core;
     requires io.xpipe.ext.base;
 
     provides ScanProvider with

@@ -5,12 +5,12 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.beacon.BeaconClient;
-import io.xpipe.beacon.BeaconClientInformation;
-import io.xpipe.beacon.BeaconServer;
-import io.xpipe.beacon.api.DaemonFocusExchange;
-import io.xpipe.beacon.api.DaemonOpenExchange;
-import io.xpipe.core.OsType;
+import io.xpipe.app.beacon.BeaconClient;
+import io.xpipe.app.beacon.BeaconClientInformation;
+import io.xpipe.app.beacon.BeaconServer;
+import io.xpipe.app.beacon.api.DaemonFocusExchange;
+import io.xpipe.app.beacon.api.DaemonOpenExchange;
+import io.xpipe.app.util.OsType;
 
 import java.awt.*;
 import java.util.List;

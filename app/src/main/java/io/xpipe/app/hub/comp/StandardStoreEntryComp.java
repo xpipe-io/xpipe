@@ -3,7 +3,7 @@ package io.xpipe.app.hub.comp;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;

@@ -20,7 +20,6 @@ open module io.xpipe.ext.base {
     exports io.xpipe.ext.base.host;
 
     requires java.desktop;
-    requires io.xpipe.core;
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.annotation;
     requires java.net.http;

@@ -21,7 +21,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.FileReference;
 import io.xpipe.app.util.ObservableSubscriber;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FilePath;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;

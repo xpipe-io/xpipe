@@ -25,8 +25,8 @@ import io.xpipe.app.util.*;
 import io.xpipe.app.vnc.ExternalVncClient;
 import io.xpipe.app.vnc.InternalVncClient;
 import io.xpipe.app.vnc.VncCategory;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.property.*;

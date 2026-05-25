@@ -11,7 +11,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.*;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

@@ -1,7 +1,7 @@
 package io.xpipe.app.action;
 
-import io.xpipe.core.JacksonMapper;
-import io.xpipe.core.SecretValue;
+import io.xpipe.app.util.JacksonMapper;
+import io.xpipe.app.util.SecretValue;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;

@@ -6,7 +6,7 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.*;
 import io.xpipe.app.terminal.TerminalLaunch;
-import io.xpipe.core.JacksonMapper;
+import io.xpipe.app.util.JacksonMapper;
 
 import javafx.beans.property.Property;
 

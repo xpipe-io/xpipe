@@ -3,7 +3,7 @@ package io.xpipe.app.process;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.core.FailableSupplier;
+import io.xpipe.app.util.FailableSupplier;
 
 import java.io.IOException;
 

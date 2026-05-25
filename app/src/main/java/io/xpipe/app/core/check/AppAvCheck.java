@@ -9,7 +9,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.WindowsRegistry;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.scene.layout.Region;
 

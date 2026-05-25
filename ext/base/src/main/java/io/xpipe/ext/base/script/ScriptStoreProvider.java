@@ -14,7 +14,7 @@ import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;

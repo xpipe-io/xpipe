@@ -9,7 +9,7 @@ import io.xpipe.app.platform.MarkdownHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;

@@ -1,6 +1,6 @@
 package io.xpipe.app.core;
 
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import java.io.IOException;
 import java.nio.file.Files;

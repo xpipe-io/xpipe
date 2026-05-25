@@ -1,6 +1,6 @@
 package io.xpipe.app.test;
 
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FilePath;
 
 import lombok.SneakyThrows;
 

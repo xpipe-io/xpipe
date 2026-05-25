@@ -10,7 +10,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;

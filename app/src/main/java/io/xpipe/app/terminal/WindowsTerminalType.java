@@ -10,8 +10,8 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.util.NativeWinWindowControl;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.JacksonMapper;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.JacksonMapper;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 

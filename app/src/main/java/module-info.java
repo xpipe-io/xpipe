@@ -1,6 +1,6 @@
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.action.XPipeUrlProvider;
-import io.xpipe.app.beacon.impl.*;
+import io.xpipe.app.beacon.api.*;
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.action.impl.*;
 import io.xpipe.app.browser.menu.impl.*;
@@ -14,9 +14,10 @@ import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.AppJacksonModule;
+import io.xpipe.app.util.JacksonMapper;
 import io.xpipe.app.util.LicenseProvider;
-import io.xpipe.beacon.BeaconInterface;
-import io.xpipe.core.ModuleLayerLoader;
+import io.xpipe.app.beacon.BeaconInterface;
+import io.xpipe.app.util.ModuleLayerLoader;
 
 import com.fasterxml.jackson.databind.Module;
 import org.slf4j.spi.SLF4JServiceProvider;
@@ -60,6 +61,7 @@ open module io.xpipe.app {
     exports io.xpipe.app.platform;
     exports io.xpipe.app.spice;
     exports io.xpipe.app.cred;
+    exports io.xpipe.app.beacon.api;
 
     requires com.sun.jna;
     requires com.sun.jna.platform;
@@ -72,7 +74,6 @@ open module io.xpipe.app {
     requires com.fasterxml.jackson.annotation;
     requires net.synedra.validatorfx;
     requires io.xpipe.modulefs;
-    requires io.xpipe.core;
     requires static lombok;
     requires org.apache.commons.io;
     requires org.apache.commons.lang3;
@@ -84,7 +85,6 @@ open module io.xpipe.app {
     requires javafx.graphics;
     requires org.kordamp.ikonli.javafx;
     requires io.sentry;
-    requires io.xpipe.beacon;
     requires info.picocli;
     requires java.instrument;
     requires java.management;
@@ -123,12 +123,13 @@ open module io.xpipe.app {
     uses BrowserActionProvider;
     uses LicenseProvider;
     uses io.xpipe.app.util.LicensedFeature;
-    uses io.xpipe.beacon.BeaconInterface;
+    uses BeaconInterface;
     uses DataStorageExtensionProvider;
     uses ProcessControlProvider;
     uses ShellDialect;
     uses CloudSetupProvider;
     uses CliProvider;
+    uses Module;
 
     provides ActionProvider with
             GradleRunMenuProvider,
@@ -210,6 +211,8 @@ open module io.xpipe.app {
     provides Module with
             AppJacksonModule;
     provides ModuleLayerLoader with
+            JacksonMapper.Loader,
+            BeaconInterface.Loader,
             DataStorageExtensionProvider.Loader,
             DataStoreProviders.Loader,
             ActionProvider.Loader,
@@ -223,38 +226,33 @@ open module io.xpipe.app {
             AppLogs.Slf4jProvider;
     provides EventHandler with
             EventHandlerImpl;
-    provides BeaconInterface with
-            ShellStartExchangeImpl,
-            ShellStopExchangeImpl,
-            ShellExecExchangeImpl,
-            ConnectionQueryExchangeImpl,
-            ConnectionInfoExchangeImpl,
-            ConnectionRemoveExchangeImpl,
-            ConnectionAddExchangeImpl,
-            CategoryAddExchangeImpl,
-            CategoryQueryExchangeImpl,
-            CategoryInfoExchangeImpl,
-            CategoryRemoveExchangeImpl,
-            ActionExchangeImpl,
-            ConnectionRefreshExchangeImpl,
-            DaemonOpenExchangeImpl,
-            DaemonFocusExchangeImpl,
-            DaemonStatusExchangeImpl,
-            DaemonStopExchangeImpl,
-            HandshakeExchangeImpl,
-            DaemonModeExchangeImpl,
-            FsBlobExchangeImpl,
-            FsReadExchangeImpl,
-            FsScriptExchangeImpl,
-            FsWriteExchangeImpl,
-            AskpassExchangeImpl,
-            TerminalPrepareExchangeImpl,
-            TerminalRegisterExchangeImpl,
-            TerminalWaitExchangeImpl,
-            TerminalLaunchExchangeImpl,
-            TerminalExternalLaunchExchangeImpl,
-            SshLaunchExchangeImpl,
-            DaemonVersionExchangeImpl,
-            SecretEncryptExchangeImpl,
-            SecretDecryptExchangeImpl;
+    provides BeaconInterface with ShellStartExchange, ShellStopExchange, ShellExecExchange, DaemonModeExchange, DaemonStatusExchange,
+            DaemonFocusExchange,
+            DaemonOpenExchange,
+            DaemonStopExchange,
+            HandshakeExchange,
+            ConnectionQueryExchange,
+            ConnectionInfoExchange,
+            ConnectionRemoveExchange,
+            ConnectionAddExchange,
+            CategoryAddExchange,
+            CategoryQueryExchange,
+            CategoryInfoExchange,
+            CategoryRemoveExchange,
+            ActionExchange,
+            ConnectionRefreshExchange,
+            AskpassExchange,
+            TerminalPrepareExchange,
+            TerminalRegisterExchange,
+            TerminalWaitExchange,
+            TerminalLaunchExchange,
+            TerminalExternalLaunchExchange,
+            SshLaunchExchange,
+            FsReadExchange,
+            FsBlobExchange,
+            FsWriteExchange,
+            FsScriptExchange,
+            DaemonVersionExchange,
+            SecretEncryptExchange,
+            SecretDecryptExchange;
 }

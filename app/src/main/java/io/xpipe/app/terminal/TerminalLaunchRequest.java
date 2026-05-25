@@ -7,8 +7,8 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.TerminalInitScriptConfig;
 import io.xpipe.app.process.WorkingDirectoryFunction;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.beacon.BeaconServerException;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.beacon.BeaconServerException;
+import io.xpipe.app.util.FilePath;
 
 import lombok.Setter;
 import lombok.Value;

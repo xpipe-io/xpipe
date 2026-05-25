@@ -10,7 +10,7 @@ import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.GlobalTimer;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FilePath;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyBooleanWrapper;

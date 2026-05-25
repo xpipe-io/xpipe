@@ -12,8 +12,8 @@ import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.WindowsRegistry;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.OsType;
 
 import lombok.SneakyThrows;
 

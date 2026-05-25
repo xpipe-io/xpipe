@@ -5,8 +5,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.beacon.*;
-import io.xpipe.core.JacksonMapper;
+import io.xpipe.app.util.JacksonMapper;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;

@@ -1,7 +1,7 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.core.AppCache;
-import io.xpipe.core.JacksonMapper;
+import io.xpipe.app.util.JacksonMapper;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

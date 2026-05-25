@@ -9,9 +9,9 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FailableConsumer;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.KeyValue;
+import io.xpipe.app.util.FailableConsumer;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.KeyValue;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;

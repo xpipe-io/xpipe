@@ -1,5 +1,11 @@
 package io.xpipe.app.util;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.xpipe.app.beacon.BeaconAuthMethod;
+import io.xpipe.app.beacon.BeaconClientInformation;
 import io.xpipe.app.cred.SecurityKeyImpl;
 import io.xpipe.app.cred.SshIdentityStrategy;
 import io.xpipe.app.ext.HostAddress;
@@ -15,9 +21,6 @@ import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
 import io.xpipe.app.terminal.TerminalPrompt;
 import io.xpipe.app.vnc.ExternalVncClient;
-import io.xpipe.core.InPlaceSecretValue;
-import io.xpipe.core.JacksonMapper;
-import io.xpipe.core.OsType;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -34,6 +37,9 @@ import com.fasterxml.jackson.databind.type.SimpleType;
 
 import java.io.CharArrayReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -43,6 +49,13 @@ public class AppJacksonModule extends SimpleModule {
 
     @Override
     public void setupModule(SetupContext context) {
+        context.registerSubtypes(
+                new NamedType(BeaconClientInformation.Api.class),
+                new NamedType(BeaconClientInformation.Cli.class),
+                new NamedType(BeaconClientInformation.Daemon.class));
+        context.registerSubtypes(
+                new NamedType(BeaconAuthMethod.Local.class), new NamedType(BeaconAuthMethod.ApiKey.class));
+
         context.registerSubtypes(VaultKeySecretValue.class);
         context.registerSubtypes(PasswordLockSecretValue.class);
 
@@ -92,7 +105,104 @@ public class AppJacksonModule extends SimpleModule {
         context.registerSubtypes(DataStorageGroupStrategy.getClasses());
         context.registerSubtypes(KeeperPasswordManager.KeeperAuth.getClasses());
 
+        context.registerSubtypes(new NamedType(InPlaceSecretValue.class));
+
+        addSerializer(FilePath.class, new FilePathSerializer());
+        addDeserializer(FilePath.class, new FilePathDeserializer());
+
+        addSerializer(StorePath.class, new StorePathSerializer());
+        addDeserializer(StorePath.class, new StorePathDeserializer());
+
+        addSerializer(Charset.class, new CharsetSerializer());
+        addDeserializer(Charset.class, new CharsetDeserializer());
+
+        addSerializer(Path.class, new LocalPathSerializer());
+        addDeserializer(Path.class, new LocalPathDeserializer());
+
+        context.setMixInAnnotations(Throwable.class, ThrowableTypeMixIn.class);
+
         super.setupModule(context);
+    }
+
+    public static class StorePathSerializer extends JsonSerializer<StorePath> {
+
+        @Override
+        public void serialize(StorePath value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+            var ar = value.getNames().toArray(String[]::new);
+            jgen.writeArray(ar, 0, ar.length);
+        }
+    }
+
+    public static class StorePathDeserializer extends JsonDeserializer<StorePath> {
+
+        @Override
+        public StorePath deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            JavaType javaType =
+                    JacksonMapper.getDefault().getTypeFactory().constructCollectionLikeType(List.class, String.class);
+            List<String> list = JacksonMapper.getDefault().readValue(p, javaType);
+            return new StorePath(list);
+        }
+    }
+
+    public static class FilePathSerializer extends JsonSerializer<FilePath> {
+
+        @Override
+        public void serialize(FilePath value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+            jgen.writeString(value.toString());
+        }
+    }
+
+    public static class FilePathDeserializer extends JsonDeserializer<FilePath> {
+
+        @Override
+        public FilePath deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            return FilePath.of(p.getValueAsString());
+        }
+    }
+
+    public static class CharsetSerializer extends JsonSerializer<Charset> {
+
+        @Override
+        public void serialize(Charset value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+            jgen.writeString(value.name());
+        }
+    }
+
+    public static class CharsetDeserializer extends JsonDeserializer<Charset> {
+
+        @Override
+        public Charset deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            return Charset.forName(p.getValueAsString());
+        }
+    }
+
+    public static class LocalPathSerializer extends JsonSerializer<Path> {
+
+        @Override
+        public void serialize(Path value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+            jgen.writeString(value.toString());
+        }
+    }
+
+    public static class LocalPathDeserializer extends JsonDeserializer<Path> {
+
+        @Override
+        public Path deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            try {
+                return Path.of(p.getValueAsString());
+            } catch (InvalidPathException ignored) {
+                return null;
+            }
+        }
+    }
+
+    @JsonSerialize(as = Throwable.class)
+    @JsonPropertyOrder(alphabetic = true)
+    public abstract static class ThrowableTypeMixIn {
+
+        @SuppressWarnings("unused")
+        @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class, property = "$id")
+        private Throwable cause;
     }
 
     public static class KeePassXcPasswordManagerSerializer extends JsonSerializer<KeePassXcPasswordManager> {

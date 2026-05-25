@@ -7,8 +7,8 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.OsType;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;

@@ -4,7 +4,7 @@ import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.core.AppDisplayScale;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.platform.BindingsHelper;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FilePath;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;

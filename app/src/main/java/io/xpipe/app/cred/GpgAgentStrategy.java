@@ -1,15 +1,13 @@
 package io.xpipe.app.cred;
 
-import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.LicenseProvider;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.KeyValue;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.KeyValue;
+import io.xpipe.app.util.OsType;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;

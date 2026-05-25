@@ -7,7 +7,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.ColorHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.application.Application;
 import javafx.application.ColorScheme;

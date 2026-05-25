@@ -3,9 +3,9 @@ package io.xpipe.app.core;
 import io.xpipe.app.core.check.AppDirectoryPermissionsCheck;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.beacon.BeaconServer;
-import io.xpipe.core.OsType;
-import io.xpipe.core.XPipeDaemonMode;
+import io.xpipe.app.beacon.BeaconServer;
+import io.xpipe.app.util.OsType;
+import io.xpipe.app.util.XPipeDaemonMode;
 
 import lombok.AccessLevel;
 import lombok.Getter;

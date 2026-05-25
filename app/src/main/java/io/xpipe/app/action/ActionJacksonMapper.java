@@ -4,8 +4,8 @@ import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.action.*;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.core.JacksonMapper;
-import io.xpipe.core.UuidHelper;
+import io.xpipe.app.util.JacksonMapper;
+import io.xpipe.app.util.UuidHelper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;

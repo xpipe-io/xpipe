@@ -15,10 +15,10 @@ import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.HttpProxy;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.InPlaceSecretValue;
-import io.xpipe.core.JacksonMapper;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.InPlaceSecretValue;
+import io.xpipe.app.util.JacksonMapper;
+import io.xpipe.app.util.OsType;
 
 import javafx.beans.property.*;
 

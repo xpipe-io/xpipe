@@ -6,7 +6,7 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellScript;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FilePath;
 
 import javafx.beans.property.Property;
 

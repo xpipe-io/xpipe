@@ -2,7 +2,7 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import java.util.*;
 

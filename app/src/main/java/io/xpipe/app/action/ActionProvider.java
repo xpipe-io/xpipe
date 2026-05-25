@@ -2,7 +2,7 @@ package io.xpipe.app.action;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.core.ModuleLayerLoader;
+import io.xpipe.app.util.ModuleLayerLoader;
 
 import java.util.*;
 

@@ -19,9 +19,6 @@ configurations {
 }
 
 dependencies {
-    api project(':core')
-    api project(':beacon')
-
     compileOnly 'org.hamcrest:hamcrest:3.0'
     compileOnly 'org.junit.jupiter:junit-jupiter-api:5.14.2'
     compileOnly 'org.junit.jupiter:junit-jupiter-params:5.14.2'

@@ -4,10 +4,10 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.secret.EncryptionToken;
 import io.xpipe.app.secret.PasswordLockSecretValue;
 import io.xpipe.app.secret.VaultKeySecretValue;
-import io.xpipe.core.EncryptedSecretValue;
-import io.xpipe.core.InPlaceSecretValue;
-import io.xpipe.core.JacksonMapper;
-import io.xpipe.core.SecretValue;
+import io.xpipe.app.util.EncryptedSecretValue;
+import io.xpipe.app.util.InPlaceSecretValue;
+import io.xpipe.app.util.JacksonMapper;
+import io.xpipe.app.util.SecretValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;

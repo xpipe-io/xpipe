@@ -3,7 +3,6 @@ package io.xpipe.app.util;
 import io.xpipe.app.core.AppLocalTemp;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
-import io.xpipe.core.JacksonMapper;
 
 import java.net.URI;
 import java.net.http.HttpRequest;

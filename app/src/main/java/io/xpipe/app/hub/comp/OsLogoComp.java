@@ -5,8 +5,8 @@ import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.StackComp;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.process.SystemState;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.OsType;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;

@@ -6,7 +6,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.ModuleAccess;
-import io.xpipe.core.ModuleLayerLoader;
+import io.xpipe.app.util.ModuleLayerLoader;
 
 import lombok.Getter;
 

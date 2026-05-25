@@ -4,7 +4,6 @@ import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.process.ShellDialects;
-import io.xpipe.core.OsType;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 

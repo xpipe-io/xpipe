@@ -18,8 +18,8 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.HttpHelper;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.UuidHelper;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.UuidHelper;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;

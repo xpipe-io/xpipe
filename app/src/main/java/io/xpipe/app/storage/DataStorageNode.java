@@ -5,8 +5,8 @@ import io.xpipe.app.ext.UserScopeStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.secret.EncryptionToken;
-import io.xpipe.core.InPlaceSecretValue;
-import io.xpipe.core.JacksonMapper;
+import io.xpipe.app.util.InPlaceSecretValue;
+import io.xpipe.app.util.JacksonMapper;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;

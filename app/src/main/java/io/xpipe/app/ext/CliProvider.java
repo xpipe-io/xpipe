@@ -1,11 +1,8 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.beacon.BeaconInterface;
-import io.xpipe.core.ModuleLayerLoader;
+import io.xpipe.app.util.ModuleLayerLoader;
 
-import java.util.OptionalInt;
 import java.util.ServiceLoader;
-import java.util.stream.Collectors;
 
 public abstract class CliProvider {
 

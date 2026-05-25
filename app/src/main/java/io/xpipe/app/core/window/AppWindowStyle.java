@@ -4,7 +4,7 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

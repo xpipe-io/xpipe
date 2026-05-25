@@ -7,8 +7,8 @@ import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLaunch;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.OsType;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

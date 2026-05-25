@@ -1,8 +1,5 @@
 rootProject.name = 'xpipe'
 
-include 'core'
-include 'beacon'
-
 include "base"
 project(":base").projectDir = file("ext/base")
 
