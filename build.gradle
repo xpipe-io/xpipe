@@ -229,7 +229,7 @@ def getCliJvmArgs() {
     // GC config
     jvmRunArgs += [
             '-XX:+UseG1GC',
-            '-Xms50m',
+            '-Xms60m',
             '-Xmx250m',
             // The default makes GC pauses longer for some reason
             '-XX:G1HeapRegionSize=4m'
@@ -311,7 +311,7 @@ project.ext {
     ci = System.getenv('CI') != null
     obfuscate = true
     fullVersion = file("$rootDir/private_files.txt").exists()
-    bundleCds = true
+    bundleCds = ci && fullVersion
 
     // Names
     productName = isStage ? 'XPipe PTB' : 'XPipe'

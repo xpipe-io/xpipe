@@ -72,6 +72,7 @@ open module io.xpipe.app {
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.annotation;
+    requires com.fasterxml.jackson.datatype.jsr310;
     requires net.synedra.validatorfx;
     requires io.xpipe.modulefs;
     requires static lombok;
