@@ -86,6 +86,7 @@ jlink {
         mainClass = packageName('Main')
         name = "xpipe"
         jvmArgs = jpackageReleaseCliArguments
+        winConsole = true
     }
 
     jpackage {
