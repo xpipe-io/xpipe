@@ -145,11 +145,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
 
             command.add("--always-new-process")
                     .add(configuration.getPanes().getFirst().getDialectLaunchCommand());
-            ThreadHelper.runFailableAsync(() -> {
-                try (var sc = ProcessControlProvider.get().createLocalProcessControl(true).start()) {
-                    sc.command(command).execute();
-                }
-            });
+            ExternalApplicationHelper.startAsync(command);
             activeSocket = waitForInstanceStart(50);
             if (activeSocket.isEmpty()) {
                 return;

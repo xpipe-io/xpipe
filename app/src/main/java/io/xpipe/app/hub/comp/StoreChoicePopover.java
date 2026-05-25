@@ -147,11 +147,9 @@ public class StoreChoicePopover<T extends DataStore> {
                     ignored -> true);
             var filter = FilterComp.ofStoreFilter(storeFilter).hgrow();
 
-            var addButton = creationCategory != null
+            var addButton = creationCategory != null && creationCategory.getDefaultProvider() != null
                     ? new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2p-plus"), () -> {
-                                StoreCreationDialog.showCreation(
-                                        creationCategory.getDefaultProvider() != null ?
-                                                DataStoreProviders.byId(creationCategory.getDefaultProvider()).orElseThrow() : null,
+                                StoreCreationDialog.showCreation(DataStoreProviders.byId(creationCategory.getDefaultProvider()).orElseThrow(),
                                         creationCategory);
                             })
                             .describe(d -> d.nameKey("addConnection"))
