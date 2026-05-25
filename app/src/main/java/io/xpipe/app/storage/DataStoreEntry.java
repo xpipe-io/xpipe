@@ -665,7 +665,7 @@ public class DataStoreEntry extends StorageElement {
         }
 
         DataStorageNode newNode = DataStorageNode.ofNewStore(store);
-        var changed = !Objects.equals(this.storeNode.getContentNode(), newNode.getContentNode());
+        var changed = !Objects.equals(this.storeNode.getContentNode(), newNode.getContentNode()) || this.storeNode.isEncrypted() != newNode.isEncrypted();
         if (changed) {
             this.storeNode = newNode;
             dirty = true;

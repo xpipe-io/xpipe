@@ -231,9 +231,7 @@ public class StoreEntryWrapper {
                 .findFirst()
                 .orElse(StoreViewState.get().getAllConnectionsCategory());
         category.setValue(newCat);
-        perUser.setValue(
-                !category.getValue().getRoot().equals(StoreViewState.get().getAllIdentitiesCategory())
-                        && entry.isPerUserStore());
+        perUser.setValue(entry.isPerUserStore());
         pinToTop.setValue(entry.isPinToTop());
 
         var orderedTags = entry.getTags().stream().sorted().toList();
