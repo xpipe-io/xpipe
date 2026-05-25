@@ -160,31 +160,6 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
             });
         });
 
-        var selectedBorder = Bindings.createObjectBinding(
-                () -> {
-                    var c = Platform.getPreferences()
-                            .getAccentColor()
-                            .desaturate()
-                            .desaturate();
-                    return new Background(new BackgroundFill(c, new CornerRadii(8), new Insets(17, 1, 15, 2)));
-                },
-                Platform.getPreferences().accentColorProperty());
-        var hoverBorder = Bindings.createObjectBinding(
-                () -> {
-                    var c = Platform.getPreferences()
-                            .getAccentColor()
-                            .darker()
-                            .desaturate()
-                            .desaturate();
-                    return new Background(new BackgroundFill(c, new CornerRadii(8), new Insets(17, 1, 15, 2)));
-                },
-                Platform.getPreferences().accentColorProperty());
-        var noneBorder = Bindings.createObjectBinding(
-                () -> {
-                    return Background.fill(Color.TRANSPARENT);
-                },
-                Platform.getPreferences().accentColorProperty());
-
         var indicator = RegionBuilder.empty().style("indicator");
         var stack = new StackComp(List.of(indicator, b)).apply(struc -> struc.setAlignment(Pos.CENTER_RIGHT));
         stack.apply(struc -> {
@@ -192,26 +167,12 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
             var buttonRegion = (Region) struc.getChildren().get(1);
             indicatorRegion.setMaxWidth(7);
             indicatorRegion.prefHeightProperty().bind(buttonRegion.heightProperty());
-            indicatorRegion
-                    .backgroundProperty()
-                    .bind(Bindings.createObjectBinding(
-                            () -> {
-                                if (struc.isHover()) {
-                                    return hoverBorder.get();
-                                }
-
-                                if (highlight || value.getValue().equals(e)) {
-                                    return selectedBorder.get();
-                                }
-
-                                return noneBorder.get();
-                            },
-                            struc.hoverProperty(),
-                            value,
-                            hoverBorder,
-                            selectedBorder,
-                            noneBorder));
+            value.subscribe(entry -> {
+                var s = entry == e || highlight;
+                struc.pseudoClassStateChanged(selected, s);
+            });
         });
+        stack.style("sidebar-button");
         return stack;
     }
 }

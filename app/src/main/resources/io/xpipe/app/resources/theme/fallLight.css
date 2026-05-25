@@ -1,0 +1,17 @@
+.root:windows { -color-bg-default-transparent: #fdf8f0AF; }
+
+.root:linux { -color-bg-default-transparent: #fdf8f0AF; }
+
+.root:macos { -color-bg-default-transparent: #fdf8f0BF; }
+
+.root .table-view {
+    -color-cell-bg-odd: derive(-color-bg-subtle, 35%);
+}
+
+.root:dark * {
+    -color-foreground-base: derive(-color-bg-default-transparent, 13%);
+}
+
+.root:light * {
+    -color-foreground-base: derive(-color-bg-default-transparent, -3%);
+}
