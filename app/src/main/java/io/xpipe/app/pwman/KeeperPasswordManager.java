@@ -176,13 +176,17 @@ public class KeeperPasswordManager implements PasswordManager {
                 var command = sc.command(fullB);
                 command.killOnTimeout(CountDown.of().start(30_000));
                 command.sensitive();
-                var success = command.executeAndCheck();
-                // A fail indicates the query went through but the entry was not found
-                if (!success) {
-                    return false;
-                } else {
-                    return true;
+                var output = command.readStdoutAndStderr();
+                if (command.getExitCode() == CommandControl.EXIT_TIMEOUT_EXIT_CODE
+                        || (command.getExitCode() != 0
+                                && !output[1].isEmpty()
+                                && !output[1].contains("get: Cannot find"))) {
+                    throw ErrorEventFactory.expected(new IllegalStateException("Failed to request Keeper 2FA SMS"));
                 }
+
+                // A fail indicates the query went through but the entry was not found
+                var queryRan = command.getExitCode() != 0 && output[1].contains("get: Cannot find");
+                return !queryRan;
             }
 
             @Override
@@ -195,6 +199,7 @@ public class KeeperPasswordManager implements PasswordManager {
                     var input = """
 
                           1
+                          -
 
                           """;
                     return input;
@@ -613,6 +618,13 @@ public class KeeperPasswordManager implements PasswordManager {
                     return null;
                 }
 
+                if (exitCode == CommandControl.EXIT_TIMEOUT_EXIT_CODE) {
+                    ErrorEventFactory.fromMessage("Keeper request timed out")
+                            .expected()
+                            .handle();
+                    return null;
+                }
+
                 var message = !err.isEmpty() ? outPrefix + "\n" + err : outPrefix;
                 ErrorEventFactory.fromMessage(message).expected().handle();
                 return null;
@@ -647,8 +659,7 @@ public class KeeperPasswordManager implements PasswordManager {
 
                 if (login == null && password == null) {
                     var message = !err.isEmpty() ? out + "\n" + err : out;
-                    ErrorEventFactory.fromMessage(message)
-                            .description("Received invalid response")
+                    ErrorEventFactory.fromMessage("Received invalid response: " + message.trim())
                             .expected()
                             .handle();
                     return null;

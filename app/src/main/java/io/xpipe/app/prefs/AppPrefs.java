@@ -23,6 +23,7 @@ import io.xpipe.app.terminal.TerminalSplitStrategy;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 import io.xpipe.app.vnc.ExternalVncClient;
+import io.xpipe.app.vnc.InternalVncClient;
 import io.xpipe.app.vnc.VncCategory;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
@@ -99,6 +100,12 @@ public final class AppPrefs {
             .valueClass(Boolean.class)
             .requiresRestart(false)
             .build());
+    final BooleanProperty useExternalNetcatForProxies = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(false))
+            .key("useExternalNetcatForProxies")
+            .valueClass(Boolean.class)
+            .requiresRestart(false)
+            .build());
     final BooleanProperty pinLocalMachineOnStartup = map(Mapping.builder()
             .property(new GlobalBooleanProperty(false))
             .key("pinLocalMachineOnStartup")
@@ -125,11 +132,6 @@ public final class AppPrefs {
             .valueClass(Boolean.class)
             .requiresRestart(false)
             .documentationLink(DocumentationLink.MCP)
-            .build());
-    final BooleanProperty enableMcpMutationTools = map(Mapping.builder()
-            .property(new GlobalBooleanProperty(false))
-            .key("enableMcpMutationTools")
-            .valueClass(Boolean.class)
             .build());
     final StringProperty mcpAdditionalContext = map(Mapping.builder()
             .property(new GlobalStringProperty(null))
@@ -173,6 +175,13 @@ public final class AppPrefs {
             .key("saveWindowLocation")
             .valueClass(Boolean.class)
             .requiresRestart(false)
+            .build());
+    final Property<Integer> backgroundSessionInactivityTimeout = map(Mapping.builder()
+            .property(new GlobalObjectProperty<>())
+            .key("backgroundSessionInactivityTimeout")
+            .valueClass(Integer.class)
+            .requiresRestart(false)
+            .vaultSpecific(true)
             .build());
     final BooleanProperty preferTerminalTabs = map(Mapping.builder()
             .property(new GlobalBooleanProperty(true))
@@ -251,7 +260,7 @@ public final class AppPrefs {
     public final BooleanProperty dontCachePasswords =
             mapVaultShared(new GlobalBooleanProperty(false), "dontCachePasswords", Boolean.class, false);
     public final Property<ExternalVncClient> vncClient = map(Mapping.builder()
-            .property(new GlobalObjectProperty<>())
+            .property(new GlobalObjectProperty<>(InternalVncClient.builder().build()))
             .key("vncClient")
             .valueClass(ExternalVncClient.class)
             .documentationLink(DocumentationLink.VNC)
@@ -273,6 +282,12 @@ public final class AppPrefs {
             .key("terminalInitScript")
             .valueClass(ShellScript.class)
             .log(false)
+            .build());
+    final ObjectProperty<HttpProxy> httpProxy = map(Mapping.builder()
+            .property(new GlobalObjectProperty<>())
+            .key("httpProxy")
+            .valueClass(HttpProxy.class)
+            .requiresRestart(true)
             .build());
     final Property<UUID> terminalProxy = map(Mapping.builder()
             .property(new GlobalObjectProperty<>())
@@ -362,7 +377,7 @@ public final class AppPrefs {
     final BooleanProperty checkForSecurityUpdates =
             mapLocal(new GlobalBooleanProperty(true), "checkForSecurityUpdates", Boolean.class, false);
     final BooleanProperty disableHttpsTlsCheck =
-            mapLocal(new GlobalBooleanProperty(false), "disableHttpsTlsCheck", Boolean.class, true);
+            mapLocal(new GlobalBooleanProperty(false), "disableHttpsTlsCheck", Boolean.class, false);
     final BooleanProperty condenseConnectionDisplay =
             mapLocal(new GlobalBooleanProperty(false), "condenseConnectionDisplay", Boolean.class, false);
     final BooleanProperty showChildCategoriesInParentCategory =
@@ -417,6 +432,8 @@ public final class AppPrefs {
             mapVaultShared(new GlobalStringProperty(UUID.randomUUID().toString()), "apiKey", String.class, true);
     final BooleanProperty disableApiAuthentication =
             mapLocal(new GlobalBooleanProperty(false), "disableApiAuthentication", Boolean.class, false);
+    final BooleanProperty allowExternalApiRequests =
+            mapLocal(new GlobalBooleanProperty(false), "allowExternalApiRequests", Boolean.class, false);
 
     @Getter
     private final StringProperty lockCrypt =
@@ -442,6 +459,7 @@ public final class AppPrefs {
             new ApiCategory(),
             new McpCategory(),
             new UpdatesCategory(),
+            new HttpProxyCategory(),
             new SecurityCategory(),
             new WorkspacesCategory(),
             new DeveloperCategory(),
@@ -462,6 +480,14 @@ public final class AppPrefs {
 
     public boolean canSaveLocal() {
         return globalStorageHandler.isInitialized();
+    }
+
+    public ObservableValue<Integer> backgroundSessionInactivityTimeout() {
+        return backgroundSessionInactivityTimeout;
+    }
+
+    public ObservableBooleanValue useExternalNetcatForProxies() {
+        return useExternalNetcatForProxies;
     }
 
     public ObservableValue<Boolean> disableHttpsTlsCheck() {
@@ -584,8 +610,16 @@ public final class AppPrefs {
         return apiKey;
     }
 
+    public ObservableValue<HttpProxy> httpProxy() {
+        return httpProxy;
+    }
+
     public ObservableBooleanValue disableApiAuthentication() {
         return disableApiAuthentication;
+    }
+
+    public ObservableBooleanValue allowExternalApiRequests() {
+        return allowExternalApiRequests;
     }
 
     public ObservableBooleanValue enableHttpApi() {
@@ -594,10 +628,6 @@ public final class AppPrefs {
 
     public ObservableBooleanValue enableMcpServer() {
         return enableMcpServer;
-    }
-
-    public ObservableBooleanValue enableMcpMutationTools() {
-        return enableMcpMutationTools;
     }
 
     public ObservableValue<String> mcpAdditionalContext() {
@@ -841,6 +871,10 @@ public final class AppPrefs {
             sshVerboseOutput.set(false);
         }
 
+        if (enableMcpServer.get()) {
+            enableHttpApi.set(true);
+        }
+
         PrefsProvider.getAll().forEach(prov -> prov.fixLocalValues());
     }
 
@@ -849,7 +883,6 @@ public final class AppPrefs {
         terminalType.set(ExternalTerminalType.determineDefault(terminalType.get()));
         rdpClientType.setValue(ExternalRdpClient.determineDefault(rdpClientType.get()));
         spiceClient.setValue(ExternalSpiceClient.determineDefault(spiceClient.getValue()));
-        vncClient.setValue(ExternalVncClient.determineDefault(vncClient.getValue()));
         passwordManager.setValue(PasswordManager.determineDefault(passwordManager.getValue()));
         terminalMultiplexer.setValue(TerminalMultiplexer.determineDefault(terminalMultiplexer.getValue()));
 
@@ -884,19 +917,26 @@ public final class AppPrefs {
         }
 
         if (OsType.ofLocal() != OsType.WINDOWS) {
-            var changeDate = LocalDate.of(2026, 3, 25).atStartOfDay(ZoneId.systemDefault()).toInstant();
-            var removePasswordManagerAgent = AppProperties.get().getFirstStartupDate().compareTo(changeDate) > 0;
+            var changeDate = LocalDate.of(2026, 3, 25)
+                    .atStartOfDay(ZoneId.systemDefault())
+                    .toInstant();
+            var removePasswordManagerAgent =
+                    AppProperties.get().getFirstStartupDate().compareTo(changeDate) > 0;
 
             // On Linux and macOS, we prefer the shell variable compared to any global env variable
             // as the one is set by default and might not be the right one
             // This happens for example with homebrew ssh
             var shellVariable = LocalShell.getShell().view().getEnvironmentVariable("SSH_AUTH_SOCK");
-            if (shellVariable.isPresent() && removePasswordManagerAgent && PasswordManager.isPasswordManagerSshAgent(shellVariable.get())) {
+            if (shellVariable.isPresent()
+                    && removePasswordManagerAgent
+                    && PasswordManager.isPasswordManagerSshAgent(shellVariable.get())) {
                 shellVariable = Optional.empty();
             }
 
             var envVariable = System.getenv("SSH_AUTH_SOCK");
-            if (envVariable != null && removePasswordManagerAgent && PasswordManager.isPasswordManagerSshAgent(envVariable)) {
+            if (envVariable != null
+                    && removePasswordManagerAgent
+                    && PasswordManager.isPasswordManagerSshAgent(envVariable)) {
                 envVariable = null;
             }
 

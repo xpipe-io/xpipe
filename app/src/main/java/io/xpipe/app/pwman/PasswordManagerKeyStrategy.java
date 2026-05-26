@@ -47,7 +47,7 @@ public interface PasswordManagerKeyStrategy {
         }
 
         @Override
-        public SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
+        public SshIdentityKeyListStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
             return null;
         }
     }
@@ -113,7 +113,7 @@ public interface PasswordManagerKeyStrategy {
         }
 
         @Override
-        public SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
+        public SshIdentityKeyListStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
             return PasswordManagerKeyStrategy.getAgentSshIdentityStrategy(
                     publicKey, forward, (socket) -> SshIdentityStateManager.prepareLocalExternalAgent(socket));
         }
@@ -175,7 +175,7 @@ public interface PasswordManagerKeyStrategy {
         }
 
         @Override
-        public SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
+        public SshIdentityKeyListStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
             return PasswordManagerKeyStrategy.getAgentSshIdentityStrategy(publicKey, forward, (socket) -> {
                 try {
                     SshIdentityStateManager.prepareLocalExternalAgent(socket);
@@ -191,12 +191,15 @@ public interface PasswordManagerKeyStrategy {
         }
     }
 
-    private static SshIdentityAgentStrategy getAgentSshIdentityStrategy(
+    private static SshIdentityKeyListStrategy getAgentSshIdentityStrategy(
             String publicKey, boolean forward, FailableConsumer<FilePath, Exception> con) {
         var pwman = AppPrefs.get().passwordManager().getValue();
         var socket = pwman != null ? FilePath.of(pwman.getKeyConfiguration().getDefaultSocketLocation()) : null;
 
         return new SshIdentityAgentStrategy() {
+            @Override
+            public void checkComplete() {}
+
             @Override
             public void prepareParent(ShellControl parent) throws Exception {
                 if (parent.isLocal()) {
@@ -205,7 +208,7 @@ public interface PasswordManagerKeyStrategy {
             }
 
             @Override
-            public FilePath determinetAgentSocketLocation(ShellControl parent) throws Exception {
+            public FilePath determineAgentSocketLocation(ShellControl parent) throws Exception {
                 return socket != null ? socket.resolveTildeHome(parent.view().userHome()) : null;
             }
 
@@ -216,13 +219,12 @@ public interface PasswordManagerKeyStrategy {
             public List<KeyValue> configOptions(ShellControl sc) throws Exception {
                 var file = SshIdentityStrategy.getPublicKeyPath(sc, publicKey);
                 var l = new ArrayList<>(List.of(
-                        new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
-                        new KeyValue("ForwardAgent", forward ? "yes" : "no"),
-                        new KeyValue(
-                                "IdentityFile", file.isPresent() ? file.get().toString() : "none"),
-                        new KeyValue("PKCS11Provider", "none")));
+                        KeyValue.raw("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
+                        KeyValue.raw("ForwardAgent", forward ? "yes" : "no"),
+                        KeyValue.escape("IdentityFile", file.isPresent() ? file.get() : "none"),
+                        KeyValue.raw("PKCS11Provider", "none")));
                 if (socket != null) {
-                    l.add(new KeyValue("IdentityAgent", "\"" + socket + "\""));
+                    l.add(KeyValue.escape("IdentityAgent", socket));
                 }
                 return l;
             }
@@ -259,7 +261,7 @@ public interface PasswordManagerKeyStrategy {
         }
 
         @Override
-        public SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
+        public SshIdentityKeyListStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
             return OpenSshAgentStrategy.builder().build();
         }
     }
@@ -289,14 +291,14 @@ public interface PasswordManagerKeyStrategy {
         }
 
         @Override
-        public SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
+        public SshIdentityKeyListStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
             return PageantStrategy.builder().build();
         }
     }
 
     boolean useAgent();
 
-    SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward);
+    SshIdentityKeyListStrategy getSshIdentityStrategy(String publicKey, boolean forward);
 
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();

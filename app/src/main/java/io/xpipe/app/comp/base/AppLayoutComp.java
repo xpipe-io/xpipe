@@ -68,7 +68,7 @@ public class AppLayoutComp extends RegionStructureBuilder<BorderPane, AppLayoutC
 
             if (new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN).match(event)) {
                 if (TerminalDockHubManager.get().getEnabled().get()) {
-                    TerminalDockHubManager.get().toggleDock();
+                    TerminalDockHubManager.get().triggerDock();
                     event.consume();
                 }
             }

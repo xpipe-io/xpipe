@@ -126,8 +126,6 @@ public class SystemIconCache {
                                     .expected()
                                     .handle();
                         }
-
-                        continue;
                     }
                 }
 
@@ -142,7 +140,6 @@ public class SystemIconCache {
                         }
 
                         rasterizeSizesInverted(icon.getFile(), target, icon.getName(), true);
-                        continue;
                     }
                 }
 

@@ -21,18 +21,19 @@ import java.util.List;
 
 public class IncusContainerStoreProvider implements ShellStoreProvider {
 
-    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
-        return new OsLogoComp(w, BindingsHelper.map(w.getPersistentState(), o -> {
-            var state = (ContainerStoreState) o;
-            var cs = state.getContainerState();
-            if (cs != null && cs.toLowerCase().contains("stopped")) {
-                return SystemStateComp.State.FAILURE;
-            } else if (cs != null && cs.toLowerCase().contains("running")) {
-                return SystemStateComp.State.SUCCESS;
-            } else {
-                return SystemStateComp.State.OTHER;
-            }
-        }));
+    public BaseRegionBuilder<?, ?> stateDisplay(StoreSection section) {
+        return new OsLogoComp(
+                section.getWrapper(), BindingsHelper.map(section.getWrapper().getPersistentState(), o -> {
+                    var state = (ContainerStoreState) o;
+                    var cs = state.getContainerState();
+                    if (cs != null && cs.toLowerCase().contains("stopped")) {
+                        return SystemStateComp.State.FAILURE;
+                    } else if (cs != null && cs.toLowerCase().contains("running")) {
+                        return SystemStateComp.State.SUCCESS;
+                    } else {
+                        return SystemStateComp.State.OTHER;
+                    }
+                }));
     }
 
     @Override
@@ -71,7 +72,7 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
     }
 
     @Override
-    public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
+    public GuiDialog guiDialog(StoreCreationModel model, Property<DataStore> store) {
         IncusContainerStore st = (IncusContainerStore) store.getValue();
         var identity = new SimpleObjectProperty<>(st.getIdentity());
 
@@ -79,7 +80,7 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
                 .name("container")
                 .description("containerDescription")
                 .addStaticString((st.getProjectName() != null ? st.getProjectName() + "/" : "") + st.getContainerName())
-                .sub(IdentityChoiceBuilder.container(identity), identity)
+                .sub(IdentityChoiceBuilder.container(identity, model.getSyncable()), identity)
                 .bind(
                         () -> {
                             return IncusContainerStore.builder()

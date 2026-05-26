@@ -9,6 +9,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.SetChangeListener;
 import javafx.css.PseudoClass;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
@@ -21,6 +22,7 @@ import java.util.function.Predicate;
 public final class BrowserConnectionListComp extends SimpleRegionBuilder {
 
     private static final PseudoClass SELECTED = PseudoClass.getPseudoClass("selected");
+    private static final PseudoClass BUSY = PseudoClass.getPseudoClass("busy");
     private final ObservableValue<DataStoreEntry> selected;
     private final Predicate<StoreEntryWrapper> applicable;
     private final BiConsumer<StoreEntryWrapper, BooleanProperty> action;
@@ -56,6 +58,11 @@ public final class BrowserConnectionListComp extends SimpleRegionBuilder {
                                 SELECTED,
                                 newValue != null
                                         && newValue.equals(s.getWrapper().getEntry()));
+                    });
+                });
+                busyEntries.addListener((SetChangeListener<? super StoreSection>) change -> {
+                    PlatformThread.runLaterIfNeeded(() -> {
+                        struc.pseudoClassStateChanged(BUSY, change.getSet().contains(s));
                     });
                 });
             });

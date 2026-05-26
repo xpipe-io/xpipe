@@ -6,12 +6,11 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.prefs.CloseBehaviourDialog;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.GlobalTimer;
+import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
@@ -23,7 +22,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -108,7 +106,7 @@ public class AppMainWindow {
         var scene = new Scene(content, -1, -1, false);
         content.prefWidthProperty().bind(scene.widthProperty());
         content.prefHeightProperty().bind(scene.heightProperty());
-        scene.setFill(Color.TRANSPARENT);
+        AppWindowStyle.setSceneFill(scene);
 
         stage.setScene(scene);
         if (AppPrefs.get() != null) {
@@ -118,7 +116,7 @@ public class AppMainWindow {
         AppWindowStyle.addStylesheets(stage.getScene());
         AppWindowStyle.addClickShield(stage);
         AppWindowStyle.addMaximizedPseudoClass(stage);
-        AppWindowStyle.addFontSize(stage);
+        AppWindowStyle.addFontSize(scene);
         AppTheme.initThemeHandlers(stage);
 
         AppWindowTitle.getTitle().subscribe(s -> {
@@ -167,7 +165,7 @@ public class AppMainWindow {
         return INSTANCE;
     }
 
-    public void show() {
+    public synchronized void show() {
         stage.show();
 
         if (OsType.ofLocal() == OsType.WINDOWS) {
@@ -294,23 +292,8 @@ public class AppMainWindow {
         });
 
         stage.setOnCloseRequest(e -> {
-            if (!AppOperationMode.isInStartup()
-                    && !AppOperationMode.isInShutdown()
-                    && !CloseBehaviourDialog.showIfNeeded()) {
-                e.consume();
-                return;
-            }
-
-            // Close dialogs
-            AppDialog.getModalOverlays().clear();
-
-            // Close other windows
-            Stage.getWindows().stream().filter(w -> !w.equals(stage)).toList().forEach(w -> w.fireEvent(e));
-
-            // Close self
-            stage.close();
-            AppOperationMode.onWindowClose();
             e.consume();
+            AppOperationMode.onWindowClose();
         });
 
         stage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {

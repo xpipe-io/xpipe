@@ -4,17 +4,19 @@ import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.TrackEvent;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Optional;
 
 public class LocalExec {
 
-    public static void executeAsync(String... command) {
+    public static Process executeAsync(String... command) {
+        var list = Arrays.stream(command).filter(s -> s != null).toList();
         try {
             TrackEvent.withTrace("Running local command")
-                    .tag("command", String.join(" ", command))
+                    .tag("command", String.join(" ", list))
                     .handle();
 
-            var pb = new ProcessBuilder(command)
+            var pb = new ProcessBuilder(list)
                     .redirectOutput(ProcessBuilder.Redirect.DISCARD)
                     .redirectError(ProcessBuilder.Redirect.DISCARD);
             pb.directory(AppSystemInfo.ofCurrent().getUserHome().toFile());
@@ -23,12 +25,13 @@ public class LocalExec {
             // https://bugs.openjdk.org/browse/JDK-8360500
             env.remove("_JPACKAGE_LAUNCHER");
 
-            pb.start();
+            return pb.start();
         } catch (Exception ex) {
             TrackEvent.withTrace("Local command finished")
-                    .tag("command", String.join(" ", command))
+                    .tag("command", String.join(" ", list))
                     .tag("error", ex.toString())
                     .handle();
+            return null;
         }
     }
 

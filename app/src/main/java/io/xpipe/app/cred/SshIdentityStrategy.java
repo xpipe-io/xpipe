@@ -27,6 +27,8 @@ public interface SshIdentityStrategy {
         l.add(KeyFileStrategy.class);
         l.add(OpenSshAgentStrategy.class);
         l.add(PasswordManagerAgentStrategy.class);
+        l.add(CertificateKeyFileStrategy.class);
+        l.add(SecurityKeyStrategy.class);
         if (OsType.ofLocal() != OsType.WINDOWS) {
             l.add(CustomAgentStrategy.class);
         }
@@ -36,9 +38,7 @@ public interface SshIdentityStrategy {
         if (PageantStrategy.isSupported()) {
             l.add(PageantStrategy.class);
         }
-        l.add(YubikeyPivStrategy.class);
-        l.add(CustomPkcs11LibraryStrategy.class);
-        l.add(OtherExternalAgentStrategy.class);
+        l.add(OtherExternalIdentityStrategy.class);
 
         return l;
     }
@@ -50,15 +50,22 @@ public interface SshIdentityStrategy {
         l.add(KeyFileStrategy.class);
         l.add(OpenSshAgentStrategy.class);
         l.add(PasswordManagerAgentStrategy.class);
-        l.add(PasswordManagerInPlaceKeyStrategy.class);
+        l.add(CertificateKeyFileStrategy.class);
+        l.add(SecurityKeyStrategy.class);
         l.add(CustomAgentStrategy.class);
         l.add(GpgAgentStrategy.class);
         l.add(PageantStrategy.class);
-        l.add(YubikeyPivStrategy.class);
-        l.add(CustomPkcs11LibraryStrategy.class);
-        l.add(OtherExternalAgentStrategy.class);
+        l.add(OtherExternalIdentityStrategy.class);
 
         return l;
+    }
+
+    static FilePath getPublicKeyPath(FilePath file) {
+        if (file.getExtension().isEmpty() || file.isDotFile()) {
+            return FilePath.of(file + ".pub");
+        } else {
+            return FilePath.of(file.getBaseName() + ".pub");
+        }
     }
 
     static Optional<FilePath> getPublicKeyPath(ShellControl sc, String publicKey) throws Exception {
@@ -101,6 +108,10 @@ public interface SshIdentityStrategy {
 
     default SecretRetrievalStrategy getAskpassStrategy() {
         return new SecretNoneStrategy();
+    }
+
+    default boolean supportsIdentityApply() {
+        return true;
     }
 
     PublicKeyStrategy getPublicKeyStrategy();

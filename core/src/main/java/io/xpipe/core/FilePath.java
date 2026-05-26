@@ -117,8 +117,19 @@ public final class FilePath {
         return components.getLast();
     }
 
+    public boolean isDotFile() {
+        var name = getFileName();
+        var lastDot = name.lastIndexOf(".");
+        return lastDot == 0;
+    }
+
     public FilePath getBaseName() {
-        if (!getFileName().contains(".")) {
+        var name = getFileName();
+        var lastDot = name.lastIndexOf(".");
+        if (lastDot == 0) {
+            throw new IllegalStateException("getBaseName() called on a dotfile: " + value);
+        }
+        if (lastDot < 0) {
             return this;
         }
 

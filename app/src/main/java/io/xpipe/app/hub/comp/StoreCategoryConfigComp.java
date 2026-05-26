@@ -7,6 +7,7 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.ToggleGroupComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategoryConfig;
@@ -31,7 +32,7 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
     public static void show(StoreCategoryWrapper wrapper) {
         var config = new SimpleObjectProperty<>(wrapper.getCategory().getConfig());
         var comp = new StoreCategoryConfigComp(wrapper, config);
-        comp.prefWidth(600);
+        comp.prefWidth(700);
         var modal = ModalOverlay.of(
                 AppI18n.observable("categoryConfigTitle", wrapper.getName().getValue()), comp, null);
         modal.addButton(ModalButton.cancel());
@@ -64,10 +65,17 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
         var confirm = new SimpleObjectProperty<>(c.getConfirmAllModifications());
         var sync = new SimpleObjectProperty<>(c.getSync());
         var freeze = new SimpleObjectProperty<>(c.getFreezeConfigurations());
-        var ref = new SimpleObjectProperty<>(
+        var identityRef = new SimpleObjectProperty<>(
                 c.getDefaultIdentityStore() != null
                         ? DataStorage.get()
                                 .getStoreEntryIfPresent(c.getDefaultIdentityStore())
+                                .map(DataStoreEntry::ref)
+                                .orElse(null)
+                        : null);
+        var gatewayRef = new SimpleObjectProperty<>(
+                c.getDefaultGatewayStore() != null
+                        ? DataStorage.get()
+                                .getStoreEntryIfPresent(c.getDefaultGatewayStore())
                                 .map(DataStoreEntry::ref)
                                 .orElse(null)
                         : null);
@@ -79,33 +87,52 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
         var syncDisable = !DataStorage.get().supportsSync()
                 || ((sync.getValue() == null || !sync.getValue())
                         && !wrapper.getCategory().canShare());
-        options.name(
-                        specialCategorySync
-                                ? AppI18n.observable(
-                                        "categorySyncSpecial", wrapper.getName().getValue())
-                                : AppI18n.observable("categorySync"))
-                .description("categorySyncDescription")
-                .addComp(createToggle(sync, parentConfig.getSync()), sync)
-                .disable(syncDisable)
-                .nameAndDescription("categoryDontAllowScripts")
-                .addComp(createToggle(scripts, parentConfig.getDontAllowScripts()), scripts)
-                .hide(!connectionsCategory)
-                .nameAndDescription("categoryConfirmAllModifications")
-                .addComp(createToggle(confirm, parentConfig.getConfirmAllModifications()), confirm)
-                .hide(!connectionsCategory)
-                .nameAndDescription("categoryFreeze")
-                .addComp(createToggle(freeze, parentConfig.getFreezeConfigurations()), freeze)
-                .hide(!connectionsCategory)
-                .nameAndDescription("categoryDefaultIdentity")
-                .addComp(
-                        new StoreChoiceComp<>(
-                                null,
-                                ref,
-                                DataStore.class,
-                                null,
-                                StoreViewState.get().getAllIdentitiesCategory()),
-                        ref)
-                .hide(!connectionsCategory)
+        options.title("sync")
+                .sub(new OptionsBuilder()
+                        .name(
+                                specialCategorySync
+                                        ? AppI18n.observable(
+                                                "categorySyncSpecial",
+                                                wrapper.getName().getValue())
+                                        : AppI18n.observable("categorySync"))
+                        .description("categorySyncDescription")
+                        .addComp(createToggle(sync, parentConfig.getSync()), sync)
+                        .disable(syncDisable))
+                .title("connectionHandling")
+                .sub(new OptionsBuilder()
+                        .nameAndDescription("categoryDontAllowScripts")
+                        .addComp(createToggle(scripts, parentConfig.getDontAllowScripts()), scripts)
+                        .hide(!connectionsCategory)
+                        .nameAndDescription("categoryConfirmAllModifications")
+                        .addComp(createToggle(confirm, parentConfig.getConfirmAllModifications()), confirm)
+                        .hide(!connectionsCategory))
+                .title("connectionConfiguration")
+                .sub(new OptionsBuilder()
+                        .nameAndDescription("categoryFreeze")
+                        .addComp(createToggle(freeze, parentConfig.getFreezeConfigurations()), freeze)
+                        .hide(!connectionsCategory)
+                        .nameAndDescription("categoryDefaultIdentity")
+                        .addComp(
+                                new StoreChoiceComp<>(
+                                        null,
+                                        identityRef,
+                                        DataStore.class,
+                                        null,
+                                        StoreViewState.get().getAllIdentitiesCategory(),
+                                        DataStoreCreationCategory.IDENTITY),
+                                identityRef)
+                        .hide(!connectionsCategory)
+                        .nameAndDescription("categoryDefaultGateway")
+                        .addComp(
+                                new StoreChoiceComp<>(
+                                        null,
+                                        gatewayRef,
+                                        DataStore.class,
+                                        null,
+                                        StoreViewState.get().getAllConnectionsCategory(),
+                                        DataStoreCreationCategory.HOST),
+                                gatewayRef)
+                        .hide(!connectionsCategory))
                 .bind(
                         () -> {
                             return new DataStoreCategoryConfig(
@@ -114,10 +141,16 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
                                     confirm.get(),
                                     sync.get(),
                                     freeze.get(),
-                                    ref.get() != null ? ref.get().get().getUuid() : null);
+                                    identityRef.get() != null
+                                            ? identityRef.get().get().getUuid()
+                                            : null,
+                                    gatewayRef.get() != null
+                                            ? gatewayRef.get().get().getUuid()
+                                            : null);
                         },
                         config);
         var r = options.build();
+        r.getStyleClass().add("category-config");
         var sp = new ScrollPane(r);
         sp.setFitToWidth(true);
         sp.prefHeightProperty().bind(r.heightProperty());

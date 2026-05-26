@@ -1,10 +1,7 @@
 package io.xpipe.ext.system.podman;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
-import io.xpipe.app.ext.ContainerStoreState;
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.GuiDialog;
-import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -55,19 +52,20 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
     }
 
     @Override
-    public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
+    public GuiDialog guiDialog(StoreCreationModel model, Property<DataStore> store) {
         PodmanContainerStore st = (PodmanContainerStore) store.getValue();
 
         return new OptionsBuilder()
                 .name("host")
                 .description("podmanHostDescription")
                 .addComp(new StoreChoiceComp<>(
-                        entry,
+                        model.getExistingEntry(),
                         new ReadOnlyObjectWrapper<>(
                                 st.getCmd() != null ? st.getCmd().getStore().getHost() : null),
                         ShellStore.class,
                         null,
-                        StoreViewState.get().getAllConnectionsCategory()))
+                        StoreViewState.get().getAllConnectionsCategory(),
+                        DataStoreCreationCategory.HOST))
                 .disable()
                 .name("container")
                 .description("podmanContainerDescription")
@@ -90,18 +88,19 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
         return List.of(PodmanContainerStore.class);
     }
 
-    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
-        return new OsLogoComp(w, BindingsHelper.map(w.getPersistentState(), o -> {
-            var state = (ContainerStoreState) o;
-            var cs = state.getContainerState();
-            if (cs != null && cs.toLowerCase().contains("exited")) {
-                return SystemStateComp.State.FAILURE;
-            } else if (cs != null && cs.toLowerCase().contains("up")) {
-                return SystemStateComp.State.SUCCESS;
-            } else {
-                return SystemStateComp.State.OTHER;
-            }
-        }));
+    public BaseRegionBuilder<?, ?> stateDisplay(StoreSection section) {
+        return new OsLogoComp(
+                section.getWrapper(), BindingsHelper.map(section.getWrapper().getPersistentState(), o -> {
+                    var state = (ContainerStoreState) o;
+                    var cs = state.getContainerState();
+                    if (cs != null && cs.toLowerCase().contains("exited")) {
+                        return SystemStateComp.State.FAILURE;
+                    } else if (cs != null && cs.toLowerCase().contains("up")) {
+                        return SystemStateComp.State.SUCCESS;
+                    } else {
+                        return SystemStateComp.State.OTHER;
+                    }
+                }));
     }
 
     @Override

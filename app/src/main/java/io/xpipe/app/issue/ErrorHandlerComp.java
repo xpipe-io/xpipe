@@ -24,6 +24,8 @@ import javafx.scene.layout.VBox;
 
 import lombok.Getter;
 
+import java.util.Objects;
+
 import static atlantafx.base.theme.Styles.ACCENT;
 import static atlantafx.base.theme.Styles.BUTTON_OUTLINED;
 
@@ -79,7 +81,7 @@ public class ErrorHandlerComp extends SimpleRegionBuilder {
                 .sum();
 
         var descriptionField = new TextArea(desc);
-        descriptionField.setPrefRowCount(Math.max(5, Math.min(estimatedLineCount + 2, 14)));
+        descriptionField.setPrefRowCount(Math.clamp(estimatedLineCount + 2, 5, 14));
         descriptionField.setWrapText(true);
         descriptionField.setEditable(false);
         descriptionField.setPadding(Insets.EMPTY);
@@ -94,12 +96,16 @@ public class ErrorHandlerComp extends SimpleRegionBuilder {
     private String getEventDescription() {
         var desc = event.getDescription();
 
+        String lastLine = desc;
         Throwable t = event.getThrowable();
         while (t != null) {
             var toAppend = t.getMessage() != null
                     ? t.getMessage()
                     : AppI18n.get("errorTypeOccured", t.getClass().getSimpleName());
-            desc = desc != null ? desc + "\n\n" + toAppend : toAppend;
+            if (!Objects.equals(toAppend, lastLine)) {
+                desc = desc != null ? desc + "\n\n" + toAppend : toAppend;
+                lastLine = toAppend;
+            }
             t = t.getCause() != t && !(t instanceof ProcessOutputException) ? t.getCause() : null;
         }
 

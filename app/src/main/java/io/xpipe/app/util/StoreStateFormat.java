@@ -51,7 +51,7 @@ public class StoreStateFormat {
                     return new StoreStateFormat(features, formattedOsName(s.getOsName()), info).format();
                 }
 
-                if (s.getShellDialect() == ShellDialects.NO_INTERACTION) {
+                if (s.getShellDialect() == ShellDialects.DISABLED_INTERACTION) {
                     return new StoreStateFormat(List.of(), null, info).format();
                 }
 

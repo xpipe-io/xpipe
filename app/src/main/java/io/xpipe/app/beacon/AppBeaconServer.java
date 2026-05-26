@@ -15,9 +15,12 @@ import com.sun.net.httpserver.HttpServer;
 import lombok.Getter;
 
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.Inet4Address;
 import java.net.InetSocketAddress;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.*;
@@ -44,18 +47,16 @@ public class AppBeaconServer {
 
     @Getter
     private String localAuthSecret;
+    private FileChannel localLockFileChannel;
+    private FileLock localLockFileLock;
 
     private AppBeaconServer(int port) {
         this.port = port;
     }
 
-    public static void setupPort() {
-        int port = BeaconConfig.getUsedPort();
-        INSTANCE = new AppBeaconServer(port);
-    }
-
     public static void init() {
         try {
+            INSTANCE = new AppBeaconServer(BeaconConfig.getUsedPort());
             INSTANCE.initAuthSecret();
             INSTANCE.start();
             TrackEvent.withInfo("Started http server")
@@ -113,20 +114,26 @@ public class AppBeaconServer {
         var file = BeaconConfig.getLocalBeaconAuthFile();
         // Create and set temp dir permissions for Linux
         AppLocalTemp.getLocalTempDataDirectory();
+
         var id = UUID.randomUUID().toString();
         Files.writeString(file, id);
         if (OsType.ofLocal() != OsType.WINDOWS) {
             Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("rw-rw----"));
         }
         localAuthSecret = id;
+
+        var lockFile = BeaconConfig.getLocalBeaconLockFile();
+        localLockFileChannel = new RandomAccessFile(lockFile.toFile(), "rw").getChannel();
+        localLockFileLock = localLockFileChannel.tryLock();
     }
 
     private void deleteAuthSecret() {
         var file = BeaconConfig.getLocalBeaconAuthFile();
         try {
             Files.delete(file);
-        } catch (IOException ignored) {
-        }
+            localLockFileLock.release();
+            localLockFileChannel.close();
+        } catch (IOException ignored) {}
     }
 
     private void start() throws IOException {
@@ -139,8 +146,11 @@ public class AppBeaconServer {
             });
             return t;
         });
-        server = HttpServer.create(
-                new InetSocketAddress(Inet4Address.getByAddress(new byte[] {0x7f, 0x00, 0x00, 0x01}), port), 10);
+        var external = AppPrefs.get().allowExternalApiRequests().get() || Boolean.getBoolean("XPIPE_API_SERVER");
+        var addr = external
+                ? Inet4Address.getByAddress(new byte[] {0, 0, 0, 0})
+                : Inet4Address.getByAddress(new byte[] {0x7f, 0x00, 0x00, 0x01});
+        server = HttpServer.create(new InetSocketAddress(addr, port), 10);
         BeaconInterface.getAll().forEach(beaconInterface -> {
             var handler = new BeaconRequestHandler<>(beaconInterface);
             server.createContext(beaconInterface.getPath(), exchange -> {
@@ -173,7 +183,7 @@ public class AppBeaconServer {
     private boolean handleCorsHeaders(HttpExchange exchange) throws IOException {
         if (AppPrefs.get().enableHttpApi().get()) {
             exchange.getResponseHeaders()
-                    .add("Origin", "http://localhost:" + AppBeaconServer.get().getPort());
+                    .add("Origin", "http://localhost:" + getPort());
             exchange.getResponseHeaders().add("Vary", "Origin");
             exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
             exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");

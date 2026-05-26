@@ -11,10 +11,7 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.platform.BindingsHelper;
-import io.xpipe.app.platform.LabelGraphic;
-import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.platform.OptionsChoiceBuilder;
+import io.xpipe.app.platform.*;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -23,6 +20,7 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
@@ -244,13 +242,35 @@ public class TerminalCategory extends AppPrefsCategory {
         });
         var proxyChoice = new DelayedInitComp(
                 RegionBuilder.of(() -> {
-                    var comp = new StoreChoiceComp<>(
+                    var choice = new StoreChoiceComp<>(
                             null,
                             ref,
                             ShellStore.class,
                             r -> r.get().equals(DataStorage.get().local()) || TerminalProxyManager.canUseAsProxy(r),
-                            StoreViewState.get().getAllConnectionsCategory());
-                    return comp.build();
+                            StoreViewState.get().getAllConnectionsCategory(),
+                            null);
+                    choice.hgrow();
+
+                    var refresh = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2r-refresh"), null);
+                    refresh.describe(d -> d.nameKey("refresh"));
+                    refresh.apply(button -> {
+                        var disable = new SimpleBooleanProperty();
+                        button.disableProperty().bind(PlatformThread.sync(disable));
+                        button.setOnAction(event -> {
+                            ThreadHelper.runFailableAsync(() -> {
+                                BooleanScope.executeExclusive(disable, () -> {
+                                    ProcessControlProvider.get().refreshWsl();
+                                });
+                            });
+                            event.consume();
+                        });
+                    });
+                    refresh.hide(new ReadOnlyBooleanWrapper(OsType.ofLocal() != OsType.WINDOWS));
+                    refresh.maxHeight(200);
+
+                    var box = new HorizontalComp(List.of(choice, refresh));
+                    box.spacing(12);
+                    return box.build();
                 }),
                 () -> StoreViewState.get() != null && StoreViewState.get().isInitialized());
         proxyChoice.maxWidth(getCompWidth());
@@ -277,7 +297,7 @@ public class TerminalCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .nameAndDescription("terminalInitScript")
                 .addComp(
-                        IntegratedTextAreaComp.script(ref, prefs.terminalInitScript)
+                        IntegratedTextAreaComp.script(ref, prefs.terminalInitScript, true)
                                 .maxWidth(getCompWidth()),
                         prefs.terminalInitScript);
     }
@@ -313,39 +333,42 @@ public class TerminalCategory extends AppPrefsCategory {
         var choice = choiceBuilder.build().buildComp();
         choice.maxWidth(600);
 
-
         var testDisabled = new SimpleBooleanProperty();
         var test = new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
-            testDisabled.set(true);
-            ThreadHelper.runFailableAsync(() -> {
-                try {
-                    var term = AppPrefs.get().terminalType().getValue();
-                    if (term != null) {
-                        TerminalLaunch.builder()
-                                .title("Tab 1 test")
-                                .localScript(new ShellScript(ProcessControlProvider.get()
-                                        .getEffectiveLocalDialect()
-                                        .getEchoCommand("If you can read this, the terminal multiplexer integration works", false)))
-                                .preferTabs(true)
-                                .logIfEnabled(false)
-                                .pauseOnExit(true)
-                                .launch();
+                    testDisabled.set(true);
+                    ThreadHelper.runFailableAsync(() -> {
+                        try {
+                            var term = AppPrefs.get().terminalType().getValue();
+                            if (term != null) {
+                                TerminalLaunch.builder()
+                                        .title("Tab 1 test")
+                                        .localScript(new ShellScript(ProcessControlProvider.get()
+                                                .getEffectiveLocalDialect()
+                                                .getEchoCommand(
+                                                        "If you can read this, the terminal multiplexer integration works",
+                                                        false)))
+                                        .preferTabs(true)
+                                        .logIfEnabled(false)
+                                        .pauseOnExit(true)
+                                        .launch();
 
-                        TerminalLaunch.builder()
-                                .title("Tab 2 test")
-                                .localScript(new ShellScript(ProcessControlProvider.get()
-                                        .getEffectiveLocalDialect()
-                                        .getEchoCommand("If you can read this, the tabbed terminal multiplexer integration works", false)))
-                                .preferTabs(true)
-                                .logIfEnabled(false)
-                                .pauseOnExit(true)
-                                .launch();
-                    }
-                } finally {
-                    testDisabled.set(false);
-                }
-            });
-        })
+                                TerminalLaunch.builder()
+                                        .title("Tab 2 test")
+                                        .localScript(new ShellScript(ProcessControlProvider.get()
+                                                .getEffectiveLocalDialect()
+                                                .getEchoCommand(
+                                                        "If you can read this, the tabbed terminal multiplexer integration works",
+                                                        false)))
+                                        .preferTabs(true)
+                                        .logIfEnabled(false)
+                                        .pauseOnExit(true)
+                                        .launch();
+                            }
+                        } finally {
+                            testDisabled.set(false);
+                        }
+                    });
+                })
                 .disable(testDisabled)
                 .padding(new Insets(6, 11, 6, 5))
                 .apply(struc -> struc.setAlignment(Pos.CENTER_LEFT));
@@ -361,8 +384,7 @@ public class TerminalCategory extends AppPrefsCategory {
         if (OsType.ofLocal() == OsType.WINDOWS) {
             options.disable(BindingsHelper.map(prefs.terminalProxy(), uuid -> uuid == null));
         }
-        options.addComp(test)
-                .hide(prefs.terminalMultiplexer.isNull());
+        options.addComp(test).hide(prefs.terminalMultiplexer.isNull());
         if (OsType.ofLocal() == OsType.WINDOWS) {
             options.disable(BindingsHelper.map(prefs.terminalProxy(), uuid -> uuid == null));
         }

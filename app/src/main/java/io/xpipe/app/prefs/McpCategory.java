@@ -132,25 +132,33 @@ public class McpCategory extends AppPrefsCategory {
             return tabPane;
         });
 
+        prefs.enableMcpServer.addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                prefs.enableHttpApi.set(true);
+            }
+        });
+
         return new OptionsBuilder()
                 .title("mcpServer")
                 .sub(new OptionsBuilder()
                         .pref(prefs.enableMcpServer)
                         .addToggle(prefs.enableMcpServer)
                         .nameAndDescription("mcpClientConfigurationDetails")
-                        .addComp(tabComp)
-                        .pref(prefs.enableMcpMutationTools)
-                        .addToggle(prefs.enableMcpMutationTools)
-                        .hide(prefs.enableMcpServer.not())
+                        .addComp(tabComp.maxWidth(getCompWidth()))
                         .pref(prefs.mcpAdditionalContext)
                         .addComp(new IntegratedTextAreaComp(
-                                        prefs.mcpAdditionalContext, false, "prompt", new SimpleStringProperty("txt"))
+                                        prefs.mcpAdditionalContext,
+                                        false,
+                                        "prompt",
+                                        new SimpleStringProperty("txt"),
+                                        true)
                                 .applyStructure(structure -> {
                                     structure
                                             .getTextArea()
                                             .promptTextProperty()
                                             .bind(AppI18n.observable("mcpAdditionalContextSample"));
-                                }))
+                                })
+                                .maxWidth(getCompWidth()))
                         .hide(prefs.enableMcpServer.not()))
                 .buildComp();
     }

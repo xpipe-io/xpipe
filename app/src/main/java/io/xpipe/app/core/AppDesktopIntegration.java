@@ -5,6 +5,7 @@ import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.PlatformState;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.OsType;
 
 import java.awt.*;
@@ -51,16 +52,6 @@ public class AppDesktopIntegration {
             // This will initialize the toolkit on macOS and create the dock icon
             // macOS does not like applications that run fully in the background, so always do it
             if (OsType.ofLocal() == OsType.MACOS && Desktop.isDesktopSupported()) {
-                Desktop.getDesktop().setPreferencesHandler(e -> {
-                    if (PlatformState.getCurrent() != PlatformState.RUNNING) {
-                        return;
-                    }
-
-                    if (AppLayoutModel.get() != null) {
-                        AppLayoutModel.get().selectSettings();
-                    }
-                });
-
                 // URL open operations have to be handled in a special way on macOS!
                 Desktop.getDesktop().setOpenURIHandler(e -> {
                     AppOpenArguments.handle(List.of(e.getURI().toString()));
@@ -91,9 +82,44 @@ public class AppDesktopIntegration {
                                 .handle();
                     }
                 }
+
+                Desktop.getDesktop().setQuitHandler((e, response) -> {
+                    response.cancelQuit();
+                    ThreadHelper.runAsync(() -> {
+                        AppOperationMode.externalShutdown();
+                    });
+                });
             }
         } catch (Throwable ex) {
             ErrorEventFactory.fromThrowable(ex).term().handle();
+        }
+    }
+
+    public static void initMenuBar() {
+        if (OsType.ofLocal() == OsType.MACOS && Desktop.isDesktopSupported()) {
+
+            // TODO: These don't show up any more
+            // JavaFX broke them
+
+            Desktop.getDesktop().setPreferencesHandler(e -> {
+                if (PlatformState.getCurrent() != PlatformState.RUNNING) {
+                    return;
+                }
+
+                if (AppLayoutModel.get() != null) {
+                    AppLayoutModel.get().selectSettings();
+                }
+            });
+
+            Desktop.getDesktop().setAboutHandler(e -> {
+                if (PlatformState.getCurrent() != PlatformState.RUNNING) {
+                    return;
+                }
+
+                if (AppLayoutModel.get() != null) {
+                    AppLayoutModel.get().selectSettings();
+                }
+            });
         }
     }
 }

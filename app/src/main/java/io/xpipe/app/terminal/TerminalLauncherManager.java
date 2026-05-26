@@ -12,7 +12,6 @@ import io.xpipe.core.FilePath;
 
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
 
 public class TerminalLauncherManager {
 
@@ -36,23 +35,18 @@ public class TerminalLauncherManager {
         });
     }
 
-    public static CountDownLatch submitAsync(
-            UUID request,
-            ProcessControl processControl,
-            TerminalInitScriptConfig config,
-            FilePath directory,
-            CountDownLatch latch) {
+    public static void submitAsync(
+            UUID request, ProcessControl processControl, TerminalInitScriptConfig config, FilePath directory) {
         synchronized (entries) {
             var req = entries.get(request);
             if (req == null) {
-                req = new TerminalLaunchRequest(request, processControl, config, directory, -1, null, false, latch);
+                req = new TerminalLaunchRequest(request, processControl, config, directory);
                 entries.put(request, req);
             } else {
                 req.setResult(null);
             }
 
             req.setupRequestAsync();
-            return req.getLatch();
         }
     }
 
@@ -105,7 +99,7 @@ public class TerminalLauncherManager {
         }
 
         if (req.isSetupCompleted()) {
-            submitAsync(req.getRequest(), req.getProcessControl(), req.getConfig(), req.getWorkingDirectory(), null);
+            submitAsync(req.getRequest(), req.getProcessControl(), req.getConfig(), req.getWorkingDirectory());
         }
         try {
             req.waitForCompletion();
@@ -175,7 +169,7 @@ public class TerminalLauncherManager {
         }
 
         var config = new TerminalInitScriptConfig(ref.get().getName(), false, TerminalInitFunction.none());
-        submitAsync(request, control, config, null, null);
+        submitAsync(request, control, config, null);
         waitExchange(request);
         var script = launchExchange(request);
         try (var sc = LocalShell.getShell().start()) {

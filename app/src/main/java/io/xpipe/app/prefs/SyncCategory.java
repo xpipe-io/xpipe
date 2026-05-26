@@ -14,18 +14,11 @@ import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.*;
 import io.xpipe.core.FilePath;
 
-import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.layout.Region;
-
-import atlantafx.base.theme.Styles;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class SyncCategory extends AppPrefsCategory {
 
@@ -41,27 +34,11 @@ public class SyncCategory extends AppPrefsCategory {
 
     public BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
-        AtomicReference<Region> button = new AtomicReference<>();
 
-        var canRestart = new SimpleBooleanProperty(false);
-        var testButton = new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
-            ThreadHelper.runAsync(() -> {
-                var r = DataStorageSyncHandler.getInstance().validateConnection();
-                if (r) {
-                    Platform.runLater(() -> {
-                        button.get().getStyleClass().add(Styles.SUCCESS);
-                        canRestart.set(true);
-                    });
-                }
-            });
+        var testButton = new TestButtonComp(() -> {
+            var r = DataStorageSyncHandler.getInstance().validateConnection();
+            return r;
         });
-        testButton.apply(struc -> button.set(struc));
-        testButton.padding(new Insets(6, 10, 6, 6));
-
-        var testRow = new HorizontalComp(List.of(testButton))
-                .spacing(10)
-                .padding(new Insets(10, 0, 0, 0))
-                .apply(struc -> struc.setAlignment(Pos.CENTER_LEFT));
 
         var remoteRepo = new TextFieldComp(prefs.storageGitRemote).hgrow();
         remoteRepo.apply(textField -> textField.setPromptText("https://... | ssh://... | directory path"));
@@ -74,7 +51,7 @@ public class SyncCategory extends AppPrefsCategory {
                         .addToggle(prefs.enableGitStorage)
                         .pref(prefs.storageGitRemote)
                         .addComp(remoteRepo.maxWidth(getCompWidth()), prefs.storageGitRemote)
-                        .addComp(testRow)
+                        .addComp(testButton)
                         .disable(prefs.storageGitRemote.isNull().or(prefs.enableGitStorage.not()))
                         .sub(prefs.getCustomOptions("syncToPlainDirectory"))
                         .sub(prefs.getCustomOptions("gitUsername"))

@@ -77,7 +77,8 @@ public class LxdCommandView extends CommandViewBase {
     public boolean isSupported() throws Exception {
         // Ubuntu always has the lxc command installed as a stub to install LXD
         // We don't want to call it as this would automatically install LXD and take a while
-        if (shellControl.getOsName() != null && shellControl.getOsName().toLowerCase().contains("ubuntu")) {
+        if (shellControl.getOsName() != null
+                && shellControl.getOsName().toLowerCase().contains("ubuntu")) {
             return shellControl.view().fileExists(FilePath.of("/snap/bin/lxc"));
         }
 
@@ -131,51 +132,39 @@ public class LxdCommandView extends CommandViewBase {
             return this;
         }
 
-
         public void start(String containerName) throws Exception {
-            build(commandBuilder -> commandBuilder
-                    .add("start")
-                    .addQuoted(containerName))
+            build(commandBuilder -> commandBuilder.add("start").addQuoted(containerName))
                     .execute();
         }
 
         public void stop(String containerName) throws Exception {
-            build(commandBuilder -> commandBuilder
-                    .add("stop")
-                    .addQuoted(containerName))
+            build(commandBuilder -> commandBuilder.add("stop").addQuoted(containerName))
                     .execute();
         }
 
         public void pause(String containerName) throws Exception {
-            build(commandBuilder -> commandBuilder
-                    .add("pause")
-                    .addQuoted(containerName))
+            build(commandBuilder -> commandBuilder.add("pause").addQuoted(containerName))
                     .execute();
         }
 
         public CommandControl console(String containerName) {
-            return build(commandBuilder -> commandBuilder
-                    .add("console").addQuoted(containerName));
+            return build(commandBuilder -> commandBuilder.add("console").addQuoted(containerName));
         }
 
         public CommandControl configEdit(String containerName) {
-            return build(commandBuilder -> commandBuilder
-                    .add("config", "edit").addQuoted(containerName));
+            return build(commandBuilder -> commandBuilder.add("config", "edit").addQuoted(containerName));
         }
-
-
 
         public Optional<ContainerEntry> queryContainerState(String containerName) throws Exception {
             var l = listContainers();
             var found = l.stream()
                     .filter(containerEntry -> (containerEntry.getProject().equals(project)
-                            || project == null
-                            && containerEntry.getProject().equals("default"))
+                                    || project == null
+                                            && containerEntry.getProject().equals("default"))
                             && containerEntry.getName().equals(containerName))
                     .findFirst();
             return found;
         }
-
 
         public ShellControl exec(String container, String user, Supplier<Boolean> busybox) {
             var sub = shellControl.subShell();
@@ -184,7 +173,8 @@ public class LxdCommandView extends CommandViewBase {
             return sub.withExceptionConverter(LxdCommandView::convertException).elevated(requiresElevation());
         }
 
-        private ShellOpenFunction createOpenFunction(String containerName, String user, boolean terminal, Supplier<Boolean> busybox) {
+        private ShellOpenFunction createOpenFunction(
+                String containerName, String user, boolean terminal, Supplier<Boolean> busybox) {
             return new ShellOpenFunction() {
                 @Override
                 public CommandBuilder prepareWithoutInitCommand() {
@@ -219,8 +209,7 @@ public class LxdCommandView extends CommandViewBase {
                     .add("lxc")
                     .add("--project", project != null ? project : "default")
                     .add("exec", terminal ? "-t" : "-T");
-            return c.addQuoted(containerName)
-                    .add("--");
+            return c.addQuoted(containerName).add("--");
         }
     }
 
@@ -298,6 +287,12 @@ public class LxdCommandView extends CommandViewBase {
                 l.add(new ContainerEntry(project, name, status, ipv4, ipv6));
             }
             return l;
+        } catch (ProcessOutputException ex) {
+            if (ex.getOutput().contains("Error: unknown flag: --all-projects")) {
+                return List.of();
+            } else {
+                throw ex;
+            }
         }
     }
 }

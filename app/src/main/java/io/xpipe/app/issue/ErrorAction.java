@@ -1,6 +1,7 @@
 package io.xpipe.app.issue;
 
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.core.FailableSupplier;
@@ -11,6 +12,13 @@ public interface ErrorAction {
         return translated("openDocumentation", () -> {
             Hyperlinks.open(link);
             return false;
+        });
+    }
+
+    static ErrorAction openSettings(String category) {
+        return translated("openSettings", () -> {
+            AppPrefs.get().selectCategory(category);
+            return true;
         });
     }
 

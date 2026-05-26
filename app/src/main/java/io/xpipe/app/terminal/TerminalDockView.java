@@ -1,11 +1,12 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
+import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.util.Rect;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.util.WindowDockListener;
 
 import java.time.Duration;
 import java.util.HashSet;
@@ -13,9 +14,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 
-public class TerminalDockView {
+public class TerminalDockView implements WindowDockListener {
 
-    private final Set<ControllableTerminalSession> terminalInstances = new HashSet<>();
+    private final Set<TerminalView.ControllableTerminalSession> terminalInstances = new HashSet<>();
 
     private final UnaryOperator<Rect> windowBoundsFunction;
 
@@ -26,30 +27,41 @@ public class TerminalDockView {
         this.windowBoundsFunction = windowBoundsFunction;
     }
 
-    public synchronized void clearDeadTerminals() {
-        terminalInstances.removeIf(controllableTerminalSession ->
-                !controllableTerminalSession.getTerminalProcess().isAlive());
+    public synchronized void removeTerminal(TerminalView.TerminalSession s) {
+        terminalInstances.removeIf(controllableTerminalSession -> controllableTerminalSession.equals(s));
+    }
+
+    public synchronized boolean isActive() {
+        return viewActive
+                && !terminalInstances.isEmpty()
+                && terminalInstances.stream()
+                        .anyMatch(s -> s.getControllable().isActive()
+                                && !s.getControllable().isCustomBounds());
     }
 
     public synchronized boolean isRunning() {
-        return terminalInstances.stream().anyMatch(terminal -> terminal.isRunning());
+        return !terminalInstances.isEmpty() && terminalInstances.stream().anyMatch(terminal -> terminal.isRunning());
     }
 
     public synchronized boolean isCustomBounds() {
-        return terminalInstances.stream().anyMatch(terminal -> terminal.isCustomBounds());
+        return !terminalInstances.isEmpty()
+                && terminalInstances.stream()
+                        .anyMatch(terminal -> terminal.getControllable().isCustomBounds());
     }
 
     public synchronized boolean isMinimized() {
-        return terminalInstances.stream().noneMatch(terminal -> terminal.isActive());
+        return terminalInstances.stream()
+                .noneMatch(terminal -> terminal.getControllable().isActive());
     }
 
     public synchronized void updateCustomBounds() {
         terminalInstances.forEach(terminal -> {
-            var wasCustom = terminal.isCustomBounds();
-            terminal.updateBoundsState();
+            var controllable = terminal.getControllable();
+            var wasCustom = controllable.isCustomBounds();
+            controllable.updateBoundsState();
 
             if (wasCustom && viewBounds != null && viewActive) {
-                var currentBounds = terminal.getLastBounds();
+                var currentBounds = controllable.getLastBounds();
                 var targetBounds = windowBoundsFunction.apply(viewBounds);
                 var sum = Math.abs(targetBounds.getX() - currentBounds.getX())
                         + Math.abs(targetBounds.getY() - currentBounds.getY())
@@ -62,35 +74,37 @@ public class TerminalDockView {
                 }
             }
 
-            if (!wasCustom && terminal.isCustomBounds()) {
-                terminal.restoreIcon();
-                terminal.disown();
-                terminal.restoreStyle();
+            if (!wasCustom && controllable.isCustomBounds()) {
+                controllable.restoreIcon();
+                controllable.disown();
+                controllable.restoreStyle(terminal.manageBorders());
             }
         });
     }
 
-    public synchronized void trackTerminal(ControllableTerminalSession terminal, boolean dock) {
+    public synchronized void trackTerminal(TerminalView.ControllableTerminalSession terminal, boolean dock) {
         if (viewActive
                 && dock
                 && viewBounds != null
                 && NativeWinWindowControl.MAIN_WINDOW.isVisible()
                 && !NativeWinWindowControl.MAIN_WINDOW.isIconified()) {
+            var controllable = terminal.getControllable();
+
             // Bring main window to foreground since initial launch
             NativeWinWindowControl.MAIN_WINDOW.activate();
 
-            terminal.removeIcon();
-            terminal.own();
-            terminal.removeStyle();
+            controllable.removeIcon();
+            controllable.own(NativeWinWindowControl.MAIN_WINDOW);
+            controllable.removeStyle(terminal.manageBorders());
 
             // The window might be minimized
             // We always want to show the terminal though
-            terminal.show();
+            controllable.show();
 
             // Move input focus to terminal
-            terminal.focus();
+            controllable.focus();
 
-            terminal.updatePosition(windowBoundsFunction.apply(viewBounds));
+            controllable.updatePosition(windowBoundsFunction.apply(viewBounds));
             updateCustomBounds();
         }
 
@@ -101,7 +115,7 @@ public class TerminalDockView {
             if (AppPrefs.get().terminalType().getValue() instanceof WindowsTerminalType) {
                 GlobalTimer.delay(
                         () -> {
-                            terminal.updatePosition(windowBoundsFunction.apply(viewBounds));
+                            terminal.getControllable().updatePosition(windowBoundsFunction.apply(viewBounds));
                             updateCustomBounds();
                         },
                         Duration.ofMillis(100));
@@ -110,29 +124,58 @@ public class TerminalDockView {
     }
 
     public synchronized boolean closeOtherTerminals(UUID request) {
+        var owner = TerminalView.get().getSessions().stream()
+                .filter(shellSession -> shellSession.getRequest().equals(request))
+                .map(shellSession -> shellSession.getTerminal())
+                .findFirst()
+                .orElse(null);
+        if (owner == null) {
+            return false;
+        }
+
         var others = terminalInstances.stream()
                 .filter(terminal -> terminal.getTerminalProcess().isAlive())
-                .filter(terminal -> TerminalView.get().getSessions().stream()
-                        .noneMatch(shellSession -> shellSession.getRequest().equals(request)
-                                && shellSession.getTerminal().equals(terminal)))
+                .filter(terminal -> !terminal.equals(owner))
                 .toList();
-        for (ControllableTerminalSession other : others) {
+        for (TerminalView.ControllableTerminalSession other : others) {
             closeTerminal(other);
         }
         return others.size() > 0;
     }
 
-    public synchronized void closeTerminal(ControllableTerminalSession terminal) {
+    public synchronized void focus() {
+        if (!viewActive) {
+            return;
+        }
+
+        terminalInstances.forEach(terminalInstance -> {
+            var controllable = terminalInstance.getControllable();
+            if (!controllable.isActive()) {
+                return;
+            }
+
+            controllable.updateBoundsState();
+            if (controllable.isCustomBounds()) {
+                return;
+            }
+
+            controllable.focus();
+        });
+    }
+
+    public synchronized void closeTerminal(TerminalView.ControllableTerminalSession terminal) {
         if (!terminalInstances.contains(terminal)) {
             return;
         }
 
-        // Reset style in case close is blocked by terminal
-        terminal.restoreIcon();
-        terminal.disown();
-        terminal.restoreStyle();
+        var controllable = terminal.getControllable();
 
-        terminal.close();
+        // Reset style in case close is blocked by terminal
+        controllable.restoreIcon();
+        controllable.disown();
+        controllable.restoreStyle(terminal.manageBorders());
+
+        controllable.close();
         // If the process blocked the exit, still don't track it anymore
         terminalInstances.remove(terminal);
     }
@@ -145,19 +188,20 @@ public class TerminalDockView {
 
         this.viewActive = true;
         terminalInstances.forEach(terminalInstance -> {
-            if (!terminalInstance.isActive()) {
+            var controllable = terminalInstance.getControllable();
+            if (!controllable.isActive()) {
                 return;
             }
 
-            terminalInstance.updateBoundsState();
-            if (terminalInstance.isCustomBounds()) {
+            controllable.updateBoundsState();
+            if (controllable.isCustomBounds()) {
                 return;
             }
 
-            terminalInstance.removeIcon();
-            terminalInstance.own();
-            terminalInstance.removeStyle();
-            terminalInstance.focus();
+            controllable.removeIcon();
+            controllable.own(NativeWinWindowControl.MAIN_WINDOW);
+            controllable.removeStyle(terminalInstance.manageBorders());
+            controllable.focus();
         });
         updatePositions();
     }
@@ -170,8 +214,9 @@ public class TerminalDockView {
 
         this.viewActive = false;
         terminalInstances.forEach(terminalInstance -> {
-            terminalInstance.disown();
-            terminalInstance.backOfMainWindow();
+            var controllable = terminalInstance.getControllable();
+            controllable.disown();
+            controllable.backOfWindow(NativeWinWindowControl.MAIN_WINDOW);
         });
         updatePositions();
     }
@@ -179,25 +224,26 @@ public class TerminalDockView {
     public synchronized void onWindowShow() {
         TrackEvent.withTrace("Terminal view window shown").handle();
         terminalInstances.forEach(terminalInstance -> {
-            if (terminalInstance.isActive()) {
+            var controllable = terminalInstance.getControllable();
+            if (controllable.isActive()) {
                 return;
             }
 
-            terminalInstance.updateBoundsState();
-            if (terminalInstance.isCustomBounds()) {
+            controllable.updateBoundsState();
+            if (controllable.isCustomBounds()) {
                 return;
             }
 
-            terminalInstance.show();
+            controllable.show();
             if (viewActive) {
-                terminalInstance.removeIcon();
-                terminalInstance.own();
-                terminalInstance.removeStyle();
-                terminalInstance.focus();
+                controllable.removeIcon();
+                controllable.own(NativeWinWindowControl.MAIN_WINDOW);
+                controllable.removeStyle(terminalInstance.manageBorders());
+                controllable.focus();
             } else {
-                terminalInstance.restoreIcon();
-                terminalInstance.disown();
-                terminalInstance.backOfMainWindow();
+                controllable.restoreIcon();
+                controllable.disown();
+                controllable.backOfWindow(NativeWinWindowControl.MAIN_WINDOW);
             }
         });
     }
@@ -206,12 +252,13 @@ public class TerminalDockView {
         TrackEvent.withTrace("Terminal view window minimized").handle();
 
         terminalInstances.forEach(terminalInstance -> {
-            terminalInstance.updateBoundsState();
-            if (terminalInstance.isCustomBounds()) {
+            var controllable = terminalInstance.getControllable();
+            controllable.updateBoundsState();
+            if (controllable.isCustomBounds()) {
                 return;
             }
 
-            terminalInstance.minimize();
+            controllable.minimize();
         });
     }
 
@@ -219,8 +266,9 @@ public class TerminalDockView {
         TrackEvent.withTrace("Terminal view closed").handle();
 
         terminalInstances.forEach(terminalInstance -> {
-            terminalInstance.updateBoundsState();
-            if (terminalInstance.isCustomBounds()) {
+            var controllable = terminalInstance.getControllable();
+            controllable.updateBoundsState();
+            if (controllable.isCustomBounds()) {
                 return;
             }
 
@@ -235,16 +283,30 @@ public class TerminalDockView {
         }
 
         terminalInstances.forEach(terminalInstance -> {
-            if (!terminalInstance.isActive()) {
+            var controllable = terminalInstance.getControllable();
+            if (!controllable.isActive()) {
                 return;
             }
 
-            terminalInstance.updateBoundsState();
-            if (terminalInstance.isCustomBounds()) {
+            controllable.updateBoundsState();
+            if (controllable.isCustomBounds()) {
                 return;
             }
 
-            terminalInstance.updatePosition(windowBoundsFunction.apply(viewBounds));
+            Rect lastViewBounds = viewBounds;
+            controllable.updatePosition(windowBoundsFunction.apply(lastViewBounds));
+
+            // Ugly fix for Windows Terminal instances using size constraints on first resize
+            // This will cause the dock to interpret is as detached if we don't fix it again
+            if (AppPrefs.get().terminalType().getValue() instanceof WindowsTerminalType) {
+                GlobalTimer.delay(
+                        () -> {
+                            if (lastViewBounds.equals(viewBounds)) {
+                                controllable.updatePosition(windowBoundsFunction.apply(viewBounds));
+                            }
+                        },
+                        Duration.ofMillis(100));
+            }
         });
     }
 
@@ -265,12 +327,13 @@ public class TerminalDockView {
         TrackEvent.withTrace("Terminal view attached").handle();
 
         terminalInstances.forEach(terminalInstance -> {
-            terminalInstance.show();
-            terminalInstance.removeIcon();
-            terminalInstance.own();
-            terminalInstance.removeStyle();
-            terminalInstance.updatePosition(windowBoundsFunction.apply(viewBounds));
-            terminalInstance.focus();
+            var controllable = terminalInstance.getControllable();
+            controllable.show();
+            controllable.removeIcon();
+            controllable.own(NativeWinWindowControl.MAIN_WINDOW);
+            controllable.removeStyle(terminalInstance.manageBorders());
+            controllable.updatePosition(windowBoundsFunction.apply(viewBounds));
+            controllable.focus();
         });
     }
 }

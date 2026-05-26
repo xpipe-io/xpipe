@@ -107,7 +107,7 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
         var sc = TerminalProxyManager.getProxy().orElse(LocalShell.getShell());
         // Set proper env variables for a terminal
         try (var sub = sc.identicalDialectSubShell().start()) {
-            sub.writeLine(sub.getShellDialect().prepareTerminalEnvironmentCommands());
+            sub.writeLine(sub.getShellDialect().prepareTerminalEnvironmentCommands(true));
             sub.command("zellij delete-session -f xpipe > /dev/null 2>&1").executeAndCheck();
             sub.command("zellij attach --create-background xpipe").executeAndCheck();
         }

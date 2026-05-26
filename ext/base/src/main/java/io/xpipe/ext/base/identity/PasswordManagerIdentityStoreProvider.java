@@ -5,6 +5,7 @@ import io.xpipe.app.cred.PasswordManagerAgentStrategy;
 import io.xpipe.app.cred.SshIdentityStrategyChoiceConfig;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.hub.comp.StoreCreationModel;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
@@ -13,7 +14,6 @@ import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.app.storage.DataStoreCategory;
-import io.xpipe.app.storage.DataStoreEntry;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -43,7 +43,7 @@ public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider 
     }
 
     @Override
-    public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
+    public GuiDialog guiDialog(StoreCreationModel model, Property<DataStore> store) {
         PasswordManagerIdentityStore st = (PasswordManagerIdentityStore) store.getValue();
 
         var key = new SimpleStringProperty(st.getKey());
@@ -70,7 +70,7 @@ public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider 
                 AppPrefs.get().passwordManager(),
                 sshKey);
 
-        var testComp = new PasswordManagerTestComp(key, false);
+        var testComp = new PasswordManagerTestComp(key, false, true, false);
         return new OptionsBuilder()
                 .nameAndDescription("passwordManagerKey")
                 .addComp(testComp.hgrow(), key)

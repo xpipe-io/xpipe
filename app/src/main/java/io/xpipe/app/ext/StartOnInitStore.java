@@ -5,35 +5,42 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 
 public interface StartOnInitStore extends SelfReferentialStore, DataStore {
 
     static void init() {
-        ThreadHelper.runFailableAsync(() -> {
-            var enabled = getEnabledStores();
-            for (DataStoreEntry e : DataStorage.get().getStoreEntries()) {
-                if (e.getStore() instanceof StartOnInitStore i
-                        && e.getValidity().isUsable()
-                        && enabled.contains(i.getSelfEntry().ref())
-                        && i.canAutomaticallyStart()) {
-                    try {
-                        i.startOnInit();
-                    } catch (Throwable ex) {
-                        ErrorEventFactory.fromThrowable(ex)
-                                .description("Unable to automatically start connection "
-                                        + DataStorage.get().getStoreEntryDisplayName(i.getSelfEntry()))
-                                .handle();
-                    }
-                }
-            }
-        });
+        GlobalTimer.delay(
+                () -> {
+                    ThreadHelper.runFailableAsync(() -> {
+                        var enabled = getEnabledStores();
+                        for (DataStoreEntry e : DataStorage.get().getStoreEntries()) {
+                            if (e.getStore() instanceof StartOnInitStore i
+                                    && e.getValidity().isUsable()
+                                    && enabled.contains(i.getSelfEntry().ref())
+                                    && i.canAutomaticallyStart()) {
+                                try {
+                                    i.startOnInit();
+                                } catch (Throwable ex) {
+                                    ErrorEventFactory.fromThrowable(ex)
+                                            .description("Unable to automatically start connection "
+                                                    + DataStorage.get().getStoreEntryDisplayName(i.getSelfEntry()))
+                                            .expected()
+                                            .handle();
+                                }
+                            }
+                        }
+                    });
+                },
+                Duration.ofSeconds(5));
     }
 
     static Set<DataStoreEntryRef<?>> getEnabledStores() {

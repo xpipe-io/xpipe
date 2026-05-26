@@ -4,6 +4,7 @@ import io.xpipe.app.cred.NoIdentityStrategy;
 import io.xpipe.app.cred.SshIdentityStrategyChoiceConfig;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.hub.comp.StoreCreationModel;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.secret.EncryptedValue;
@@ -32,7 +33,7 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
     }
 
     @Override
-    public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
+    public GuiDialog guiDialog(StoreCreationModel model, Property<DataStore> store) {
         LocalIdentityStore st = (LocalIdentityStore) store.getValue();
 
         var user = new SimpleStringProperty(st.getUsername().get());

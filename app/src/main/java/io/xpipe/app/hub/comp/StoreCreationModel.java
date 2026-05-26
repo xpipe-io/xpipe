@@ -24,6 +24,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -44,8 +45,11 @@ public class StoreCreationModel {
     BooleanProperty connectable = new SimpleBooleanProperty();
     StringProperty name;
     DataStoreEntry existingEntry;
+    List<DataStore> existingDependencies;
     boolean staticDisplay;
     StoreCreationConsumer consumer;
+    ObservableBooleanValue syncable;
+    UUID uuid;
 
     public StoreCreationModel(
             Property<DataStoreProvider> provider,
@@ -60,14 +64,21 @@ public class StoreCreationModel {
         this.filter = filter;
         this.name = new SimpleStringProperty(initialName != null && !initialName.isEmpty() ? initialName : null);
         this.existingEntry = existingEntry;
+        this.existingDependencies = existingEntry != null
+                ? DataStorage.get().getDependencies(existingEntry).stream()
+                        .<DataStore>map(ref -> ref.getStore())
+                        .toList()
+                : null;
         this.staticDisplay = staticDisplay;
         this.consumer = consumer;
+        this.uuid = existingEntry != null ? existingEntry.getUuid() : UUID.randomUUID();
 
         this.provider.addListener((c, o, n) -> {
             store.unbind();
             store.setValue(null);
             if (n != null) {
-                store.setValue(n.defaultStore(getTargetCategory(existingEntry)));
+                store.setValue(n.defaultStore(
+                        getTargetCategory(existingEntry != null ? existingEntry.getCategoryUuid() : null)));
             }
         });
 
@@ -82,6 +93,7 @@ public class StoreCreationModel {
                 newValue.validate();
             });
         });
+
         this.entry = Bindings.createObjectBinding(
                 () -> {
                     if (name.getValue() == null
@@ -91,19 +103,32 @@ public class StoreCreationModel {
                     }
 
                     var initial = DataStoreEntry.createNew(
-                            UUID.randomUUID(),
-                            DataStorage.get().getSelectedCategory().getUuid(),
-                            name.getValue(),
-                            store.getValue());
+                            uuid, DataStorage.get().getSelectedCategory().getUuid(), name.getValue(), store.getValue());
                     var entryRef = existingEntry != null
                             ? existingEntry
                             : DataStorage.get().getDefaultDisplayParent(initial).orElse(initial);
-                    var targetCategory = getTargetCategory(entryRef);
-                    return DataStoreEntry.createNew(
-                            UUID.randomUUID(), targetCategory.getUuid(), name.getValue(), store.getValue());
+                    var targetCategory = getTargetCategory(entryRef.getCategoryUuid());
+                    return DataStoreEntry.createNew(uuid, targetCategory.getUuid(), name.getValue(), store.getValue());
                 },
                 name,
                 store);
+
+        this.syncable = Bindings.createBooleanBinding(
+                () -> {
+                    var targetCategory = getTargetCategory(
+                            existingEntry != null
+                                    ? existingEntry.getCategoryUuid()
+                                    : StoreViewState.get()
+                                            .getActiveCategory()
+                                            .getValue()
+                                            .getCategory()
+                                            .getUuid());
+                    var entry = DataStoreEntry.createNew(
+                            UUID.randomUUID(), targetCategory.getUuid(), "Temp", store.getValue());
+                    return DataStorage.get().shouldSync(entry);
+                },
+                store,
+                StoreViewState.get().getActiveCategory());
 
         skippable.bind(Bindings.createBooleanBinding(
                 () -> {
@@ -124,9 +149,9 @@ public class StoreCreationModel {
                 name));
     }
 
-    private DataStoreCategory getTargetCategory(DataStoreEntry base) {
-        var targetCategory = base != null
-                ? base.getCategoryUuid()
+    private DataStoreCategory getTargetCategory(UUID baseCategory) {
+        var targetCategory = baseCategory != null
+                ? baseCategory
                 : DataStorage.get().getSelectedCategory().getUuid();
         var rootCategory = DataStorage.get()
                 .getRootCategory(DataStorage.get()
@@ -189,11 +214,22 @@ public class StoreCreationModel {
     }
 
     boolean wasChanged() {
-        if (existingEntry != null && existingEntry.getStore().equals(store.getValue())) {
-            return false;
+        if (existingEntry == null) {
+            return true;
         }
 
-        return true;
+        if (!existingEntry.getStore().equals(store.getValue())) {
+            return true;
+        }
+
+        var newDependencies = DataStorage.get().getDependencies(entry.getValue()).stream()
+                .map(ref -> ref.getStore())
+                .toList();
+        if (!existingDependencies.equals(newDependencies)) {
+            return true;
+        }
+
+        return false;
     }
 
     void finish() {

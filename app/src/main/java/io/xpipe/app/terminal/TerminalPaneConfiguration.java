@@ -2,6 +2,7 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.*;
@@ -22,6 +23,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Value
 @RequiredArgsConstructor
@@ -65,7 +67,7 @@ public class TerminalPaneConfiguration {
             var sc = LocalShell.getShell();
             var register = TerminalLauncher.getTerminalRegisterCommand(request, sc);
             var launcherScript =
-                    register + "\n" + sc.getShellDialect().terminalLauncherScript(request, title, alwaysPromptRestart);
+                    register + "\n" + getBannerPrint(sc.getShellDialect(), entry) + sc.getShellDialect().terminalLauncherScript(request, title, alwaysPromptRestart);
             var config = new TerminalPaneConfiguration(request, title, paneIndex, launcherScript, sc.getShellDialect());
             return config;
         }
@@ -76,7 +78,8 @@ public class TerminalPaneConfiguration {
 
         if (sc.getOsType() == OsType.WINDOWS) {
             if (LocalShell.getLocalPowershell().isEmpty()) {
-                throw ErrorEventFactory.expected(new IllegalStateException("PowerShell is required for terminal logging but it failed to start"));
+                throw ErrorEventFactory.expected(new IllegalStateException(
+                        "PowerShell is required for terminal logging but it failed to start"));
             }
 
             var launcherScript = ScriptHelper.createExecScript(
@@ -85,11 +88,11 @@ public class TerminalPaneConfiguration {
                     ShellDialects.POWERSHELL.terminalLauncherScript(request, title, alwaysPromptRestart));
             var content = """
                           %s
-                          echo 'Transcript started, output file is "sessions\\%s"'
-                          Start-Transcript -Force -LiteralPath "%s" > $Out-Null
+                          echo 'Session logging is active, output file is "sessions\\%s"'
+                          Start-Transcript -Force -LiteralPath "%s" | Out-Null
                           & "%s"
-                          Stop-Transcript > $Out-Null
-                          echo 'Transcript stopped, output file is "sessions\\%s"'
+                          Stop-Transcript | Out-Null
+                          echo 'Session logging is finished, output file is "sessions\\%s"'
                           """.formatted(
                             TerminalLauncher.getTerminalRegisterCommand(
                                     request, LocalShell.getLocalPowershell().orElseThrow()),
@@ -130,9 +133,9 @@ public class TerminalPaneConfiguration {
                     : "script --quiet --command '%s' \"%s\"".formatted(command, logFile);
             var content = """
                           %s
-                          echo "Transcript started, output file is sessions/%s"
+                          echo "Session logging is active, output file is sessions/%s"
                           %s
-                          echo "Transcript stopped, output file is sessions/%s"
+                          echo "Session logging is finished, output file is sessions/%s"
                           cat "%s" | "%s" terminal-clean > "%s.txt"
                           """.formatted(
                             TerminalLauncher.getTerminalRegisterCommand(request, sc),
@@ -146,6 +149,16 @@ public class TerminalPaneConfiguration {
             config.scriptFile = ScriptHelper.createExecScript(sc.getShellDialect(), sc, content);
             return config;
         }
+    }
+
+    private static String getBannerPrint(ShellDialect d, DataStoreEntry entry) {
+        if (entry == null || !(entry.getStore() instanceof ShellStore)) {
+            return "";
+        }
+
+        var banner = new TerminalBanner(entry.ref()).build();
+        var lines = banner.lines().map(s -> d.getEchoCommand(s, false)).collect(Collectors.joining("\n"));
+        return "\n" + lines + "\n";
     }
 
     public TerminalPaneConfiguration withScript(ShellDialect d, String content) {

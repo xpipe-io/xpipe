@@ -1,9 +1,7 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.core.mode.AppOperationMode;
-import io.xpipe.app.process.LocalShell;
-import io.xpipe.app.process.ShellDialect;
-import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.process.*;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.core.OsType;
 
@@ -17,27 +15,24 @@ public class AppRestart {
         var loc = AppProperties.get().isDevelopmentEnvironment()
                 ? AppInstallation.ofDefault()
                 : AppInstallation.ofCurrent();
-        var suffix = (arguments.size() > 0 ? " " + String.join(" ", arguments) : "");
         if (AppDistributionType.get() == AppDistributionType.APP_IMAGE) {
             var exec = System.getenv("APPIMAGE");
-            return "nohup \"" + exec + "\"" + suffix + " </dev/null >/dev/null 2>&1 & disown";
+            var b = CommandBuilder.of().addQuoted(exec).addAll(arguments);
+            var async = dialect.launchAsync(b, true);
+            return async.buildSimple();
         } else if (OsType.ofLocal() == OsType.LINUX) {
             var exec = loc.getCliExecutablePath();
-            return "\"" + exec + "\" open" + suffix;
+            var b = CommandBuilder.of().addFile(exec).add("open").addAll(arguments);
+            return b.buildSimple();
         } else if (OsType.ofLocal() == OsType.MACOS) {
             var exec = loc.getCliExecutablePath();
-            return "\"" + exec + "\" open" + suffix;
+            var b = CommandBuilder.of().addFile(exec).add("open").addAll(arguments);
+            return b.buildSimple();
         } else {
             var exe = loc.getDaemonExecutablePath();
-            if (ShellDialects.isPowershell(dialect)) {
-                var escapedList =
-                        arguments.stream().map(s -> s.replaceAll("\"", "`\"")).toList();
-                var argumentList = String.join(" ", escapedList);
-                return "echo \"Starting XPipe ...\"; Start-Process -FilePath \"" + exe + "\" -ArgumentList \"" + argumentList + "\"";
-            } else {
-                var base = "\"" + exe + "\"" + suffix;
-                return "echo Starting XPipe ...&start \"\" " + base;
-            }
+            var b = CommandBuilder.of().addFile(exe).addAll(arguments);
+            var async = dialect.launchAsync(b, true);
+            return async.buildSimple();
         }
     }
 
@@ -45,26 +40,29 @@ public class AppRestart {
         var loc = AppProperties.get().isDevelopmentEnvironment()
                 ? AppInstallation.ofDefault()
                 : AppInstallation.ofCurrent();
-        var suffix = (arguments.size() > 0 ? " " + String.join(" ", arguments) : "");
         if (AppDistributionType.get() == AppDistributionType.APP_IMAGE) {
             var exec = System.getenv("APPIMAGE");
-            return "nohup \"" + exec + "\"" + suffix + " </dev/null >/dev/null 2>&1 & disown";
+            var b = CommandBuilder.of().addQuoted(exec).addAll(arguments);
+            var async = dialect.launchAsync(b, true);
+            return async.buildSimple();
         } else if (OsType.ofLocal() == OsType.LINUX) {
-            return "nohup \"" + loc.getDaemonExecutablePath() + "\"" + suffix + " </dev/null >/dev/null 2>&1 & disown";
+            var exec = loc.getDaemonExecutablePath();
+            var b = CommandBuilder.of().addFile(exec).addAll(arguments);
+            var async = dialect.launchAsync(b, true);
+            return async.buildSimple();
         } else if (OsType.ofLocal() == OsType.MACOS) {
-            return "(sleep 1;open \"" + loc.getBaseInstallationPath() + "\" --args" + suffix
-                    + " </dev/null &>/dev/null) & disown";
+            var exec = loc.getBaseInstallationPath();
+            var b = CommandBuilder.of()
+                    .add("open", "-na")
+                    .addFile(exec)
+                    .addIf(!arguments.isEmpty(), "--args")
+                    .addAll(arguments);
+            return b.buildSimple();
         } else {
             var exe = loc.getDaemonExecutablePath();
-            if (ShellDialects.isPowershell(dialect)) {
-                var escapedList =
-                        arguments.stream().map(s -> s.replaceAll("\"", "`\"")).toList();
-                var argumentList = String.join(" ", escapedList);
-                return "Start-Process -FilePath \"" + exe + "\" -ArgumentList \"" + argumentList + "\"";
-            } else {
-                var base = "\"" + exe + "\"" + suffix;
-                return "start \"\" " + base;
-            }
+            var b = CommandBuilder.of().addFile(exe).addAll(arguments);
+            var async = dialect.launchAsync(b, true);
+            return async.buildSimple();
         }
     }
 

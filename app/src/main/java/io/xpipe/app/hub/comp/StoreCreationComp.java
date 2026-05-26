@@ -60,7 +60,7 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                 : providerChoice.getProviders().getFirst();
         var showProviders = (!model.isStaticDisplay() && provider.showProviderChoice())
                 || (model.isStaticDisplay() && provider.showProviderChoice());
-        if (model.isStaticDisplay()) {
+        if (model.isStaticDisplay() || providerChoice.getProviders().size() == 1) {
             providerChoice.apply(struc -> struc.setDisable(true));
         }
 
@@ -72,7 +72,7 @@ public class StoreCreationComp extends ModalOverlayContentComp {
         var activeDialog = new SimpleObjectProperty<GuiDialog>();
         model.getProvider().subscribe(n -> {
             if (n != null) {
-                var d = n.guiDialog(model.getExistingEntry(), model.getStore());
+                var d = n.guiDialog(model, model.getStore());
                 activeDialog.set(d);
                 if (d == null) {
                     return;
@@ -116,6 +116,7 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                 sp.setFocusTraversable(false);
                 sp.setSkin(new ScrollPaneSkin(sp));
                 sp.setFitToWidth(true);
+                sp.prefHeightProperty().bind(valSp.heightProperty());
                 var vbar = (ScrollBar) sp.lookup(".scroll-bar:vertical");
 
                 var topSep = new Separator();

@@ -52,7 +52,8 @@ public class SshIdentityStateManager {
 
             if (gpg && gpgRunning) {
                 // This sometimes takes a long time if the agent is not running. Why?
-                sc.command(CommandBuilder.of().add("gpg-connect-agent", "killagent", "/bye")).executeAndCheck();
+                sc.command(CommandBuilder.of().add("gpg-connect-agent", "killagent", "/bye"))
+                        .executeAndCheck();
             }
 
             if (openssh && opensshRunning) {

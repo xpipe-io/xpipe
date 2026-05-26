@@ -1,8 +1,8 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.platform.OptionsBuilder;
-
 import io.xpipe.app.storage.DataStoreEntry;
+
 import lombok.AllArgsConstructor;
 import lombok.Value;
 

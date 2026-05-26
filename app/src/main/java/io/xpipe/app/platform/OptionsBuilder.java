@@ -3,13 +3,16 @@ package io.xpipe.app.platform;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
+import io.xpipe.app.util.Checkable;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.core.InPlaceSecretValue;
+import io.xpipe.core.JacksonMapper;
 
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
@@ -66,7 +69,7 @@ public class OptionsBuilder {
     private final List<Validator> allValidators = new ArrayList<>();
     private final List<Check> allChecks = new ArrayList<>();
     private final List<OptionsComp.Entry> entries = new ArrayList<>();
-    private final List<Property<?>> props = new ArrayList<>();
+    private final List<ObservableValue<?>> props = new ArrayList<>();
 
     private ObservableValue<String> name;
     private ObservableValue<String> description;
@@ -170,17 +173,34 @@ public class OptionsBuilder {
                 .description(AppI18n.observable(BindingsHelper.map(key, k -> k + "Description")));
     }
 
-    public OptionsBuilder subAdvanced(OptionsBuilder builder) {
+    public OptionsBuilder subAdvanced(OptionsBuilder builder, String trackKey) {
         name("advanced");
-        subExpandable("showAdvancedOptions", builder);
+        subExpandable("showAdvancedOptions", builder, trackKey);
         return this;
     }
 
-    public OptionsBuilder subExpandable(String key, OptionsBuilder builder) {
+    public OptionsBuilder subExpandable(String key, OptionsBuilder builder, String trackKey) {
+        var javaType =
+                JacksonMapper.getDefault().getTypeFactory().constructCollectionLikeType(List.class, String.class);
+        var expanded = trackKey != null
+                && AppCache.getNonNull("advancedExpanded", javaType, () -> List.of())
+                        .contains(trackKey);
+
         sub(builder, null);
         var subComp = this.comp;
         var pane = new SimpleTitledPaneComp(AppI18n.observable(key), subComp, true);
-        pane.apply(struc -> struc.setExpanded(false));
+        pane.apply(struc -> {
+            struc.setExpanded(expanded);
+            struc.expandedProperty().addListener((observable, oldValue, newValue) -> {
+                var l = new ArrayList<>(AppCache.getNonNull("advancedExpanded", javaType, () -> List.of()));
+                if (newValue) {
+                    l.add(trackKey);
+                } else {
+                    l.remove(trackKey);
+                }
+                AppCache.update("advancedExpanded", l);
+            });
+        });
         this.comp = pane;
         this.lastCompHeadReference = comp;
         return this;
@@ -304,6 +324,12 @@ public class OptionsBuilder {
         return check(Validator.nonNull(ownValidator, e, p));
     }
 
+    @SuppressWarnings("unchecked")
+    public OptionsBuilder checkComplete() {
+        var p = props.getLast();
+        return check(Validator.create(ownValidator, (ObservableValue<? extends Checkable>) p));
+    }
+
     public OptionsBuilder nonNullIf(ObservableValue<Boolean> b) {
         var e = lastNameReference;
         var p = props.getLast();
@@ -408,7 +434,7 @@ public class OptionsBuilder {
         return this;
     }
 
-    public OptionsBuilder addProperty(Property<?> prop) {
+    public OptionsBuilder addProperty(ObservableValue<?> prop) {
         props.add(prop);
         return this;
     }
@@ -423,7 +449,7 @@ public class OptionsBuilder {
         return this;
     }
 
-    public OptionsBuilder addSecret(Property<InPlaceSecretValue> prop, boolean copy) {
+    public OptionsBuilder addSecret(ObjectProperty<InPlaceSecretValue> prop, boolean copy) {
         var comp = new SecretFieldComp(prop, copy);
         pushComp(comp);
         props.add(prop);

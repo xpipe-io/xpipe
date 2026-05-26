@@ -3,6 +3,7 @@ package io.xpipe.ext.base.service;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreComboChoiceComp;
+import io.xpipe.app.hub.comp.StoreCreationModel;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -53,7 +54,7 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
     }
 
     @Override
-    public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
+    public GuiDialog guiDialog(StoreCreationModel model, Property<DataStore> store) {
         CustomServiceStore st = store.getValue().asNeeded();
 
         var comboHost = new SimpleObjectProperty<>(StoreComboChoiceComp.ComboValue.of(st.getAddress(), st.getHost()));
@@ -92,19 +93,20 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
                     HostAddress addr = hostStore.getHostAddress();
                     return addr != null && !addr.isEmpty() ? addr.get() : null;
                 },
-                entry,
+                model.getExistingEntry(),
                 comboHost,
                 HostAddressStore.class,
                 n -> true,
                 StoreViewState.get().getAllConnectionsCategory(),
                 false);
         var gatewayChoice = new StoreChoiceComp<>(
-                entry,
+                model.getExistingEntry(),
                 gateway,
                 NetworkTunnelStore.class,
                 ref -> !ref.get().equals(DataStorage.get().local()),
                 StoreViewState.get().getAllConnectionsCategory(),
-                true);
+                true,
+                DataStoreCreationCategory.HOST);
 
         var q = new OptionsBuilder()
                 .nameAndDescription("serviceHost")

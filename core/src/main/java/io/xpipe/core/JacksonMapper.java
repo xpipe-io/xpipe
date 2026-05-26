@@ -33,6 +33,7 @@ public class JacksonMapper {
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         objectMapper.enable(JsonParser.Feature.ALLOW_COMMENTS);
         objectMapper.enable(JsonParser.Feature.ALLOW_TRAILING_COMMA);
+        objectMapper.enable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL);
         objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         objectMapper.disable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE);

@@ -12,9 +12,6 @@ import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.core.OsType;
 
 import javafx.beans.value.ObservableValue;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 
 import java.util.List;
 
@@ -40,11 +37,6 @@ public class OpenFileWithMenuProvider implements BrowserMenuLeafProvider {
     @Override
     public BrowserMenuCategory getCategory() {
         return BrowserMenuCategory.OPEN;
-    }
-
-    @Override
-    public KeyCombination getShortcut() {
-        return new KeyCodeCombination(KeyCode.ENTER, KeyCombination.SHIFT_DOWN);
     }
 
     @Override

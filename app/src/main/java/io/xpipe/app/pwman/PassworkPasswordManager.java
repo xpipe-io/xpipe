@@ -1,7 +1,5 @@
 package io.xpipe.app.pwman;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
@@ -14,16 +12,16 @@ import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.core.InPlaceSecretValue;
-import io.xpipe.core.JacksonMapper;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
-
-import java.util.Optional;
 
 @Getter
 @Builder
@@ -115,7 +113,9 @@ public class PassworkPasswordManager implements PasswordManager {
             getOrStartShell().view().setSensitiveEnvironmentVariable("PASSWORK_HOST", fixedServerUrl);
             getOrStartShell().view().setSensitiveEnvironmentVariable("PASSWORK_TOKEN", token.getSecretValue());
             if (masterKey != null) {
-                getOrStartShell().view().setSensitiveEnvironmentVariable("PASSWORK_MASTER_KEY", masterKey.getSecretValue());
+                getOrStartShell()
+                        .view()
+                        .setSensitiveEnvironmentVariable("PASSWORK_MASTER_KEY", masterKey.getSecretValue());
             }
             var user = getOrStartShell()
                     .command(CommandBuilder.of()

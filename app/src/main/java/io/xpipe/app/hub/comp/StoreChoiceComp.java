@@ -6,10 +6,10 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -38,8 +38,9 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
             Class<?> storeClass,
             Predicate<DataStoreEntryRef<T>> applicableCheck,
             StoreCategoryWrapper categoryRoot,
-            boolean requireComplete) {
-        this(self, selected, storeClass, applicableCheck, categoryRoot, null, requireComplete);
+            boolean requireComplete,
+            DataStoreCreationCategory creationCategory) {
+        this(self, selected, storeClass, applicableCheck, categoryRoot, null, requireComplete, creationCategory);
     }
 
     public StoreChoiceComp(
@@ -49,7 +50,8 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
             Predicate<DataStoreEntryRef<T>> applicableCheck,
             StoreCategoryWrapper categoryRoot,
             StoreCategoryWrapper explicitCategory,
-            boolean requireComplete) {
+            boolean requireComplete,
+            DataStoreCreationCategory creationCategory) {
         this.selected = selected;
         this.popover = new StoreChoicePopover<>(
                 self,
@@ -62,7 +64,8 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
                 StoreViewState.get().getAllConnectionsCategory().equals(categoryRoot)
                         ? "selectConnection"
                         : "selectEntry",
-                "noCompatibleConnection");
+                "noCompatibleConnection",
+                creationCategory);
     }
 
     public StoreChoiceComp(
@@ -70,8 +73,9 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
             ObjectProperty<DataStoreEntryRef<T>> selected,
             Class<?> storeClass,
             Predicate<DataStoreEntryRef<T>> applicableCheck,
-            StoreCategoryWrapper initialCategory) {
-        this(self, selected, storeClass, applicableCheck, initialCategory, true);
+            StoreCategoryWrapper initialCategory,
+            DataStoreCreationCategory creationCategory) {
+        this(self, selected, storeClass, applicableCheck, initialCategory, true, creationCategory);
     }
 
     protected String toName(DataStoreEntry entry) {
@@ -153,7 +157,9 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
                 r.requestFocus();
             }
         });
-        AnchorPane.setTopAnchor(dropdownIcon, OsType.ofLocal() == OsType.MACOS ? 8.5 : 11.0);
+        pane.heightProperty().subscribe(number -> {
+            AnchorPane.setTopAnchor(dropdownIcon, number.doubleValue() / 3.3);
+        });
         AnchorPane.setRightAnchor(dropdownIcon, 7.0);
         AnchorPane.setRightAnchor(r, 0.0);
         AnchorPane.setLeftAnchor(r, 0.0);

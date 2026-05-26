@@ -1,5 +1,6 @@
 package io.xpipe.app.storage;
 
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppMainWindow;
@@ -7,7 +8,6 @@ import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.secret.EncryptionKey;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
@@ -17,15 +17,14 @@ import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
-import javax.crypto.SecretKey;
 
 public class StandardStorage extends DataStorage {
 
@@ -38,12 +37,15 @@ public class StandardStorage extends DataStorage {
     private final DataStorageUserHandler dataStorageUserHandler;
 
     private final ReentrantLock busyIo = new ReentrantLock();
-    private SecretKey vaultKey;
+    private DataStorageVaultKey vaultKey;
 
     @Getter
     private boolean disposed;
 
     private boolean saveQueued;
+
+    private final AppLayoutModel.QueueEntry queueEntry = AppLayoutModel.QueueEntry.ofNotification(
+            "syncInProgressTitle", "syncInProgress", "mdi2g-git", false);
 
     StandardStorage() {
         this.dataStorageSyncHandler = DataStorageSyncHandler.getInstance();
@@ -301,7 +303,7 @@ public class StandardStorage extends DataStorage {
     }
 
     @Override
-    public SecretKey getVaultKey() {
+    public DataStorageVaultKey getVaultKey() {
         return vaultKey;
     }
 
@@ -399,6 +401,16 @@ public class StandardStorage extends DataStorage {
 
         this.saveQueued = false;
 
+        var saveActive = new AtomicBoolean(true);
+        var syncEnabled = dataStorageSyncHandler.supportsSync();
+        if (syncEnabled) {
+            GlobalTimer.delay(() -> {
+                if (saveActive.get()) {
+                    AppLayoutModel.get().showQueueEntry(queueEntry, null, false);
+                }
+            }, Duration.ofSeconds(5));
+        }
+
         this.dataStorageSyncHandler.beforeStorageSave();
 
         try {
@@ -461,6 +473,9 @@ public class StandardStorage extends DataStorage {
         if (dispose) {
             disposed = true;
         }
+
+        saveActive.set(false);
+        queueEntry.hide();
 
         busyIo.unlock();
         if (!dispose && saveQueued) {
@@ -593,14 +608,11 @@ public class StandardStorage extends DataStorage {
         var file = dir.resolve("vaultkey");
         try {
             if (Files.exists(file)) {
-                var s = Files.readString(file);
-                var id = new String(Base64.getDecoder().decode(s), StandardCharsets.UTF_8);
-                vaultKey = EncryptionKey.getVaultSecretKey(id);
+                vaultKey = DataStorageVaultKey.load(file);
             } else {
                 FileUtils.forceMkdir(dir.toFile());
-                var id = UUID.randomUUID().toString();
-                Files.writeString(file, Base64.getEncoder().encodeToString(id.getBytes(StandardCharsets.UTF_8)));
-                vaultKey = EncryptionKey.getVaultSecretKey(id);
+                vaultKey = DataStorageVaultKey.generate();
+                DataStorageVaultKey.write(vaultKey, file);
             }
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(

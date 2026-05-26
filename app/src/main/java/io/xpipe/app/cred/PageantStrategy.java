@@ -37,7 +37,7 @@ public class PageantStrategy implements SshIdentityAgentStrategy {
                 new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
         return new OptionsBuilder()
                 .nameAndDescription("publicKey")
-                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false), publicKey)
+                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false, false), publicKey)
                 .bind(
                         () -> {
                             return new PageantStrategy(publicKey.get());
@@ -87,7 +87,7 @@ public class PageantStrategy implements SshIdentityAgentStrategy {
     }
 
     @Override
-    public FilePath determinetAgentSocketLocation(ShellControl sc) {
+    public FilePath determineAgentSocketLocation(ShellControl sc) {
         if (sc.isLocal() && sc.getOsType() == OsType.WINDOWS) {
             return FilePath.of(getPageantWindowsPipe());
         }
@@ -96,19 +96,22 @@ public class PageantStrategy implements SshIdentityAgentStrategy {
     }
 
     @Override
+    public void checkComplete() {}
+
+    @Override
     public void buildCommand(CommandBuilder builder) {}
 
     @Override
     public List<KeyValue> configOptions(ShellControl sc) throws Exception {
         var file = SshIdentityStrategy.getPublicKeyPath(sc, publicKey);
         var l = new ArrayList<>(List.of(
-                new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
-                new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
-                new KeyValue("PKCS11Provider", "none")));
+                KeyValue.raw("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
+                KeyValue.escape("IdentityFile", file.isPresent() ? file.get() : "none"),
+                KeyValue.raw("PKCS11Provider", "none")));
 
-        var agent = determinetAgentSocketLocation(sc);
+        var agent = determineAgentSocketLocation(sc);
         if (agent != null) {
-            l.add(new KeyValue("IdentityAgent", "\"" + agent + "\""));
+            l.add(KeyValue.escape("IdentityAgent", agent));
         }
 
         return l;

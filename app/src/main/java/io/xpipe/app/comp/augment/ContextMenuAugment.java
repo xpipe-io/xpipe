@@ -43,8 +43,9 @@ public class ContextMenuAugment<S extends Region> implements Consumer<S> {
 
         var r = struc;
         r.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            var hidden = hide.get();
             if (mouseEventCheck != null && mouseEventCheck.test(event)) {
-                if (!hide.get()) {
+                if (!hidden) {
                     var cm = contextMenu.get();
                     if (cm != null) {
                         cm.show(r, event.getScreenX(), event.getScreenY());
@@ -67,15 +68,18 @@ public class ContextMenuAugment<S extends Region> implements Consumer<S> {
             }
         });
         r.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if (keyEventCheck != null && keyEventCheck.test(event)) {
-                if (!hide.get()) {
-                    var cm = contextMenu.get();
-                    if (cm != null) {
-                        cm.show(r, Side.BOTTOM, 0, 0);
-                        currentContextMenu.set(cm);
+            if (keyEventCheck != null) {
+                var hidden = hide.get();
+                if (keyEventCheck.test(event)) {
+                    if (!hidden) {
+                        var cm = contextMenu.get();
+                        if (cm != null) {
+                            cm.show(r, Side.BOTTOM, 0, 0);
+                            currentContextMenu.set(cm);
+                        }
                     }
+                    event.consume();
                 }
-                event.consume();
             }
         });
 

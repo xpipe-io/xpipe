@@ -11,7 +11,6 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.pwman.PasswordManagerKeyConfiguration;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.FilePath;
@@ -81,7 +80,8 @@ public class PasswordManagerAgentStrategy implements SshIdentityAgentStrategy {
                 .hide(pwmanErrorProp.isNull())
                 .nameAndDescription(useKeyName() ? "agentKeyName" : "publicKeyRequired")
                 .documentationLink(DocumentationLink.SSH_AGENT_PUBLIC_KEYS)
-                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, identifier, useKeyName()), identifier)
+                .addComp(
+                        new SshAgentKeyListComp(config.getFileSystem(), p, identifier, useKeyName(), false), identifier)
                 .disable(pwmanErrorProp.isNotNull())
                 .nonNull()
                 .bind(
@@ -126,7 +126,7 @@ public class PasswordManagerAgentStrategy implements SshIdentityAgentStrategy {
     }
 
     @Override
-    public FilePath determinetAgentSocketLocation(ShellControl parent) {
+    public FilePath determineAgentSocketLocation(ShellControl parent) {
         var config = getConfig();
         return config != null ? FilePath.of(config.getDefaultSocketLocation()) : null;
     }

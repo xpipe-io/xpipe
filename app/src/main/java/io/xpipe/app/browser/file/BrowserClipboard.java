@@ -11,7 +11,6 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.Dragboard;
 
-import lombok.SneakyThrows;
 import lombok.Value;
 
 import java.awt.datatransfer.Clipboard;

@@ -111,6 +111,7 @@ open module io.xpipe.app {
     requires org.kordamp.ikonli.bootstrapicons;
     requires jdk.zipfs;
     requires org.int4.fx.builders;
+    requires java.desktop;
 
     uses TerminalLauncher;
     uses ActionProvider;
@@ -182,6 +183,8 @@ open module io.xpipe.app {
             ChmodActionProvider,
             TarActionProvider,
             UntarActionProvider,
+            GzipActionProvider,
+            GunzipActionProvider,
             ZipActionProvider,
             UnzipActionProvider,
             UnzipHereUnixMenuProvider,
@@ -190,6 +193,7 @@ open module io.xpipe.app {
             UnzipDirectoryWindowsActionProvider,
             UntarHereMenuProvider,
             UntarGzHereMenuProvider,
+            GunzipUnixMenuProvider,
             UntarDirectoryMenuProvider,
             UntarGzDirectoryMenuProvider,
             JavapMenuProvider,

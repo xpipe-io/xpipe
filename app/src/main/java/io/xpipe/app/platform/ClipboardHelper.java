@@ -55,7 +55,7 @@ public class ClipboardHelper {
             return;
         }
 
-        PlatformThread.runLaterIfNeeded(() -> {
+        PlatformThread.runLaterIfNeededBlocking(() -> {
             Clipboard clipboard = Clipboard.getSystemClipboard();
             var text = clipboard.getString();
 
@@ -69,7 +69,7 @@ public class ClipboardHelper {
                 }
             }
 
-            var transition = new PauseTransition(Duration.millis(15000));
+            var transition = new PauseTransition(Duration.millis(25000));
             transition.setOnFinished(e -> {
                 var present = clipboard.getString();
                 if (present != null && present.equals(pass.getSecretValue())) {
@@ -83,13 +83,13 @@ public class ClipboardHelper {
     }
 
     public static void copyText(String s) {
-        PlatformThread.runLaterIfNeeded(() -> {
+        PlatformThread.runLaterIfNeededBlocking(() -> {
             apply(Map.of(DataFormat.PLAIN_TEXT, s), true);
         });
     }
 
     public static void copyUrl(String s) {
-        PlatformThread.runLaterIfNeeded(() -> {
+        PlatformThread.runLaterIfNeededBlocking(() -> {
             apply(Map.of(DataFormat.URL, s, DataFormat.PLAIN_TEXT, s), true);
         });
     }

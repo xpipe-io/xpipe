@@ -5,6 +5,8 @@ import io.xpipe.app.issue.ErrorEventFactory;
 
 import lombok.SneakyThrows;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class LocalShell {
@@ -12,6 +14,18 @@ public class LocalShell {
     private static ShellControl local;
     private static ShellControl localPowershell;
     private static boolean powershellInitialized;
+    private static final Map<Object, ShellControl> localShellInstances = new HashMap<>();
+
+    public static synchronized ShellControl get(Object key) throws Exception {
+        var found = localShellInstances.get(key);
+        if (found != null) {
+            return found;
+        }
+
+        var sc = ProcessControlProvider.get().createLocalProcessControl(true).start();
+        localShellInstances.put(key, sc);
+        return sc;
+    }
 
     public static synchronized boolean isInitialized() {
         return local != null;
@@ -60,11 +74,11 @@ public class LocalShell {
             return Optional.of(local);
         }
 
-        if (powershellInitialized) {
-            return Optional.ofNullable(localPowershell);
-        }
-
         try {
+            if (powershellInitialized) {
+                return Optional.ofNullable(localPowershell != null ? localPowershell.start() : null);
+            }
+
             powershellInitialized = true;
             localPowershell = ProcessControlProvider.get()
                     .createLocalProcessControl(false)

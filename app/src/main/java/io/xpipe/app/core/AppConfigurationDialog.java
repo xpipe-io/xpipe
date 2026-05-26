@@ -8,8 +8,8 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.PlatformState;
 import io.xpipe.app.prefs.*;
 import io.xpipe.app.util.DocumentationLink;
-
 import io.xpipe.core.OsType;
+
 import javafx.application.Platform;
 import javafx.scene.layout.Region;
 
@@ -32,12 +32,12 @@ public class AppConfigurationDialog {
                     .sub(PersonalizationCategory.themeChoice())
                     .sub(TerminalCategory.terminalChoice(false));
 
-            if (OsType.ofLocal() != OsType.WINDOWS && AppPrefs.get().terminalMultiplexer().getValue() != null) {
+            if (OsType.ofLocal() != OsType.WINDOWS
+                    && AppPrefs.get().terminalMultiplexer().getValue() != null) {
                 options.sub(TerminalCategory.terminalMultiplexerChoice());
             }
 
-            var optionsComp = options
-                    .sub(EditorCategory.editorChoice())
+            var optionsComp = options.sub(EditorCategory.editorChoice())
                     .sub(PasswordManagerCategory.passwordManagerChoice())
                     .buildComp();
             optionsComp.style("initial-setup");

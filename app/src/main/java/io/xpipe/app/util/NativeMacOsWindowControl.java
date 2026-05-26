@@ -1,7 +1,8 @@
-package io.xpipe.app.platform;
+package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.NativeBridge;
 
 import javafx.stage.Window;
 
@@ -31,7 +32,7 @@ public class NativeMacOsWindowControl {
     }
 
     public boolean setAppearance(boolean seamlessFrame, boolean darkMode) {
-        if (!AppProperties.get().isImage() || !AppProperties.get().isFullVersion()) {
+        if (!AppProperties.get().isFullVersion()) {
             return false;
         }
 

@@ -7,6 +7,7 @@ import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.util.DesktopHelper;
+
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.scene.layout.Region;
 
@@ -27,7 +28,8 @@ public class WorkspaceEntryComp extends SimpleRegionBuilder {
         });
         view.describe(d -> d.nameKey("browse"));
         var buttons = new HorizontalComp(List.of(view));
-        var header = workspace.getName() + (workspace.equals(WorkspaceManager.get().getCurrent()) ? " (" + AppI18n.get("active") + ")" : "");
+        var header = workspace.getName()
+                + (workspace.equals(WorkspaceManager.get().getCurrent()) ? " (" + AppI18n.get("active") + ")" : "");
         var tile = new TileButtonComp(
                 new ReadOnlyStringWrapper(header),
                 new ReadOnlyStringWrapper(workspace.getDir().toString()),

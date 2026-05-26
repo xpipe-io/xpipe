@@ -27,7 +27,6 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
@@ -191,7 +190,8 @@ public interface DataStorageGroupStrategy {
                             IntegratedTextAreaComp.script(
                                     new ReadOnlyObjectWrapper<>(
                                             DataStorage.get().local().ref()),
-                                    command),
+                                    command,
+                                    true),
                             command)
                     .nonNull()
                     .bind(
@@ -265,9 +265,7 @@ public interface DataStorageGroupStrategy {
                     .POST(java.net.http.HttpRequest.BodyPublishers.noBody())
                     .build();
             var result = HttpHelper.client().send(request, HttpResponse.BodyHandlers.ofString());
-            if (result.statusCode() >= 400) {
-                throw ErrorEventFactory.expected(new IOException(result.body()));
-            }
+            HttpHelper.checkOrThrow(result);
             var body = result.body();
             if (body.length() == 0) {
                 throw ErrorEventFactory.expected(new IllegalArgumentException("Http response body is empty"));

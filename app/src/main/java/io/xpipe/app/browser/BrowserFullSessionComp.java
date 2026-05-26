@@ -90,7 +90,7 @@ public class BrowserFullSessionComp extends SimpleRegionBuilder {
                     leftSplit.set(d);
                 });
         splitPane.applyStructure(struc -> {
-            struc.getLeft().setMinWidth(250);
+            struc.getLeft().setMinWidth(270);
             struc.getLeft().setMaxWidth(500);
             struc.get().setPickOnBounds(false);
         });

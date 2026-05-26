@@ -97,7 +97,9 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
                 })
                 .disable(Bindings.isEmpty(category.getChildren().getList()))
                 .style("expand-button")
-                .describe(d -> d.nameKey("expand").shortcut(new KeyCodeCombination(KeyCode.SPACE)));
+                .describe(d -> d.nameKey("expand")
+                        .shortcut(new KeyCodeCombination(KeyCode.SPACE))
+                        .showTooltips(false));
 
         var focus = new SimpleBooleanProperty();
         var hover = new SimpleBooleanProperty();
@@ -155,7 +157,7 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
                 count,
                 RegionBuilder.hspacer(9),
                 statusButton.hide(showStatus.not())));
-        h.padding(new Insets(0, 10, 0, (category.getDepth() * 10)));
+        h.padding(new Insets(0, 10, 0, (category.getDepth() * 8)));
 
         var categoryButton = new ButtonComp(
                         null, new SimpleObjectProperty<>(new LabelGraphic.CompGraphic(h)), category::select)
@@ -275,20 +277,25 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
 
         if (category.canMove()) {
             var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
-            StoreViewState.get()
-                    .getSortedCategories(getCategory().getRoot(), true)
-                    .getList()
-                    .stream()
+            StoreViewState.get().getSortedCategories(getCategory().getRoot(), true).getList().stream()
                     .filter(w -> {
-                        var isSource = DataStorage.get().getCategoryParentHierarchy(getCategory().getCategory())
-                                .stream().anyMatch(h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
+                        var isSource =
+                                DataStorage.get()
+                                        .getCategoryParentHierarchy(
+                                                getCategory().getCategory())
+                                        .stream()
+                                        .anyMatch(h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
                         if (isSource) {
                             return DataStorage.get().getCategoryParentHierarchy(w.getCategory()).stream()
                                     .anyMatch(h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
                         }
 
-                        var isScript = DataStorage.get().getCategoryParentHierarchy(getCategory().getCategory())
-                                .stream().anyMatch(h -> h.getUuid().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID));
+                        var isScript =
+                                DataStorage.get()
+                                        .getCategoryParentHierarchy(
+                                                getCategory().getCategory())
+                                        .stream()
+                                        .anyMatch(h -> h.getUuid().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID));
                         if (isScript) {
                             return DataStorage.get().getCategoryParentHierarchy(w.getCategory()).stream()
                                     .noneMatch(h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));

@@ -143,11 +143,12 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
             struc.setPrefWidth(300);
         });
         text.style(Styles.TEXT_SUBTLE);
-        text.visible(busy);
+        text.show(busy);
 
         var loading = new LoadingIconComp(busy, AppFontSizes::title);
         loading.prefWidth(50);
         loading.prefHeight(50);
+        loading.show(busy);
 
         var vbox = new VerticalComp(List.of(text, loading, refreshButton)).spacing(25);
         vbox.apply(struc -> {

@@ -38,6 +38,7 @@ public interface ExternalVncClient extends PrefsValue {
                 l.add(TigerVncClient.Linux.class);
                 l.add(RemoteViewerVncClient.Linux.class);
                 l.add(RealVncClient.Linux.class);
+                l.add(KrdcVncClient.class);
             }
             case OsType.MacOs ignored -> {
                 l.add(ScreenSharingVncClient.class);
@@ -54,34 +55,6 @@ public interface ExternalVncClient extends PrefsValue {
         }
         l.add(CustomVncClient.class);
         return l;
-    }
-
-    static ExternalVncClient determineDefault(ExternalVncClient existing) {
-        // Verify that our selection is still valid
-        if (existing != null && existing.isAvailable()) {
-            return existing;
-        }
-
-        var l = new ArrayList<ExternalVncClient>();
-        switch (OsType.ofLocal()) {
-            case OsType.Linux ignored -> {
-                l.add(new TigerVncClient.Linux());
-                l.add(new RealVncClient.Linux());
-            }
-            case OsType.MacOs ignored -> {}
-            case OsType.Windows ignored -> {
-                l.add(new TightVncClient());
-            }
-        }
-
-        var found = l.stream()
-                .filter(externalVncClient -> externalVncClient.isAvailable())
-                .findFirst();
-        if (found.isPresent()) {
-            return found.get();
-        }
-
-        return new InternalVncClient();
     }
 
     void launch(VncLaunchConfig configuration) throws Exception;

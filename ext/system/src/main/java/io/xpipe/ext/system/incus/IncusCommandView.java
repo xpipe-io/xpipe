@@ -56,60 +56,50 @@ public class IncusCommandView extends CommandViewBase {
             return this;
         }
 
-
         public void start(String containerName) throws Exception {
-            build(commandBuilder -> commandBuilder
-                    .add("start")
-                    .addQuoted(containerName))
+            build(commandBuilder -> commandBuilder.add("start").addQuoted(containerName))
                     .execute();
         }
 
         public void stop(String containerName) throws Exception {
-            build(commandBuilder -> commandBuilder
-                    .add("stop")
-                    .addQuoted(containerName))
+            build(commandBuilder -> commandBuilder.add("stop").addQuoted(containerName))
                     .execute();
         }
 
         public void pause(String containerName) throws Exception {
-            build(commandBuilder -> commandBuilder
-                    .add("pause")
-                    .addQuoted(containerName))
+            build(commandBuilder -> commandBuilder.add("pause").addQuoted(containerName))
                     .execute();
         }
 
         public CommandControl console(String containerName) {
-            return build(commandBuilder -> commandBuilder
-                    .add("console").addQuoted(containerName));
+            return build(commandBuilder -> commandBuilder.add("console").addQuoted(containerName));
         }
 
         public CommandControl configEdit(String containerName) {
-            return build(commandBuilder -> commandBuilder
-                    .add("config", "edit").addQuoted(containerName));
+            return build(commandBuilder -> commandBuilder.add("config", "edit").addQuoted(containerName));
         }
-
-
 
         public Optional<ContainerEntry> queryContainerState(String containerName) throws Exception {
             var l = listContainers();
             var found = l.stream()
                     .filter(containerEntry -> (containerEntry.getProject().equals(project)
-                            || project == null
-                            && containerEntry.getProject().equals("default"))
+                                    || project == null
+                                            && containerEntry.getProject().equals("default"))
                             && containerEntry.getName().equals(containerName))
                     .findFirst();
             return found;
         }
 
-
         public ShellControl exec(String container, String user, Supplier<Boolean> busybox) {
             var sub = shellControl.subShell();
             sub.setDumbOpen(createOpenFunction(container, user, false, busybox));
             sub.setTerminalOpen(createOpenFunction(container, user, true, busybox));
-            return sub.withExceptionConverter(IncusCommandView::convertException).elevated(requiresElevation());
+            return sub.withExceptionConverter(IncusCommandView::convertException)
+                    .elevated(requiresElevation());
         }
 
-        private ShellOpenFunction createOpenFunction(String containerName, String user, boolean terminal, Supplier<Boolean> busybox) {
+        private ShellOpenFunction createOpenFunction(
+                String containerName, String user, boolean terminal, Supplier<Boolean> busybox) {
             return new ShellOpenFunction() {
                 @Override
                 public CommandBuilder prepareWithoutInitCommand() {
@@ -144,8 +134,7 @@ public class IncusCommandView extends CommandViewBase {
                     .add("incus")
                     .add("--project", project != null ? project : "default")
                     .add("exec", terminal ? "-t" : "-T");
-            return c.addQuoted(containerName)
-                    .add("--");
+            return c.addQuoted(containerName).add("--");
         }
     }
 
@@ -243,7 +232,8 @@ public class IncusCommandView extends CommandViewBase {
     }
 
     private List<ContainerEntry> listContainers() throws Exception {
-        try (var c = build(commandBuilder -> commandBuilder.add("list", "--all-projects", "-f", "json")).start()) {
+        try (var c = build(commandBuilder -> commandBuilder.add("list", "--all-projects", "-f", "json"))
+                .start()) {
             var output = c.readStdoutOrThrow();
             var json = JacksonMapper.getDefault().readTree(output);
             var l = new ArrayList<ContainerEntry>();
@@ -286,6 +276,12 @@ public class IncusCommandView extends CommandViewBase {
                 l.add(new ContainerEntry(project, name, status, ipv4, ipv6));
             }
             return l;
+        } catch (ProcessOutputException ex) {
+            if (ex.getOutput().contains("Error: unknown flag: --all-projects")) {
+                return List.of();
+            } else {
+                throw ex;
+            }
         }
     }
 }

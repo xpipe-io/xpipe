@@ -2,11 +2,10 @@ package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.ext.*;
-import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.hub.comp.StoreSection;
 import io.xpipe.app.hub.comp.SystemStateComp;
-
 import io.xpipe.app.util.DocumentationLink;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -28,7 +27,7 @@ public abstract class IdentityStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
+    public BaseRegionBuilder<?, ?> stateDisplay(StoreSection section) {
         return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
     }
 

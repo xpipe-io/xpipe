@@ -1,14 +1,17 @@
 package io.xpipe.app.secret;
 
-import io.xpipe.app.comp.base.TextFieldComp;
+import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.InPlaceSecretValue;
 
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
@@ -28,7 +31,14 @@ public class SecretCustomCommandStrategy implements SecretRetrievalStrategy {
             Property<SecretCustomCommandStrategy> p, SecretStrategyChoiceConfig config) {
         var options = new OptionsBuilder();
         var cmdProperty = options.map(p, SecretCustomCommandStrategy::getCommand);
-        return options.addComp(new TextFieldComp(cmdProperty), cmdProperty)
+        return options.nameAndDescription("customCommandValue")
+                .addComp(
+                        IntegratedTextAreaComp.script(
+                                cmdProperty,
+                                new ReadOnlyObjectWrapper<>(
+                                        LocalShell.getDialect().getScriptFileEnding()),
+                                true),
+                        cmdProperty)
                 .nonNull()
                 .bind(
                         () -> {
@@ -37,7 +47,7 @@ public class SecretCustomCommandStrategy implements SecretRetrievalStrategy {
                         p);
     }
 
-    String command;
+    ShellScript command;
 
     @Override
     public void checkComplete() throws ValidationException {
@@ -49,14 +59,14 @@ public class SecretCustomCommandStrategy implements SecretRetrievalStrategy {
         return new SecretQuery() {
             @Override
             public SecretQueryResult query(String prompt, boolean forceFocus) {
-                if (command == null || command.isBlank()) {
+                if (command == null || command.getValue().isBlank()) {
                     throw ErrorEventFactory.expected(new IllegalStateException("No custom command specified"));
                 }
 
-                try (var cc = ProcessControlProvider.get()
+                try (var sc = ProcessControlProvider.get()
                         .createLocalProcessControl(true)
-                        .command(command)
                         .start()) {
+                    var cc = sc.command(command);
                     return new SecretQueryResult(
                             InPlaceSecretValue.of(cc.readStdoutOrThrow()), SecretQueryState.NORMAL);
                 } catch (Exception ex) {

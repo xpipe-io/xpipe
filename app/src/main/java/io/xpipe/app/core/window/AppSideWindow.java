@@ -1,6 +1,7 @@
 package io.xpipe.app.core.window;
 
 import io.xpipe.app.platform.PlatformInit;
+import io.xpipe.app.util.RemoteDesktopWindow;
 
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -9,7 +10,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.util.Optional;
@@ -39,7 +40,7 @@ public class AppSideWindow {
                 event.consume();
             });
             AppWindowBounds.fixInvalidStagePosition(s);
-            AppWindowStyle.addFontSize(s);
+            AppWindowStyle.addFontSize(s.getScene());
             a.getDialogPane().getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
                 if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
                     s.close();
@@ -83,10 +84,15 @@ public class AppSideWindow {
 
     public static Alert createEmptyAlert() {
         Alert alert = new Alert(Alert.AlertType.NONE);
-        if (AppMainWindow.get() != null && AppMainWindow.get().getStage().isShowing() && !AppMainWindow.get().getStage().isIconified()) {
+        alert.initModality(Modality.NONE);
+        if (AppMainWindow.get() != null
+                && AppMainWindow.get().getStage().isShowing()
+                && !AppMainWindow.get().getStage().isIconified()
+                && (RemoteDesktopWindow.get().getStage() == null
+                        || !RemoteDesktopWindow.get().getStage().isShowing())) {
             alert.initOwner(AppMainWindow.get().getStage());
         }
-        alert.getDialogPane().getScene().setFill(Color.TRANSPARENT);
+        AppWindowStyle.setSceneFill(alert.getDialogPane().getScene());
         var stage = (Stage) alert.getDialogPane().getScene().getWindow();
         AppModifiedStage.prepareStage(stage);
         AppWindowStyle.addIcons(stage);

@@ -1,10 +1,8 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.ext.LocalStore;
-import io.xpipe.app.secret.EncryptionKey;
 
 import java.time.Instant;
-import javax.crypto.SecretKey;
 
 public class ImpersistentStorage extends DataStorage {
 
@@ -18,8 +16,8 @@ public class ImpersistentStorage extends DataStorage {
     public void reloadContent() {}
 
     @Override
-    public SecretKey getVaultKey() {
-        return EncryptionKey.getVaultSecretKey("");
+    public DataStorageVaultKey getVaultKey() {
+        return DataStorageVaultKey.empty();
     }
 
     @Override
