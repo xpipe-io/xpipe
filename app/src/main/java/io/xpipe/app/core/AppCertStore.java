@@ -3,8 +3,10 @@ package io.xpipe.app.core;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.TextAreaComp;
+import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.TlsCertificateFormat;
@@ -195,6 +197,10 @@ public class AppCertStore {
 
         modalShowing = true;
         ThreadHelper.runAsync(() -> {
+            // We need the platform to create the dialog
+            PlatformInit.init(true);
+            AppMainWindow.init(true);
+
             var format = TlsCertificateFormat.format(certificate);
             var content = new TextAreaComp(new SimpleStringProperty(format))
                     .applyStructure(structure -> {
