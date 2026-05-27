@@ -19,17 +19,21 @@ public class BrowserFileDuplicates {
     }
 
     private static FilePath renameFile(FilePath target, boolean dir) {
-        var name = dir ? target.getFileName() : target.getBaseName().getFileName();
+        var name = dir || target.isDotFile() ? target.getFileName() : target.getBaseName().getFileName();
         var pattern = Pattern.compile("(.+)_(\\d+)");
         var matcher = pattern.matcher(name);
         if (matcher.matches()) {
             try {
                 var number = Integer.parseInt(matcher.group(2));
-                var suffix = dir ? "" : target.getExtension().map(s -> "." + s).orElse("");
+                var suffix = dir || target.isDotFile() ? "" : target.getExtension().map(s -> "." + s).orElse("");
                 var newFile = target.getParent().join(matcher.group(1) + "_" + (number + 1) + suffix);
                 return newFile;
             } catch (NumberFormatException ignored) {
             }
+        }
+
+        if (target.isDotFile()) {
+            return FilePath.of(target.removeTrailingSlash() + "_" + 1);
         }
 
         var ext = target.getExtension();
