@@ -69,49 +69,49 @@ public abstract class AppOperationMode {
 
     private static void setup(String[] args) {
         try {
-            // Only for handling SIGTERM
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                externalShutdown();
-            }));
+            if (AppProperties.get().isDaemon()) {
+                // Only for handling SIGTERM
+                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                    externalShutdown();
+                }));
 
-            // Handle uncaught exceptions
-            Thread.setDefaultUncaughtExceptionHandler((thread, ex) -> {
-                // It seems like a few exceptions are thrown in the quantum renderer
-                // when in shutdown. We can ignore these
-                if (AppOperationMode.isInShutdown()
-                        && Platform.isFxApplicationThread()
-                        && ex instanceof NullPointerException) {
-                    return;
-                }
+                // Handle uncaught exceptions
+                Thread.setDefaultUncaughtExceptionHandler((thread, ex) -> {
+                    // It seems like a few exceptions are thrown in the quantum renderer
+                    // when in shutdown. We can ignore these
+                    if (AppOperationMode.isInShutdown() && Platform.isFxApplicationThread() && ex instanceof NullPointerException) {
+                        return;
+                    }
 
-                // It seems like a few exceptions are thrown in the quantum renderer
-                // when the screen configuration changes
-                if (Platform.isFxApplicationThread()
-                        && ex instanceof IllegalArgumentException
-                        && ex.getStackTrace()[0].toString().contains("Rectangle2D")) {
-                    return;
-                }
+                    // It seems like a few exceptions are thrown in the quantum renderer
+                    // when the screen configuration changes
+                    if (Platform.isFxApplicationThread() && ex instanceof IllegalArgumentException && ex.getStackTrace()[0].toString().contains(
+                            "Rectangle2D")) {
+                        return;
+                    }
 
-                // Some random AWT errors are thrown sometimes
-                if (ex instanceof AWTError) {
-                    return;
-                }
+                    // Some random AWT errors are thrown sometimes
+                    if (ex instanceof AWTError) {
+                        return;
+                    }
 
-                // Handle any startup uncaught errors
-                if (AppOperationMode.isInStartup() && thread.threadId() == 1) {
-                    ex.printStackTrace();
-                    AppOperationMode.halt(1);
-                }
+                    // Handle any startup uncaught errors
+                    if (AppOperationMode.isInStartup() && thread.threadId() == 1) {
+                        ex.printStackTrace();
+                        AppOperationMode.halt(1);
+                    }
 
-                if (ex instanceof OutOfMemoryError) {
-                    ex.printStackTrace();
-                    AppOperationMode.halt(1);
-                }
+                    if (ex instanceof OutOfMemoryError) {
+                        ex.printStackTrace();
+                        AppOperationMode.halt(1);
+                    }
 
-                ErrorEventFactory.fromThrowable(ex).unhandled(true).build().handle();
-            });
+                    ErrorEventFactory.fromThrowable(ex).unhandled(true).build().handle();
+                });
+            }
 
             AppProperties.init(args);
+
             if (AppProperties.get().isCli()) {
                 ModuleLayerLoader.loadAll(ModuleLayer.boot(), throwable -> throwable.printStackTrace());
                 var cli = CliProvider.get();

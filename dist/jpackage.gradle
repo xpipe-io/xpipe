@@ -81,12 +81,14 @@ jlink {
         jvmArgs = jpackageReleaseDaemonArguments
     }
 
-    secondaryLauncher {
-        moduleName = packageName(null)
-        mainClass = packageName('Main')
-        name = "xpipe"
-        jvmArgs = jpackageReleaseCliArguments
-        winConsole = true
+    if (os.isWindows()) {
+        secondaryLauncher {
+            moduleName = packageName(null)
+            mainClass = packageName('Main')
+            name = "xpipe"
+            jvmArgs = jpackageReleaseCliArguments
+            winConsole = true
+        }
     }
 
     jpackage {

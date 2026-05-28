@@ -31,16 +31,14 @@ public abstract class BeaconInterface<T> {
     @SuppressWarnings("unchecked")
     @SneakyThrows
     public Class<T> getRequestClass() {
-        var c = getClass().getSuperclass();
-        var name = (c.getSuperclass().equals(BeaconInterface.class) ? c : getClass()).getName() + "$Request";
+        var name = getClass().getName() + "$Request";
         return (Class<T>) Class.forName(name);
     }
 
     @SuppressWarnings("unchecked")
     @SneakyThrows
     public Class<T> getResponseClass() {
-        var c = getClass().getSuperclass();
-        var name = (c.getSuperclass().equals(BeaconInterface.class) ? c : getClass()).getName() + "$Response";
+        var name = getClass().getName() + "$Response";
         return (Class<T>) Class.forName(name);
     }
 
@@ -83,10 +81,6 @@ public abstract class BeaconInterface<T> {
                     .map(ServiceLoader.Provider::get)
                     .map(beaconInterface -> (BeaconInterface<?>) beaconInterface)
                     .collect(Collectors.toList());
-            // Remove parent classes
-            ALL.removeIf(beaconInterface -> ALL.stream()
-                    .anyMatch(other -> !other.equals(beaconInterface)
-                            && beaconInterface.getClass().isAssignableFrom(other.getClass())));
         }
 
         @Override
