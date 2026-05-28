@@ -31,8 +31,7 @@ public class AppWindowStyle {
         scene.fillProperty()
                 .bind(Bindings.createObjectBinding(
                         () -> {
-                            return AppPrefs.get() != null
-                                            && AppPrefs.get().theme().getValue().isDark()
+                            return AppPrefs.get().theme().getValue().isDark()
                                     ? Color.BLACK
                                     : Color.WHITE;
                         },
