@@ -96,11 +96,3 @@ extraJavaModuleInfo {
         exportAllPackages()
     }
 }
-
-extraJavaModuleInfo {
-    module("com.dlsc.atlantafx:themes", "com.dlsc.atlantafx.themes") {
-        patchRealModule()
-        requires("atlantafx.base")
-        exportAllPackages()
-    }
-}
