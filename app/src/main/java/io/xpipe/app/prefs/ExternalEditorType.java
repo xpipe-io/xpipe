@@ -65,7 +65,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
                 var perMachine = AppSystemInfo.ofWindows()
                         .getProgramFiles()
-                        .resolve("Programs")
                         .resolve("VSCodium");
                 return perMachine;
             },
@@ -85,7 +84,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
                 var perMachine = AppSystemInfo.ofWindows()
                         .getProgramFiles()
-                        .resolve("Programs")
                         .resolve("Antigravity");
                 return perMachine;
             },
@@ -105,7 +103,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
                 var perMachine = AppSystemInfo.ofWindows()
                         .getProgramFiles()
-                        .resolve("Programs")
                         .resolve("cursor");
                 return perMachine;
             },
@@ -125,7 +122,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
                 var perMachine = AppSystemInfo.ofWindows()
                         .getProgramFiles()
-                        .resolve("Programs")
                         .resolve("Void");
                 return perMachine;
             },
@@ -145,7 +141,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
                 var perMachine = AppSystemInfo.ofWindows()
                         .getProgramFiles()
-                        .resolve("Programs")
                         .resolve("Windsurf");
                 return perMachine;
             },
@@ -165,7 +160,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
                 var perMachine = AppSystemInfo.ofWindows()
                         .getProgramFiles()
-                        .resolve("Programs")
                         .resolve("Kiro");
                 return perMachine;
             },
@@ -220,7 +214,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
                 var perMachine = AppSystemInfo.ofWindows()
                         .getProgramFiles()
-                        .resolve("Programs")
                         .resolve("Trae");
                 return perMachine;
             },
@@ -240,7 +233,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
                 var perMachine = AppSystemInfo.ofWindows()
                         .getProgramFiles()
-                        .resolve("Programs")
                         .resolve("Microsoft VS Code");
                 return perMachine;
             },
@@ -260,7 +252,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
                 var perMachine = AppSystemInfo.ofWindows()
                         .getProgramFiles()
-                        .resolve("Programs")
                         .resolve("Microsoft VS Code Insiders");
                 return perMachine;
             },
