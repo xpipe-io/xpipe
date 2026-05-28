@@ -126,11 +126,11 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         if (activeSocket.isEmpty() || configuration.getPanes().size() > 1 || !configuration.isPreferTabs()) {
             var gui = CommandBuilder.of().add(base.buildSimple().replace("wezterm.exe", "wezterm-gui.exe"));
 
-            gui.add("--config", "window_close_confirmation='NeverPrompt'");
             if (configuration.isDock()) {
                 gui.add("--config", "hide_tab_bar_if_only_one_tab=false");
                 gui.add("--config", "use_fancy_tab_bar=true");
                 gui.add("--config", "enable_tab_bar=true");
+                gui.add("--config", "window_close_confirmation='NeverPrompt'");
             }
 
             var command = CommandBuilder.of().add(gui).add("start");
@@ -145,11 +145,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
 
             command.add("--always-new-process")
                     .add(configuration.getPanes().getFirst().getDialectLaunchCommand());
-            ThreadHelper.runFailableAsync(() -> {
-                try (var sc = ProcessControlProvider.get().createLocalProcessControl(true).start()) {
-                    sc.command(command).execute();
-                }
-            });
+            ExternalApplicationHelper.startAsync(command);
             activeSocket = waitForInstanceStart(50);
             if (activeSocket.isEmpty()) {
                 return;

@@ -50,7 +50,7 @@ public class SecurityKeyStrategy implements SshIdentityKeyListStrategy {
             }
 
             ThreadHelper.runFailableAsync(() -> {
-                var fs = config.getFileSystem().getValue() != null
+                var fs = config.getFileSystem() != null && config.getFileSystem().getValue() != null
                         ? config.getFileSystem().getValue().getStore()
                         : (ShellStore) DataStorage.get().local().getStore().asNeeded();
                 var path = impl.determineLibraryPath(fs.getOrStartSession());

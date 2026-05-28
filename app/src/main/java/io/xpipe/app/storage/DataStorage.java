@@ -381,6 +381,7 @@ public abstract class DataStorage {
         }
 
         var categoryChanged = !entry.getCategoryUuid().equals(newEntry.getCategoryUuid());
+        var userScopeChanged = entry.isPerUserStore() != newEntry.isPerUserStore();
 
         if (entry.getStore() != null && newEntry.getStore() != null) {
             synchronized (storeMoveCache) {
@@ -406,10 +407,30 @@ public abstract class DataStorage {
             listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
         }
 
+        if (userScopeChanged) {
+            updateUserScope(entry);
+        }
+
         SecretManager.moveReferences(newEntry.getUuid(), entry.getUuid());
 
         refreshEntries();
         saveAsync();
+    }
+
+    private void updateUserScope(DataStoreEntry entry) {
+        var otherToUpdate = new ArrayList<DataStoreEntry>();
+        synchronized (storeDependencyCache) {
+            for (DataStoreEntry other : getStoreEntries()) {
+                var cached = storeDependencyCache.computeIfAbsent(other, this::getDependencies);
+                if (cached.contains(entry.ref())) {
+                    otherToUpdate.add(other);
+                }
+            }
+        }
+
+        for (DataStoreEntry other : otherToUpdate) {
+            other.reassignStoreNode();
+        }
     }
 
     public void finalizeWithDependencies(DataStoreEntry entry) {

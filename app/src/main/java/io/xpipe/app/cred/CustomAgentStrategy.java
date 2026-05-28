@@ -99,7 +99,11 @@ public class CustomAgentStrategy implements SshIdentityAgentStrategy {
 
     @Override
     public void checkComplete() throws ValidationException {
-        Validators.nonNull(AppPrefs.get().defaultSshAgentSocket().getValue());
+        var agent = AppPrefs.get().sshAgentSocket().getValue();
+        if (agent == null) {
+            agent = AppPrefs.get().defaultSshAgentSocket().getValue();
+        }
+        Validators.nonNull(agent);
     }
 
     @Override

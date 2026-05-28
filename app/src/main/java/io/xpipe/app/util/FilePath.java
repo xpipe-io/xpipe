@@ -117,6 +117,12 @@ public final class FilePath {
         return components.getLast();
     }
 
+    public boolean isDotFile() {
+        var name = getFileName();
+        var lastDot = name.lastIndexOf(".");
+        return lastDot == 0;
+    }
+
     public FilePath getBaseName() {
         var name = getFileName();
         var lastDot = name.lastIndexOf(".");
