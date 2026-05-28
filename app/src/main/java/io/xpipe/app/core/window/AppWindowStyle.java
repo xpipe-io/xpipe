@@ -23,7 +23,7 @@ import java.util.List;
 public class AppWindowStyle {
 
     public static void setSceneFill(Scene scene) {
-        if (OsType.ofLocal() != OsType.LINUX) {
+        if (OsType.ofLocal() != OsType.LINUX || AppPrefs.get() == null) {
             scene.setFill(Color.TRANSPARENT);
             return;
         }

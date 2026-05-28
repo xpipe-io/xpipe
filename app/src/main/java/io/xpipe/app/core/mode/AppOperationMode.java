@@ -69,7 +69,8 @@ public abstract class AppOperationMode {
 
     private static void setup(String[] args) {
         try {
-            if (AppProperties.get().isDaemon()) {
+            // Ugly, but we haven't initialized anything yet
+            if (Boolean.getBoolean("io.xpipe.app.isDaemon")) {
                 // Only for handling SIGTERM
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     externalShutdown();
