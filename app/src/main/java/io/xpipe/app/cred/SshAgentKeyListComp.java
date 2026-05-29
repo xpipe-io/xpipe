@@ -82,6 +82,7 @@ public class SshAgentKeyListComp extends SimpleRegionBuilder {
                             content.setPadding(new Insets(10));
                             content.setFillWidth(true);
                             var header = new Label(AppI18n.get("sshAgentHasKeys"));
+                            header.getStyleClass().add(Styles.TEXT_BOLD);
                             header.setPadding(new Insets(0, 0, 8, 8));
                             content.getChildren().add(header);
                             for (SshAgentKeyList.Entry entry : list) {

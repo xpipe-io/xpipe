@@ -248,6 +248,17 @@ public interface ShellControl extends ProcessControl {
         }
     }
 
+    default void enforcePowershell(FailableConsumer<ShellControl, Exception> sc)
+            throws Exception {
+        if (ShellDialects.isPowershell(this)) {
+            sc.accept(this);
+        } else {
+            try (var sub = subShell(ShellDialects.POWERSHELL).start()) {
+                sc.accept(sub);
+            }
+        }
+    }
+
     default <T> T enforceDialect(@NonNull ShellDialect type, FailableFunction<ShellControl, T, Exception> sc)
             throws Exception {
         if (type.equals(getShellDialect())) {
