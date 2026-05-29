@@ -5,8 +5,8 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.JacksonMapper;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.JacksonMapper;
 import io.xpipe.ext.base.identity.IdentityValue;
 
 import com.fasterxml.jackson.databind.JsonNode;

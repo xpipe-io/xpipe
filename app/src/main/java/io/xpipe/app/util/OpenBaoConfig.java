@@ -8,8 +8,6 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.*;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.terminal.TerminalLaunch;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.JacksonMapper;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;

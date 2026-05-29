@@ -11,7 +11,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;

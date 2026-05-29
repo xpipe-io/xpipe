@@ -1,0 +1,19 @@
+package io.xpipe.app.beacon;
+
+/**
+ * Indicates that an internal server error occurred.
+ */
+public class BeaconServerException extends Exception {
+
+    public BeaconServerException(String message) {
+        super(message);
+    }
+
+    public BeaconServerException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public BeaconServerException(Throwable cause) {
+        super(cause);
+    }
+}

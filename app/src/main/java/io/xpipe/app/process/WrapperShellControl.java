@@ -2,9 +2,9 @@ package io.xpipe.app.process;
 
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.util.LicensedFeature;
-import io.xpipe.core.FailableConsumer;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.FailableConsumer;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.OsType;
 
 import lombok.Getter;
 

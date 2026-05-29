@@ -13,8 +13,8 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FailableFunction;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FailableFunction;
+import io.xpipe.app.util.FilePath;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;

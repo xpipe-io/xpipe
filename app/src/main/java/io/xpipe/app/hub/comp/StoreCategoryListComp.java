@@ -3,7 +3,7 @@ package io.xpipe.app.hub.comp;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ScrollComp;
 import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.beans.binding.Bindings;
 import javafx.scene.layout.Region;

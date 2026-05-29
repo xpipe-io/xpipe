@@ -5,9 +5,9 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.core.InPlaceSecretValue;
-import io.xpipe.core.OsType;
-import io.xpipe.core.SecretValue;
+import io.xpipe.app.util.InPlaceSecretValue;
+import io.xpipe.app.util.OsType;
+import io.xpipe.app.util.SecretValue;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;

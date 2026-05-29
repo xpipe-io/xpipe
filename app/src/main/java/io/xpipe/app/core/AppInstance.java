@@ -1,23 +1,18 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.beacon.BeaconClient;
-import io.xpipe.beacon.BeaconClientInformation;
-import io.xpipe.beacon.BeaconConfig;
-import io.xpipe.beacon.BeaconServer;
-import io.xpipe.beacon.api.DaemonFocusExchange;
-import io.xpipe.beacon.api.DaemonOpenExchange;
-import io.xpipe.core.OsType;
+import io.xpipe.app.beacon.BeaconClient;
+import io.xpipe.app.beacon.BeaconClientInformation;
+import io.xpipe.app.beacon.BeaconServer;
+import io.xpipe.app.beacon.api.DaemonFocusExchange;
+import io.xpipe.app.beacon.api.DaemonOpenExchange;
+import io.xpipe.app.util.OsType;
 
 import java.awt.*;
-import java.io.RandomAccessFile;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +25,7 @@ public class AppInstance {
     public static Optional<BeaconClient> tryEstablishConnection(int port) {
         try {
             return Optional.of(BeaconClient.establishConnection(
-                    port, BeaconClientInformation.Daemon.builder().build()));
+                    port, BeaconClientInformation.Daemon.builder().build(), AppProperties.get().getBeaconAuthFile()));
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).omit().expected().handle();
             return Optional.empty();
@@ -38,40 +33,17 @@ public class AppInstance {
     }
 
     private static void checkStart(int attemptCounter) {
-        var port = BeaconConfig.getUsedPort();
+        var port = AppProperties.get().getDefaultBeaconPort();
         var reachable = BeaconServer.isReachable(port);
 
-        if (reachable) {
-            // If an instance is running as another user, we cannot connect to it as the xpipe_auth file is inaccessible
-            var authFile = BeaconConfig.getLocalBeaconAuthFile();
-            var hasAuthFile = Files.exists(authFile);
-
-            // Make sure that it is not a leftover
-            if (hasAuthFile) {
-                try (var channel = new RandomAccessFile(BeaconConfig.getLocalBeaconLockFile().toFile(), "rw").getChannel()) {
-                    var lock = channel.tryLock();
-                    if (lock != null) {
-                        lock.release();
-                        Files.delete(authFile);
-                        hasAuthFile = false;
-                    }
-                } catch (Exception ignored) {}
-            }
-
-            if (!hasAuthFile) {
-                var replacement = BeaconConfig.fallBackToAnotherPort();
-                if (replacement.isEmpty()) {
-                    ErrorEventFactory.fromMessage("Unable to find free beacon port")
-                            .term()
-                            .documentationLink(DocumentationLink.BEACON_PORT_BIND)
-                            .expected()
-                            .handle();
-                    AppOperationMode.halt(1);
-                } else {
-                    port = replacement.getAsInt();
-                    reachable = false;
-                }
-            }
+        var effectiveBeaconPort = AppProperties.get().queryEffectiveBeaconPort(reachable);
+        if (effectiveBeaconPort.isEmpty()) {
+            ErrorEventFactory.fromMessage("Unable to find free beacon port")
+                    .term()
+                    .documentationLink(DocumentationLink.BEACON_PORT_BIND)
+                    .expected()
+                    .handle();
+            AppOperationMode.halt(1);
         }
 
         if (!reachable) {
@@ -99,7 +71,7 @@ public class AppInstance {
         }
 
         try {
-            var inputs = AppProperties.get().getArguments().getOpenArgs();
+            var inputs = AppProperties.get().getArguments().getDaemonOpenArgs();
             // Assume that we want to open the GUI if we launched again
             client.get().performRequest(DaemonFocusExchange.Request.builder().build());
             if (!inputs.isEmpty()) {

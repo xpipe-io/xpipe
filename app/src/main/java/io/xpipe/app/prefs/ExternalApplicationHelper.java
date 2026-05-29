@@ -5,7 +5,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.LocalShell;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FilePath;
 
 import java.io.IOException;
 import java.util.Arrays;

@@ -4,7 +4,7 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.FlatpakCache;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;

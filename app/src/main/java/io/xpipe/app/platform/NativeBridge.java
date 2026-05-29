@@ -3,7 +3,7 @@ package io.xpipe.app.platform;
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;

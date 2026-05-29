@@ -9,7 +9,7 @@ import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.FlatpakCache;
 import io.xpipe.app.util.Translatable;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import java.io.IOException;
 import java.nio.file.Files;

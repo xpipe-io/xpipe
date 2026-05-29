@@ -1,14 +1,8 @@
 package io.xpipe.app.cred;
 
-import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.KeyValue;
-
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleStringProperty;
+import io.xpipe.app.util.KeyValue;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;

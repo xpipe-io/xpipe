@@ -17,8 +17,8 @@ import io.xpipe.app.util.RdpConfig;
 import io.xpipe.app.util.RemoteDesktopWindow;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.WindowsRegistry;
-import io.xpipe.core.OsType;
-import io.xpipe.core.SecretValue;
+import io.xpipe.app.util.OsType;
+import io.xpipe.app.util.SecretValue;
 
 import javafx.application.Platform;
 import javafx.beans.property.Property;

@@ -2,7 +2,7 @@ package io.xpipe.app.rdp;
 
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.RdpConfig;
-import io.xpipe.core.SecretValue;
+import io.xpipe.app.util.SecretValue;
 
 import lombok.Value;
 

@@ -14,7 +14,7 @@ import io.xpipe.app.secret.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
-import io.xpipe.core.KeyValue;
+import io.xpipe.app.util.KeyValue;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;

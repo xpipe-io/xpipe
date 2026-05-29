@@ -11,8 +11,8 @@ import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.Checkable;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LicenseProvider;
-import io.xpipe.core.InPlaceSecretValue;
-import io.xpipe.core.JacksonMapper;
+import io.xpipe.app.util.InPlaceSecretValue;
+import io.xpipe.app.util.JacksonMapper;
 
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;

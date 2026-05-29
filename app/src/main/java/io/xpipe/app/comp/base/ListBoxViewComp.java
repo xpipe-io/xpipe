@@ -291,11 +291,11 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
             }
         }
 
-        if (pane.getScene().getHeight() > 200) {
+        if (pane.getScene().getHeight() > 300) {
             var sceneNodeBounds = node.localToScene(node.getBoundsInLocal());
             // Add some margin to preload
-            if (sceneNodeBounds.getMaxY() < -250
-                    || sceneNodeBounds.getMinY() > pane.getScene().getHeight() + 250) {
+            if (sceneNodeBounds.getMaxY() < -300
+                    || sceneNodeBounds.getMinY() > pane.getScene().getHeight() + 300) {
                 return false;
             }
         }

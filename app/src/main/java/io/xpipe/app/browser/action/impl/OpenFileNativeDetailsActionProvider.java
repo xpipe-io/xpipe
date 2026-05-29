@@ -8,7 +8,7 @@ import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;

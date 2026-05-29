@@ -1,8 +1,8 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.core.FailableConsumer;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FailableConsumer;
+import io.xpipe.app.util.FilePath;
 
 import java.io.IOException;
 import java.io.InputStream;

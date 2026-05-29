@@ -4,7 +4,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.core.FailableSupplier;
+import io.xpipe.app.util.FailableSupplier;
 
 import lombok.Getter;
 

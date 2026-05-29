@@ -3,8 +3,8 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.*;
 import io.xpipe.app.util.GithubReleaseDownloader;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.OsType;
 
 import javafx.beans.property.Property;
 

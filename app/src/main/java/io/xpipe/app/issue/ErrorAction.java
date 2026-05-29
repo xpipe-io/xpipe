@@ -4,7 +4,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LicenseProvider;
-import io.xpipe.core.FailableSupplier;
+import io.xpipe.app.util.FailableSupplier;
 
 public interface ErrorAction {
 

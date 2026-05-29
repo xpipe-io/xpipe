@@ -2,7 +2,7 @@ package io.xpipe.ext.system.podman;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import lombok.NonNull;
 import lombok.Value;

@@ -6,7 +6,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.LicenseProvider;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.stage.Stage;
 

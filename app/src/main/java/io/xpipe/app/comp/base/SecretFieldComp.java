@@ -7,7 +7,7 @@ import io.xpipe.app.comp.RegionStructureBuilder;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.ClipboardHelper;
 import io.xpipe.app.platform.PlatformThread;
-import io.xpipe.core.InPlaceSecretValue;
+import io.xpipe.app.util.InPlaceSecretValue;
 
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;

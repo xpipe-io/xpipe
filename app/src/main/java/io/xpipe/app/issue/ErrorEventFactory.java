@@ -2,7 +2,7 @@ package io.xpipe.app.issue;
 
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.process.ProcessOutputException;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import java.nio.file.AccessDeniedException;
 import java.nio.file.NoSuchFileException;

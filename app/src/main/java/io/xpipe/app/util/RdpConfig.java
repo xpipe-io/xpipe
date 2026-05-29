@@ -1,8 +1,6 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.StreamCharset;
 
 import lombok.Value;
 

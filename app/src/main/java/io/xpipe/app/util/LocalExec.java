@@ -25,6 +25,9 @@ public class LocalExec {
             // https://bugs.openjdk.org/browse/JDK-8360500
             env.remove("_JPACKAGE_LAUNCHER");
 
+            env.remove("_JAVA_OPTIONS");
+            env.remove("JAVA_TOOL_OPTIONS");
+
             return pb.start();
         } catch (Exception ex) {
             TrackEvent.withTrace("Local command finished")
@@ -47,6 +50,9 @@ public class LocalExec {
             var env = pb.environment();
             // https://bugs.openjdk.org/browse/JDK-8360500
             env.remove("_JPACKAGE_LAUNCHER");
+
+            env.remove("_JAVA_OPTIONS");
+            env.remove("JAVA_TOOL_OPTIONS");
 
             var process = pb.start();
             var out = process.getInputStream().readAllBytes();

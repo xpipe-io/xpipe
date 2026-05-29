@@ -9,7 +9,7 @@ import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.platform.LabelGraphic;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.beans.value.ObservableValue;
 

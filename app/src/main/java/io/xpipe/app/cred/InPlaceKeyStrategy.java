@@ -13,11 +13,7 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
-import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.LocalFileTracker;
-import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.util.Validators;
-import io.xpipe.core.*;
+import io.xpipe.app.util.*;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;

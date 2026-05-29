@@ -6,7 +6,6 @@ import io.xpipe.app.core.window.AppSideWindow;
 import io.xpipe.app.secret.SecretManager;
 import io.xpipe.app.secret.SecretQueryResult;
 import io.xpipe.app.secret.SecretQueryState;
-import io.xpipe.core.InPlaceSecretValue;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;

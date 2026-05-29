@@ -8,8 +8,6 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.update.AppDistributionType;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
 
 import java.io.IOException;
 import java.nio.file.Files;

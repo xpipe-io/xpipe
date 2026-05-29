@@ -6,7 +6,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.secret.SecretManager;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.StorePath;
+import io.xpipe.app.util.StorePath;
 
 import javafx.util.Pair;
 

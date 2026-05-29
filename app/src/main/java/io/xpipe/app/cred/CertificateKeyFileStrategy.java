@@ -19,9 +19,9 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.KeyValue;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.KeyValue;
+import io.xpipe.app.util.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.property.Property;

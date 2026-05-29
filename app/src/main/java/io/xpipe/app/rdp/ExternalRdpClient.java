@@ -5,7 +5,7 @@ import io.xpipe.app.ext.PrefsValue;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.util.*;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 

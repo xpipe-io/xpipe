@@ -14,7 +14,7 @@ import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.core.JacksonMapper;
+import io.xpipe.app.util.JacksonMapper;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;

@@ -2,8 +2,8 @@ package io.xpipe.app.ext;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.core.JacksonMapper;
-import io.xpipe.core.ModuleLayerLoader;
+import io.xpipe.app.util.JacksonMapper;
+import io.xpipe.app.util.ModuleLayerLoader;
 
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 
@@ -89,6 +89,11 @@ public class DataStoreProviders {
                     }
                 });
             }
+        }
+
+        @Override
+        public boolean initForCli() {
+            return false;
         }
     }
 }

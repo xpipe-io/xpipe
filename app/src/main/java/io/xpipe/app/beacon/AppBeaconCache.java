@@ -2,7 +2,6 @@ package io.xpipe.app.beacon;
 
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.beacon.BeaconClientException;
 
 import lombok.Value;
 

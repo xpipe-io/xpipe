@@ -4,7 +4,7 @@ import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 public class AppAotTrain {
 

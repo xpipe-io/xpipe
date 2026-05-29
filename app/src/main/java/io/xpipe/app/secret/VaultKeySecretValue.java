@@ -1,8 +1,8 @@
 package io.xpipe.app.secret;
 
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.core.AesSecretValue;
-import io.xpipe.core.InPlaceSecretValue;
+import io.xpipe.app.util.AesSecretValue;
+import io.xpipe.app.util.InPlaceSecretValue;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;

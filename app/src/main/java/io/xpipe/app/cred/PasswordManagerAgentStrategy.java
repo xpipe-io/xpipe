@@ -13,8 +13,8 @@ import io.xpipe.app.pwman.PasswordManagerKeyConfiguration;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.KeyValue;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.KeyValue;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;

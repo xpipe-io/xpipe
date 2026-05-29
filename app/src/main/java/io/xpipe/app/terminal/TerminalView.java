@@ -7,7 +7,7 @@ import io.xpipe.app.util.ControllableWindowProcess;
 import io.xpipe.app.util.ControllableWindowsProcess;
 import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import lombok.Getter;
 import lombok.Value;

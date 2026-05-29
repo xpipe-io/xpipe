@@ -9,8 +9,8 @@ import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.*;
 import io.xpipe.app.terminal.TerminalLaunch;
-import io.xpipe.core.JacksonMapper;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.JacksonMapper;
+import io.xpipe.app.util.OsType;
 
 import javafx.beans.property.*;
 

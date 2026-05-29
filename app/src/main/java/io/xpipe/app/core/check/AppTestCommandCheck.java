@@ -5,7 +5,7 @@ import io.xpipe.app.core.AppNames;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.update.AppDistributionType;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 public class AppTestCommandCheck {
 

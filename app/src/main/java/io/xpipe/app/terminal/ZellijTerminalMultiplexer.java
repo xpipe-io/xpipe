@@ -3,8 +3,8 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.*;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.OsType;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;

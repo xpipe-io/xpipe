@@ -6,7 +6,6 @@ import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.rdp.RdpLaunchConfig;
 import io.xpipe.app.vnc.VncLaunchConfig;
-import io.xpipe.core.SecretValue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

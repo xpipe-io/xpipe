@@ -2,7 +2,7 @@ package io.xpipe.app.action;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.core.ModuleLayerLoader;
+import io.xpipe.app.util.ModuleLayerLoader;
 
 import java.util.*;
 
@@ -58,6 +58,11 @@ public interface ActionProvider {
                     .sorted(Comparator.comparing(p -> p.type().getModule().getName()))
                     .map(p -> p.get())
                     .toList());
+        }
+
+        @Override
+        public boolean initForCli() {
+            return false;
         }
     }
 }

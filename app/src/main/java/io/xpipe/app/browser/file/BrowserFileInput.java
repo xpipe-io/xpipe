@@ -6,8 +6,8 @@ import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.ext.FileInfo;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ElevationFunction;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.OsType;
 
 import java.io.InputStream;
 

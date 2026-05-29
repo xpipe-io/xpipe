@@ -8,7 +8,7 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.PlatformState;
 import io.xpipe.app.prefs.*;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.application.Platform;
 import javafx.scene.layout.Region;

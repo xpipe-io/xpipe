@@ -12,8 +12,7 @@ import io.xpipe.app.secret.SecretManager;
 import io.xpipe.app.secret.SecretPromptStrategy;
 import io.xpipe.app.secret.SecretQueryState;
 import io.xpipe.app.terminal.TerminalLaunch;
-import io.xpipe.app.util.AskpassAlert;
-import io.xpipe.core.*;
+import io.xpipe.app.util.*;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;

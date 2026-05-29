@@ -10,7 +10,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.MenuHelper;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.beans.binding.Bindings;
 import javafx.css.PseudoClass;

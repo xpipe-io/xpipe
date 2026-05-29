@@ -3,7 +3,7 @@ package io.xpipe.app.core;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.process.*;
 import io.xpipe.app.update.AppDistributionType;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

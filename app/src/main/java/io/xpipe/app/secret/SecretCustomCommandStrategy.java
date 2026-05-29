@@ -8,7 +8,7 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.InPlaceSecretValue;
+import io.xpipe.app.util.InPlaceSecretValue;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;

@@ -1,7 +1,7 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.platform.LabelGraphic;
-import io.xpipe.core.ModuleLayerLoader;
+import io.xpipe.app.util.ModuleLayerLoader;
 
 import java.util.*;
 
@@ -31,6 +31,11 @@ public interface CloudSetupProvider {
                     .sorted(Comparator.comparing(p -> p.type().getModule().getName()))
                     .map(p -> p.get())
                     .toList());
+        }
+
+        @Override
+        public boolean initForCli() {
+            return false;
         }
     }
 }

@@ -1,6 +1,6 @@
 package io.xpipe.app.process;
 
-import io.xpipe.core.ModuleLayerLoader;
+import io.xpipe.app.util.ModuleLayerLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,9 +71,7 @@ public class ShellDialects {
 
         @Override
         public void init(ModuleLayer layer) {
-            var services = layer != null
-                    ? ServiceLoader.load(layer, ShellDialect.class)
-                    : ServiceLoader.load(ShellDialect.class);
+            var services = ServiceLoader.load(layer, ShellDialect.class);
             services.stream().forEach(moduleLayerLoaderProvider -> {
                 ALL.add(moduleLayerLoaderProvider.get());
             });
@@ -107,6 +105,11 @@ public class ShellDialects {
             OVH_BASTION = byId("ovhBastion");
             HETZNER_BOX = byId("hetznerBox");
             SFTP = byId("sftp");
+        }
+
+        @Override
+        public boolean initForCli() {
+            return false;
         }
     }
 }

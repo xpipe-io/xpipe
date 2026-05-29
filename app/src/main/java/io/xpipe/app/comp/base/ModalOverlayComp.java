@@ -8,7 +8,7 @@ import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.animation.Timeline;
 import javafx.application.Platform;

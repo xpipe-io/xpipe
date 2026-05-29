@@ -6,7 +6,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.Translatable;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.beans.value.ObservableValue;
 

@@ -2,7 +2,7 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import java.awt.*;
 import java.io.IOException;

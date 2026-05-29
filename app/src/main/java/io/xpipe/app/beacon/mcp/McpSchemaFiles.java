@@ -1,6 +1,6 @@
 package io.xpipe.app.beacon.mcp;
 
-import io.xpipe.core.JacksonMapper;
+import io.xpipe.app.util.JacksonMapper;
 
 import io.modelcontextprotocol.spec.McpSchema;
 

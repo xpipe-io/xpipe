@@ -6,7 +6,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.NativeMacOsWindowControl;
 import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.util.RemoteDesktopWindow;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;

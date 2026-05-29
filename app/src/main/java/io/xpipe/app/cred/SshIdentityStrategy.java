@@ -7,9 +7,9 @@ import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.secret.SecretNoneStrategy;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.KeyValue;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.KeyValue;
+import io.xpipe.app.util.OsType;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 

@@ -14,8 +14,8 @@ import io.xpipe.app.secret.SecretManager;
 import io.xpipe.app.secret.SecretPromptStrategy;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.JacksonMapper;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.JacksonMapper;
 
 import javafx.application.Platform;
 import javafx.beans.property.Property;

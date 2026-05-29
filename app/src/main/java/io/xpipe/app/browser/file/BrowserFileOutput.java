@@ -9,8 +9,8 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ElevationFunction;
 import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.OsType;
 
 import java.io.OutputStream;
 import java.util.List;

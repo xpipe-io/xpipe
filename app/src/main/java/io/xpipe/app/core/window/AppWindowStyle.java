@@ -4,7 +4,7 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -23,7 +23,7 @@ import java.util.List;
 public class AppWindowStyle {
 
     public static void setSceneFill(Scene scene) {
-        if (OsType.ofLocal() != OsType.LINUX) {
+        if (OsType.ofLocal() != OsType.LINUX || AppPrefs.get() == null) {
             scene.setFill(Color.TRANSPARENT);
             return;
         }
@@ -31,8 +31,7 @@ public class AppWindowStyle {
         scene.fillProperty()
                 .bind(Bindings.createObjectBinding(
                         () -> {
-                            return AppPrefs.get() != null
-                                            && AppPrefs.get().theme().getValue().isDark()
+                            return AppPrefs.get().theme().getValue().isDark()
                                     ? Color.BLACK
                                     : Color.WHITE;
                         },

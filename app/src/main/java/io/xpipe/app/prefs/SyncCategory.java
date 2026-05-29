@@ -12,7 +12,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.*;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FilePath;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;

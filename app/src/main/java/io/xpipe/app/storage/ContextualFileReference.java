@@ -4,7 +4,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FilePath;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

@@ -11,7 +11,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.terminal.TerminalPromptManager;
 import io.xpipe.app.util.StoreStateFormat;
-import io.xpipe.core.FailableRunnable;
+import io.xpipe.app.util.FailableRunnable;
 import io.xpipe.ext.base.script.ScriptStoreSetup;
 
 import javafx.beans.property.BooleanProperty;

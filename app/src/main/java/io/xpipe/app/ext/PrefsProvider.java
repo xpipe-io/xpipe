@@ -1,6 +1,6 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.core.ModuleLayerLoader;
+import io.xpipe.app.util.ModuleLayerLoader;
 
 import java.util.List;
 import java.util.ServiceLoader;
@@ -35,6 +35,11 @@ public abstract class PrefsProvider {
             ALL = ServiceLoader.load(layer, PrefsProvider.class).stream()
                     .map(ServiceLoader.Provider::get)
                     .collect(Collectors.toList());
+        }
+
+        @Override
+        public boolean initForCli() {
+            return false;
         }
     }
 }

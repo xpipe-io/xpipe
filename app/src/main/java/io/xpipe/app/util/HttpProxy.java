@@ -5,7 +5,6 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.core.InPlaceSecretValue;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

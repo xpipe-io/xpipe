@@ -4,7 +4,7 @@ import io.xpipe.app.core.AppTray;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.app.platform.PlatformThread;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import java.awt.*;
 

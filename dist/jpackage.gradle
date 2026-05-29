@@ -14,6 +14,9 @@ def extLibrariesTasks = extModules.stream().map { it.getTasksByName('createExtOu
 
 dependencies {
     implementation project(':app')
+    if (fullVersion) {
+        implementation project(':cli')
+    }
     if (!useBundledJavaFx) {
         configurations.javafx.getAsFileTree().getFiles().forEach {
             implementation files(it)
@@ -67,11 +70,23 @@ jlink {
         addOptions("--add-modules", "jdk.jdwp.agent")
     }
 
+    if (fullVersion) {
+        addOptions("--add-modules", "io.xpipe.cli")
+    }
+
     launcher {
         moduleName = packageName(null)
         mainClass = packageName('Main')
         name = jpackageExecutableName
-        jvmArgs = jpackageReleaseArguments
+        jvmArgs = jpackageReleaseDaemonArguments
+    }
+
+    secondaryLauncher {
+        moduleName = packageName(null)
+        mainClass = packageName('Main')
+        name = "xpipe"
+        jvmArgs = jpackageReleaseCliArguments
+        winConsole = true
     }
 
     jpackage {

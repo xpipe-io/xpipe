@@ -7,7 +7,7 @@ import io.xpipe.app.process.ShellTemp;
 import io.xpipe.app.process.ShellTerminalInitCommand;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FilePath;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 

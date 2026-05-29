@@ -13,10 +13,10 @@ import io.xpipe.app.storage.DataStorageQuery;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.CommandDialog;
 import io.xpipe.app.util.HttpHelper;
-import io.xpipe.beacon.BeaconClientException;
-import io.xpipe.beacon.BeaconInterface;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.JacksonMapper;
+import io.xpipe.app.beacon.BeaconClientException;
+import io.xpipe.app.beacon.BeaconInterface;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.JacksonMapper;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import io.modelcontextprotocol.json.jackson2.JacksonMcpJsonMapper;

@@ -8,8 +8,6 @@ testing {
             useJUnitJupiter()
 
             dependencies {
-                implementation project(':core')
-                implementation project(':beacon')
                 implementation project()
             }
 
@@ -18,8 +16,7 @@ testing {
                     testTask.configure {
                         workingDir = projectDir
 
-                        jvmArgs += ["-Xmx2g"]
-                        jvmArgs += jvmRunArgs
+                        jvmArgs += daemonJvmRunArgs
 
                         def daemonArgs = Map.of(
                                 propertyName("dataDir"), "$projectDir/local/",
