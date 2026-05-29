@@ -216,7 +216,9 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
                 },
                 Duration.ofSeconds(1));
 
-        if (!setCache) {
+        if (!setCache && configuration
+                .getConfig()
+                .get("full address").isPresent()) {
             var localhost = configuration
                     .getConfig()
                     .get("full address")
