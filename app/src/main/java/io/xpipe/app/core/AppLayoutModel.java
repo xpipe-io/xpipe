@@ -17,6 +17,8 @@ import io.xpipe.app.terminal.TerminalDockHubManager;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 
+import io.xpipe.app.webtop.WebtopAppListDialog;
+import io.xpipe.app.webtop.WebtopAppListManager;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -84,8 +86,8 @@ public class AppLayoutModel {
                     });
                 }
 
-                if (AppPrefs.get() != null
-                        && AppPrefs.get().getRequiresRestart().get()) {
+                if (prefs != null
+                        && prefs.getRequiresRestart().get()) {
                     GlobalTimer.delay(
                             () -> {
                                 var modal = ModalOverlay.of(
@@ -96,6 +98,10 @@ public class AppLayoutModel {
                             },
                             Duration.ofSeconds(1));
                     AppPrefs.get().getRequiresRestart().set(false);
+                }
+
+                if (prefs != null && WebtopAppListManager.get() != null) {
+                    WebtopAppListManager.get().showDialogIfNeeded();
                 }
             }
 
@@ -191,26 +197,35 @@ public class AppLayoutModel {
                         new LabelGraphic.IconGraphic("mdi2b-book-open-variant"),
                         null,
                         () -> Hyperlinks.open(DocumentationLink.getRoot()),
-                        null),
-                new Entry(
-                        AppI18n.observable("visitGithubRepository"),
-                        new LabelGraphic.IconGraphic("mdi2g-github"),
-                        null,
-                        () -> Hyperlinks.open(Hyperlinks.GITHUB),
-                        null),
-                new Entry(
-                        AppI18n.observable("discord"),
-                        new LabelGraphic.IconGraphic("bi-discord"),
-                        null,
-                        () -> Hyperlinks.open(Hyperlinks.DISCORD),
                         null)));
         if (AppDistributionType.get() != AppDistributionType.WEBTOP) {
+            l.add(
+                    new Entry(
+                            AppI18n.observable("visitGithubRepository"),
+                            new LabelGraphic.IconGraphic("mdi2g-github"),
+                            null,
+                            () -> Hyperlinks.open(Hyperlinks.GITHUB),
+                            null));
+            l.add(new Entry(
+                            AppI18n.observable("discord"),
+                            new LabelGraphic.IconGraphic("bi-discord"),
+                            null,
+                            () -> Hyperlinks.open(Hyperlinks.DISCORD),
+                    null));
             l.add(new Entry(
                     AppI18n.observable("webtop"),
                     new LabelGraphic.IconGraphic("mdal-desktop_mac"),
                     null,
                     () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
                     null));
+        } else {
+            l.add(
+                    new Entry(
+                            AppI18n.observable("webtopAppList"),
+                            new LabelGraphic.IconGraphic("mdi2a-archive-sync-outline"),
+                            null,
+                            () -> WebtopAppListDialog.show(),
+                            null));
         }
         return l;
     }

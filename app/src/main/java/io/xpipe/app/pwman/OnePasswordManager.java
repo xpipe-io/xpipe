@@ -8,11 +8,9 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.*;
-import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.util.JacksonMapper;
-import io.xpipe.app.util.OsType;
+import io.xpipe.app.util.*;
 
+import io.xpipe.app.webtop.WebtopApp;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 
@@ -31,6 +29,11 @@ import java.util.regex.Pattern;
 @Jacksonized
 @Getter
 public class OnePasswordManager implements PasswordManager {
+
+    @Override
+    public WebtopApp getRequiredWebtopApp() {
+        return WebtopApp.ONE_PASSWORD;
+    }
 
     @Override
     public boolean supportsKeyConfiguration() {

@@ -37,6 +37,7 @@ import io.xpipe.app.update.UpdateChangelogDialog;
 import io.xpipe.app.update.UpdateNagDialog;
 import io.xpipe.app.util.*;
 import io.xpipe.app.util.XPipeDaemonMode;
+import io.xpipe.app.webtop.WebtopAppListManager;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -189,6 +190,7 @@ public class AppBaseMode extends AppOperationMode {
         AppDialog.waitForAllDialogsClose();
         UpdateChangelogDialog.showIfNeeded();
 
+        WebtopAppListManager.init();
         ActionProvider.initProviders();
         DataStoreProviders.init();
         StartOnInitStore.init();
