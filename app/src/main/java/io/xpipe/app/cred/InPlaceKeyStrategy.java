@@ -148,7 +148,11 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
         }
 
         var file = getTargetFilePath(parent);
-        if (parent.view().fileExists(file)) {
+        // Don't spam log each time it checks for file existence
+        if (parent.getShellDialect()
+                .createFileExistsCommand(parent, file.toString())
+                .sensitive()
+                .executeAndCheck()) {
             return;
         }
 
