@@ -58,7 +58,13 @@ public class ShellTemp {
                 var newSession = !sc.view().fileExists(sessionFile);
                 if (newSession) {
                     clearTemp(sc);
-                    sc.view().touch(sessionFile);
+                    try {
+                        sc.view().touch(sessionFile);
+                    } catch (ProcessOutputException pex) {
+                        if (!pex.getOutput().toLowerCase().contains("no space left on device")) {
+                            throw pex;
+                        }
+                    }
                 }
             }
         }
