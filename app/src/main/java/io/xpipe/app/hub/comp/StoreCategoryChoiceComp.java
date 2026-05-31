@@ -85,11 +85,10 @@ public class StoreCategoryChoiceComp extends SimpleRegionBuilder {
         @Override
         protected void updateItem(StoreCategoryWrapper w, boolean empty) {
             super.updateItem(w, empty);
-            textProperty().unbind();
             if (w != null) {
                 setGraphic(PrettyImageHelper.ofFixedSizeSquare(w.getIconFile().getValue(), 16)
                         .build());
-                textProperty().bind(w.getShownName());
+                setText(w.getShownName().getValue());
                 setPadding(new Insets(6, 6, 6, 8 + (indent ? w.getDepth() * 8 : 0)));
             } else {
                 setGraphic(null);
