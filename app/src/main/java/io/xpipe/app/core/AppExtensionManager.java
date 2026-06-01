@@ -59,6 +59,10 @@ public class AppExtensionManager {
     private static String getLocalInstallVersion(AppInstallation localInstallation) {
         var exec = localInstallation.getCliExecutablePath();
         var out = LocalExec.readStdoutIfPossible(exec.toString(), "version");
+        if (out.isEmpty()) {
+            throw ErrorEventFactory.expected(new ExtensionException("Unable to determine version from command \"" + exec + "\" version"));
+        }
+
         var s = out.orElseThrow().strip();
         return !s.isEmpty() ? s : "?";
     }
