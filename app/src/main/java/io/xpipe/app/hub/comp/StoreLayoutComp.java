@@ -5,7 +5,7 @@ import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.DelayedInitComp;
 import io.xpipe.app.comp.base.LeftSplitPaneComp;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.core.window.AppMainWindow;
+import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.terminal.TerminalDockHubComp;
 import io.xpipe.app.terminal.TerminalDockHubManager;
@@ -30,7 +30,7 @@ public class StoreLayoutComp extends SimpleRegionBuilder {
     private Region createContent() {
         var filterTrigger = new ObservableSubscriber();
         var left = new StoreSidebarComp(filterTrigger);
-        left.hide(AppMainWindow.get().getStage().widthProperty().lessThan(1000));
+        left.hide(AppSizeBreakpoints.compactMode());
         left.minWidth(285);
         left.maxWidth(500);
         left.minHeight(0);

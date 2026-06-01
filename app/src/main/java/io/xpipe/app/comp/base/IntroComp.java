@@ -5,14 +5,13 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.LabelGraphic;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
 import atlantafx.base.theme.Styles;
+import javafx.scene.paint.Color;
 import lombok.Setter;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -69,13 +68,12 @@ public class IntroComp extends SimpleRegionBuilder {
             v.getChildren().add(buttonPane);
         }
 
-        v.setMinWidth(Region.USE_PREF_SIZE);
-        v.setMaxWidth(Region.USE_PREF_SIZE);
-        v.setMinHeight(Region.USE_PREF_SIZE);
-        v.setMaxHeight(Region.USE_PREF_SIZE);
+        v.setMinWidth(0);
+        v.setMinHeight(0);
 
         v.setSpacing(20);
         v.getStyleClass().add("intro");
+        v.setPadding(new Insets(40, 20, 40, 20));
         return v;
     }
 }

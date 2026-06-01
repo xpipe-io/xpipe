@@ -6,9 +6,9 @@ import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.LoadingIconComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.StackComp;
-import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
@@ -269,26 +269,24 @@ public class BrowserSessionTabsComp extends SimpleRegionBuilder {
                             .paddingProperty()
                             .bind(Bindings.createObjectBinding(
                                     () -> {
-                                        var w = App.getApp().getStage().getWidth();
-                                        if (w >= 1000) {
+                                        if (!AppSizeBreakpoints.compactMode().get()) {
                                             return new Insets(2, 0, 4, -leftPadding.get() + 3);
                                         } else {
                                             return new Insets(2, 0, 4, -leftPadding.get() - 4);
                                         }
                                     },
-                                    App.getApp().getStage().widthProperty(),
+                                    AppSizeBreakpoints.compactMode(),
                                     leftPadding));
                     tabs.paddingProperty()
                             .bind(Bindings.createObjectBinding(
                                     () -> {
-                                        var w = App.getApp().getStage().getWidth();
-                                        if (w >= 1000) {
+                                        if (!AppSizeBreakpoints.compactMode().get()) {
                                             return new Insets(0, 0, 0, -5);
                                         } else {
                                             return new Insets(0, 0, 0, 5);
                                         }
                                     },
-                                    App.getApp().getStage().widthProperty()));
+                                    AppSizeBreakpoints.compactMode()));
                     headerHeight.bind(headerArea.heightProperty());
                 });
             }

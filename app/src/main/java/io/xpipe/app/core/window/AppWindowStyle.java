@@ -38,6 +38,17 @@ public class AppWindowStyle {
                         AppPrefs.get().theme()));
     }
 
+    public static void addSizePseudoClasses(Stage stage) {
+        stage.getScene().rootProperty().subscribe(root -> {
+            AppSizeBreakpoints.compactMode().subscribe(v -> {
+                root.pseudoClassStateChanged(PseudoClass.getPseudoClass("compact"), v);
+            });
+            AppSizeBreakpoints.portraitMode().subscribe(v -> {
+                root.pseudoClassStateChanged(PseudoClass.getPseudoClass("portrait"), v);
+            });
+        });
+    }
+
     public static void addMaximizedPseudoClass(Stage stage) {
         stage.getScene().rootProperty().subscribe(root -> {
             stage.maximizedProperty().subscribe(v -> {

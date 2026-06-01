@@ -4,6 +4,7 @@ import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
 
+import io.xpipe.app.core.AppSizeBreakpoints;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -68,7 +69,9 @@ public class DenseStoreEntryComp extends StoreEntryComp {
 
     protected Region createContent() {
         var grid = new GridPane();
-        grid.setHgap(8);
+        grid.hgapProperty().bind(Bindings.createDoubleBinding(() -> {
+            return AppSizeBreakpoints.portraitMode().get() ? 2.0 : 6.0;
+        }, AppSizeBreakpoints.portraitMode()));
 
         var tags = createTags().build();
         var index = createOrderIndex().build();

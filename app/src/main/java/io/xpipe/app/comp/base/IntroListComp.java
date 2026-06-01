@@ -4,8 +4,10 @@ import io.xpipe.app.comp.SimpleRegionBuilder;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 
 import java.util.List;
 
@@ -20,12 +22,7 @@ public class IntroListComp extends SimpleRegionBuilder {
     @Override
     public Region createSimple() {
         var v = new VerticalComp(intros).build();
-        v.setSpacing(80);
-        v.setMinWidth(Region.USE_PREF_SIZE);
-        v.setMaxWidth(Region.USE_PREF_SIZE);
-        v.setMinHeight(Region.USE_PREF_SIZE);
         v.setMaxHeight(Region.USE_PREF_SIZE);
-
         var sp = new StackPane(v);
         sp.setPadding(new Insets(40, 0, 0, 0));
         sp.setAlignment(Pos.CENTER);

@@ -2,6 +2,10 @@
     -fx-padding: 0 40 0 80;
 }
 
+.root:portrait .prefs-box {
+    -fx-padding: 0 30 0 10;
+}
+
 .prefs-container .options-comp .name {
     -fx-padding: 1.8em 0 0 0;
     -fx-font-weight: BOLD;

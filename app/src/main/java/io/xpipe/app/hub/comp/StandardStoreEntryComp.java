@@ -3,8 +3,10 @@ package io.xpipe.app.hub.comp;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
+import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.util.OsType;
 
+import javafx.beans.binding.Bindings;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -36,7 +38,9 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         var pinIcon = createPinIcon().build();
 
         var grid = new GridPane();
-        grid.setHgap(6);
+        grid.hgapProperty().bind(Bindings.createDoubleBinding(() -> {
+            return AppSizeBreakpoints.portraitMode().get() ? 2.0 : 6.0;
+        }, AppSizeBreakpoints.portraitMode()));
         grid.setVgap(OsType.ofLocal() == OsType.MACOS ? 2 : 0);
 
         var selection = createBatchSelection();

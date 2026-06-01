@@ -144,6 +144,7 @@ public abstract class AppOperationMode {
             ThreadHelper.runAsync(() -> {
                 PlatformInit.init(true);
                 AppMainWindow.init(AppOperationMode.getStartupMode() == XPipeDaemonMode.GUI);
+                AppSizeBreakpoints.init();
             });
             TrackEvent.info("Finished initial setup");
         } catch (Throwable ex) {

@@ -8,7 +8,7 @@ import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.core.window.AppMainWindow;
+import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.hub.comp.StoreFilter;
@@ -80,7 +80,7 @@ public class BrowserFullSessionComp extends SimpleRegionBuilder {
         loadingStack.apply(struc -> struc.setPickOnBounds(false));
         var delayedStack = new DelayedInitComp(
                 left, () -> StoreViewState.get() != null && StoreViewState.get().isInitialized());
-        delayedStack.hide(AppMainWindow.get().getStage().widthProperty().lessThan(1000));
+        delayedStack.hide(AppSizeBreakpoints.compactMode());
         var splitPane = new LeftSplitPaneComp(delayedStack, loadingStack)
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
                 .withOnDividerChange(d -> {

@@ -5,6 +5,7 @@ import io.xpipe.app.comp.RegionDescriptor;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.ext.FileInfo;
 import io.xpipe.app.ext.FileKind;
@@ -193,7 +194,7 @@ public final class BrowserFileListComp extends SimpleRegionBuilder {
             TableColumn<BrowserEntry, String> sizeCol) {
         table.widthProperty().subscribe((newValue) -> {
             if (fileList.getFileSystemModel().getFileSystem().supportsOwnerColumn()) {
-                ownerCol.setVisible(newValue.doubleValue() > 1000);
+                ownerCol.setVisible(!AppSizeBreakpoints.compactMode().get());
             }
 
             if (fileList.getFileSystemModel().getFileSystem().supportsModeColumn()) {

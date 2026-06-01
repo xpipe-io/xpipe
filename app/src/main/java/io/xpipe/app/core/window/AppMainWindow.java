@@ -88,8 +88,8 @@ public class AppMainWindow {
         }
 
         var stage = App.getApp().getStage();
-        stage.setMinWidth(500);
-        stage.setMinHeight(400);
+        stage.setMinWidth(300);
+        stage.setMinHeight(300);
         INSTANCE = new AppMainWindow(stage);
         AppModifiedStage.prepareStage(stage);
 
@@ -116,6 +116,7 @@ public class AppMainWindow {
         AppWindowStyle.addStylesheets(stage.getScene());
         AppWindowStyle.addClickShield(stage);
         AppWindowStyle.addMaximizedPseudoClass(stage);
+        AppWindowStyle.addSizePseudoClasses(stage);
         AppWindowStyle.addFontSize(scene);
         AppTheme.initThemeHandlers(stage);
 

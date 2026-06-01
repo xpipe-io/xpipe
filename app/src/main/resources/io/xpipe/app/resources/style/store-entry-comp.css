@@ -153,6 +153,11 @@
     -fx-padding: 5px 0 0 17px;
 }
 
+.root:portrait .store-entry-section-comp > .children-content {
+    -fx-padding: 5px 0 0 8;
+}
+
+
 .store-entry-section-comp > .separator .line {
     -fx-padding: 0;
     -fx-border-insets: 0px;
