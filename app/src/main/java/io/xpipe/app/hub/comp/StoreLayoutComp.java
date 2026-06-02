@@ -30,7 +30,6 @@ public class StoreLayoutComp extends SimpleRegionBuilder {
     private Region createContent() {
         var filterTrigger = new ObservableSubscriber();
         var left = new StoreSidebarComp(filterTrigger);
-        left.hide(AppSizeBreakpoints.compactMode());
         left.minWidth(285);
         left.maxWidth(500);
         left.minHeight(0);

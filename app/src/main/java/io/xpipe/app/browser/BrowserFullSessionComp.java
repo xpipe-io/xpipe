@@ -80,7 +80,6 @@ public class BrowserFullSessionComp extends SimpleRegionBuilder {
         loadingStack.apply(struc -> struc.setPickOnBounds(false));
         var delayedStack = new DelayedInitComp(
                 left, () -> StoreViewState.get() != null && StoreViewState.get().isInitialized());
-        delayedStack.hide(AppSizeBreakpoints.compactMode());
         var splitPane = new LeftSplitPaneComp(delayedStack, loadingStack)
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
                 .withOnDividerChange(d -> {

@@ -89,7 +89,11 @@
     -fx-effect: NONE;
 }
 
-
 .root:seamless-frame .prefs .scroll-bar:vertical {
     -fx-padding: 9 1 5 1;
+}
+
+.prefs .split-pane-divider {
+    -fx-padding: 0 2 0 3;
+    -fx-background-color: transparent;
 }

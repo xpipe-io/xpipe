@@ -1,6 +1,9 @@
 package io.xpipe.app.prefs;
 
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
+import io.xpipe.app.comp.base.LeftSplitPaneComp;
+import io.xpipe.app.comp.base.StackComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
@@ -11,6 +14,8 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 
 import net.synedra.validatorfx.GraphicDecorationStackPane;
+
+import java.util.List;
 
 public class AppPrefsComp extends SimpleRegionBuilder {
 
@@ -83,17 +88,16 @@ public class AppPrefsComp extends SimpleRegionBuilder {
         scrollPane.setFitToWidth(true);
         HBox.setHgrow(scrollPane, Priority.ALWAYS);
 
-        var sidebar = new AppPrefsSidebarComp().build();
-        sidebar.setMinWidth(260);
-        sidebar.setPrefWidth(260);
-        sidebar.setMaxWidth(260);
-        sidebar.setMinHeight(0);
+        var sidebar = new AppPrefsSidebarComp();
+        var sidebarWrapper = new StackComp(List.of(sidebar));
+        sidebarWrapper.padding(new Insets(4));
+        sidebarWrapper.minWidth(150);
+        sidebarWrapper.maxWidth(350);
 
-        var split = new HBox(sidebar, scrollPane);
-        HBox.setMargin(sidebar, new Insets(4));
-        split.setFillHeight(true);
-        split.getStyleClass().add("prefs");
-        return split;
+        var split = new LeftSplitPaneComp(sidebarWrapper, RegionBuilder.of(() -> scrollPane));
+        split.withInitialWidth(265);
+        split.style("prefs");
+        return split.build();
     }
 
     private double computeCategoryOffset(Region box, ScrollPane scrollPane, AppPrefsCategory val) {

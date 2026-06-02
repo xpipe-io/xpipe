@@ -19,6 +19,7 @@ import io.xpipe.app.util.OsType;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.input.KeyCode;
@@ -138,7 +139,7 @@ public class TerminalDockHubManager {
             AppI18n.observable(
                     "toggleTerminalDock",
                     new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN).getDisplayText()),
-            new LabelGraphic.NodeGraphic(() -> {
+            new ReadOnlyObjectWrapper<>(new LabelGraphic.NodeGraphic(() -> {
                 var inner = new FontIcon();
                 inner.iconCodeProperty()
                         .bind(PlatformThread.sync(Bindings.createObjectBinding(
@@ -153,7 +154,7 @@ public class TerminalDockHubManager {
                 inner.getStyleClass().add("graphic");
                 inner.getStyleClass().add("terminal-dock-button");
                 return inner;
-            }),
+            })),
             () -> {
                 refreshDockStatus();
 

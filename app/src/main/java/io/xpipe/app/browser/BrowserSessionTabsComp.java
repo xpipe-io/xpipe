@@ -8,6 +8,7 @@ import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.StackComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.MenuHelper;
@@ -269,24 +270,24 @@ public class BrowserSessionTabsComp extends SimpleRegionBuilder {
                             .paddingProperty()
                             .bind(Bindings.createObjectBinding(
                                     () -> {
-                                        if (!AppSizeBreakpoints.compactMode().get()) {
+                                        if (!AppLayoutModel.get().getPortraitLayoutCollapsed().get()) {
                                             return new Insets(2, 0, 4, -leftPadding.get() + 3);
                                         } else {
                                             return new Insets(2, 0, 4, -leftPadding.get() - 4);
                                         }
                                     },
-                                    AppSizeBreakpoints.compactMode(),
+                                    AppLayoutModel.get().getPortraitLayoutCollapsed(),
                                     leftPadding));
                     tabs.paddingProperty()
                             .bind(Bindings.createObjectBinding(
                                     () -> {
-                                        if (!AppSizeBreakpoints.compactMode().get()) {
+                                        if (!AppLayoutModel.get().getPortraitLayoutCollapsed().get()) {
                                             return new Insets(0, 0, 0, -5);
                                         } else {
                                             return new Insets(0, 0, 0, 5);
                                         }
                                     },
-                                    AppSizeBreakpoints.compactMode()));
+                                    AppLayoutModel.get().getPortraitLayoutCollapsed()));
                     headerHeight.bind(headerArea.heightProperty());
                 });
             }

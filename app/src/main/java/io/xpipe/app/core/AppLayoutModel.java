@@ -19,10 +19,8 @@ import io.xpipe.app.util.*;
 
 import io.xpipe.app.webtop.WebtopAppListDialog;
 import io.xpipe.app.webtop.WebtopAppListManager;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -53,6 +51,8 @@ public class AppLayoutModel {
     private final ObservableList<QueueEntry> queueEntries;
 
     private final BooleanProperty ptbAvailable = new SimpleBooleanProperty();
+
+    private final BooleanProperty portraitLayoutCollapsed = new SimpleBooleanProperty();
 
     public AppLayoutModel(SavedState savedState) {
         this.savedState = savedState;
@@ -112,6 +112,27 @@ public class AppLayoutModel {
                 }
             }
         });
+
+        var portraitExpanded = new SimpleBooleanProperty(true);
+        var toggleExpand = new AppLayoutModel.QueueEntry(AppI18n.observable("expand"), Bindings.createObjectBinding(() -> {
+            return new LabelGraphic.IconGraphic("mdi2a-arrow-expand-horizontal");
+        }, portraitExpanded), () -> {
+            portraitExpanded.set(!portraitExpanded.get());
+            return false;
+        });
+        AppSizeBreakpoints.portraitMode().subscribe(v -> {
+            if (v) {
+                AppLayoutModel.get().getQueueEntries().add(toggleExpand);
+                portraitExpanded.set(false);
+            } else {
+                AppLayoutModel.get().getQueueEntries().remove(toggleExpand);
+                portraitExpanded.set(true);
+            }
+        });
+        portraitLayoutCollapsed.bind(Bindings.createBooleanBinding(() -> {
+            return AppSizeBreakpoints.portraitMode().get() && !portraitExpanded.get();
+        }, portraitExpanded, AppSizeBreakpoints.portraitMode()));
+
     }
 
     public static void reset() {
@@ -264,13 +285,20 @@ public class AppLayoutModel {
 
         public QueueEntry(ObservableValue<String> name, LabelGraphic icon, Supplier<Boolean> action) {
             this.name = name;
+            this.icon = new ReadOnlyObjectWrapper<>(icon);
+            this.action = action;
+            this.top = false;
+        }
+
+        public QueueEntry(ObservableValue<String> name, ObservableValue<LabelGraphic> icon, Supplier<Boolean> action) {
+            this.name = name;
             this.icon = icon;
             this.action = action;
             this.top = false;
         }
 
         ObservableValue<String> name;
-        LabelGraphic icon;
+        ObservableValue<LabelGraphic> icon;
         Supplier<Boolean> action;
         boolean top;
 
