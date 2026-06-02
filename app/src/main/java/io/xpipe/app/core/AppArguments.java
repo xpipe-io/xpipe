@@ -58,7 +58,7 @@ public class AppArguments {
     public static class LauncherCommand implements Callable<Integer> {
 
         @CommandLine.Parameters(paramLabel = "<input>")
-        final List<String> inputs = List.of();
+        List<String> inputs = List.of();
 
         public static LauncherCommand resolveLauncher(String[] args) {
             var cmd = new CommandLine(new LauncherCommand());

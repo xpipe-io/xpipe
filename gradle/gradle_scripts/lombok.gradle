@@ -1,16 +1,16 @@
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.18.40'
-    annotationProcessor 'org.projectlombok:lombok:1.18.40'
-    testCompileOnly 'org.projectlombok:lombok:1.18.40'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.40'
+    compileOnly 'org.projectlombok:lombok:1.18.46'
+    annotationProcessor 'org.projectlombok:lombok:1.18.46'
+    testCompileOnly 'org.projectlombok:lombok:1.18.46'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.46'
 }
 
 testing {
     suites {
         configureEach {
             dependencies {
-                compileOnly 'org.projectlombok:lombok:1.18.40'
-                annotationProcessor 'org.projectlombok:lombok:1.18.40'
+                compileOnly 'org.projectlombok:lombok:1.18.46'
+                annotationProcessor 'org.projectlombok:lombok:1.18.46'
             }
         }
     }

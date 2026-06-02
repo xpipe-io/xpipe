@@ -30,6 +30,7 @@ if (customJavaFxLibsPath != null) {
         javafx files("$customJavaFxLibsPath/javafx.graphics.jar")
         javafx files("$customJavaFxLibsPath/javafx.media.jar")
         javafx files("$customJavaFxLibsPath/javafx.web.jar")
+        javafx files("$customJavaFxLibsPath/jdk.jsobject.jar")
     }
 } else if (!bundledJdkJavaFx) {
     // Always use maven version for development
@@ -40,5 +41,6 @@ if (customJavaFxLibsPath != null) {
         javafx "org.openjfx:javafx-graphics:${devJavafxVersion}:${platform}"
         javafx "org.openjfx:javafx-media:${devJavafxVersion}:${platform}"
         javafx "org.openjfx:javafx-web:${devJavafxVersion}:${platform}"
+        javafx "org.openjfx:jdk-jsobject:${devJavafxVersion}:${platform}"
     }
 }
