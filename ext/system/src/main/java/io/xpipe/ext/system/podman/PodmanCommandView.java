@@ -132,7 +132,7 @@ public class PodmanCommandView extends CommandViewBase {
             }
         }
 
-        public ShellControl exec(String container, Function<ShellControl, ShellDialect> dialect) {
+        public ShellControl exec(String container, ShellDialect dialect) {
             var sub = shellControl.subShell();
             sub.setDumbOpen(createOpenFunction(container, dialect, false));
             sub.setTerminalOpen(createOpenFunction(container, dialect, true));
@@ -140,13 +140,13 @@ public class PodmanCommandView extends CommandViewBase {
         }
 
         private ShellOpenFunction createOpenFunction(
-                String containerName, Function<ShellControl, ShellDialect> dialect, boolean terminal) {
+                String containerName, ShellDialect dialect, boolean terminal) {
             return new ShellOpenFunction() {
                 @Override
                 public CommandBuilder prepareWithoutInitCommand() {
                     return execCommand(terminal)
                             .addQuoted(containerName)
-                            .add(sc -> dialect.apply(sc).getLaunchCommand().loginCommand());
+                            .add(dialect.getLaunchCommand().loginCommand());
                 }
 
                 @Override

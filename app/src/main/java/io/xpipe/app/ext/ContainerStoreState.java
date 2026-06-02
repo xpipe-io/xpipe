@@ -53,12 +53,12 @@ public class ContainerStoreState extends ShellStoreState {
     ShellDialect availableShellDialect;
     Boolean shellMissing;
 
-    public ShellDialect getEffectiveDialect(ShellControl sc) {
+    public ShellDialect getEffectiveDialect() {
         if (availableShellDialect != null) {
             return availableShellDialect;
         }
 
-        return sc.getOsType() != OsType.WINDOWS ? ShellDialects.SH : ShellDialects.CMD;
+        return ShellDialects.SH;
     }
 
     @Override
