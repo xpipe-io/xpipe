@@ -24,8 +24,7 @@ public class AppSizeBreakpoints {
             return AppMainWindow.get().getStage().getWidth() <= 1000;
         }, AppMainWindow.get().getStage().widthProperty()));
         portraitMode.bind(Bindings.createBooleanBinding(() -> {
-            return AppMainWindow.get().getStage().getWidth() <= 700 &&
-                    AppMainWindow.get().getStage().getHeight() > AppMainWindow.get().getStage().getWidth();
-        }, AppMainWindow.get().getStage().widthProperty(), AppMainWindow.get().getStage().heightProperty()));
+            return AppMainWindow.get().getStage().getWidth() <= 700;
+        }, AppMainWindow.get().getStage().widthProperty()));
     }
 }

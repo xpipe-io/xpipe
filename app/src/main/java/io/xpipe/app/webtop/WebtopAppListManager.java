@@ -84,13 +84,15 @@ public class WebtopAppListManager {
         }
 
         var installedDir = Path.of("/apps/installed");
-        try (var stream = Files.list(installedDir)) {
-            var installedFiles = stream.toList();
-            for (Path installedFile : installedFiles) {
-                var name = FilenameUtils.getBaseName(installedFile.getFileName().toString());
-                var app = WebtopApp.fromString(name);
-                if (app.isPresent()) {
-                    installed.add(app.get());
+        if (Files.isDirectory(installedDir)) {
+            try (var stream = Files.list(installedDir)) {
+                var installedFiles = stream.toList();
+                for (Path installedFile : installedFiles) {
+                    var name = FilenameUtils.getBaseName(installedFile.getFileName().toString());
+                    var app = WebtopApp.fromString(name);
+                    if (app.isPresent()) {
+                        installed.add(app.get());
+                    }
                 }
             }
         }
