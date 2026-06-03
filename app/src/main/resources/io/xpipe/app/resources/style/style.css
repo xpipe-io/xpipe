@@ -276,3 +276,16 @@
 .store-filter-state-comp .separator {
     -fx-padding: 0.15em 0 0.15em 0;
 }
+
+.webtop-mode {
+    -fx-font-size: 2em;
+    -fx-padding: 1em;
+}
+
+.webtop-mode .toggle-button {
+    -fx-padding: 1em;
+}
+
+.webtop-mode .ikonli-font-icon {
+    -fx-icon-size: 50;
+}

@@ -15,11 +15,9 @@ public class WebtopAppListComp extends SimpleRegionBuilder {
     private final ObservableList<WebtopApp> selected;
     private final ObservableList<WebtopApp> installed = FXCollections.observableArrayList();
     private final ObservableList<WebtopApp> available = FXCollections.observableArrayList();
-    private final BooleanProperty force;
 
-    public WebtopAppListComp(ObservableList<WebtopApp> selected, BooleanProperty force) {
+    public WebtopAppListComp(ObservableList<WebtopApp> selected) {
         this.selected = selected;
-        this.force = force;
         var m = WebtopAppListManager.get();
         selected.addAll(m.getSelected());
         installed.addAll(m.getInstalled());
@@ -28,22 +26,19 @@ public class WebtopAppListComp extends SimpleRegionBuilder {
 
     @Override
     protected Region createSimple() {
-        var list = new ListSelectorComp<>(available, webtopApp -> AppI18n.get(webtopApp.getTranslationKey()),
-                webtopApp -> {
+        var list = new ListSelectorComp<>(available, webtopApp -> AppI18n.get(webtopApp.getTranslationKey()), webtopApp -> {
             if (installed.contains(webtopApp)) {
                 return new LabelGraphic.IconGraphic("mdi2c-check");
+            } else if (selected.contains(webtopApp)) {
+                return new LabelGraphic.IconGraphic("mdi2c-mdi2e-exclamation-thick");
             } else {
                 return new LabelGraphic.IconGraphic("mdi2m-minus-circle");
             }
-                }, installed, webtopApp -> {
+        }, selected, webtopApp -> {
             return installed.contains(webtopApp);
         }, () -> false);
 
-        var options = new OptionsBuilder()
-                .nameAndDescription("selectApps")
-                .addComp(list)
-                .nameAndDescription("selectAppsForce")
-                .addToggle(force);
+        var options = new OptionsBuilder().nameAndDescription("selectApps").addComp(list);
 
         return options.build();
     }

@@ -19,6 +19,7 @@ import io.xpipe.app.util.*;
 
 import io.xpipe.app.webtop.WebtopAppListDialog;
 import io.xpipe.app.webtop.WebtopAppListManager;
+import io.xpipe.app.webtop.WebtopModeComp;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
@@ -245,6 +246,13 @@ public class AppLayoutModel {
                     () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
                     null));
         } else {
+            l.add(
+                    new Entry(
+                            AppI18n.observable("webtopMode"),
+                            new LabelGraphic.IconGraphic("mdi2t-tablet-cellphone"),
+                            null,
+                            () -> WebtopModeComp.show(),
+                            null));
             l.add(
                     new Entry(
                             AppI18n.observable("webtopAppList"),

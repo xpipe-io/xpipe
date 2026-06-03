@@ -12,12 +12,11 @@ public class WebtopAppListDialog {
 
     public static void show() {
         ObservableList<WebtopApp> selected = FXCollections.observableArrayList();
-        BooleanProperty force = new SimpleBooleanProperty();
-        var modal = ModalOverlay.of("webtopAppList", new WebtopAppListComp(selected, force).prefWidth(600).prefHeight(700));
+        var modal = ModalOverlay.of("webtopAppList", new WebtopAppListComp(selected).prefWidth(600).prefHeight(700));
         modal.addButton(ModalButton.cancel());
         modal.addButton(new ModalButton("install", () -> {
             ThreadHelper.runFailableAsync(() -> {
-                WebtopAppListManager.get().install(selected, force.get());
+                WebtopAppListManager.get().install(selected);
             });
         }, true, true));
         modal.show();

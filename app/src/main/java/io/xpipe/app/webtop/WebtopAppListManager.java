@@ -3,6 +3,7 @@ package io.xpipe.app.webtop;
 import com.fasterxml.jackson.databind.JavaType;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLaunch;
@@ -28,7 +29,7 @@ public class WebtopAppListManager {
 
     @SneakyThrows
     public static void init() {
-        if (AppDistributionType.get() != AppDistributionType.WEBTOP && AppProperties.get().isImage()) {
+        if (AppDistributionType.get() != AppDistributionType.WEBTOP) {
             return;
         }
 
@@ -44,7 +45,6 @@ public class WebtopAppListManager {
     private final Set<WebtopApp> available = new LinkedHashSet<>();
     private final Set<WebtopApp> installed = new LinkedHashSet<>();
     private final Set<WebtopApp> selected = new LinkedHashSet<>();
-    private final boolean dev = AppDistributionType.get() !=  AppDistributionType.WEBTOP;
 
     public void showDialogIfNeeded() {
         var req = getRequired();
@@ -66,13 +66,8 @@ public class WebtopAppListManager {
     }
 
     private void load() throws Exception {
-        if (dev) {
-            available.addAll(Arrays.asList(WebtopApp.values()));
-            return;
-        }
-
         var availableDir = Path.of("/apps/available");
-        try (var stream = Files.list(availableDir)) {
+        try (var stream = Files.list(availableDir).sorted()) {
             var availableFiles = stream.toList();
             for (Path availableFile : availableFiles) {
                 var name = FilenameUtils.getBaseName(availableFile.getFileName().toString());
@@ -85,7 +80,7 @@ public class WebtopAppListManager {
 
         var installedDir = Path.of("/apps/installed");
         if (Files.isDirectory(installedDir)) {
-            try (var stream = Files.list(installedDir)) {
+            try (var stream = Files.list(installedDir).sorted()) {
                 var installedFiles = stream.toList();
                 for (Path installedFile : installedFiles) {
                     var name = FilenameUtils.getBaseName(installedFile.getFileName().toString());
@@ -97,31 +92,32 @@ public class WebtopAppListManager {
             }
         }
 
-        JavaType javaType =
-                JacksonMapper.getDefault().getTypeFactory().constructCollectionLikeType(List.class, String.class);
-        var cached = AppCache.<List<String>>getNonNull("selectedWebtopApps", javaType, () -> List.of()).stream()
-                .map(s -> {
-                    var app = WebtopApp.fromString(s);
-                    return app;
-                }).flatMap(Optional::stream).toList();
-        selected.addAll(cached);
+        var selectedDir = AppSystemInfo.ofCurrent().getUserHome().resolve(".xpipe", "webtop", "installed");
+        if (Files.isDirectory(selectedDir)) {
+            try (var stream = Files.list(selectedDir).sorted()) {
+                var selectedFiles = stream.toList();
+                for (Path selectedFile : selectedFiles) {
+                    var name = FilenameUtils.getBaseName(selectedFile.getFileName().toString());
+                    var app = WebtopApp.fromString(name);
+                    if (app.isPresent()) {
+                        selected.add(app.get());
+                    }
+                }
+            }
+        }
     }
 
-    public void install(List<WebtopApp> selected, boolean force) throws Exception {
+    public void install(List<WebtopApp> selected) throws Exception {
         this.installed.addAll(selected);
         this.selected.addAll(selected);
 
-        if (dev) {
-            return;
-        }
-
         var rem = new ArrayList<>(selected);
         rem.removeAll(installed);
-        if (!force && rem.isEmpty()) {
+        if (rem.isEmpty()) {
             return;
         }
 
-        var command = "/apps/install.sh " + (force ? "--force" : "") + " " + rem.stream()
+        var command = "/apps/install.sh " + rem.stream()
                 .map(webtopApp -> webtopApp.getId() + ".sh")
                 .collect(Collectors.joining(" "));
         TerminalLaunch.builder().title("Install").localScript(ShellScript.of(command)).launch();

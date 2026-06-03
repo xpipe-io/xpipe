@@ -8,7 +8,25 @@ import java.util.Optional;
 @Getter
 public enum WebtopApp {
 
-    ONE_PASSWORD("1password");
+    ONE_PASSWORD("1password"),
+    AWS("aws"),
+    BITWARDEN("bitwarden"),
+    GHOSTTY("ghostty"),
+    HASHICORP_VAULT("hashicorpVault", "hashicorp-vault"),
+    KEEPASSXC("keePassXc", "keepassxc"),
+    KEEPER("keeper"),
+    KUBECTL("kubectl"),
+    NETBIRD("netbird"),
+    OPENBAO("openBao", "openbao"),
+    PROTON_PASS("protonPass", "proton-pass"),
+    TAILSCALE("tailscale"),
+    TELEPORT("teleport"),
+    TMUX("tmux"),
+    VSCODE("vscode"),
+    WARP("warp"),
+    WEZTERM("wezterm"),
+    ZED("zed"),
+    ZELLIJ("zellij");
 
     public static Optional<WebtopApp> fromString(String value) {
         return Arrays.stream(WebtopApp.values())
