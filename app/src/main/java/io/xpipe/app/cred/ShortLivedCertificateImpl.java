@@ -51,9 +51,10 @@ public interface ShortLivedCertificateImpl extends Checkable {
         var text = new TextAreaComp(new ReadOnlyObjectWrapper<>(summary));
         text.prefWidth(600);
         text.prefHeight(350);
+        var validity = checkValid(summary);
         var modal = ModalOverlay.of(
                 AppI18n.observable(
-                        !checkValid(summary) ? "certificateDialogExpiredTitle" : "certificateDialogTitle",
+                        validity == Validity.EXPIRED ? "certificateDialogExpiredTitle" : validity == Validity.NOT_VALID_YET ? "certificateDialogNotValidTitle" : "certificateDialogTitle",
                         certificate.getFileName()),
                 text,
                 null);
@@ -78,10 +79,16 @@ public interface ShortLivedCertificateImpl extends Checkable {
         }
     }
 
-    static boolean checkValid(String text) {
+    static enum Validity {
+        NOT_VALID_YET,
+        VALID,
+        EXPIRED;
+    }
+
+    static Validity checkValid(String text) {
         var matcher = Pattern.compile("Valid: from (\\S+) to (\\S+)").matcher(text);
         if (!matcher.find()) {
-            return true;
+            return Validity.VALID;
         }
 
         try {
@@ -89,10 +96,16 @@ public interface ShortLivedCertificateImpl extends Checkable {
             parser.setTimeZone(TimeZone.getTimeZone("UTC"));
             var from = parser.parse(matcher.group(1)).toInstant();
             var to = parser.parse(matcher.group(2)).toInstant();
-            return from.isBefore(Instant.now()) && to.isAfter(Instant.now());
+            if (!from.isBefore(Instant.now())) {
+                return Validity.NOT_VALID_YET;
+            }
+            if (!to.isAfter(Instant.now())) {
+                return Validity.EXPIRED;
+            }
+            return Validity.VALID;
         } catch (ParseException e) {
             ErrorEventFactory.fromThrowable(e).omit().handle();
-            return true;
+            return Validity.VALID;
         }
     }
 
@@ -108,7 +121,10 @@ public interface ShortLivedCertificateImpl extends Checkable {
                 })
                 .min()
                 .orElse(0);
-        var text = out.lines().skip(1).map(s -> s.substring(minIndent)).collect(Collectors.joining("\n"));
+        var text = out.lines().skip(1).map(s -> {
+            var line = s.substring(minIndent);
+            return line + (line.startsWith("Valid:") ? line + " (UTC)" : "");
+        }).collect(Collectors.joining("\n"));
         return text;
     }
 
