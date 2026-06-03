@@ -5,6 +5,7 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLogs;
+import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
@@ -309,12 +310,13 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
     private ObservableDoubleValue modalBoxWidth(ModalPane pane, Region r) {
         return Bindings.createDoubleBinding(
                 () -> {
-                    var max = pane.getWidth() - 120;
+                    var max = pane.getWidth() - (AppSizeBreakpoints.portraitMode().get() ? 30 : 120);
                     if (r.getPrefWidth() != Region.USE_COMPUTED_SIZE) {
                         return Math.min(max, r.getPrefWidth() + 50);
                     }
                     return max;
                 },
+                AppSizeBreakpoints.portraitMode(),
                 pane.widthProperty(),
                 r.prefWidthProperty());
     }

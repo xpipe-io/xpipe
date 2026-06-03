@@ -11,6 +11,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.OverrunStyle;
 import javafx.scene.layout.*;
 
 public class StandardStoreEntryComp extends StoreEntryComp {
@@ -83,20 +84,30 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         nameCC.setPrefWidth(100);
         grid.getColumnConstraints().addAll(nameCC);
 
+        var contentRegion = content != null ? content.build() : null;
+        var customWidth = Bindings.createDoubleBinding(() -> {
+            if (AppSizeBreakpoints.compactMode().get()) {
+                return contentRegion != null && contentRegion.isVisible() ? 125.0 : 55.0;
+            }
+
+            return contentRegion != null && contentRegion.isVisible() ? 140.0 : 70.0;
+        }, INFO_WIDTH, AppSizeBreakpoints.compactMode());
+        var infoWidth = Bindings.createDoubleBinding(() -> {
+            return INFO_WIDTH.get() - (customWidth.get());
+        }, INFO_WIDTH, customWidth);
+
         grid.add(createInformation(), 3, 0, 1, 2);
         var info = new ColumnConstraints();
-        info.prefWidthProperty().bind(content != null ? INFO_WITH_CONTENT_WIDTH : INFO_NO_CONTENT_WIDTH);
+        info.prefWidthProperty().bind(infoWidth);
         info.setHalignment(HPos.LEFT);
         grid.getColumnConstraints().add(info);
 
         var custom = new ColumnConstraints();
         custom.setMinWidth(0);
-        custom.prefWidthProperty().bind(Bindings.createDoubleBinding(() -> {
-            return AppSizeBreakpoints.compactMode().get() ? 10.0 : content != null ? 140.0 : 70.0;
-        }, AppSizeBreakpoints.compactMode()));
+        custom.prefWidthProperty().bind(customWidth);
         custom.maxWidthProperty().bind(custom.prefWidthProperty());
         custom.setHalignment(HPos.RIGHT);
-        var cr = content != null ? content.build() : new Region();
+        var cr = contentRegion != null ? contentRegion : new Region();
         cr.getStyleClass().add("custom-content");
         var bb = createButtonBar(name);
         var controls = new HBox(cr, bb);
@@ -133,6 +144,9 @@ public class StandardStoreEntryComp extends StoreEntryComp {
                 ? getWrapper().getEntry().getProvider().stateDisplay(section)
                 : RegionBuilder.empty();
         information.setGraphic(state.build());
+
+        information.visibleProperty().bind(information.widthProperty().greaterThan(40));
+        information.setTextOverrun(OverrunStyle.CLIP);
 
         return information;
     }

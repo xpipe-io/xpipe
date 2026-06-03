@@ -6,6 +6,7 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefs;
@@ -70,7 +71,7 @@ public class BrowserHistoryTabComp extends SimpleRegionBuilder {
         var state = BrowserHistorySavedStateImpl.get();
 
         var welcome = new BrowserGreetingComp();
-        var header = new LabelComp(AppI18n.observable("browserWelcomeSystems"));
+        var header = new LabelComp(AppI18n.observable("browserWelcomeSystems")).apply(label -> label.setWrapText(true));
         var vbox = new VerticalComp(List.of(welcome, RegionBuilder.vspacer(4), header));
         vbox.apply(struc -> struc.setAlignment(Pos.CENTER_LEFT));
 
@@ -108,7 +109,6 @@ public class BrowserHistoryTabComp extends SimpleRegionBuilder {
         layout.style("welcome");
         layout.spacing(14);
         layout.maxWidth(1000);
-        layout.padding(new Insets(45, 40, 40, 50));
         layout.apply(struc -> {
             struc.setMaxWidth(1000);
         });
@@ -147,7 +147,9 @@ public class BrowserHistoryTabComp extends SimpleRegionBuilder {
                         }
                     });
                 })
-                .minWidth(300)
+                .apply(button -> button.minWidthProperty().bind(Bindings.createDoubleBinding(() -> {
+                    return AppSizeBreakpoints.portraitMode().get() ? 170.0 : 300.0;
+                }, AppSizeBreakpoints.portraitMode())))
                 .describe(
                         d -> d.name(new ReadOnlyStringWrapper(DataStorage.get().getStoreEntryDisplayName(entry.get()))))
                 .disable(disable)

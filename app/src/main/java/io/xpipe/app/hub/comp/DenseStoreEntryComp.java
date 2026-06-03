@@ -10,6 +10,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.OverrunStyle;
 import javafx.scene.layout.*;
 
 public class DenseStoreEntryComp extends StoreEntryComp {
@@ -53,6 +54,9 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                             info,
                             summary));
         }
+
+        information.visibleProperty().bind(information.widthProperty().greaterThan(40));
+        information.setTextOverrun(OverrunStyle.CLIP);
 
         return information;
     }
@@ -102,12 +106,26 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         grid.add(storeIcon, 1, 0);
         grid.getColumnConstraints().add(new ColumnConstraints(34));
 
-        var controlsSize = content != null ? 140 : 70;
-        var custom = new ColumnConstraints(0, controlsSize, controlsSize);
+        var contentRegion = content != null ? content.build() : null;
+        var customWidth = Bindings.createDoubleBinding(() -> {
+            if (AppSizeBreakpoints.compactMode().get()) {
+                return contentRegion != null && contentRegion.isVisible() ? 120.0 : 40.0;
+            }
+
+            return contentRegion != null && contentRegion.isVisible() ? 140.0 : 70.0;
+        }, INFO_WIDTH, AppSizeBreakpoints.compactMode());
+        var infoWidth = Bindings.createDoubleBinding(() -> {
+            return INFO_WIDTH.get() - (customWidth.get());
+        }, INFO_WIDTH, customWidth);
+
+        var custom = new ColumnConstraints();
+        custom.setMinWidth(0);
+        custom.prefWidthProperty().bind(customWidth);
+        custom.maxWidthProperty().bind(custom.prefWidthProperty());
         custom.setHalignment(HPos.RIGHT);
 
         var infoCC = new ColumnConstraints();
-        infoCC.prefWidthProperty().bind(content != null ? INFO_WITH_CONTENT_WIDTH : INFO_NO_CONTENT_WIDTH);
+        infoCC.prefWidthProperty().bind(infoWidth);
         infoCC.setHalignment(HPos.LEFT);
 
         var nameCC = new ColumnConstraints();
@@ -132,7 +150,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         grid.addRow(0, info);
         grid.getColumnConstraints().addAll(infoCC, custom);
 
-        var cr = content != null ? content.build() : new Region();
+        var cr = contentRegion != null ? contentRegion : new Region();
         cr.getStyleClass().add("custom-content");
         var bb = createButtonBar(name);
         var controls = new HBox(cr, bb);

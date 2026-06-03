@@ -49,29 +49,15 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
 
     public static final PseudoClass FAILED = PseudoClass.getPseudoClass("failed");
     public static final PseudoClass INCOMPLETE = PseudoClass.getPseudoClass("incomplete");
-    public static final ObservableDoubleValue INFO_NO_CONTENT_WIDTH = Bindings.createDoubleBinding(
-            () -> {
-                var w = App.getApp().getStage().getWidth();
-                var contentSpacer = AppSizeBreakpoints.compactMode().get() ? 10 : 70;
-                if (w > 2000) {
-                    return (w / 1.8) - (240 - contentSpacer);
-                } else if (w >= 1000) {
-                    return (w / 2.0) - (240 - contentSpacer);
-                } else {
-                    return (w / 1.7) - (190 - contentSpacer);
-                }
-            },
-            App.getApp().getStage().widthProperty(),
-            AppSizeBreakpoints.compactMode());
-    public static final ObservableDoubleValue INFO_WITH_CONTENT_WIDTH = Bindings.createDoubleBinding(
+    public static final ObservableDoubleValue INFO_WIDTH = Bindings.createDoubleBinding(
             () -> {
                 var w = App.getApp().getStage().getWidth();
                 if (w > 2000) {
-                    return (w / 1.8) - 240;
+                    return (w / 1.8) - 100;
                 } else if (w >= 1000) {
-                    return (w / 2.0) - 240;
+                    return (w / 2.0) - 100;
                 } else {
-                    return (w / 1.7) - 190;
+                    return (w / 1.7) - 50;
                 }
             },
             App.getApp().getStage().widthProperty());
@@ -800,6 +786,10 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         var leaf = p instanceof HubLeafProvider<?> l ? l : null;
         var branch = p instanceof HubBranchProvider<?> b ? b : null;
         var cs = leaf != null ? leaf : branch;
+
+        if (cs == null || (leaf != null && leaf.isDefault())) {
+            return null;
+        }
 
         var name = cs.getName(getWrapper().getEntry().ref());
         var icon = cs.getIcon(getWrapper().getEntry().ref());

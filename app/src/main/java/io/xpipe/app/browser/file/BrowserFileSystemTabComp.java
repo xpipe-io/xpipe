@@ -6,6 +6,7 @@ import io.xpipe.app.comp.*;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
+import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
@@ -120,6 +121,18 @@ public class BrowserFileSystemTabComp extends SimpleRegionBuilder {
 
         topBar.getChildren().setAll(leftBox, new Spacer(6), navBar.get(), new Spacer(6), rightBox);
         topBar.setMinWidth(0);
+
+        var showAll = Bindings.createBooleanBinding(() -> {
+            return !AppSizeBreakpoints.portraitMode().get() || !navBar.textField().isFocused();
+        }, AppSizeBreakpoints.portraitMode(), navBar.textField().focusedProperty());
+        leftBox.visibleProperty().bind(showAll);
+        leftBox.managedProperty().bind(leftBox.visibleProperty());
+        rightBox.visibleProperty().bind(showAll);
+        rightBox.managedProperty().bind(leftBox.visibleProperty());
+        topBar.getChildren().get(1).visibleProperty().bind(showAll);
+        topBar.getChildren().get(1).managedProperty().bind(showAll);
+        topBar.getChildren().get(3).visibleProperty().bind(showAll);
+        topBar.getChildren().get(3).managedProperty().bind(showAll);
 
         if (model.getBrowserModel() instanceof BrowserFullSessionModel fullSessionModel) {
             var pinButton = new Button();

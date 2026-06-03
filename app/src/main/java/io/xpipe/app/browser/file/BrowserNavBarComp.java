@@ -9,6 +9,7 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppFontSizes;
+import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
@@ -93,8 +94,10 @@ public class BrowserNavBarComp extends RegionStructureBuilder<HBox, BrowserNavBa
                 .bind(Bindings.createBooleanBinding(
                         () -> {
                             return !pathRegion.isFocused()
-                                    && !model.getInOverview().get();
+                                    && !model.getInOverview().get()
+                                    && !AppSizeBreakpoints.portraitMode().get();
                         },
+                        AppSizeBreakpoints.portraitMode(),
                         pathRegion.focusedProperty(),
                         PlatformThread.sync(model.getInOverview())));
         var stack = new StackPane(pathRegion, breadcrumbsRegion);
@@ -167,13 +170,18 @@ public class BrowserNavBarComp extends RegionStructureBuilder<HBox, BrowserNavBa
         pathBar.apply(struc -> {
             struc.focusedProperty().subscribe(val -> {
                 struc.pseudoClassStateChanged(
-                        INVISIBLE, !val && !model.getInOverview().get());
+                        INVISIBLE, !val && !model.getInOverview().get() && !AppSizeBreakpoints.portraitMode().get());
 
                 if (val) {
                     Platform.runLater(() -> {
                         struc.end();
                     });
                 }
+            });
+
+            struc.widthProperty().subscribe(val -> {
+                struc.pseudoClassStateChanged(
+                        INVISIBLE, !struc.isFocused() && !model.getInOverview().get() && !AppSizeBreakpoints.portraitMode().get());
             });
 
             struc.addEventHandler(KeyEvent.KEY_PRESSED, ke -> {
@@ -186,7 +194,7 @@ public class BrowserNavBarComp extends RegionStructureBuilder<HBox, BrowserNavBa
                 // Pseudo classes do not apply if set instantly before shown
                 // If we start a new tab with a directory set, we have to set the pseudo class one pulse later
                 Platform.runLater(() -> {
-                    struc.pseudoClassStateChanged(INVISIBLE, !val && !struc.isFocused());
+                    struc.pseudoClassStateChanged(INVISIBLE, !val && !struc.isFocused() && !AppSizeBreakpoints.portraitMode().get());
                 });
             });
         });
