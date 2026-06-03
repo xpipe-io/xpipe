@@ -11,6 +11,7 @@ import io.xpipe.app.terminal.TerminalDockHubComp;
 import io.xpipe.app.terminal.TerminalDockHubManager;
 import io.xpipe.app.util.ObservableSubscriber;
 
+import javafx.beans.binding.Bindings;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -30,7 +31,9 @@ public class StoreLayoutComp extends SimpleRegionBuilder {
     private Region createContent() {
         var filterTrigger = new ObservableSubscriber();
         var left = new StoreSidebarComp(filterTrigger);
-        left.minWidth(285);
+        left.apply(region -> region.minWidthProperty().bind(Bindings.createDoubleBinding(() -> {
+            return AppSizeBreakpoints.compactMode().get() ? 230.0 : 285.0;
+        }, AppSizeBreakpoints.compactMode())));
         left.maxWidth(500);
         left.minHeight(0);
         var comp = new LeftSplitPaneComp(left, new StoreEntryListComp())

@@ -85,7 +85,7 @@ public class BrowserFileSystemTabComp extends SimpleRegionBuilder {
 
         var smallWidth = Bindings.createBooleanBinding(
                 () -> {
-                    return root.getWidth() < 450;
+                    return root.getWidth() < 550;
                 },
                 root.widthProperty());
 
@@ -143,6 +143,8 @@ public class BrowserFileSystemTabComp extends SimpleRegionBuilder {
                 }
                 e.consume();
             });
+            pinButton.managedProperty().bind(smallWidth.not());
+            pinButton.visibleProperty().bind(pinButton.managedProperty());
             rightBox.getChildren().add(1, pinButton);
             squaredSize(navBar.get(), pinButton, true);
         }

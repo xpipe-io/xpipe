@@ -41,6 +41,8 @@ public class AppPrefsComp extends SimpleRegionBuilder {
         pane.getChildren().add(box);
 
         var scrollPane = new ScrollPane(pane);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         var externalUpdate = new SimpleBooleanProperty();
 
@@ -85,8 +87,6 @@ public class AppPrefsComp extends SimpleRegionBuilder {
                 });
             });
         });
-        scrollPane.setFitToWidth(true);
-        HBox.setHgrow(scrollPane, Priority.ALWAYS);
 
         var sidebar = new AppPrefsSidebarComp();
         var sidebarWrapper = new StackComp(List.of(sidebar));

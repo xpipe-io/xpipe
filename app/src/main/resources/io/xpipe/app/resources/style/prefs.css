@@ -1,9 +1,9 @@
 .prefs-box {
-    -fx-padding: 0 40 0 80;
+    -fx-padding: 40 40 0 80;
 }
 
 .root:portrait .prefs-box {
-    -fx-padding: 0 30 0 10;
+    -fx-padding: 20 20 20 20;
 }
 
 .prefs-container .options-comp .name {
@@ -18,6 +18,10 @@
 
 .prefs .prefs-container.options-comp > .options-comp {
     -fx-padding: 0 0 0 1em;
+}
+
+.root:portrait .prefs .prefs-container.options-comp > .options-comp {
+    -fx-padding: 0 0 0 0.2em;
 }
 
 .prefs-container .options-comp .description-box {
@@ -42,6 +46,10 @@
     -fx-padding: 2em 0 -0.5em 0;
     -fx-font-weight: BOLD;
     -fx-font-size: 1.5em;
+}
+
+.root:portrait .prefs-container > .title-header {
+    -fx-padding: 1.5em 0 -0.5em 0;
 }
 
 .prefs {

@@ -3,8 +3,10 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.platform.LabelGraphic;
 
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -50,6 +52,10 @@ public class IntroComp extends SimpleRegionBuilder {
         if (img instanceof FontIcon fontIcon) {
             fontIcon.setIconSize(80);
         }
+        var hideImg = Bindings.not(AppSizeBreakpoints.compactMode());
+        img.managedProperty().bind(hideImg);
+        img.visibleProperty().bind(hideImg);
+
         var text = new VBox(title, introDesc);
         text.setSpacing(5);
         text.setAlignment(Pos.CENTER_LEFT);

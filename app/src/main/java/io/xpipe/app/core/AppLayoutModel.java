@@ -31,6 +31,8 @@ import javafx.scene.input.KeyCombination;
 import lombok.*;
 import lombok.experimental.NonFinal;
 import lombok.extern.jackson.Jacksonized;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -114,13 +116,16 @@ public class AppLayoutModel {
         });
 
         var portraitExpanded = new SimpleBooleanProperty(true);
-        var toggleExpand = new AppLayoutModel.QueueEntry(AppI18n.observable("expand"), Bindings.createObjectBinding(() -> {
-            return new LabelGraphic.IconGraphic("mdi2a-arrow-expand-horizontal");
-        }, portraitExpanded), () -> {
+        var toggleExpand = new AppLayoutModel.QueueEntry(AppI18n.observable("expand"), new ReadOnlyObjectWrapper<>(new LabelGraphic.NodeGraphic(() -> {
+                var inner = new FontIcon("mdi2a-arrow-expand-horizontal");
+                inner.getStyleClass().add("graphic");
+                inner.getStyleClass().add("accent-icon");
+                return inner;
+            })), () -> {
             portraitExpanded.set(!portraitExpanded.get());
             return false;
-        });
-        AppSizeBreakpoints.portraitMode().subscribe(v -> {
+        }, true);
+        AppSizeBreakpoints.compactMode().subscribe(v -> {
             if (v) {
                 AppLayoutModel.get().getQueueEntries().add(toggleExpand);
                 portraitExpanded.set(false);
@@ -130,8 +135,8 @@ public class AppLayoutModel {
             }
         });
         portraitLayoutCollapsed.bind(Bindings.createBooleanBinding(() -> {
-            return AppSizeBreakpoints.portraitMode().get() && !portraitExpanded.get();
-        }, portraitExpanded, AppSizeBreakpoints.portraitMode()));
+            return AppSizeBreakpoints.compactMode().get() && !portraitExpanded.get();
+        }, portraitExpanded, AppSizeBreakpoints.compactMode()));
 
     }
 

@@ -52,15 +52,17 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
     public static final ObservableDoubleValue INFO_NO_CONTENT_WIDTH = Bindings.createDoubleBinding(
             () -> {
                 var w = App.getApp().getStage().getWidth();
+                var contentSpacer = AppSizeBreakpoints.compactMode().get() ? 10 : 70;
                 if (w > 2000) {
-                    return (w / 1.8) - 170;
+                    return (w / 1.8) - (240 - contentSpacer);
                 } else if (w >= 1000) {
-                    return (w / 2.0) - 170;
+                    return (w / 2.0) - (240 - contentSpacer);
                 } else {
-                    return (w / 1.7) - 120;
+                    return (w / 1.7) - (190 - contentSpacer);
                 }
             },
-            App.getApp().getStage().widthProperty());
+            App.getApp().getStage().widthProperty(),
+            AppSizeBreakpoints.compactMode());
     public static final ObservableDoubleValue INFO_WITH_CONTENT_WIDTH = Bindings.createDoubleBinding(
             () -> {
                 var w = App.getApp().getStage().getWidth();
@@ -798,10 +800,6 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         var leaf = p instanceof HubLeafProvider<?> l ? l : null;
         var branch = p instanceof HubBranchProvider<?> b ? b : null;
         var cs = leaf != null ? leaf : branch;
-
-        if (cs == null || cs.isMajor() || (leaf != null && leaf.isDefault())) {
-            return null;
-        }
 
         var name = cs.getName(getWrapper().getEntry().ref());
         var icon = cs.getIcon(getWrapper().getEntry().ref());

@@ -152,7 +152,7 @@ public class TerminalDockHubManager {
                                 minimized,
                                 showing)));
                 inner.getStyleClass().add("graphic");
-                inner.getStyleClass().add("terminal-dock-button");
+                inner.getStyleClass().add("accent-icon");
                 return inner;
             })),
             () -> {

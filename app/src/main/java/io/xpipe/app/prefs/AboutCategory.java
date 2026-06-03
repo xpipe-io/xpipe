@@ -60,7 +60,6 @@ public class AboutCategory extends AppPrefsCategory {
         title.style(Styles.TEXT_BOLD);
 
         var section = new OptionsBuilder()
-                .addComp(RegionBuilder.vspacer(40))
                 .addComp(title, null)
                 .addComp(RegionBuilder.vspacer(10))
                 .name("build")
@@ -79,7 +78,8 @@ public class AboutCategory extends AppPrefsCategory {
                                         + " "
                                         + System.getProperty("java.vm.version"))
                                 .describe(d ->
-                                        d.focusTraversal(RegionDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)),
+                                        d.focusTraversal(RegionDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY))
+                                .minWidth(0),
                         null)
                 .buildComp();
         return section.style("properties-comp");

@@ -2,6 +2,7 @@ package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -405,6 +406,10 @@ public class StoreViewState {
         }
 
         AppI18n.activeLanguage().addListener((observable, oldValue, newValue) -> {
+            updateWrappers();
+        });
+
+        AppSizeBreakpoints.compactMode().addListener((observable, oldValue, newValue) -> {
             updateWrappers();
         });
 

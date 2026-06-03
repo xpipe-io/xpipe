@@ -2,6 +2,7 @@ package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.action.*;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.FixedHierarchyStore;
@@ -385,14 +386,16 @@ public class StoreEntryWrapper {
                     && leaf.getApplicableClass()
                             .isAssignableFrom(entry.getStore().getClass())
                     && leaf.isApplicable(entry.ref())
-                    && (!major || leaf.isMajor());
+                    && ((!AppSizeBreakpoints.compactMode().get() && major == leaf.isMajor()) ||
+                            (AppSizeBreakpoints.compactMode().get() && !major));
         }
 
         if (p instanceof HubBranchProvider<?> branch
                 && entry.getStore() != null
                 && branch.getApplicableClass().isAssignableFrom(entry.getStore().getClass())
                 && branch.isApplicable(entry.ref())
-                && (!major || branch.isMajor())) {
+                && ((!AppSizeBreakpoints.compactMode().get() && major == branch.isMajor()) ||
+                        (AppSizeBreakpoints.compactMode().get() && !major))) {
             return branch.getChildren(entry.ref()).stream().anyMatch(child -> {
                 return showActionProvider(child, false);
             });

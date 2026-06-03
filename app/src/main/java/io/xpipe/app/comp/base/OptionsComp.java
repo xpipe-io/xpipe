@@ -69,9 +69,9 @@ public class OptionsComp extends RegionBuilder<VBox> {
                 line.prefWidthProperty().bind(pane.widthProperty());
 
                 var name = new Label();
+                name.setWrapText(true);
                 name.getStyleClass().add("name");
                 name.textProperty().bind(entry.name());
-                name.setMinWidth(Region.USE_PREF_SIZE);
                 name.setMinHeight(Region.USE_PREF_SIZE);
                 name.setAlignment(Pos.CENTER_LEFT);
                 VBox.setVgrow(line, VBox.getVgrow(compRegion));
