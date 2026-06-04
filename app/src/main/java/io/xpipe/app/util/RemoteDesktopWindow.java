@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.*;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.core.window.AppModifiedStage;
 import io.xpipe.app.core.window.AppWindowStyle;
@@ -307,6 +308,10 @@ public class RemoteDesktopWindow {
     }
 
     private void updateState() {
+        if (AppOperationMode.isInShutdown()) {
+            return;
+        }
+
         model.clearDead();
         DerivedObservableList.wrap(processes, true).setContent(model.getEntries());
         selected.set(model.getSelected());
