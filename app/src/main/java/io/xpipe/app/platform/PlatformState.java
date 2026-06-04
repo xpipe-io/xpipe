@@ -123,11 +123,11 @@ public enum PlatformState {
 
             // Catch more than just the headless exception in case the graphics environment initialization completely
             // fails
-        } catch (HeadlessException h) {
-            var msg = getErrorMessage(h.getMessage());
+        } catch (HeadlessException | AWTError e) {
+            var msg = getErrorMessage(e.getMessage());
             PlatformState.setCurrent(PlatformState.EXITED);
             expectedError = true;
-            lastError = new UnsupportedOperationException(msg, h);
+            lastError = new UnsupportedOperationException(msg, e);
             return;
         } catch (Throwable t) {
             PlatformState.setCurrent(PlatformState.EXITED);

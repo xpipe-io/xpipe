@@ -304,7 +304,7 @@ public class CertificateKeyFileStrategy implements SshIdentityStrategy {
             var summary = ShortLivedCertificateImpl.queryCertificateSummary(parent, s);
             var valid = ShortLivedCertificateImpl.checkValid(summary);
 
-            if (!valid) {
+            if (valid != ShortLivedCertificateImpl.Validity.VALID) {
                 var pubKey = SshIdentityStrategy.getPublicKeyPath(file.toAbsoluteFilePath(parent)
                         .resolveTildeHome(parent.view().userHome()));
                 if (!parent.view().fileExists(pubKey)) {
@@ -329,7 +329,7 @@ public class CertificateKeyFileStrategy implements SshIdentityStrategy {
                     prepareCertificateKey(parent, true);
                 } else {
                     throw ErrorEventFactory.expected(new IllegalStateException("Certificate " + s.getFileName()
-                            + " is expired" + (alreadyRenewed ? " and failed to renew" : "")));
+                            + " is " + (valid == ShortLivedCertificateImpl.Validity.EXPIRED ? "expired" : "not valid yet") + (alreadyRenewed ? " and failed to renew" : "")));
                 }
             }
         } else {

@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.*;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.core.window.AppModifiedStage;
 import io.xpipe.app.core.window.AppWindowStyle;
@@ -16,11 +17,13 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import javafx.stage.WindowEvent;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -102,6 +105,15 @@ public class RemoteDesktopWindow {
                 updateState();
                 closeIfNecessary();
             });
+        });
+
+        stage.setOnHiding(event -> {
+            ThreadHelper.runAsync(() -> {
+                model.onClose();
+                updateState();
+                closeIfNecessary();
+            });
+            event.consume();
         });
 
         if (AppPrefs.get() != null) {
@@ -296,6 +308,10 @@ public class RemoteDesktopWindow {
     }
 
     private void updateState() {
+        if (AppOperationMode.isInShutdown()) {
+            return;
+        }
+
         model.clearDead();
         DerivedObservableList.wrap(processes, true).setContent(model.getEntries());
         selected.set(model.getSelected());

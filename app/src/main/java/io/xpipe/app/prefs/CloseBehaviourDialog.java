@@ -23,12 +23,12 @@ public class CloseBehaviourDialog {
 
     public static boolean showIfNeeded() {
         if (AppOperationMode.isInShutdown()) {
-            return true;
+            return false;
         }
 
         boolean set = AppCache.getBoolean("closeBehaviourSet", false);
         if (set) {
-            return true;
+            return false;
         }
 
         Property<CloseBehaviour> prop =
@@ -67,6 +67,6 @@ public class CloseBehaviourDialog {
             oked.set(true);
         }));
         modal.showAndWait();
-        return oked.get();
+        return !oked.get();
     }
 }

@@ -104,6 +104,7 @@ public class WindowDockComp<T extends WindowDockListener> extends SimpleRegionBu
                 s.iconifiedProperty().removeListener(iconified);
                 s.removeEventFilter(WindowEvent.WINDOW_SHOWN, show);
                 s.removeEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, hide);
+                s.removeEventFilter(WindowEvent.WINDOW_HIDDEN, hide);
                 s.outputScaleXProperty().addListener(scale);
                 if (parent.get() != null) {
                     parent.get().boundsInParentProperty().removeListener(bounds);
@@ -119,6 +120,7 @@ public class WindowDockComp<T extends WindowDockListener> extends SimpleRegionBu
                 s.outputScaleXProperty().removeListener(scale);
                 s.addEventFilter(WindowEvent.WINDOW_SHOWN, show);
                 s.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, hide);
+                s.addEventFilter(WindowEvent.WINDOW_HIDDEN, hide);
                 // As in practice this node is wrapped in another stack pane
                 // We have to listen to the parent bounds to actually receive bounds changes
                 stack.getParent().boundsInParentProperty().addListener(bounds);

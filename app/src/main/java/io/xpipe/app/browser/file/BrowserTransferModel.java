@@ -194,7 +194,7 @@ public class BrowserTransferModel {
         }
     }
 
-    public void transferToDownloads(boolean open) throws Exception {
+    public void transferToDownloads(boolean open) {
         List<Item> toMove;
         synchronized (items) {
             toMove = items.stream()
@@ -206,32 +206,36 @@ public class BrowserTransferModel {
             items.removeAll(toMove);
         }
 
-        var files = toMove.stream().map(item -> item.getLocalFile()).toList();
-        var downloads = getDownloadsTargetDirectory();
-        Files.createDirectories(downloads);
-        Path firstToOpen = null;
-        for (Path file : files) {
-            if (!Files.exists(file)) {
-                continue;
-            }
+        try {
+            var files = toMove.stream().map(item -> item.getLocalFile()).toList();
+            var downloads = getDownloadsTargetDirectory();
+            Files.createDirectories(downloads);
+            Path firstToOpen = null;
+            for (Path file : files) {
+                if (!Files.exists(file)) {
+                    continue;
+                }
 
-            var target = downloads.resolve(file.getFileName());
-            // Prevent DirectoryNotEmptyException
-            if (Files.exists(target) && Files.isDirectory(target)) {
-                FileUtils.deleteDirectory(target.toFile());
-            }
-            if (Files.isDirectory(file)) {
-                FileUtils.moveDirectory(file.toFile(), target.toFile());
-            } else {
-                Files.move(file, target, StandardCopyOption.REPLACE_EXISTING);
-            }
+                var target = downloads.resolve(file.getFileName());
+                // Prevent DirectoryNotEmptyException
+                if (Files.exists(target) && Files.isDirectory(target)) {
+                    FileUtils.deleteDirectory(target.toFile());
+                }
+                if (Files.isDirectory(file)) {
+                    FileUtils.moveDirectory(file.toFile(), target.toFile());
+                } else {
+                    Files.move(file, target, StandardCopyOption.REPLACE_EXISTING);
+                }
 
-            if (firstToOpen == null) {
-                firstToOpen = target;
+                if (firstToOpen == null) {
+                    firstToOpen = target;
+                }
             }
-        }
-        if (open && firstToOpen != null) {
-            DesktopHelper.browseFileInDirectory(firstToOpen);
+            if (open && firstToOpen != null) {
+                DesktopHelper.browseFileInDirectory(firstToOpen);
+            }
+        } catch (IOException e) {
+            ErrorEventFactory.fromThrowable(e).expected().handle();
         }
     }
 

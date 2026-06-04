@@ -216,7 +216,7 @@ public class BrowserFileListCompEntry {
                             return null;
                         }
                     })
-                    .filter(path -> path != null)
+                    .filter(path -> path != null && !path.toString().isEmpty())
                     .toList();
             var target = item != null && item.getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY
                     ? item.getRawFileEntry().resolved()

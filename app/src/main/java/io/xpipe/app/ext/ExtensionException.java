@@ -7,6 +7,10 @@ public class ExtensionException extends RuntimeException {
 
     public ExtensionException() {}
 
+    public ExtensionException(String message) {
+        super(message);
+    }
+
     private ExtensionException(String message, Throwable cause) {
         super(message, cause);
     }

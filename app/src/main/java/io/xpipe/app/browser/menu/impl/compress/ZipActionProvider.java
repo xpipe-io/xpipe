@@ -60,7 +60,7 @@ public class ZipActionProvider implements BrowserActionProvider {
                 } else {
                     var command = CommandBuilder.of().add("zip", "-q", "-y", "-r", "-");
                     for (BrowserEntry entry : getEntries()) {
-                        var base = target.getParent();
+                        var base = model.getTargetDirectoryPath(getEntries().getFirst());
                         var rel = entry.getRawFileEntry()
                                 .getPath()
                                 .relativize(base)

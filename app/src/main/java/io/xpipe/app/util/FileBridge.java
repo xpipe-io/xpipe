@@ -54,7 +54,7 @@ public class FileBridge {
                 }
             });
         } catch (IOException e) {
-            ErrorEventFactory.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).expected().handle();
         }
     }
 
@@ -166,7 +166,7 @@ public class FileBridge {
                     input.onFinish();
                 }
             } catch (Exception ex) {
-                ErrorEventFactory.fromThrowable(ex).handle();
+                ErrorEventFactory.fromThrowable(ex).expected().handle();
                 return;
             }
             ext.get().registerChange();
@@ -186,7 +186,7 @@ public class FileBridge {
                 input.onFinish();
             }
         } catch (Exception ex) {
-            ErrorEventFactory.fromThrowable(ex).handle();
+            ErrorEventFactory.fromThrowable(ex).expected().handle();
             return;
         }
 
@@ -206,7 +206,7 @@ public class FileBridge {
                             .build();
                     action.executeSync();
                 } catch (Exception ex) {
-                    ErrorEventFactory.fromThrowable(ex).handle();
+                    ErrorEventFactory.fromThrowable(ex).expected().handle();
                 }
             }
         });

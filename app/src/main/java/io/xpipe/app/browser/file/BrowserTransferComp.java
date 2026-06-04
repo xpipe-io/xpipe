@@ -95,14 +95,14 @@ public class BrowserTransferComp extends SimpleRegionBuilder {
                     struc.setOnMouseClicked(e -> {
                         if (e.getButton() == MouseButton.PRIMARY) {
                             var open = !e.isShiftDown();
-                            ThreadHelper.runFailableAsync(() -> {
+                            ThreadHelper.runAsync(() -> {
                                 model.transferToDownloads(open);
                             });
                             e.consume();
                         }
                     });
                     struc.setOnAction(e -> {
-                        ThreadHelper.runFailableAsync(() -> {
+                        ThreadHelper.runAsync(() -> {
                             model.transferToDownloads(true);
                         });
                         e.consume();

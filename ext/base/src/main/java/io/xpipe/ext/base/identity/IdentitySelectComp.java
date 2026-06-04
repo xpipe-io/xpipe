@@ -332,6 +332,15 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
                 });
             });
 
+            struc.setOnKeyPressed(event -> {
+                if (!event.getCode().equals(KeyCode.ENTER)) {
+                    return;
+                }
+
+                struc.show();
+                event.consume();
+            });
+
             var skin = new ComboBoxListViewSkin<>(struc) {
                 @Override
                 public void show() {
