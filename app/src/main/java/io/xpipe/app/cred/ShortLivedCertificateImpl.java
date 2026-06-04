@@ -93,7 +93,7 @@ public interface ShortLivedCertificateImpl extends Checkable {
 
         try {
             var parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
-            parser.setTimeZone(TimeZone.getTimeZone("UTC"));
+            parser.setTimeZone(TimeZone.getDefault());
             var from = parser.parse(matcher.group(1)).toInstant();
             var to = parser.parse(matcher.group(2)).toInstant();
             if (!from.isBefore(Instant.now())) {
@@ -123,7 +123,9 @@ public interface ShortLivedCertificateImpl extends Checkable {
                 .orElse(0);
         var text = out.lines().skip(1).map(s -> {
             var line = s.substring(minIndent);
-            return line + (line.startsWith("Valid:") ? line + " (UTC)" : "");
+            var tz = TimeZone.getDefault();
+            var tzd = tz.getDisplayName(tz.useDaylightTime(), TimeZone.SHORT);
+            return line + (line.startsWith("Valid:") ? " (" + tzd + ")" : "");
         }).collect(Collectors.joining("\n"));
         return text;
     }
@@ -245,7 +247,8 @@ public interface ShortLivedCertificateImpl extends Checkable {
             var command = new SimpleObjectProperty<>(p.getValue().getCommand());
 
             return new OptionsBuilder()
-                    .nameAndDescription("certificateRenewCommand")
+                    .name("certificateRenewCommand")
+                    .description(AppI18n.observable("certificateRenewCommandDescription", LocalShell.getDialect().getDisplayName()))
                     .addComp(
                             IntegratedTextAreaComp.script(
                                     new ReadOnlyObjectWrapper<>(
