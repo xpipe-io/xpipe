@@ -33,7 +33,6 @@ import lombok.*;
 import lombok.experimental.NonFinal;
 import lombok.extern.jackson.Jacksonized;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -251,7 +250,7 @@ public class AppLayoutModel {
                             AppI18n.observable("webtopMode"),
                             new LabelGraphic.IconGraphic("mdi2t-tablet-cellphone"),
                             null,
-                            () -> WebtopModeComp.show(),
+                            () -> WebtopModeComp.showDialog(),
                             null));
             l.add(
                     new Entry(

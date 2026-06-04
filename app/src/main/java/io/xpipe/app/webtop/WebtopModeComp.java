@@ -2,7 +2,6 @@ package io.xpipe.app.webtop;
 
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ModalOverlay;
-import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContentDisplay;
@@ -14,7 +13,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 public class WebtopModeComp extends SimpleRegionBuilder {
 
-    public static void show() {
+    public static void showDialog() {
         var modal = ModalOverlay.of("webtopMode", new WebtopModeComp().prefWidth(600));
         modal.show();
     }
@@ -26,12 +25,14 @@ public class WebtopModeComp extends SimpleRegionBuilder {
         desktop.textProperty().bind(AppI18n.observable("desktopMode"));
         desktop.setAlignment(Pos.CENTER);
         desktop.setContentDisplay(ContentDisplay.TOP);
+        desktop.setWrapText(true);
 
         var mobile = new ToggleButton();
         mobile.setGraphic(new FontIcon("mdi2t-tablet"));
         mobile.textProperty().bind(AppI18n.observable("mobileMode"));
         mobile.setAlignment(Pos.CENTER);
         mobile.setContentDisplay(ContentDisplay.TOP);
+        mobile.setWrapText(true);
 
         var group = new ToggleGroup();
         group.getToggles().addAll(desktop, mobile);
