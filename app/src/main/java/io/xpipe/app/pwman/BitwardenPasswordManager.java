@@ -15,6 +15,7 @@ import io.xpipe.app.util.*;
 import io.xpipe.app.util.JacksonMapper;
 import io.xpipe.app.util.OsType;
 
+import io.xpipe.app.webtop.WebtopApp;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -40,6 +41,11 @@ import java.util.concurrent.atomic.AtomicReference;
 @Builder
 @Jacksonized
 public class BitwardenPasswordManager implements PasswordManager {
+
+    @Override
+    public WebtopApp getRequiredWebtopApp() {
+        return WebtopApp.BITWARDEN;
+    }
 
     private enum Dist {
         WINDOWS {

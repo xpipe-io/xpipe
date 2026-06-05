@@ -9,6 +9,7 @@ import io.xpipe.app.util.FlatpakCache;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.app.util.OsType;
 
+import io.xpipe.app.webtop.WebtopApp;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 
@@ -296,6 +297,12 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     LinuxType VSCODE_LINUX =
             new LinuxType("app.vscode", "code", "https://code.visualstudio.com/", "com.visualstudio.code") {
+
+                @Override
+                public WebtopApp getRequiredWebtopApp() {
+                    return WebtopApp.VSCODE;
+                }
+
                 @Override
                 public void launch(Path file) throws Exception {
                     var exec = CommandSupport.isInLocalPath(getExecutable())
@@ -628,6 +635,10 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     String getWebsite();
 
     void launch(Path file) throws Exception;
+
+    default WebtopApp getRequiredWebtopApp() {
+        return null;
+    }
 
     interface WindowsType extends ExternalApplicationType.WindowsType, ExternalEditorType {
 

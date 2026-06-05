@@ -8,6 +8,7 @@ import io.xpipe.app.process.*;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.OsType;
 
+import io.xpipe.app.webtop.WebtopApp;
 import lombok.Getter;
 
 import java.util.*;
@@ -617,6 +618,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     TerminalOpenFormat getOpenFormat();
 
     default String getWebsite() {
+        return null;
+    }
+
+    default WebtopApp getRequiredWebtopApp() {
         return null;
     }
 

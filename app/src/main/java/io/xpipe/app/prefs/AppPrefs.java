@@ -164,7 +164,7 @@ public final class AppPrefs {
             .key("useSystemFont")
             .valueClass(Boolean.class)
             .build());
-    final Property<Integer> uiScale = map(Mapping.builder()
+    public final Property<Integer> uiScale = map(Mapping.builder()
             .property(new GlobalObjectProperty<>())
             .key("uiScale")
             .valueClass(Integer.class)

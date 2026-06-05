@@ -3,6 +3,7 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.process.*;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.webtop.WebtopApp;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -12,6 +13,11 @@ import java.util.ArrayList;
 @Jacksonized
 @JsonTypeName("screen")
 public class ScreenTerminalMultiplexer implements TerminalMultiplexer {
+
+    @Override
+    public WebtopApp getRequiredWebtopApp() {
+        return null;
+    }
 
     @Override
     public boolean supportsSplitView() {

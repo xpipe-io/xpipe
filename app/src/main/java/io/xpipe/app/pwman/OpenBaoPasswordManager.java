@@ -7,6 +7,7 @@ import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.*;
 import io.xpipe.app.util.OpenBaoConfig;
 
+import io.xpipe.app.webtop.WebtopApp;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -22,6 +23,11 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @JsonTypeName("openBao")
 public class OpenBaoPasswordManager implements PasswordManager {
+
+    @Override
+    public WebtopApp getRequiredWebtopApp() {
+        return WebtopApp.OPENBAO;
+    }
 
     @Override
     public boolean supportsKeyConfiguration() {

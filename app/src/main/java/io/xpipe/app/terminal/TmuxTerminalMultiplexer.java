@@ -7,6 +7,7 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.webtop.WebtopApp;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -17,6 +18,11 @@ import java.util.List;
 @Jacksonized
 @JsonTypeName("tmux")
 public class TmuxTerminalMultiplexer implements TerminalMultiplexer {
+
+    @Override
+    public WebtopApp getRequiredWebtopApp() {
+        return WebtopApp.TMUX;
+    }
 
     @Override
     public boolean supportsSplitView() {

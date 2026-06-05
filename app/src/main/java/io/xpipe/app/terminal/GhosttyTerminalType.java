@@ -4,6 +4,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.webtop.WebtopApp;
 
 public interface GhosttyTerminalType extends ExternalTerminalType, TrackableTerminalType {
 
@@ -21,6 +22,11 @@ public interface GhosttyTerminalType extends ExternalTerminalType, TrackableTerm
     }
 
     class Linux implements GhosttyTerminalType, ExternalApplicationType.PathApplication {
+
+        @Override
+        public WebtopApp getRequiredWebtopApp() {
+            return WebtopApp.GHOSTTY;
+        }
 
         @Override
         public TerminalOpenFormat getOpenFormat() {

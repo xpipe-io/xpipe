@@ -13,6 +13,7 @@ import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.*;
 import io.xpipe.app.util.OsType;
 
+import io.xpipe.app.webtop.WebtopApp;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -41,6 +42,11 @@ public class KeePassXcPasswordManager implements PasswordManager {
 
     private final List<KeePassXcAssociationKey> associationKeys;
     private final PasswordManagerKeyStrategy keyStrategy;
+
+    @Override
+    public WebtopApp getRequiredWebtopApp() {
+        return WebtopApp.KEEPASSXC;
+    }
 
     @Override
     public boolean supportsKeyConfiguration() {

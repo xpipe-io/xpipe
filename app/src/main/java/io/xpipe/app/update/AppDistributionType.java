@@ -58,7 +58,15 @@ public enum AppDistributionType implements Translatable {
                 "if [ \"$?\" != 0 ]; then echo \"Update failed ...\"; read key; fi",
                 AppRestart.getTerminalRestartCommand()));
     }),
-    WEBTOP("webtop", true, () -> new WebtopUpdater()),
+    WEBTOP("webtop", true, () -> {
+        var pkg = AppNames.ofCurrent().getKebapName();
+        return new CommandUpdater(ShellScript.lines(
+                "echo \"+ sudo apt update && sudo apt install -y " + pkg + "\"",
+                "sudo apt update",
+                "sudo apt install -y " + pkg,
+                "if [ \"$?\" != 0 ]; then echo \"Update failed ...\"; read key; fi",
+                AppRestart.getTerminalRestartCommand()));
+    }),
     CHOCO("choco", true, () -> new ChocoUpdater()),
     WINGET("winget", true, () -> new WingetUpdater()),
     SCOOP("scoop", false, () -> new PortableUpdater(true));
@@ -197,7 +205,7 @@ public enum AppDistributionType implements Translatable {
             }
         }
 
-        if (OsType.ofLocal() == OsType.LINUX && Files.isDirectory(Path.of("/kclient"))) {
+        if (OsType.ofLocal() == OsType.LINUX && (Files.isDirectory(Path.of("/kclient")) || Files.isRegularFile(Path.of("/defaults/startwm_wayland.sh")))) {
             return WEBTOP;
         }
 

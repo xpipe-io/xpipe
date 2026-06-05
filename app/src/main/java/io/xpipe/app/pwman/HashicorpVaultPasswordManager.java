@@ -7,6 +7,7 @@ import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.*;
 import io.xpipe.app.util.HashicorpVaultConfig;
 
+import io.xpipe.app.webtop.WebtopApp;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -22,6 +23,11 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @JsonTypeName("hashicorpVault")
 public class HashicorpVaultPasswordManager implements PasswordManager {
+
+    @Override
+    public WebtopApp getRequiredWebtopApp() {
+        return WebtopApp.HASHICORP_VAULT;
+    }
 
     @Override
     public boolean supportsKeyConfiguration() {

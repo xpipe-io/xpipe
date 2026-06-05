@@ -248,6 +248,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                 getWrapper().getTags());
         var tagsLabel = new LabelComp(tagsProp);
         tagsLabel.apply(struc -> struc.setOpacity(0.85));
+        tagsLabel.hide(AppSizeBreakpoints.compactMode());
         return tagsLabel;
     }
 
@@ -261,6 +262,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         var comp = new LabelComp(prop);
         comp.style("orderIndex");
         comp.apply(struc -> struc.setOpacity(0.85));
+        comp.hide(AppSizeBreakpoints.compactMode());
         return comp;
     }
 
@@ -273,7 +275,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
             struc.setDisable(true);
             struc.setOpacity(1.0);
         });
-        button.hide(Bindings.not(getWrapper().getPerUser()));
+        button.hide(Bindings.not(getWrapper().getPerUser()).or(AppSizeBreakpoints.compactMode()));
         button.apply(struc -> struc.setOpacity(0.85));
         return button;
     }
@@ -286,7 +288,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
             AppFontSizes.xs(struc);
             struc.setOpacity(1.0);
         });
-        button.hide(Bindings.not(getWrapper().getPinToTop()));
+        button.hide(Bindings.not(getWrapper().getPinToTop()).or(AppSizeBreakpoints.portraitMode()));
         button.apply(struc -> struc.setOpacity(0.85));
         return button;
     }

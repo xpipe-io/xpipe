@@ -14,6 +14,7 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.FilePath;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import io.xpipe.app.webtop.WebtopApp;
 
 import java.io.IOException;
 import java.net.StandardProtocolFamily;
@@ -146,6 +147,11 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
     }
 
     class Linux implements KittyTerminalType {
+
+        @Override
+        public WebtopApp getRequiredWebtopApp() {
+            return WebtopApp.KITTY;
+        }
 
         @Override
         public int getProcessHierarchyOffset() {

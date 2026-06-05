@@ -2,9 +2,12 @@ package io.xpipe.app.ext;
 
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.action.ActionProvider;
+import io.xpipe.app.core.AppDisplayScale;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
 
+import io.xpipe.app.update.AppDistributionType;
+import io.xpipe.app.webtop.WebtopAppListManager;
 import lombok.SneakyThrows;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -43,7 +46,11 @@ public class SetupToolActionProvider implements ActionProvider {
             }
 
             if (op.isDisabled()) {
-                provider.get().handleUnsupported();
+                if (AppDistributionType.get() == AppDistributionType.WEBTOP && provider.get().getWebtopApp() != null) {
+                    WebtopAppListManager.get().showDialogIfNeeded(provider.get().getWebtopApp());
+                } else {
+                    provider.get().handleUnsupported();
+                }
                 return;
             }
 

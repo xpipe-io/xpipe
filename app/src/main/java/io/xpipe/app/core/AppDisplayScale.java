@@ -1,5 +1,6 @@
 package io.xpipe.app.core;
 
+import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 

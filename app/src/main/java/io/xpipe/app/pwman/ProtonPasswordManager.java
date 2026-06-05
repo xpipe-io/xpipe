@@ -12,6 +12,7 @@ import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.JacksonMapper;
 import io.xpipe.app.util.OsType;
 
+import io.xpipe.app.webtop.WebtopApp;
 import javafx.beans.property.*;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -29,6 +30,11 @@ import java.util.List;
 @Jacksonized
 @Getter
 public class ProtonPasswordManager implements PasswordManager {
+
+    @Override
+    public WebtopApp getRequiredWebtopApp() {
+        return WebtopApp.PROTON_PASS;
+    }
 
     @Override
     public boolean supportsKeyConfiguration() {

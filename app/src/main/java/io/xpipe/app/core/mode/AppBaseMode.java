@@ -38,6 +38,7 @@ import io.xpipe.app.update.UpdateNagDialog;
 import io.xpipe.app.util.*;
 import io.xpipe.app.util.XPipeDaemonMode;
 import io.xpipe.app.webtop.WebtopAppListManager;
+import io.xpipe.app.webtop.WebtopDisplayScale;
 import io.xpipe.app.webtop.WebtopMode;
 
 import java.util.concurrent.CountDownLatch;
@@ -193,6 +194,7 @@ public class AppBaseMode extends AppOperationMode {
 
         WebtopMode.init();
         WebtopAppListManager.init();
+        WebtopDisplayScale.init();
 
         ActionProvider.initProviders();
         DataStoreProviders.init();

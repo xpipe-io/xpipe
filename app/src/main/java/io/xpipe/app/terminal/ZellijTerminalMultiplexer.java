@@ -7,6 +7,7 @@ import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.OsType;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.webtop.WebtopApp;
 import lombok.Builder;
 import lombok.SneakyThrows;
 import lombok.extern.jackson.Jacksonized;
@@ -18,6 +19,11 @@ import java.util.List;
 @Jacksonized
 @JsonTypeName("zellij")
 public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
+
+    @Override
+    public WebtopApp getRequiredWebtopApp() {
+        return WebtopApp.ZELLIJ;
+    }
 
     @Override
     public boolean supportsSplitView() {

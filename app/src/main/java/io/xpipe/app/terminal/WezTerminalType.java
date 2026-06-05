@@ -15,6 +15,7 @@ import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.OsType;
 
+import io.xpipe.app.webtop.WebtopApp;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
@@ -285,6 +286,11 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
     }
 
     class Linux implements ExternalApplicationType.LinuxApplication, WezTerminalType {
+
+        @Override
+        public WebtopApp getRequiredWebtopApp() {
+            return WebtopApp.WEZTERM;
+        }
 
         @Override
         public CommandBuilder getWeztermCommandBase() throws Exception {

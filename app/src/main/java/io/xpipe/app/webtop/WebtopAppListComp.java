@@ -30,7 +30,7 @@ public class WebtopAppListComp extends SimpleRegionBuilder {
             if (installed.contains(webtopApp)) {
                 return new LabelGraphic.IconGraphic("mdi2c-check");
             } else if (selected.contains(webtopApp)) {
-                return new LabelGraphic.IconGraphic("mdi2c-mdi2e-exclamation-thick");
+                return new LabelGraphic.IconGraphic("mdi2e-exclamation-thick");
             } else {
                 return new LabelGraphic.IconGraphic("mdi2m-minus-circle");
             }

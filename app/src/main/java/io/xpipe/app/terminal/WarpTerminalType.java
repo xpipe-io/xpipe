@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.*;
 import io.xpipe.app.util.*;
+import io.xpipe.app.webtop.WebtopApp;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -98,6 +99,11 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
     }
 
     class Linux implements WarpTerminalType {
+
+        @Override
+        public WebtopApp getRequiredWebtopApp() {
+            return WebtopApp.WARP;
+        }
 
         @Override
         public int getProcessHierarchyOffset() {

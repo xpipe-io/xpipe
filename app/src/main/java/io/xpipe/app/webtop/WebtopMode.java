@@ -2,6 +2,8 @@ package io.xpipe.app.webtop;
 
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.core.mode.AppOperationMode;
+import io.xpipe.app.prefs.ExternalApplicationHelper;
+import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -25,12 +27,13 @@ public class WebtopMode {
             var file = AppSystemInfo.ofCurrent().getUserHome().resolve(".xpipe", "webtop", "mobile");
             if (!mobile) {
                 Files.deleteIfExists(file);
-                LocalExec.executeAsync("bash", "-c", "/defaults/desktop.sh && WAYLAND_DISPLAY=wayland-0 plasmashell --replace && xpipe open");
+                ExternalApplicationHelper.startAsync(CommandBuilder.of().add("bash", "-c").addQuoted("/defaults/desktop.sh && plasmashell --replace && xpipe open"));
             } else {
                 Files.createDirectories(file.getParent());
                 Files.createFile(file);
-                LocalExec.executeAsync("bash", "-c", "/defaults/mobile.sh && WAYLAND_DISPLAY=wayland-0 plasmashell --replace && xpipe open");
+                ExternalApplicationHelper.startAsync(CommandBuilder.of().add("bash", "-c").addQuoted("/defaults/mobile.sh && plasmashell --replace && xpipe open"));
             }
+            ThreadHelper.sleep(1000);
         });
     }
 

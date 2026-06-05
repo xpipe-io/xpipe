@@ -8,6 +8,7 @@ import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.OsType;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.xpipe.app.webtop.WebtopApp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,8 @@ public interface TerminalMultiplexer {
 
         return null;
     }
+
+    WebtopApp getRequiredWebtopApp();
 
     boolean supportsSplitView();
 

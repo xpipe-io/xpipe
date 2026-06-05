@@ -14,6 +14,7 @@ import io.xpipe.app.secret.SecretQueryState;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.*;
 
+import io.xpipe.app.webtop.WebtopApp;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -41,6 +42,11 @@ import java.util.stream.Collectors;
 @ToString
 @Jacksonized
 public class KeeperPasswordManager implements PasswordManager {
+
+    @Override
+    public WebtopApp getRequiredWebtopApp() {
+        return WebtopApp.KEEPER;
+    }
 
     private static Path getSocketLocation() {
         var socket =

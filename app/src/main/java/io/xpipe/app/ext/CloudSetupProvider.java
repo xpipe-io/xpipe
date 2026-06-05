@@ -2,6 +2,7 @@ package io.xpipe.app.ext;
 
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.util.ModuleLayerLoader;
+import io.xpipe.app.webtop.WebtopApp;
 
 import java.util.*;
 
@@ -20,6 +21,8 @@ public interface CloudSetupProvider {
     LabelGraphic getGraphic();
 
     ScanProvider getScan();
+
+    WebtopApp getWebtopApp();
 
     default void handleUnsupported() {}
 

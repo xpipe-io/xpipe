@@ -37,6 +37,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         var notes = new StoreNotesComp(getWrapper()).build();
         var userIcon = createUserIcon().build();
         var pinIcon = createPinIcon().build();
+        var active = new StoreActiveComp(getWrapper()).build();
 
         var grid = new GridPane();
         grid.hgapProperty().bind(Bindings.createDoubleBinding(() -> {
@@ -59,19 +60,11 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         grid.add(storeIcon.build(), 1, 0, 1, 2);
         grid.getColumnConstraints().add(new ColumnConstraints(52));
 
-        var active = new StoreActiveComp(getWrapper()).build();
-        var nameBox = new HBox(name, tags, index, userIcon, pinIcon, notes);
+        var nameBox = new HBox(name, tags, index, active, userIcon, pinIcon, notes);
         nameBox.setSpacing(4);
         nameBox.setAlignment(Pos.CENTER_LEFT);
         grid.add(nameBox, 2, 0);
         GridPane.setVgrow(nameBox, Priority.ALWAYS);
-        getWrapper().getSessionActive().subscribe(aBoolean -> {
-            if (!aBoolean) {
-                nameBox.getChildren().remove(active);
-            } else {
-                nameBox.getChildren().add(3, active);
-            }
-        });
 
         var summaryBox = new HBox(createSummary());
         summaryBox.setAlignment(Pos.TOP_LEFT);

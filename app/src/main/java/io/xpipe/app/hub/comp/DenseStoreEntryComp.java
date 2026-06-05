@@ -89,6 +89,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         var notes = new StoreNotesComp(getWrapper()).build();
         var userIcon = createUserIcon().build();
         var pinIcon = createPinIcon().build();
+        var active = new StoreActiveComp(getWrapper()).build();
 
         var selection = createBatchSelection().build();
         grid.add(selection, 0, 0, 1, 2);
@@ -133,15 +134,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         nameCC.setHgrow(Priority.ALWAYS);
         grid.getColumnConstraints().addAll(nameCC);
 
-        var active = new StoreActiveComp(getWrapper()).build();
-        var nameBox = new HBox(name, tags, index, userIcon, pinIcon, notes);
-        getWrapper().getSessionActive().subscribe(aBoolean -> {
-            if (!aBoolean) {
-                nameBox.getChildren().remove(active);
-            } else {
-                nameBox.getChildren().add(3, active);
-            }
-        });
+        var nameBox = new HBox(name, tags, index, active, userIcon, pinIcon, notes);
         nameBox.setSpacing(4);
         nameBox.setAlignment(Pos.CENTER_LEFT);
         grid.addRow(0, nameBox);

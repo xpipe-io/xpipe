@@ -126,6 +126,11 @@ def getBaseJvmArgs() {
             "--sun-misc-unsafe-memory-access=allow",
     ]
 
+    // Disable JDK26 warnings
+    jvmRunArgs += [
+            "--enable-final-field-mutation=io.xpipe.app"
+    ]
+
     // Module access fixes
     def appPackage = packageName(null)
     jvmRunArgs += [
