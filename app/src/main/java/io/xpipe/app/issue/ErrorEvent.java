@@ -143,7 +143,7 @@ public class ErrorEvent {
                     && Arrays.stream(s).map(String::toLowerCase).anyMatch(string -> throwable
                             .getMessage()
                             .toLowerCase(Locale.ROOT)
-                            .endsWith(string));
+                            .contains(string));
             if (contains) {
                 expected();
             }
