@@ -43,6 +43,7 @@ public class HashicorpVaultConfig implements Checkable {
 
     private final String vaultAddress;
     private final String vaultNamespace;
+    private final String vaultSignerMount;
 
     public static CacheableConfiguration<HashicorpVaultConfig> get() {
         return INSTANCE;
@@ -59,6 +60,7 @@ public class HashicorpVaultConfig implements Checkable {
     public static OptionsBuilder createOptions(Property<HashicorpVaultConfig> p) {
         var vaultAddress = new SimpleStringProperty(p.getValue().getVaultAddress());
         var vaultNamespace = new SimpleStringProperty(p.getValue().getVaultNamespace());
+        var vaultSignerMount = new SimpleStringProperty(p.getValue().getVaultSignerMount());
 
         return new OptionsBuilder()
                 .nameAndDescription("hashicorpVaultAddress")
@@ -72,11 +74,16 @@ public class HashicorpVaultConfig implements Checkable {
                 .nonNull()
                 .nameAndDescription("hashicorpVaultNamespace")
                 .addString(vaultNamespace)
+                .nameAndDescription("hashicorpVaultSignerMount")
+                .addComp(new TextFieldComp(vaultSignerMount).apply(textField -> textField.setPromptText("ssh-client-signer")), vaultSignerMount)
+                .documentationLink("https://developer.hashicorp.com/vault/docs/secrets/ssh/signed-ssh-certificates#signing-key-role-configuration")
                 .nameAndDescription("testConfig")
                 .addComp(new TestButtonComp(() -> {
                     p.getValue().checkInstalled();
 
                     p.getValue().checkConnectivity();
+
+                    p.getValue().checkMountPoint();
 
                     if (p.getValue().isLoginValid()) {
                         return true;
@@ -90,6 +97,7 @@ public class HashicorpVaultConfig implements Checkable {
                             return HashicorpVaultConfig.builder()
                                     .vaultAddress(vaultAddress.get())
                                     .vaultNamespace(vaultNamespace.get())
+                                    .vaultSignerMount(vaultSignerMount.get())
                                     .build();
                         },
                         p);
@@ -102,13 +110,14 @@ public class HashicorpVaultConfig implements Checkable {
     public void renew(String role, FilePath privateKey, FilePath certificate) throws Exception {
         var sc = LocalShell.get(HashicorpVaultConfig.class);
         var publicKey = SshIdentityStrategy.getPublicKeyPath(privateKey);
+        var mount = vaultSignerMount != null ? vaultSignerMount : "ssh-client-signer";
         var b = CommandBuilder.of()
-                .add("vault", "write", "ssh-client-signer/sign/" + role)
+                .add("vault", "write", mount + "/sign/" + role)
                 .addQuotedKeyValue("public_key", "@" + publicKey.toUnix().toString());
         addEnvironment(b);
         sc.command(b).execute();
         var signedB = CommandBuilder.of()
-                .add("vault", "write", "-field=signed_key", "ssh-client-signer/sign/" + role)
+                .add("vault", "write", "-field=signed_key", mount + "/sign/" + role)
                 .addQuotedKeyValue("public_key", "@" + publicKey.toUnix().toString());
         addEnvironment(signedB);
         var signedContent = sc.command(signedB).readStdoutOrThrow();
@@ -136,6 +145,18 @@ public class HashicorpVaultConfig implements Checkable {
     private void checkConnectivity() throws Exception {
         var sc = LocalShell.get(HashicorpVaultConfig.class);
         var b = CommandBuilder.of().add("vault", "status");
+        addEnvironment(b);
+        try {
+            sc.command(b).sensitive().execute();
+        } catch (ProcessOutputException pex) {
+            throw ErrorEventFactory.expected(pex);
+        }
+    }
+
+    private void checkMountPoint() throws Exception {
+        var sc = LocalShell.get(OpenBaoConfig.class);
+        var mount = vaultSignerMount != null ? vaultSignerMount : "ssh-client-signer";
+        var b = CommandBuilder.of().add("vault", "read", "-field=public_key " + mount + "/config/ca");
         addEnvironment(b);
         try {
             sc.command(b).sensitive().execute();

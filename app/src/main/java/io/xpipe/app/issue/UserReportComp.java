@@ -87,6 +87,7 @@ public class UserReportComp extends ModalOverlayContentComp {
 
         var infoHeader = new Label(AppI18n.get("additionalErrorInfo"));
         var tf = new TextArea();
+        tf.setWrapText(true);
         text.bind(tf.textProperty());
         VBox.setVgrow(tf, Priority.ALWAYS);
 
