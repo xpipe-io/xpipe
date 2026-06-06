@@ -5,6 +5,7 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.IntFieldComp;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.OsType;
 
 import javafx.beans.property.SimpleBooleanProperty;
@@ -49,7 +50,7 @@ public class DisplayCategory extends AppPrefsCategory {
                         .addToggle(prefs.censorMode)
                         .pref(prefs.limitedTouchscreenMode)
                         .addToggle(prefs.limitedTouchscreenMode)
-                        .hide(OsType.ofLocal() != OsType.LINUX))
+                        .hide(OsType.ofLocal() != OsType.LINUX || AppDistributionType.get() == AppDistributionType.WEBTOP))
                 .title("windowOptions")
                 .sub(new OptionsBuilder()
                         .pref(prefs.windowOpacity)

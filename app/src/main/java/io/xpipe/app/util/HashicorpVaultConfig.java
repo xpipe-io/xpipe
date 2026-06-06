@@ -12,6 +12,9 @@ import io.xpipe.app.process.*;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.terminal.TerminalLaunch;
 
+import io.xpipe.app.update.AppDistributionType;
+import io.xpipe.app.webtop.WebtopApp;
+import io.xpipe.app.webtop.WebtopAppListManager;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -47,6 +50,12 @@ public class HashicorpVaultConfig implements Checkable {
     }
 
     public static void showDialog() {
+        if (AppDistributionType.get() == AppDistributionType.WEBTOP) {
+            if (WebtopAppListManager.get().showDialogIfNeeded(WebtopApp.HASHICORP_VAULT)) {
+                return;
+            }
+        }
+
         var modal = ModalOverlay.of(
                 "hashicorpVault", createOptions(INSTANCE.getValue()).buildComp().prefWidth(500));
         modal.addButton(ModalButton.ok());

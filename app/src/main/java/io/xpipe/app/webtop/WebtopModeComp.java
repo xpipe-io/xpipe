@@ -38,6 +38,15 @@ public class WebtopModeComp extends SimpleRegionBuilder {
         group.getToggles().addAll(desktop, mobile);
         group.selectToggle(WebtopMode.isMobile() ? mobile : desktop);
         group.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue == null) {
+                return;
+            }
+
+            if (newValue == null) {
+                group.selectToggle(oldValue);
+                return;
+            }
+
             WebtopMode.set(newValue == mobile);
         });
 

@@ -127,10 +127,10 @@ public class AppLayoutModel {
         }, true);
         AppSizeBreakpoints.compactMode().subscribe(v -> {
             if (v) {
-                AppLayoutModel.get().getQueueEntries().add(toggleExpand);
+                getQueueEntries().add(toggleExpand);
                 portraitExpanded.set(false);
             } else {
-                AppLayoutModel.get().getQueueEntries().remove(toggleExpand);
+                getQueueEntries().remove(toggleExpand);
                 portraitExpanded.set(true);
             }
         });
@@ -244,6 +244,13 @@ public class AppLayoutModel {
                     null,
                     () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
                     null));
+            l.add(
+                    new Entry(
+                            AppI18n.observable("webtopMode"),
+                            new LabelGraphic.IconGraphic("mdi2t-tablet-cellphone"),
+                            null,
+                            () -> WebtopModeComp.showDialog(),
+                            null));
         } else {
             l.add(
                     new Entry(
@@ -257,7 +264,7 @@ public class AppLayoutModel {
                             AppI18n.observable("webtopAppList"),
                             new LabelGraphic.IconGraphic("mdi2a-archive-sync-outline"),
                             null,
-                            () -> WebtopAppListDialog.show(),
+                            () -> WebtopAppListDialog.show(null),
                             null));
         }
         return l;

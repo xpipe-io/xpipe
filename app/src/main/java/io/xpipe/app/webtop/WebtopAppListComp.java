@@ -19,7 +19,6 @@ public class WebtopAppListComp extends SimpleRegionBuilder {
     public WebtopAppListComp(ObservableList<WebtopApp> selected) {
         this.selected = selected;
         var m = WebtopAppListManager.get();
-        selected.addAll(m.getSelected());
         installed.addAll(m.getInstalled());
         available.addAll(m.getAvailable());
     }

@@ -37,10 +37,22 @@ public class WebtopAppListManager {
         INSTANCE = m;
 
         if (!INSTANCE.installed.containsAll(INSTANCE.selected)) {
-            WebtopAppListDialog.show();
+            WebtopAppListDialog.show(null);
         }
 
         AppPrefs.get().passwordManager().addListener((observable, oldValue, newValue) -> {
+            INSTANCE.showDialogIfNeeded();
+        });
+
+        AppPrefs.get().externalEditor().addListener((observable, oldValue, newValue) -> {
+            INSTANCE.showDialogIfNeeded();
+        });
+
+        AppPrefs.get().terminalType().addListener((observable, oldValue, newValue) -> {
+            INSTANCE.showDialogIfNeeded();
+        });
+
+        AppPrefs.get().terminalMultiplexer().addListener((observable, oldValue, newValue) -> {
             INSTANCE.showDialogIfNeeded();
         });
 
@@ -58,18 +70,24 @@ public class WebtopAppListManager {
     private final Set<WebtopApp> available = new LinkedHashSet<>();
     private final Set<WebtopApp> installed = new LinkedHashSet<>();
     private final Set<WebtopApp> selected = new LinkedHashSet<>();
-    private final Set<WebtopApp> additionalRequired = new LinkedHashSet<>();
 
-    public void showDialogIfNeeded(WebtopApp app) {
-        additionalRequired.add(app);
-        showDialogIfNeeded();
-    }
-
-    public void showDialogIfNeeded() {
+    public boolean showDialogIfNeeded(WebtopApp app) {
         var req = queryRequired();
         if (!installed.containsAll(req)) {
-            WebtopAppListDialog.show();
+            var l = new ArrayList<WebtopApp>();
+            l.addAll(req);
+            if (app != null && !l.contains(app)) {
+                l.add(app);
+            }
+            WebtopAppListDialog.show(l);
+            return true;
+        } else {
+            return false;
         }
+    }
+
+    public boolean showDialogIfNeeded() {
+        return showDialogIfNeeded(null);
     }
 
     void refreshSelected() throws Exception {
@@ -125,22 +143,29 @@ public class WebtopAppListManager {
             all.add(terminal.getRequiredWebtopApp());
         }
 
-        all.addAll(additionalRequired);
+        var editor = p.externalEditor().getValue();
+        if (editor != null) {
+            all.add(editor.getRequiredWebtopApp());
+        }
 
         return all.stream().filter(webtopApp -> webtopApp != null).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     private void load() throws Exception {
         var availableDir = Path.of("/apps/available");
-        try (var stream = Files.list(availableDir).sorted()) {
-            var availableFiles = stream.toList();
-            for (Path availableFile : availableFiles) {
-                var name = FilenameUtils.getBaseName(availableFile.getFileName().toString());
-                var app = WebtopApp.fromString(name);
-                if (app.isPresent()) {
-                    available.add(app.get());
+        if (Files.isDirectory(availableDir)) {
+            try (var stream = Files.list(availableDir).sorted()) {
+                var availableFiles = stream.toList();
+                for (Path availableFile : availableFiles) {
+                    var name = FilenameUtils.getBaseName(availableFile.getFileName().toString());
+                    var app = WebtopApp.fromString(name);
+                    if (app.isPresent()) {
+                        available.add(app.get());
+                    }
                 }
             }
+        } else {
+            available.addAll(Arrays.asList(WebtopApp.values()));
         }
 
         refreshInstalled();
@@ -157,13 +182,15 @@ public class WebtopAppListManager {
         var selectedDir = AppSystemInfo.ofCurrent().getUserHome().resolve(".xpipe", "webtop", "installed");
         Files.createDirectories(selectedDir);
         for (WebtopApp webtopApp : toInstall) {
-            Files.createFile(selectedDir.resolve(webtopApp.getId()));
+            if (!Files.exists(selectedDir.resolve(webtopApp.getId()))) {
+                Files.createFile(selectedDir.resolve(webtopApp.getId()));
+            }
             this.selected.add(webtopApp);
         }
 
         var command = "/apps/install.sh " + rem.stream()
                 .map(webtopApp -> webtopApp.getId())
                 .collect(Collectors.joining(" "));
-        TerminalLaunch.builder().title("Install").localScript(ShellScript.of(command)).launch();
+        TerminalLaunch.builder().title("Install packages").localScript(ShellScript.of(command)).pauseOnExit(false).launch();
     }
 }

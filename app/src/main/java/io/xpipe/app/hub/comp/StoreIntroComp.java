@@ -4,6 +4,7 @@ import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.IntroComp;
 import io.xpipe.app.comp.base.IntroListComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
+import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DocumentationLink;
@@ -31,6 +32,7 @@ public class StoreIntroComp extends SimpleRegionBuilder {
         docs.setButtonAction(() -> {
             DocumentationLink.INTRO.open();
         });
+        docs.hide(AppSizeBreakpoints.portraitMode());
 
         var list = new IntroListComp(List.of(hub, docs));
         return list.build();

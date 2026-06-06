@@ -433,7 +433,13 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     ExternalEditorType ZED_MACOS = new MacOsEditor("app.zed", "Zed", "https://zed.dev/");
 
-    LinuxType VSCODIUM_LINUX = new LinuxType("app.vscodium", "codium", "https://vscodium.com/", "com.vscodium.codium");
+    LinuxType VSCODIUM_LINUX = new LinuxType("app.vscodium", "codium", "https://vscodium.com/", "com.vscodium.codium") {
+
+        @Override
+        public WebtopApp getRequiredWebtopApp() {
+            return WebtopApp.VSCODIUM;
+        }
+    };
 
     LinuxType ANTIGRAVITY_LINUX = new LinuxType("app.antigravity", "antigravity", "https://antigravity.google/", null);
 

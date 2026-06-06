@@ -91,8 +91,8 @@ public class AppPrefsComp extends SimpleRegionBuilder {
         var sidebar = new AppPrefsSidebarComp();
         var sidebarWrapper = new StackComp(List.of(sidebar));
         sidebarWrapper.padding(new Insets(4));
-        sidebarWrapper.minWidth(150);
-        sidebarWrapper.maxWidth(350);
+        sidebarWrapper.minWidth(265);
+        sidebarWrapper.maxWidth(265);
 
         var split = new LeftSplitPaneComp(sidebarWrapper, RegionBuilder.of(() -> scrollPane));
         split.withInitialWidth(265);
