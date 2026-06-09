@@ -119,7 +119,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
                         p);
     }
 
-    private static KeePassXcAssociationKey associate() throws Exception {
+    private static synchronized KeePassXcAssociationKey associate() throws Exception {
         var found = findKeePassProxy();
         if (found.isEmpty()) {
             throw ErrorEventFactory.expected(new UnsupportedOperationException("No KeePassXC installation was found"));
@@ -137,14 +137,14 @@ public class KeePassXcPasswordManager implements PasswordManager {
         }
     }
 
-    public static void reset() {
+    public static synchronized void reset() {
         if (client != null) {
             client.disconnect();
             client = null;
         }
     }
 
-    private synchronized KeePassXcProxyClient getOrCreateClient() throws Exception {
+    private KeePassXcProxyClient getOrCreateClient() throws Exception {
         if (client == null) {
             var found = findKeePassProxy();
             if (found.isEmpty()) {
@@ -269,22 +269,21 @@ public class KeePassXcPasswordManager implements PasswordManager {
 
     @Override
     public Result query(String key) {
-        try {
-            var hasScheme = Pattern.compile("^\\w+://").matcher(key).find();
-            var fixedKey = hasScheme ? key : "https://" + key;
-            var isPrefs = this == AppPrefs.get().passwordManager().getValue();
-            var client = getOrCreateClient();
-            // The prefs value might be updated during the client creation
-            var effectiveKeys = isPrefs
-                    ? ((KeePassXcPasswordManager)
-                                    AppPrefs.get().passwordManager().getValue())
-                            .getAssociationKeys()
-                    : associationKeys;
-            var credentials = client.getCredentials(effectiveKeys, fixedKey);
-            return Result.of(credentials, null);
-        } catch (Exception e) {
-            ErrorEventFactory.fromThrowable(e).handle();
-            return null;
+        synchronized (KeePassXcPasswordManager.class) {
+            try {
+                var hasScheme = Pattern.compile("^\\w+://").matcher(key).find();
+                var fixedKey = hasScheme ? key : "https://" + key;
+                var isPrefs = this == AppPrefs.get().passwordManager().getValue();
+                var client = getOrCreateClient();
+                // The prefs value might be updated during the client creation
+                var effectiveKeys =
+                        isPrefs ? ((KeePassXcPasswordManager) AppPrefs.get().passwordManager().getValue()).getAssociationKeys() : associationKeys;
+                var credentials = client.getCredentials(effectiveKeys, fixedKey);
+                return Result.of(credentials, null);
+            } catch (Exception e) {
+                ErrorEventFactory.fromThrowable(e).handle();
+                return null;
+            }
         }
     }
 
