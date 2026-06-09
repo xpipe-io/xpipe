@@ -200,6 +200,11 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
         }
 
         @Override
+        public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+            return entries.stream().allMatch(browserEntry -> browserEntry.getRawFileEntry().getKind() == FileKind.FILE);
+        }
+
+        @Override
         protected String getExtension() {
             return "gz";
         }

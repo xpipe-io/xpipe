@@ -5,6 +5,7 @@ import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
@@ -83,6 +84,11 @@ public class ZipActionProvider implements BrowserActionProvider {
                     } else {
                         sc.command(command).execute();
                     }
+                }
+            } catch (ProcessOutputException pex) {
+                // Unix zip does not like empty dirs
+                if (!pex.getOutput().contains("Nothing to do")) {
+                    throw pex;
                 }
             } finally {
                 model.refreshSync();
