@@ -27,6 +27,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
     ExternalTerminalType WINDOWS_TERMINAL = new Standard();
     ExternalTerminalType WINDOWS_TERMINAL_PREVIEW = new Preview();
     ExternalTerminalType WINDOWS_TERMINAL_CANARY = new Canary();
+    ExternalTerminalType WINDOWS_INTELLIGENT_TERMINAL = new Intelligent();
 
     AtomicInteger windowCounter = new AtomicInteger(101);
 
@@ -339,6 +340,69 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             return AppSystemInfo.ofWindows()
                     .getLocalAppData()
                     .resolve("Packages\\Microsoft.WindowsTerminalCanary_8wekyb3d8bbwe\\LocalState\\settings.json");
+        }
+    }
+
+    class Intelligent implements WindowsTerminalType {
+
+        @Override
+        public boolean isRecommended() {
+            return false;
+        }
+
+        @Override
+        public String getWebsite() {
+            return "https://devblogs.microsoft.com/commandline/announcing-intelligent-terminal-version-0-1/";
+        }
+
+        @Override
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
+            if (!isAvailable()) {
+                throw ErrorEventFactory.expected(
+                        new IllegalArgumentException("Windows Intelligent Terminal is not installed at " + getPath()));
+            }
+
+            checkProfile();
+            try (var sc = LocalShell.getShell().start()) {
+                var exec = getPath();
+                var firstScriptFile = configuration.getPanes().getFirst().getScriptFile();
+                var spaces = firstScriptFile.toString().contains(" ");
+
+                if (spaces) {
+                    var wd = sc.view().pwd();
+                    sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
+                            .withWorkingDirectory(firstScriptFile.getParent())
+                            .execute();
+                    sc.view().cd(wd);
+                } else {
+                    sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
+                            .execute();
+                }
+            }
+        }
+
+        private Path getPath() {
+            return AppSystemInfo.ofWindows()
+                    .getLocalAppData()
+                    .resolve("Microsoft\\WindowsApps\\Microsoft.IntelligentTerminal_8wekyb3d8bbwe\\wtai.exe");
+        }
+
+        @Override
+        public boolean isAvailable() {
+            // The executable is a weird link
+            return Files.exists(getPath().getParent());
+        }
+
+        @Override
+        public String getId() {
+            return "app.windowsIntelligentTerminal";
+        }
+
+        @Override
+        public Path getConfigFile() {
+            return AppSystemInfo.ofWindows()
+                    .getLocalAppData()
+                    .resolve("Packages\\Microsoft.IntelligentTerminal_8wekyb3d8bbwe\\LocalState\\settings.json");
         }
     }
 }

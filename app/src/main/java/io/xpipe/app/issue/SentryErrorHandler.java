@@ -238,6 +238,7 @@ public class SentryErrorHandler implements ErrorHandler {
                         ee.isShouldSendDiagnostics() && !ee.getAttachments().isEmpty()));
         s.setTag("inStartup", Boolean.toString(AppOperationMode.isInStartup()));
         s.setTag("inShutdown", Boolean.toString(AppOperationMode.isInShutdown()));
+        s.setTag("inShutdownHook", Boolean.toString(AppOperationMode.isInShutdownHook()));
         s.setTag("unhandled", Boolean.toString(ee.isUnhandled()));
 
         s.setTag("diagnostics", Boolean.toString(ee.isShouldSendDiagnostics()));
