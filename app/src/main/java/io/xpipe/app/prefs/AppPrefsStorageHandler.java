@@ -54,7 +54,8 @@ public class AppPrefsStorageHandler {
                         }
                     }
                 } catch (IOException e) {
-                    ErrorEventFactory.fromThrowable(e).handle();
+                    ErrorEventFactory.fromThrowable(e).expected()
+                            .description("Settings file " + file + " is corrupt").handle();
                 }
             }
 

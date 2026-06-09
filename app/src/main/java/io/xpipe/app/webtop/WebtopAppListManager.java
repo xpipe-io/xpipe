@@ -35,10 +35,7 @@ public class WebtopAppListManager {
         var m = new  WebtopAppListManager();
         m.load();
         INSTANCE = m;
-
-        if (!INSTANCE.installed.containsAll(INSTANCE.selected)) {
-            WebtopAppListDialog.show(null);
-        }
+        INSTANCE.showDialogIfNeeded(null);
 
         AppPrefs.get().passwordManager().addListener((observable, oldValue, newValue) -> {
             INSTANCE.showDialogIfNeeded();

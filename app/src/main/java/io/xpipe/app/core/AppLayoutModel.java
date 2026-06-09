@@ -264,7 +264,7 @@ public class AppLayoutModel {
                             AppI18n.observable("webtopAppList"),
                             new LabelGraphic.IconGraphic("mdi2a-archive-sync-outline"),
                             null,
-                            () -> WebtopAppListDialog.show(null),
+                            () -> WebtopAppListDialog.show(List.of()),
                             null));
         }
         return l;

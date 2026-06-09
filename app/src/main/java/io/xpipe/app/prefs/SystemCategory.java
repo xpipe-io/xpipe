@@ -41,9 +41,7 @@ public class SystemCategory extends AppPrefsCategory {
                         .pref(prefs.hibernateBehaviour)
                         .addComp(ChoiceComp.ofTranslatable(
                                         prefs.hibernateBehaviour,
-                                        PrefsChoiceValue.getSupported(HibernateBehaviour.class).stream()
-                                                .filter(b -> b.isAvailable())
-                                                .toList(),
+                                        PrefsChoiceValue.getSupported(HibernateBehaviour.class),
                                         true)
                                 .maxWidth(getCompWidth())))
                 .title("shells")

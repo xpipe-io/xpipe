@@ -96,10 +96,10 @@ public class ChoicePaneComp extends RegionBuilder<VBox> {
                     vbox.getChildren().remove(1);
                 }
             } else {
-                var region = regionMap.computeIfAbsent(n, entry -> entry.comp().build());
-                if (vbox.getChildren().size() == 1) {
+                var region = regionMap.computeIfAbsent(n, entry -> entry.comp() != null ? entry.comp().build() : null);
+                if (vbox.getChildren().size() == 1 && region != null) {
                     vbox.getChildren().add(region);
-                } else {
+                } else if (region != null) {
                     vbox.getChildren().set(1, region);
                 }
             }

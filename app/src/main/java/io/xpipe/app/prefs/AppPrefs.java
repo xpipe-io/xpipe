@@ -429,7 +429,7 @@ public final class AppPrefs {
             .documentationLink(DocumentationLink.SSH_TROUBLESHOOT)
             .build());
     final StringProperty apiKey =
-            mapVaultShared(new GlobalStringProperty(UUID.randomUUID().toString()), "apiKey", String.class, true);
+            mapLocal(new GlobalStringProperty(UUID.randomUUID().toString()), "apiKey", String.class, true);
     final BooleanProperty disableApiAuthentication =
             mapLocal(new GlobalBooleanProperty(false), "disableApiAuthentication", Boolean.class, false);
     final BooleanProperty allowExternalApiRequests =
@@ -873,6 +873,18 @@ public final class AppPrefs {
 
         if (enableMcpServer.get()) {
             enableHttpApi.set(true);
+        }
+
+        if (hibernateBehaviour.getValue() != null && !hibernateBehaviour.getValue().isAvailable()) {
+            hibernateBehaviour.setValue(null);
+        }
+
+        if (AppDistributionType.get() == AppDistributionType.WEBTOP) {
+            var env = System.getenv("XPIPE_API_KEY");
+            if (env != null && !env.isEmpty()) {
+                enableHttpApi.set(true);
+                apiKey.setValue(env);
+            }
         }
 
         PrefsProvider.getAll().forEach(prov -> prov.fixLocalValues());

@@ -9,6 +9,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+import javafx.scene.text.TextAlignment;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 public class WebtopModeComp extends SimpleRegionBuilder {
@@ -26,6 +27,7 @@ public class WebtopModeComp extends SimpleRegionBuilder {
         desktop.setAlignment(Pos.CENTER);
         desktop.setContentDisplay(ContentDisplay.TOP);
         desktop.setWrapText(true);
+        desktop.setTextAlignment(TextAlignment.CENTER);
 
         var mobile = new ToggleButton();
         mobile.setGraphic(new FontIcon("mdi2t-tablet"));
@@ -33,6 +35,7 @@ public class WebtopModeComp extends SimpleRegionBuilder {
         mobile.setAlignment(Pos.CENTER);
         mobile.setContentDisplay(ContentDisplay.TOP);
         mobile.setWrapText(true);
+        mobile.setTextAlignment(TextAlignment.CENTER);
 
         var group = new ToggleGroup();
         group.getToggles().addAll(desktop, mobile);

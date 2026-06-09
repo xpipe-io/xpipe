@@ -27,11 +27,11 @@ public class WebtopMode {
             var file = AppSystemInfo.ofCurrent().getUserHome().resolve(".xpipe", "webtop", "mobile");
             if (!mobile) {
                 Files.deleteIfExists(file);
-                ExternalApplicationHelper.startAsync(CommandBuilder.of().add("bash", "-c").addQuoted("sleep 2 && /defaults/desktop.sh && plasmashell --replace && xpipe open"));
+                ExternalApplicationHelper.startAsync(CommandBuilder.of().add("bash", "-c").addQuoted("sleep 3 && /defaults/desktop.sh && plasmashell --replace && xpipe open"));
             } else {
                 Files.createDirectories(file.getParent());
                 Files.createFile(file);
-                ExternalApplicationHelper.startAsync(CommandBuilder.of().add("bash", "-c").addQuoted("sleep 2 && /defaults/mobile.sh && plasmashell --replace && xpipe open"));
+                ExternalApplicationHelper.startAsync(CommandBuilder.of().add("bash", "-c").addQuoted("sleep 3 && /defaults/mobile.sh && plasmashell --replace && xpipe open"));
             }
         });
     }

@@ -29,6 +29,10 @@ import java.util.UUID;
 
 public interface DataStoreProvider {
 
+    default WebtopApp getRequiredWebtopApp(DataStoreEntry entry) {
+        return null;
+    }
+
     default boolean allowCreation() {
         return true;
     }

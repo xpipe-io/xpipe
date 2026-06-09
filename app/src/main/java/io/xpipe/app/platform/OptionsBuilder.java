@@ -110,7 +110,7 @@ public class OptionsBuilder {
             Function<ComboBox<ChoicePaneComp.Entry>, Region> transformer) {
         var list = options.entrySet().stream()
                 .map(e -> new ChoicePaneComp.Entry(
-                        e.getKey(), e.getValue() != null ? e.getValue().buildComp() : RegionBuilder.empty()))
+                        e.getKey(), e.getValue() != null ? e.getValue().buildComp() : null))
                 .toList();
         var validatorList = options.values().stream()
                 .map(builder -> builder != null ? builder.buildEffectiveValidator() : new SimpleValidator())
