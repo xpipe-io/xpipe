@@ -1,5 +1,6 @@
 package io.xpipe.app.core.window;
 
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
@@ -81,6 +82,10 @@ public class AppModifiedStage extends Stage {
 
     @SneakyThrows
     private static void applyModes(Stage stage) {
+        if (AppOperationMode.isInShutdown()) {
+            return;
+        }
+
         if (stage.getScene() == null) {
             return;
         }
