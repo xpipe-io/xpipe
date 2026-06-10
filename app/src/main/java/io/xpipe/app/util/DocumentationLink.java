@@ -77,6 +77,7 @@ public enum DocumentationLink {
     SSH_CONFIG("guide/ssh#config-files"),
     SSH_KEYS("guide/ssh-auth#key-based-authentication"),
     SSH_OPTIONS("guide/ssh#adding-ssh-options"),
+    SSH_DISABLE_TIMEOUT("guide/ssh#connection-timeout"),
     SSH_X11("guide/ssh#x11-forwarding"),
     SSH_LIMITED("guide/ssh#limited--embedded-systems"),
     PSSESSION("guide/pssession"),
