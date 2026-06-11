@@ -84,7 +84,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             cmd.add("--profile").addQuoted("{021eff0f-b38a-45f9-895d-41467e9d510f}");
             cmd.add(scriptOpenCommand);
 
-            if (configuration.getPanes().size() > 0) {
+            if (configuration.getPanes().size() > 1) {
                 var targetPaneIndex = splitIterator.getTargetPaneIndex();
                 cmd.add(sc -> ShellDialects.isPowershell(sc) ? "`;" : ";");
                 cmd.add("mf", targetPaneIndex == 0 ? "first" : "previousInOrder");
