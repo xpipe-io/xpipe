@@ -1,6 +1,9 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.OsType;
 
@@ -11,6 +14,7 @@ public class TerminalMultiplexerManager {
     private static final Map<UUID, TerminalMultiplexer> connectionHubRequests = new HashMap<>();
     private static UUID pendingMultiplexerLaunch;
     private static UUID runningMultiplexerContainer;
+    private static Boolean availableOnWindows;
 
     public static void registerMultiplexerContainerLaunch(UUID uuid) {
         pendingMultiplexerLaunch = uuid;
@@ -42,6 +46,19 @@ public class TerminalMultiplexerManager {
         TerminalView.get().addListener(listener);
     }
 
+    public static boolean isAvailableOnWindows() {
+        if (availableOnWindows != null) {
+            return availableOnWindows;
+        }
+
+        try {
+            return (availableOnWindows = LocalShell.getShell().view().findProgram("zellij").isPresent());
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable(e).handle();
+            return (availableOnWindows = false);
+        }
+    }
+
     public static Optional<TerminalMultiplexer> getEffectiveMultiplexer() {
         var multiplexer = AppPrefs.get().terminalMultiplexer().getValue();
         if (multiplexer == null) {
@@ -53,9 +70,20 @@ public class TerminalMultiplexerManager {
             return Optional.empty();
         }
 
+        // Don't apply multiplexer on webtop if it is not installed yet
+        if (AppDistributionType.get() == AppDistributionType.WEBTOP) {
+            try {
+                if (!multiplexer.isSupported()) {
+                    return Optional.empty();
+                }
+            } catch (Exception e) {
+                ErrorEventFactory.fromThrowable(e).handle();
+            }
+        }
+
         if (OsType.ofLocal() == OsType.WINDOWS) {
             var hasProxy = AppPrefs.get().terminalProxy().getValue() != null;
-            if (!hasProxy) {
+            if (!hasProxy && multiplexer.requiresUnixEnvironment()) {
                 return Optional.empty();
             }
         }

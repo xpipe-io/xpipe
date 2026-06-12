@@ -49,6 +49,10 @@ public interface TerminalMultiplexer {
         return null;
     }
 
+    boolean requiresUnixEnvironment();
+
+    boolean isSupported() throws Exception;
+
     WebtopApp getRequiredWebtopApp();
 
     boolean supportsSplitView();

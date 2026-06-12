@@ -12,6 +12,7 @@ import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.*;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -22,6 +23,7 @@ import io.xpipe.app.util.OsType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -333,9 +335,11 @@ public class TerminalCategory extends AppPrefsCategory {
         var choice = choiceBuilder.build().buildComp();
         choice.maxWidth(600);
 
+        var testCounter = new SimpleIntegerProperty();
         var testDisabled = new SimpleBooleanProperty();
         var test = new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
                     testDisabled.set(true);
+                    testCounter.set(testCounter.getValue() + 1);
                     ThreadHelper.runFailableAsync(() -> {
                         try {
                             var term = AppPrefs.get().terminalType().getValue();
@@ -382,6 +386,9 @@ public class TerminalCategory extends AppPrefsCategory {
                 .documentationLink(DocumentationLink.TERMINAL_MULTIPLEXER)
                 .addComp(choice);
         if (OsType.ofLocal() == OsType.WINDOWS) {
+            options.disable(Bindings.createBooleanBinding(() -> {
+                return prefs.terminalProxy() == null && !TerminalMultiplexerManager.isAvailableOnWindows();
+            }, prefs.terminalProxy(), testCounter));
             options.disable(BindingsHelper.map(prefs.terminalProxy(), uuid -> uuid == null));
         }
         options.addComp(test).hide(prefs.terminalMultiplexer.isNull());

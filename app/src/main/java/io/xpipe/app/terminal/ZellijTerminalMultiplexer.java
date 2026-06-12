@@ -21,6 +21,22 @@ import java.util.List;
 public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
 
     @Override
+    public boolean requiresUnixEnvironment() {
+        return true;
+    }
+
+    @Override
+    public boolean isSupported() throws Exception {
+        if (OsType.ofLocal() == OsType.WINDOWS) {
+            var p = TerminalProxyManager.getProxy();
+            if (p.isPresent() && p.get().view().findProgram("zellij").isPresent()) {
+                return true;
+            }
+        }
+        return LocalShell.getShell().view().findProgram("zellij").isPresent();
+    }
+
+    @Override
     public WebtopApp getRequiredWebtopApp() {
         return WebtopApp.ZELLIJ;
     }
