@@ -49,10 +49,6 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             cmd.add("--pos").addQuoted(bounds.getX() + "," + (bounds.getY() + 20));
         }
 
-        // Start from high window index to guarantee that xpipe uses its own window
-        cmd.addIf(configuration.isPreferTabs(), "-w", "100", "nt")
-                .addIf(!configuration.isPreferTabs(), "-w", "" + windowCounter.getAndIncrement());
-
         if (configuration.getColor() != null) {
             cmd.add("--tabColor").addQuoted(configuration.getColor().toHexString());
         }
