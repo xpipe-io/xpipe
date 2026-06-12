@@ -894,6 +894,7 @@ public abstract class DataStorage {
                     c.add(entry);
                     return c.stream();
                 })
+                .filter(entry -> !entry.getUuid().equals(LOCAL_ID))
                 .toList();
         if (toDelete.isEmpty()) {
             return;
@@ -1049,6 +1050,10 @@ public abstract class DataStorage {
     }
 
     public void deleteStoreEntry(@NonNull DataStoreEntry entry) {
+        if (entry.getUuid().equals(LOCAL_ID)) {
+            return;
+        }
+
         finalizeWithDependencies(entry);
         this.storeEntries.remove(entry);
         synchronized (identityStoreEntryMapCache) {
