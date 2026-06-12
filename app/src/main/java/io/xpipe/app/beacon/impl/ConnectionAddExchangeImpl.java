@@ -20,14 +20,19 @@ public class ConnectionAddExchangeImpl extends ConnectionAddExchange {
             throw new BeaconClientException("Unable to parse store data into valid store");
         }
 
-        var found = DataStorage.get().getStoreEntryIfPresent(store, false);
-        if (found.isEmpty()) {
-            found = DataStorage.get().getStoreEntryIfPresent(msg.getName());
+        var foundStore = DataStorage.get().getStoreEntryIfPresent(store, false);
+        if (foundStore.isPresent()) {
+            return Response.builder().connection(foundStore.get().getUuid()).build();
         }
 
-        if (found.isPresent()) {
-            DataStorage.get().updateEntryStore(found.get(), store);
-            return Response.builder().connection(found.get().getUuid()).build();
+        var foundName = DataStorage.get().getStoreEntryIfPresent(msg.getName());
+        if (foundName.isPresent()) {
+            var foundNameStore = foundName.get().getStore();
+            // Only allow updates for the same type of store
+            if (foundNameStore != null && foundNameStore.getClass().equals(store.getClass())) {
+                DataStorage.get().updateEntryStore(foundName.get(), store);
+                return Response.builder().connection(foundName.get().getUuid()).build();
+            }
         }
 
         if (msg.getCategory() != null
