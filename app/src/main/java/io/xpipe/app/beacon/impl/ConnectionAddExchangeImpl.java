@@ -45,6 +45,8 @@ public class ConnectionAddExchangeImpl extends ConnectionAddExchange {
             DataStorage.get().addStoreEntryInProgress(entry);
             if (msg.getValidate()) {
                 entry.validateOrThrow();
+            } else {
+                store.checkComplete();
             }
         } catch (Throwable ex) {
             if (ex instanceof ValidationException) {
