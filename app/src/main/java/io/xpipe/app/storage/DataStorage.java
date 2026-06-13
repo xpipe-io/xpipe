@@ -451,7 +451,7 @@ public abstract class DataStorage {
         entry.finalizeEntry();
     }
 
-    public Collection<DataStoreEntryRef<?>> getDependencies(DataStoreEntry entry) {
+    public Set<DataStoreEntryRef<?>> getDependencies(DataStoreEntry entry) {
         var l = new HashSet<DataStoreEntryRef<?>>();
 
         var store = entry.getStore();
@@ -462,7 +462,9 @@ public abstract class DataStorage {
         var deps = store.getDependencies();
         l.addAll(deps);
         for (DataStoreEntryRef<?> dep : deps) {
-            l.addAll(getDependencies(dep.get()));
+            if (!l.contains(dep)) {
+                l.addAll(getDependencies(dep.get()));
+            }
         }
         return l;
     }
