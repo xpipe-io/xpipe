@@ -47,6 +47,12 @@ public class TerminalMultiplexerManager {
     }
 
     public static boolean isAvailableOnWindows() {
+        // TODO: It seems like zellij is still broken on Windows
+        // Check back later
+        if (true) {
+            return false;
+        }
+
         if (availableOnWindows != null) {
             return availableOnWindows;
         }
@@ -81,12 +87,6 @@ public class TerminalMultiplexerManager {
             }
         }
 
-        if (OsType.ofLocal() == OsType.WINDOWS) {
-            var hasProxy = AppPrefs.get().terminalProxy().getValue() != null;
-            if (!hasProxy && multiplexer.requiresUnixEnvironment()) {
-                return Optional.empty();
-            }
-        }
 
         return Optional.of(multiplexer);
     }

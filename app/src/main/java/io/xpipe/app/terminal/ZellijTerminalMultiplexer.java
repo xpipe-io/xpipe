@@ -22,6 +22,8 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
 
     @Override
     public boolean requiresUnixEnvironment() {
+        // TODO: It seems like zellij is still broken on Windows
+        // Check back later
         return true;
     }
 
@@ -68,8 +70,8 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                 config.getPanes().getFirst().getDialectLaunchCommand().buildSimple();
         l.addAll(List.of(
                 "zellij attach --create-background xpipe",
-                "zellij -s xpipe action new-tab --name \"" + escape(config.getColoredTitle(), false, true) + "\"",
-                "zellij -s xpipe action write-chars -- " + escape(" " + firstCommand, true, true) + "\\;exit",
+                "zellij -s xpipe action new-tab --name \"" + escape(control, config.getColoredTitle(), false, true) + "\"",
+                "zellij -s xpipe action write-chars -- " + escape(control, " " + firstCommand, true, true) + getCommandExitLiteral(control),
                 "zellij -s xpipe action clear",
                 "zellij -s xpipe action write 10"));
 
@@ -88,9 +90,9 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                 l.addAll(List.of(
                         "zellij -s xpipe action new-pane " + directionString
                                 + " --name \""
-                                + escape(config.getPanes().get(i).getTitle(), false, true)
+                                + escape(control, config.getPanes().get(i).getTitle(), false, true)
                                 + "\"",
-                        "zellij -s xpipe action write-chars -- " + escape(" " + iCommand, true, true) + "\\;exit",
+                        "zellij -s xpipe action write-chars -- " + escape(control, " " + iCommand, true, true) + getCommandExitLiteral(control),
                         "zellij -s xpipe action clear",
                         "zellij -s xpipe action write 10",
                         "zellij -s xpipe action focus-next-pane"));
@@ -121,27 +123,24 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
             control.view().writeTextFile(configFile, configText + "\n" + "show_startup_tips false");
         }
 
-        var l = new ArrayList<String>();
         var firstConfig = config.getPanes().getFirst();
         var firstCommand = firstConfig.getDialectLaunchCommand().buildSimple();
-        l.add("zellij attach xpipe");
 
-        var sc = TerminalProxyManager.getProxy().orElse(LocalShell.getShell());
         // Set proper env variables for a terminal
-        try (var sub = sc.identicalDialectSubShell().start()) {
+        try (var sub = control.identicalDialectSubShell().start()) {
             sub.writeLine(sub.getShellDialect().prepareTerminalEnvironmentCommands(true));
-            sub.command("zellij delete-session -f xpipe > /dev/null 2>&1").executeAndCheck();
+            sub.command("zellij delete-session -f xpipe").executeAndCheck();
             sub.command("zellij attach --create-background xpipe").executeAndCheck();
         }
 
         var asyncLines = new ArrayList<String>();
         asyncLines.addAll(List.of(
                 "sleep 0.5",
-                "zellij -s xpipe action new-tab --name \"" + escape(config.getColoredTitle(), false, true) + "\"",
+                "zellij -s xpipe action new-tab --name \"" + escape(control, config.getColoredTitle(), false, true) + "\"",
                 "sleep 0.5",
                 "zellij -s xpipe action go-to-tab 2",
                 "sleep 0.5",
-                "zellij -s xpipe action write-chars -- " + escape(" " + firstCommand, true, true) + "\\;exit",
+                "zellij -s xpipe action write-chars -- " + escape(control, " " + firstCommand, true, true) + getCommandExitLiteral(control),
                 "zellij -s xpipe action clear",
                 "zellij -s xpipe action write 10",
                 "zellij -s xpipe action go-to-tab 1",
@@ -160,8 +159,8 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                         : "--direction down";
                 asyncLines.addAll(List.of(
                         "zellij -s xpipe action new-pane " + directionString + " --name \""
-                                + escape(config.getPanes().get(i).getTitle(), false, true) + "\"",
-                        "zellij -s xpipe action write-chars -- " + escape(" " + iCommand, true, true) + "\\;exit",
+                                + escape(control, config.getPanes().get(i).getTitle(), false, true) + "\"",
+                        "zellij -s xpipe action write-chars -- " + escape(control, " " + iCommand, true, true) + getCommandExitLiteral(control),
                         "zellij -s xpipe action clear",
                         "zellij -s xpipe action write 10",
                         "zellij -s xpipe action focus-next-pane"));
@@ -174,9 +173,16 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
             @SneakyThrows
             public void onSessionOpened(TerminalView.ShellSession session) {
                 TerminalView.get().removeListener(this);
+
+                // We might have changed the prefs meanwhile
+                var isActive = TerminalMultiplexerManager.getEffectiveMultiplexer()
+                        .map(terminalMultiplexer -> terminalMultiplexer == ZellijTerminalMultiplexer.this).orElse(false);
+                if (!isActive) {
+                    return;
+                }
+
                 ThreadHelper.runFailableAsync(() -> {
-                    var sc = TerminalProxyManager.getProxy().orElse(LocalShell.getShell());
-                    var command = sc.command(String.join("\n", asyncLines));
+                    var command = control.command(String.join("\n", asyncLines));
                     // Zellij sometimes freezes
                     command.killOnTimeout(CountDown.of().start(10_000));
                     command.executeAndCheck();
@@ -185,7 +191,14 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
         };
         TerminalView.get().addListener(listener);
 
+        var l = new ArrayList<String>();
+        l.add("zellij attach xpipe");
+        l.add("Start-Sleep -s 50");
         return ShellScript.lines(l);
+    }
+
+    private String getCommandExitLiteral(ShellControl sc) {
+        return sc.getOsType() == OsType.WINDOWS ? "`;exit" : "\\;exit";
     }
 
     private FilePath getConfigFile(ShellControl sc) throws Exception {
@@ -193,6 +206,10 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
             return sc.view()
                     .userHome()
                     .join("Library", "Application Support", "org.Zellij-Contributors.Zellij", "config.kdl");
+        } else if (sc.getOsType() == OsType.WINDOWS) {
+            return sc.view()
+                    .userHome()
+                    .join(".config", "zellij", "config.kdl");
         } else {
             return sc.view()
                     .getEnvironmentVariable("XDG_HOME")
@@ -202,13 +219,14 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
         }
     }
 
-    private String escape(String s, boolean spaces, boolean quotes) {
-        var r = s.replaceAll("\\\\", "\\\\\\\\");
+    private String escape(ShellControl sc, String s, boolean spaces, boolean quotes) {
+        var escapeString = sc.getOsType() == OsType.WINDOWS ? "`" : "\\\\";
+        var r = s.replaceAll(escapeString, escapeString + escapeString);
         if (quotes) {
-            r = r.replaceAll("\"", "\\\\\"");
+            r = r.replaceAll("\"", escapeString + "'");
         }
         if (spaces) {
-            r = r.replaceAll(" ", "\\\\ ");
+            r = r.replaceAll(" ", escapeString + " ");
         }
         return r;
     }

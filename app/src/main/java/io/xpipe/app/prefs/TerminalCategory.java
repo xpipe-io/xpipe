@@ -387,8 +387,12 @@ public class TerminalCategory extends AppPrefsCategory {
                 .addComp(choice);
         if (OsType.ofLocal() == OsType.WINDOWS) {
             options.disable(Bindings.createBooleanBinding(() -> {
+                if (prefs.terminalMultiplexer.getValue() != null) {
+                    return false;
+                }
+
                 return TerminalProxyManager.getProxy().isEmpty() && !TerminalMultiplexerManager.isAvailableOnWindows();
-            }, prefs.terminalProxy(), testCounter));
+            }, prefs.terminalProxy(), prefs.terminalMultiplexer(), testCounter));
         }
         options.addComp(test).hide(prefs.terminalMultiplexer.isNull());
         return options;

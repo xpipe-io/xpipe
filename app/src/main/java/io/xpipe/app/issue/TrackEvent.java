@@ -82,7 +82,7 @@ public class TrackEvent {
                         ? "\n"
                                 + (valueString
                                         .lines()
-                                        .map(line -> "    | " + line)
+                                        .map(line -> "    " + line)
                                         .collect(Collectors.joining("\n")))
                         : valueString;
                 s.append("    ").append(e.getKey()).append("=").append(value).append("\n");

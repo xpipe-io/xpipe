@@ -240,7 +240,7 @@ public class TerminalLauncher {
         }
 
         if (OsType.ofLocal() == OsType.WINDOWS && multiplexer.get().requiresUnixEnvironment() && TerminalProxyManager.getProxy().isEmpty()) {
-            throw ErrorEventFactory.expected(new IllegalStateException("Terminal multiplexer is only supported with a WSL terminal environment on Windows"));
+            throw ErrorEventFactory.expected(new IllegalStateException("The currently active terminal multiplexer is only supported with a WSL terminal environment on Windows"));
         }
 
         var control = TerminalProxyManager.getProxy().orElse(LocalShell.getShell());
