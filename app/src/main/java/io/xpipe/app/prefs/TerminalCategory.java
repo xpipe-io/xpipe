@@ -387,14 +387,10 @@ public class TerminalCategory extends AppPrefsCategory {
                 .addComp(choice);
         if (OsType.ofLocal() == OsType.WINDOWS) {
             options.disable(Bindings.createBooleanBinding(() -> {
-                return prefs.terminalProxy() == null && !TerminalMultiplexerManager.isAvailableOnWindows();
+                return TerminalProxyManager.getProxy().isEmpty() && !TerminalMultiplexerManager.isAvailableOnWindows();
             }, prefs.terminalProxy(), testCounter));
-            options.disable(BindingsHelper.map(prefs.terminalProxy(), uuid -> uuid == null));
         }
         options.addComp(test).hide(prefs.terminalMultiplexer.isNull());
-        if (OsType.ofLocal() == OsType.WINDOWS) {
-            options.disable(BindingsHelper.map(prefs.terminalProxy(), uuid -> uuid == null));
-        }
         return options;
     }
 

@@ -244,13 +244,6 @@ public class AppLayoutModel {
                     null,
                     () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
                     null));
-            l.add(
-                    new Entry(
-                            AppI18n.observable("webtopMode"),
-                            new LabelGraphic.IconGraphic("mdi2t-tablet-cellphone"),
-                            null,
-                            () -> WebtopModeComp.showDialog(),
-                            null));
         } else {
             l.add(
                     new Entry(
