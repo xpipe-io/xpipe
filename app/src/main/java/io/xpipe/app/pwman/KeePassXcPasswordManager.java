@@ -279,11 +279,11 @@ public class KeePassXcPasswordManager implements PasswordManager {
             try {
                 var hasScheme = Pattern.compile("^\\w+://").matcher(key).find();
                 var fixedKey = hasScheme ? key : "https://" + key;
-                var isPrefs = this == AppPrefs.get().passwordManager().getValue();
                 var client = getOrCreateClient();
                 // The prefs value might be updated during the client creation
-                var effectiveKeys =
-                        isPrefs ? ((KeePassXcPasswordManager) AppPrefs.get().passwordManager().getValue()).getAssociationKeys() : associationKeys;
+                // We should always apply the prefs value configuration
+                var isPrefs = this == AppPrefs.get().passwordManager().getValue();
+                var effectiveKeys = !isPrefs ? ((KeePassXcPasswordManager) AppPrefs.get().passwordManager().getValue()).getAssociationKeys() : associationKeys;
                 var credentials = client.getCredentials(effectiveKeys, fixedKey);
                 return Result.of(credentials, null);
             } catch (Exception e) {

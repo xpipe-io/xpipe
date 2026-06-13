@@ -27,6 +27,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
     ExternalTerminalType WINDOWS_TERMINAL = new Standard();
     ExternalTerminalType WINDOWS_TERMINAL_PREVIEW = new Preview();
     ExternalTerminalType WINDOWS_TERMINAL_CANARY = new Canary();
+    ExternalTerminalType WINDOWS_INTELLIGENT_TERMINAL = new Intelligent();
 
     AtomicInteger windowCounter = new AtomicInteger(101);
 
@@ -47,10 +48,6 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             var bounds = NativeWinWindowControl.MAIN_WINDOW.getBounds();
             cmd.add("--pos").addQuoted(bounds.getX() + "," + (bounds.getY() + 20));
         }
-
-        // Start from high window index to guarantee that xpipe uses its own window
-        cmd.addIf(configuration.isPreferTabs(), "-w", "100", "nt")
-                .addIf(!configuration.isPreferTabs(), "-w", "" + windowCounter.getAndIncrement());
 
         if (configuration.getColor() != null) {
             cmd.add("--tabColor").addQuoted(configuration.getColor().toHexString());
@@ -83,13 +80,15 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             cmd.add("--profile").addQuoted("{021eff0f-b38a-45f9-895d-41467e9d510f}");
             cmd.add(scriptOpenCommand);
 
-            var targetPaneIndex = splitIterator.getTargetPaneIndex();
-            cmd.add(sc -> ShellDialects.isPowershell(sc) ? "`;" : ";");
-            cmd.add("mf", targetPaneIndex == 0 ? "first" : "previousInOrder");
-            if (targetPaneIndex > 0) {
+            if (configuration.getPanes().size() > 1) {
+                var targetPaneIndex = splitIterator.getTargetPaneIndex();
                 cmd.add(sc -> ShellDialects.isPowershell(sc) ? "`;" : ";");
-                cmd.add("mf");
-                cmd.add("previousInOrder");
+                cmd.add("mf", targetPaneIndex == 0 ? "first" : "previousInOrder");
+                if (targetPaneIndex > 0) {
+                    cmd.add(sc -> ShellDialects.isPowershell(sc) ? "`;" : ";");
+                    cmd.add("mf");
+                    cmd.add("previousInOrder");
+                }
             }
         }
         return cmd;
@@ -339,6 +338,69 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             return AppSystemInfo.ofWindows()
                     .getLocalAppData()
                     .resolve("Packages\\Microsoft.WindowsTerminalCanary_8wekyb3d8bbwe\\LocalState\\settings.json");
+        }
+    }
+
+    class Intelligent implements WindowsTerminalType {
+
+        @Override
+        public boolean isRecommended() {
+            return false;
+        }
+
+        @Override
+        public String getWebsite() {
+            return "https://devblogs.microsoft.com/commandline/announcing-intelligent-terminal-version-0-1/";
+        }
+
+        @Override
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
+            if (!isAvailable()) {
+                throw ErrorEventFactory.expected(
+                        new IllegalArgumentException("Windows Intelligent Terminal is not installed at " + getPath()));
+            }
+
+            checkProfile();
+            try (var sc = LocalShell.getShell().start()) {
+                var exec = getPath();
+                var firstScriptFile = configuration.getPanes().getFirst().getScriptFile();
+                var spaces = firstScriptFile.toString().contains(" ");
+
+                if (spaces) {
+                    var wd = sc.view().pwd();
+                    sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
+                            .withWorkingDirectory(firstScriptFile.getParent())
+                            .execute();
+                    sc.view().cd(wd);
+                } else {
+                    sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
+                            .execute();
+                }
+            }
+        }
+
+        private Path getPath() {
+            return AppSystemInfo.ofWindows()
+                    .getLocalAppData()
+                    .resolve("Microsoft\\WindowsApps\\Microsoft.IntelligentTerminal_8wekyb3d8bbwe\\wtai.exe");
+        }
+
+        @Override
+        public boolean isAvailable() {
+            // The executable is a weird link
+            return Files.exists(getPath().getParent());
+        }
+
+        @Override
+        public String getId() {
+            return "app.windowsIntelligentTerminal";
+        }
+
+        @Override
+        public Path getConfigFile() {
+            return AppSystemInfo.ofWindows()
+                    .getLocalAppData()
+                    .resolve("Packages\\Microsoft.IntelligentTerminal_8wekyb3d8bbwe\\LocalState\\settings.json");
         }
     }
 }

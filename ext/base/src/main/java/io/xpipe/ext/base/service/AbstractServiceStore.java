@@ -15,6 +15,9 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 @SuperBuilder(toBuilder = true)
 @Getter
 @EqualsAndHashCode
@@ -49,6 +52,15 @@ public abstract class AbstractServiceStore
         Validators.nonNull(serviceProtocolType);
         if (getHost() == null) {
             Validators.nonNull(getAddress());
+        }
+
+        var addr = serviceProtocolType.formatAddress(getOpenTargetUrl());
+        if (addr != null) {
+            try {
+                URI.create(addr);
+            } catch (IllegalArgumentException e) {
+                throw new ValidationException(e.getMessage());
+            }
         }
     }
 

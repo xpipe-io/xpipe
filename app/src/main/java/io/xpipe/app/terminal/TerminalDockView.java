@@ -319,7 +319,7 @@ public class TerminalDockView implements WindowDockListener {
         updatePositions();
     }
 
-    public void attach() {
+    public synchronized void attach() {
         if (viewBounds == null) {
             return;
         }

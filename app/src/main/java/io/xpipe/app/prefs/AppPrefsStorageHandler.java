@@ -1,5 +1,6 @@
 package io.xpipe.app.prefs;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;

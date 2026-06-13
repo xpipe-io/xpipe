@@ -130,9 +130,13 @@ public class AppBeaconServer {
     private void deleteAuthSecret() {
         var file = AppProperties.get().getBeaconAuthFile();
         try {
-            Files.delete(file);
-            localLockFileLock.release();
-            localLockFileChannel.close();
+            Files.deleteIfExists(file);
+            if (localLockFileLock != null) {
+                localLockFileLock.release();
+            }
+            if (localLockFileChannel != null) {
+                localLockFileChannel.close();
+            }
         } catch (IOException ignored) {}
     }
 

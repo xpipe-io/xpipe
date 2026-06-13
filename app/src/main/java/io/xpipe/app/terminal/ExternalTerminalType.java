@@ -484,11 +484,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             CMD,
             PWSH,
             POWERSHELL,
+            TabbyTerminalType.TABBY_WINDOWS,
+            WindowsTerminalType.WINDOWS_INTELLIGENT_TERMINAL,
             MOBAXTERM,
             SECURECRT,
             TERMIUS,
             XSHELL,
-            TabbyTerminalType.TABBY_WINDOWS,
             WaveTerminalType.WAVE_WINDOWS);
     List<ExternalTerminalType> LINUX_TERMINALS = List.of(
             AlacrittyTerminalType.ALACRITTY_LINUX,

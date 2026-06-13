@@ -451,7 +451,7 @@ public abstract class DataStorage {
         entry.finalizeEntry();
     }
 
-    public Collection<DataStoreEntryRef<?>> getDependencies(DataStoreEntry entry) {
+    public Set<DataStoreEntryRef<?>> getDependencies(DataStoreEntry entry) {
         var l = new HashSet<DataStoreEntryRef<?>>();
 
         var store = entry.getStore();
@@ -462,7 +462,9 @@ public abstract class DataStorage {
         var deps = store.getDependencies();
         l.addAll(deps);
         for (DataStoreEntryRef<?> dep : deps) {
-            l.addAll(getDependencies(dep.get()));
+            if (!l.contains(dep)) {
+                l.addAll(getDependencies(dep.get()));
+            }
         }
         return l;
     }
@@ -894,6 +896,7 @@ public abstract class DataStorage {
                     c.add(entry);
                     return c.stream();
                 })
+                .filter(entry -> !entry.getUuid().equals(LOCAL_ID))
                 .toList();
         if (toDelete.isEmpty()) {
             return;
@@ -1049,6 +1052,10 @@ public abstract class DataStorage {
     }
 
     public void deleteStoreEntry(@NonNull DataStoreEntry entry) {
+        if (entry.getUuid().equals(LOCAL_ID)) {
+            return;
+        }
+
         finalizeWithDependencies(entry);
         this.storeEntries.remove(entry);
         synchronized (identityStoreEntryMapCache) {

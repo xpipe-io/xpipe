@@ -685,14 +685,12 @@ public class DataStoreEntry extends StorageElement {
             return;
         }
 
-        if (!(store instanceof ValidatableStore l)) {
-            return;
-        }
-
         try {
-            store.checkComplete();
             incrementBusyCounter();
-            l.validate();
+            store.checkComplete();
+            if ((store instanceof ValidatableStore l)) {
+                l.validate();
+            }
         } finally {
             decrementBusyCounter();
         }
