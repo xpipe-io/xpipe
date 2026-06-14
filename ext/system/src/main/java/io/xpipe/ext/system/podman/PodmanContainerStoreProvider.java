@@ -48,7 +48,7 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
     @Override
     public DataStoreEntry getDisplayParent(DataStoreEntry store) {
         PodmanContainerStore s = store.getStore().asNeeded();
-        return s.getCmd().get();
+        return s.getCmd() != null ? s.getCmd().get() : null;
     }
 
     @Override
