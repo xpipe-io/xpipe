@@ -16,6 +16,7 @@ import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.FileReference;
@@ -57,6 +58,10 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
             boolean save,
             boolean directory,
             Predicate<DataStoreEntry> filter) {
+        if (store.get() == null && DataStorage.get().getStoreEntries().stream().noneMatch(filter)) {
+            return;
+        }
+
         var model = new BrowserFileChooserSessionModel(directory);
         model.setOnFinish(fileStores -> {
             file.accept(fileStores.size() > 0 ? fileStores.getFirst() : null);

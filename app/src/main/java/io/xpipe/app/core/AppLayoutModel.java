@@ -6,6 +6,7 @@ import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.hub.comp.StoreLayoutComp;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.LabelGraphic;
@@ -242,7 +243,7 @@ public class AppLayoutModel {
                     AppI18n.observable("webtop"),
                     new LabelGraphic.IconGraphic("mdal-desktop_mac"),
                     null,
-                    () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
+                    () -> ProcessControlProvider.get().showWebtopDeploymentDialog(),
                     null));
         } else {
             l.add(

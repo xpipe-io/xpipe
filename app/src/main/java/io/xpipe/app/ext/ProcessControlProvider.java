@@ -89,4 +89,6 @@ public abstract class ProcessControlProvider {
             CommandBuilder b, String prefix, UUID requestId, UUID secretId, String... askpassName);
 
     public abstract void refreshWsl();
+
+    public abstract void showWebtopDeploymentDialog();
 }
