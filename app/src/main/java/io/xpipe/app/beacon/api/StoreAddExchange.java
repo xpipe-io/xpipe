@@ -16,13 +16,19 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.List;
 import java.util.UUID;
 
-public class ConnectionAddExchange extends BeaconInterface<ConnectionAddExchange.Request> {
+public class StoreAddExchange extends BeaconInterface<StoreAddExchange.Request> {
 
     @Override
     public String getPath() {
-        return "/connection/add";
+        return "/store/add";
+    }
+
+    @Override
+    public List<String> getPathAliases() {
+        return List.of("/connection/add");
     }
 
     @Override
@@ -34,7 +40,7 @@ public class ConnectionAddExchange extends BeaconInterface<ConnectionAddExchange
 
         var foundStore = DataStorage.get().getStoreEntryIfPresent(store, false);
         if (foundStore.isPresent()) {
-            return Response.builder().connection(foundStore.get().getUuid()).build();
+            return Response.builder().store(foundStore.get().getUuid()).build();
         }
 
         var foundName = DataStorage.get().getStoreEntryIfPresent(msg.getName());
@@ -43,7 +49,7 @@ public class ConnectionAddExchange extends BeaconInterface<ConnectionAddExchange
             // Only allow updates for the same type of store
             if (foundNameStore != null && foundNameStore.getClass().equals(store.getClass())) {
                 DataStorage.get().updateEntryStore(foundName.get(), store);
-                return Response.builder().connection(foundName.get().getUuid()).build();
+                return Response.builder().store(foundName.get().getUuid()).build();
             }
         }
 
@@ -88,7 +94,7 @@ public class ConnectionAddExchange extends BeaconInterface<ConnectionAddExchange
                                     .orElseThrow());
         }
 
-        return Response.builder().connection(entry.getUuid()).build();
+        return Response.builder().store(entry.getUuid()).build();
     }
 
     @Override
@@ -117,6 +123,6 @@ public class ConnectionAddExchange extends BeaconInterface<ConnectionAddExchange
     @Value
     public static class Response {
         @NonNull
-        UUID connection;
+        UUID store;
     }
 }

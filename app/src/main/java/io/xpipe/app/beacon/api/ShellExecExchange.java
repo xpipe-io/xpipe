@@ -23,7 +23,7 @@ public class ShellExecExchange extends BeaconInterface<ShellExecExchange.Request
     @Override
     @SneakyThrows
     public Object handle(HttpExchange exchange, Request msg) {
-        var existing = AppBeaconServer.get().getCache().getShellSession(msg.getConnection());
+        var existing = AppBeaconServer.get().getCache().getShellSession(msg.getStore());
         AtomicReference<String> out = new AtomicReference<>();
         AtomicReference<String> err = new AtomicReference<>();
         long exitCode;
@@ -46,7 +46,7 @@ public class ShellExecExchange extends BeaconInterface<ShellExecExchange.Request
     @Value
     public static class Request {
         @NonNull
-        UUID connection;
+        UUID store;
 
         @NonNull
         String command;

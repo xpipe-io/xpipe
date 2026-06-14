@@ -22,7 +22,7 @@ public class ShellStopExchange extends BeaconInterface<ShellStopExchange.Request
     @Override
     @SneakyThrows
     public Object handle(HttpExchange exchange, Request msg) {
-        var e = AppBeaconServer.get().getCache().getShellSession(msg.getConnection());
+        var e = AppBeaconServer.get().getCache().getShellSession(msg.getStore());
         e.getControl().close();
         AppBeaconServer.get().getCache().getShellSessions().remove(e);
         return Response.builder().build();
@@ -33,7 +33,7 @@ public class ShellStopExchange extends BeaconInterface<ShellStopExchange.Request
     @Value
     public static class Request {
         @NonNull
-        UUID connection;
+        UUID store;
     }
 
     @Jacksonized

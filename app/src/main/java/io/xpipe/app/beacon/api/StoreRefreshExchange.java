@@ -4,34 +4,38 @@ import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.beacon.BeaconClientException;
 import io.xpipe.app.beacon.BeaconInterface;
 
+import io.xpipe.app.ext.FixedHierarchyStore;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreEntry;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class ConnectionRemoveExchange extends BeaconInterface<ConnectionRemoveExchange.Request> {
+public class StoreRefreshExchange extends BeaconInterface<StoreRefreshExchange.Request> {
 
     @Override
     public String getPath() {
-        return "/connection/remove";
+        return "/store/refresh";
     }
 
     @Override
-    public Object handle(HttpExchange exchange, Request msg) throws BeaconClientException {
-        var entries = new ArrayList<DataStoreEntry>();
-        for (UUID uuid : msg.getConnections()) {
-            var e = DataStorage.get()
-                    .getStoreEntryIfPresent(uuid)
-                    .orElseThrow(() -> new BeaconClientException("Unknown connection: " + uuid));
-            entries.add(e);
+    public List<String> getPathAliases() {
+        return List.of("/connection/refresh");
+    }
+
+    @Override
+    public Object handle(HttpExchange exchange, Request msg) throws Throwable {
+        var e = DataStorage.get()
+                .getStoreEntryIfPresent(msg.getStore())
+                .orElseThrow(() -> new BeaconClientException("Unknown  store: " + msg.getStore()));
+        if (e.getStore() instanceof FixedHierarchyStore) {
+            DataStorage.get().refreshChildren(e, true);
+        } else {
+            e.validateOrThrow();
         }
-        DataStorage.get().deleteWithChildren(entries.toArray(DataStoreEntry[]::new));
         return Response.builder().build();
     }
 
@@ -45,7 +49,7 @@ public class ConnectionRemoveExchange extends BeaconInterface<ConnectionRemoveEx
     @Value
     public static class Request {
         @NonNull
-        List<UUID> connections;
+        UUID store;
     }
 
     @Jacksonized

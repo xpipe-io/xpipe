@@ -56,12 +56,20 @@ public abstract class BeaconInterface<T> {
 
     public abstract String getPath();
 
+    public List<String> getPathAliases() {
+        return List.of();
+    }
+
     public Object handle(HttpExchange exchange, T body) throws Throwable {
         throw new UnsupportedOperationException();
     }
 
     public boolean readRawRequestBody() {
         return false;
+    }
+
+    public boolean requiresBody() {
+        return true;
     }
 
     public boolean requiresEnabledApi() {

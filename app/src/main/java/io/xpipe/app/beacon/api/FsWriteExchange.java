@@ -25,7 +25,7 @@ public class FsWriteExchange extends BeaconInterface<FsWriteExchange.Request> {
     @Override
     @SneakyThrows
     public Object handle(HttpExchange exchange, Request msg) {
-        var shell = AppBeaconServer.get().getCache().getShellSession(msg.getConnection());
+        var shell = AppBeaconServer.get().getCache().getShellSession(msg.getStore());
         var fs = new ConnectionFileSystem(shell.getControl());
         try (var in = BlobManager.get().getBlob(msg.getBlob());
              var os = fs.openOutput(msg.getPath(), in.available())) {
@@ -39,7 +39,7 @@ public class FsWriteExchange extends BeaconInterface<FsWriteExchange.Request> {
     @Value
     public static class Request {
         @NonNull
-        UUID connection;
+        UUID store;
 
         @NonNull
         UUID blob;

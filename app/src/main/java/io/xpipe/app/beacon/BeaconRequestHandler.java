@@ -96,6 +96,11 @@ public class BeaconRequestHandler<T> implements HttpHandler {
                 }
             }
 
+            if (beaconInterface.requiresBody() && object == null) {
+                writeError(exchange, new BeaconClientErrorResponse("Request body must not be empty"), 400);
+                return;
+            }
+
             var sync = beaconInterface.getSynchronizationObject();
             if (sync != null) {
                 synchronized (sync) {

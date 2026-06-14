@@ -21,6 +21,11 @@ public class DaemonStatusExchange extends BeaconInterface<DaemonStatusExchange.R
     }
 
     @Override
+    public boolean requiresBody() {
+        return false;
+    }
+
+    @Override
     public Object handle(HttpExchange exchange, Request body) {
         String mode;
         if (AppOperationMode.get() == null) {

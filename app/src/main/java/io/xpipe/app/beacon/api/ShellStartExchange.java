@@ -30,7 +30,7 @@ public class ShellStartExchange extends BeaconInterface<ShellStartExchange.Reque
     @SneakyThrows
     public Object handle(HttpExchange exchange, Request msg) {
         var e = DataStorage.get()
-                .getStoreEntryIfPresent(msg.getConnection())
+                .getStoreEntryIfPresent(msg.getStore())
                 .orElseThrow(() -> new BeaconClientException("Unknown connection"));
         if (!(e.getStore() instanceof ShellStore s)) {
             throw new BeaconClientException("Not a shell connection");
@@ -70,7 +70,7 @@ public class ShellStartExchange extends BeaconInterface<ShellStartExchange.Reque
     @Value
     public static class Request {
         @NonNull
-        UUID connection;
+        UUID store;
     }
 
     @Jacksonized

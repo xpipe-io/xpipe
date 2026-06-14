@@ -13,17 +13,22 @@ import lombok.extern.jackson.Jacksonized;
 import java.util.List;
 import java.util.UUID;
 
-public class ConnectionQueryExchange extends BeaconInterface<ConnectionQueryExchange.Request> {
+public class StoreQueryExchange extends BeaconInterface<StoreQueryExchange.Request> {
 
     @Override
     public String getPath() {
-        return "/connection/query";
+        return "/store/query";
+    }
+
+    @Override
+    public List<String> getPathAliases() {
+        return List.of("/connection/query");
     }
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) {
         var found =
-                DataStorageQuery.queryEntry(msg.getCategoryFilter(), msg.getConnectionFilter(), msg.getTypeFilter());
+                DataStorageQuery.queryEntry(msg.getCategoryFilter(), msg.getStoreFilter(), msg.getTypeFilter());
         return Response.builder()
                 .found(found.stream().map(entry -> entry.getUuid()).toList())
                 .build();
@@ -42,7 +47,7 @@ public class ConnectionQueryExchange extends BeaconInterface<ConnectionQueryExch
         String categoryFilter;
 
         @NonNull
-        String connectionFilter;
+        String storeFilter;
 
         @NonNull
         String typeFilter;

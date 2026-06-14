@@ -26,7 +26,7 @@ public class FsScriptExchange extends BeaconInterface<FsScriptExchange.Request> 
     @Override
     @SneakyThrows
     public Object handle(HttpExchange exchange, Request msg) {
-        var shell = AppBeaconServer.get().getCache().getShellSession(msg.getConnection());
+        var shell = AppBeaconServer.get().getCache().getShellSession(msg.getStore());
         String data;
         try (var in = BlobManager.get().getBlob(msg.getBlob())) {
             data = new String(in.readAllBytes(), StandardCharsets.UTF_8);
@@ -41,7 +41,7 @@ public class FsScriptExchange extends BeaconInterface<FsScriptExchange.Request> 
     @Value
     public static class Request {
         @NonNull
-        UUID connection;
+        UUID store;
 
         @NonNull
         UUID blob;

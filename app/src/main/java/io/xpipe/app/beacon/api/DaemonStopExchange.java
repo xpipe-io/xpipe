@@ -15,6 +15,11 @@ import lombok.extern.jackson.Jacksonized;
 public class DaemonStopExchange extends BeaconInterface<DaemonStopExchange.Request> {
 
     @Override
+    public boolean requiresBody() {
+        return false;
+    }
+
+    @Override
     public String getPath() {
         return "/daemon/stop";
     }

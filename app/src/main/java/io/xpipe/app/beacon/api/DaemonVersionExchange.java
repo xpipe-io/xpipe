@@ -24,6 +24,11 @@ public class DaemonVersionExchange extends BeaconInterface<DaemonVersionExchange
     }
 
     @Override
+    public boolean requiresBody() {
+        return false;
+    }
+
+    @Override
     public Object handle(HttpExchange exchange, Request msg) {
         var jvmVersion = System.getProperty("java.vm.vendor") + " " + System.getProperty("java.vm.name") + " ("
                 + System.getProperty("java.vm.version") + ")";

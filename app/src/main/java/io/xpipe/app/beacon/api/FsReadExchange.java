@@ -30,7 +30,7 @@ public class FsReadExchange extends BeaconInterface<FsReadExchange.Request> {
     @Override
     @SneakyThrows
     public Object handle(HttpExchange exchange, Request msg) {
-        var shell = AppBeaconServer.get().getCache().getShellSession(msg.getConnection());
+        var shell = AppBeaconServer.get().getCache().getShellSession(msg.getStore());
         var fs = new ConnectionFileSystem(shell.getControl());
 
         if (!fs.fileExists(msg.getPath())) {
@@ -73,7 +73,7 @@ public class FsReadExchange extends BeaconInterface<FsReadExchange.Request> {
     @Value
     public static class Request {
         @NonNull
-        UUID connection;
+        UUID store;
 
         @NonNull
         FilePath path;

@@ -1,5 +1,6 @@
 package io.xpipe.app.beacon;
 
+import com.sun.net.httpserver.HttpHandler;
 import io.xpipe.app.beacon.mcp.AppMcpServer;
 import io.xpipe.app.core.AppLocalTemp;
 import io.xpipe.app.core.AppProperties;
@@ -157,11 +158,15 @@ public class AppBeaconServer {
         server = HttpServer.create(new InetSocketAddress(addr, port), 10);
         BeaconInterface.getAll().forEach(beaconInterface -> {
             var handler = new BeaconRequestHandler<>(beaconInterface);
-            server.createContext(beaconInterface.getPath(), exchange -> {
+            HttpHandler httpHandler = exchange -> {
                 if (!handleCorsHeaders(exchange)) {
                     handler.handle(exchange);
                 }
-            });
+            };
+            server.createContext(beaconInterface.getPath(), httpHandler);
+            for (String pathAlias : beaconInterface.getPathAliases()) {
+                server.createContext(pathAlias, httpHandler);
+            }
         });
         server.setExecutor(executor);
 

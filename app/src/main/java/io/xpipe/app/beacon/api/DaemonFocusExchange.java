@@ -17,6 +17,11 @@ public class DaemonFocusExchange extends BeaconInterface<DaemonFocusExchange.Req
     }
 
     @Override
+    public boolean requiresBody() {
+        return false;
+    }
+
+    @Override
     public Object handle(HttpExchange exchange, Request msg) throws Throwable {
         if (AppOperationMode.isInStartup()) {
             return Response.builder().build();

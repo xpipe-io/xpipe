@@ -19,20 +19,25 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class ConnectionInfoExchange extends BeaconInterface<ConnectionInfoExchange.Request> {
+public class StoreInfoExchange extends BeaconInterface<StoreInfoExchange.Request> {
 
     @Override
     public String getPath() {
-        return "/connection/info";
+        return "/store/info";
+    }
+
+    @Override
+    public List<String> getPathAliases() {
+        return List.of("/connection/info");
     }
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws BeaconClientException {
         var list = new ArrayList<InfoResponse>();
-        for (UUID uuid : msg.getConnections()) {
+        for (UUID uuid : msg.getStores()) {
             var e = DataStorage.get()
                     .getStoreEntryIfPresent(uuid)
-                    .orElseThrow(() -> new BeaconClientException("Unknown connection: " + uuid));
+                    .orElseThrow(() -> new BeaconClientException("Unknown  store: " + uuid));
 
             var names = DataStorage.get()
                     .getStorePath(DataStorage.get()
@@ -54,7 +59,7 @@ public class ConnectionInfoExchange extends BeaconInterface<ConnectionInfoExchan
             var apply = InfoResponse.builder()
                     .lastModified(e.getLastModified())
                     .lastUsed(e.getLastUsed())
-                    .connection(e.getUuid())
+                    .store(e.getUuid())
                     .category(cat)
                     .name(DataStorage.get().getStorePath(e))
                     .rawData(e.getStore())
@@ -78,7 +83,7 @@ public class ConnectionInfoExchange extends BeaconInterface<ConnectionInfoExchan
     @Value
     public static class Request {
         @NonNull
-        List<UUID> connections;
+        List<UUID> stores;
     }
 
     @Jacksonized
@@ -94,7 +99,7 @@ public class ConnectionInfoExchange extends BeaconInterface<ConnectionInfoExchan
     @Value
     public static class InfoResponse {
         @NonNull
-        UUID connection;
+        UUID store;
 
         @NonNull
         StorePath category;
