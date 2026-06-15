@@ -39,6 +39,10 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
         }
 
         if (abs.getHost() != null) {
+            if (!abs.getHost().getStore().isComplete()) {
+                return false;
+            }
+
             if (abs.getHost().getStore() instanceof HostAddressGatewayStore a) {
                 if (a.getTunnelGateway() != null
                         && a.getTunnelGateway().getStore().requiresTunnel()
