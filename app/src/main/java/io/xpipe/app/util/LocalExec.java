@@ -27,6 +27,7 @@ public class LocalExec {
 
             env.remove("_JAVA_OPTIONS");
             env.remove("JAVA_TOOL_OPTIONS");
+            env.remove("JDK_JAVA_OPTIONS");
 
             return pb.start();
         } catch (Exception ex) {
@@ -53,6 +54,7 @@ public class LocalExec {
 
             env.remove("_JAVA_OPTIONS");
             env.remove("JAVA_TOOL_OPTIONS");
+            env.remove("JDK_JAVA_OPTIONS");
 
             var process = pb.start();
             var out = process.getInputStream().readAllBytes();

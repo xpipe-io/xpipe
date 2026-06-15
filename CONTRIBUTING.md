@@ -15,16 +15,16 @@ There are no real formal contribution guidelines right now, they will maybe come
 
 ## Development Setup
 
-You need to have JDK for Java 25 installed to compile the project.
+You need to have JDK for Java 26 installed to compile the project.
 If you are on Linux or macOS, you can easily accomplish that by using [SDKMAN](https://sdkman.io/) and running
 ```bash
 curl -s "https://get.sdkman.io" | bash
 . "$HOME/.sdkman/bin/sdkman-init.sh"
-sdk install java 25.0.2-graalce
-sdk default java 25.0.2-graalce
+sdk install java 26.0.1-zulu
+sdk default java 26.0.1-zulu
 ```
 
-On Windows, you have to manually install a JDK, e.g. from [Adoptium](https://adoptium.net/temurin/releases/?version=25).
+On Windows, you have to manually install a JDK, e.g. from [Azul](https://www.azul.com/downloads/?version=java-26-sts&package=jdk#zulu).
 
 You can configure a few development options in the file `app/dev.properties` which will be automatically generated when gradle is first run.
 
@@ -53,7 +53,7 @@ You are also able to properly debug the built production application:
 
 ## Modularity and IDEs
 
-All XPipe components target [Java 25](https://openjdk.java.net/projects/jdk/25/) and make full use of the Java Module System (JPMS).
+All XPipe components target [Java 26](https://openjdk.java.net/projects/jdk/26/) and make full use of the Java Module System (JPMS).
 All components are modularized, including all their dependencies.
 In case a dependency is (sadly) not modularized yet, module information is manually added using [extra-java-module-info](https://github.com/gradlex-org/extra-java-module-info).
 Further, note that as this is a pretty complicated Java project that fully utilizes modularity,
@@ -61,7 +61,7 @@ many IDEs still have problems building this project properly.
 
 For example, you can't build this project in eclipse or vscode as it will complain about missing modules.
 The tested and recommended IDE is IntelliJ.
-When setting up the project in IntelliJ, make sure that the correct JDK (Java 25)
+When setting up the project in IntelliJ, make sure that the correct JDK (Java 26)
 is selected both for the project and for gradle itself.
 
 ## Contributing guide
