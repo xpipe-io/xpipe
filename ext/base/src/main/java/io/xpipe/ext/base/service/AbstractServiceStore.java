@@ -53,15 +53,6 @@ public abstract class AbstractServiceStore
         if (getHost() == null) {
             Validators.nonNull(getAddress());
         }
-
-        var addr = serviceProtocolType.formatAddress(getOpenTargetUrl());
-        if (addr != null) {
-            try {
-                URI.create(addr);
-            } catch (IllegalArgumentException e) {
-                throw new ValidationException(e.getMessage());
-            }
-        }
     }
 
     public String getOpenTargetUrl() {
