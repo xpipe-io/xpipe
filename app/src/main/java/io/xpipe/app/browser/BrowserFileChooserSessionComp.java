@@ -83,7 +83,7 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
         });
         selectionField.style("chooser-selection");
         selectionField.hgrow();
-        var modal = ModalOverlay.of(save ? "saveFileTitle" : "openFileTitle", comp);
+        var modal = ModalOverlay.of(save ? (directory ? "saveDirectoryTitle" : "saveFileTitle") : (directory ? "openDirectoryTitle" : "openFileTitle"), comp);
         modal.setRequireCloseButtonForClose(true);
         modal.addButtonBarComp(selectionField);
         modal.addButton(new ModalButton("select", () -> model.finishChooser(), true, true));
