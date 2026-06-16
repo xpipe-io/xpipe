@@ -20,6 +20,7 @@ import io.xpipe.app.util.FilePath;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -71,6 +72,7 @@ public class ContextualFileReferenceChoiceComp extends RegionBuilder<HBox> {
     @Override
     public HBox createSimple() {
         var path = previousFileReferences.isEmpty() ? createTextField() : createComboBox();
+        var busy = new SimpleBooleanProperty();
         var fileBrowseButton = new ButtonComp(null, new FontIcon("mdi2f-folder-open-outline"), () -> {
             var replacement = ProcessControlProvider.get().replace(fileSystem.getValue());
             BrowserFileChooserSessionComp.open(
@@ -83,8 +85,10 @@ public class ContextualFileReferenceChoiceComp extends RegionBuilder<HBox> {
                     },
                     false,
                     directory,
-                    filter);
+                    filter,
+                    busy);
         });
+        fileBrowseButton.disable(busy);
 
         var gitShareButton = new ButtonComp(null, new FontIcon("mdi2g-git"), () -> {
             if (!DataStorageSyncHandler.getInstance().supportsSync()) {

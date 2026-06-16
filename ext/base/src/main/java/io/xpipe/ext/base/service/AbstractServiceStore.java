@@ -49,7 +49,7 @@ public abstract class AbstractServiceStore
     @Override
     public void checkComplete() throws Throwable {
         // We do not require the host to be complete
-        if (getHost() != null) {
+        if (getHost() != null && !(getHost().asNeeded().getStore() instanceof LocalStore)) {
             Validators.isType(getHost(), HostAddressStore.class);
         }
         Validators.nonNull(remotePort);
@@ -110,6 +110,10 @@ public abstract class AbstractServiceStore
             return false;
         }
 
+        if (getHost().asNeeded().getStore() instanceof LocalStore) {
+            return false;
+        }
+
         if (!getHost().getStore().isComplete()) {
             return false;
         }
@@ -146,6 +150,10 @@ public abstract class AbstractServiceStore
         }
 
         if (getHost() != null) {
+            if (getHost().asNeeded().getStore() instanceof LocalStore) {
+                return null;
+            }
+
             if (!getHost().getStore().isComplete()) {
                 return null;
             }

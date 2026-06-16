@@ -39,6 +39,10 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
         }
 
         if (abs.getHost() != null) {
+            if (abs.getHost().asNeeded().getStore() instanceof LocalStore) {
+                return false;
+            }
+
             if (!abs.getHost().getStore().isComplete()) {
                 return false;
             }

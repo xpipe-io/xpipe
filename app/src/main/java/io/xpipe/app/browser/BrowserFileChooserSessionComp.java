@@ -57,7 +57,8 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
             Consumer<FileReference> file,
             boolean save,
             boolean directory,
-            Predicate<DataStoreEntry> filter) {
+            Predicate<DataStoreEntry> filter,
+            BooleanProperty busy) {
         if (store.get() == null && DataStorage.get().getStoreEntries().stream().noneMatch(filter)) {
             return;
         }
@@ -78,7 +79,6 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
         });
         var selectionField = new TextFieldComp(selection);
         selectionField.apply(struc -> {
-            struc.setEditable(false);
             AppFontSizes.base(struc);
         });
         selectionField.style("chooser-selection");
@@ -89,7 +89,7 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
         modal.addButton(new ModalButton("select", () -> model.finishChooser(), true, true));
         modal.show();
         ThreadHelper.runAsync(() -> {
-            model.openFileSystemAsync(store.get(), null, (sc) -> initialPath.get(), model.getBusy());
+            model.openFileSystemAsync(store.get(), null, (sc) -> initialPath.get(), busy);
         });
     }
 

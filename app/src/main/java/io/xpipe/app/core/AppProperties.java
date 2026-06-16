@@ -4,6 +4,7 @@ import io.xpipe.app.core.check.AppDirectoryPermissionsCheck;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.beacon.BeaconServer;
+import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.OsType;
 import io.xpipe.app.util.XPipeDaemonMode;
 
@@ -71,6 +72,7 @@ public class AppProperties {
     @NonFinal
     @Getter(AccessLevel.PRIVATE)
     Integer effectiveBeaconPort;
+    FilePath localWebtopDockerfile;
 
     public AppProperties(String[] args) {
         var appDir = Path.of(System.getProperty("user.dir")).resolve("app");
@@ -173,6 +175,8 @@ public class AppProperties {
                 .orElse("info");
         loginTarget = Optional.ofNullable(System.getProperty(AppNames.propertyName("login")))
                 .orElse(null);
+        localWebtopDockerfile = Optional.of(System.getProperty(AppNames.propertyName("localWebtopDockerfile")))
+                .map(s -> FilePath.parse(s)).orElse(null);
         isCli = Optional.ofNullable(System.getProperty(AppNames.propertyName("isCli")))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
