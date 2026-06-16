@@ -21,6 +21,8 @@ import java.util.Locale;
 })
 public interface ServiceProtocolType {
 
+    boolean hasScheme();
+
     String formatAddress(String base);
 
     void open(String url) throws Exception;
@@ -32,6 +34,11 @@ public interface ServiceProtocolType {
     @Jacksonized
     @Builder
     class Undefined implements ServiceProtocolType {
+
+        @Override
+        public boolean hasScheme() {
+            return false;
+        }
 
         @Override
         public String formatAddress(String base) {
@@ -54,6 +61,11 @@ public interface ServiceProtocolType {
     class Http implements ServiceProtocolType {
 
         String path;
+
+        @Override
+        public boolean hasScheme() {
+            return true;
+        }
 
         @Override
         public String formatAddress(String base) {
@@ -84,6 +96,11 @@ public interface ServiceProtocolType {
         String path;
 
         @Override
+        public boolean hasScheme() {
+            return true;
+        }
+
+        @Override
         public String formatAddress(String base) {
             var url = "https://" + base;
             if (path != null && !path.isEmpty()) {
@@ -110,6 +127,11 @@ public interface ServiceProtocolType {
     class Custom implements ServiceProtocolType {
 
         String commandTemplate;
+
+        @Override
+        public boolean hasScheme() {
+            return false;
+        }
 
         @Override
         public String formatAddress(String base) {

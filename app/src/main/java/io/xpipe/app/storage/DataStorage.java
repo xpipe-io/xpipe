@@ -452,6 +452,10 @@ public abstract class DataStorage {
     }
 
     public Set<DataStoreEntryRef<?>> getDependencies(DataStoreEntry entry) {
+        return getDependencies(entry, new HashSet<>());
+    }
+
+    private Set<DataStoreEntryRef<?>> getDependencies(DataStoreEntry entry, Set<DataStoreEntryRef<?>> visited) {
         var l = new HashSet<DataStoreEntryRef<?>>();
 
         var store = entry.getStore();
@@ -460,12 +464,17 @@ public abstract class DataStorage {
         }
 
         var deps = store.getDependencies();
+        visited.add(entry.ref());
         l.addAll(deps);
         for (DataStoreEntryRef<?> dep : deps) {
-            if (!l.contains(dep)) {
-                l.addAll(getDependencies(dep.get()));
+            if (!visited.contains(dep)) {
+                visited.add(dep);
+                l.addAll(getDependencies(dep.get(), visited));
             }
         }
+
+        l.remove(entry.ref());
+
         return l;
     }
 
