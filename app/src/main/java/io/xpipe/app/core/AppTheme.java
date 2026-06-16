@@ -1,5 +1,9 @@
 package io.xpipe.app.core;
 
+import com.dlsc.atlantafx.themes.FallDark;
+import com.dlsc.atlantafx.themes.FallLight;
+import com.dlsc.atlantafx.themes.SpringDark;
+import com.dlsc.atlantafx.themes.WinterDark;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -421,6 +425,70 @@ public class AppTheme {
                         0.2),
                 () -> Platform.getPreferences().getAccentColor(),
                 6);
+        public static final Theme SPRING_DARK = new Theme(
+                "springDark",
+                "springDark",
+                new SpringDark(),
+                () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                Color.web("#0c1a10"),
+                Color.web("#44a844"),
+                () -> ColorHelper.withOpacity(
+                        Platform.getPreferences()
+                                .getAccentColor()
+                                .desaturate()
+                                .desaturate()
+                                .darker(),
+                        0.2),
+                () -> null,
+                4);
+        public static final Theme FALL_LIGHT = new Theme(
+                "fallLight",
+                "fallLight",
+                new FallLight(),
+                () -> AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                Color.web("#fdf8f0"),
+                Color.web("#c0a080"),
+                () -> ColorHelper.withOpacity(
+                        Platform.getPreferences()
+                                .getAccentColor()
+                                .desaturate()
+                                .desaturate()
+                                .darker(),
+                        0.2),
+                () -> null,
+                4);
+        public static final Theme FALL_DARK = new Theme(
+                "fallDark",
+                "fallDark",
+                new FallDark(),
+                () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                Color.web("#1e0c06"),
+                Color.web("#c88418"),
+                () -> ColorHelper.withOpacity(
+                        Platform.getPreferences()
+                                .getAccentColor()
+                                .desaturate()
+                                .desaturate()
+                                .darker(),
+                        0.2),
+                () -> null,
+                4);
+        public static final Theme WINTER_DARK = new Theme(
+                "winterDark",
+                "winterDark",
+                new WinterDark(),
+                () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                Color.web("#080c18"),
+                Color.web("#4488ff"),
+                () -> ColorHelper.withOpacity(
+                        Platform.getPreferences()
+                                .getAccentColor()
+                                .desaturate()
+                                .desaturate()
+                                .darker(),
+                        0.2),
+                () -> null,
+                4);
         public static final Theme MOCHA = new DerivedTheme(
                 "mocha",
                 "mocha",
@@ -458,7 +526,7 @@ public class AppTheme {
 
         // Also include your custom theme here
         public static final List<Theme> ALL = List.of(
-                PRIMER_LIGHT, PRIMER_DARK, NORD_LIGHT, NORD_DARK, CUPERTINO_LIGHT, CUPERTINO_DARK, DRACULA, MOCHA);
+                PRIMER_LIGHT, PRIMER_DARK, NORD_LIGHT, NORD_DARK, CUPERTINO_LIGHT, CUPERTINO_DARK, DRACULA, MOCHA, SPRING_DARK, FALL_LIGHT, FALL_DARK, WINTER_DARK);
         protected final String id;
 
         @Getter
@@ -512,18 +580,23 @@ public class AppTheme {
             var s = """
                     * {
                         -color-context-menu: %s;
-                        -color-accent-fg: %s;
-                        -color-accent-emphasis: %s;
-                        -color-accent-muted: %s;
-                        -color-accent-subtle: %s;
                     }
                     """.formatted(
-                            ColorHelper.toWeb(contextMenuColor.get()),
-                            ColorHelper.toWeb(emphasisColor.get()),
-                            ColorHelper.toWeb(emphasisColor.get().darker()),
-                            ColorHelper.toWeb(emphasisColor.get().desaturate()),
-                            ColorHelper.toWeb(ColorHelper.withOpacity(
-                                    emphasisColor.get().darker().desaturate().desaturate(), 0.2)));
+                    ColorHelper.toWeb(contextMenuColor.get()));
+            var accentColor = emphasisColor.get();
+            if (accentColor != null) {
+                s += """
+                             * {
+                                 -color-accent-fg: %s;
+                                 -color-accent-emphasis: %s;
+                                 -color-accent-muted: %s;
+                                 -color-accent-subtle: %s;
+                             }
+                             """.formatted(ColorHelper.toWeb(accentColor),
+                        ColorHelper.toWeb(accentColor.darker()),
+                        ColorHelper.toWeb(accentColor.desaturate()),
+                        ColorHelper.toWeb(ColorHelper.withOpacity(accentColor.darker().desaturate().desaturate(), 0.2)));
+            }
             return s;
         }
 

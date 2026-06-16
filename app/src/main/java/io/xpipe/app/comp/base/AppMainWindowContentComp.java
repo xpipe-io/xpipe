@@ -12,6 +12,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
 
 import javafx.animation.*;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -51,10 +52,16 @@ public class AppMainWindowContentComp extends SimpleRegionBuilder {
                     AppPrefs.get() != null && AppPrefs.get().theme().getValue().isDark();
             loadingIcon.setOpacity(dark ? 0.95 : 0.93);
 
-            var color = AppPrefs.get() != null
-                    ? ColorHelper.withOpacity(
-                            AppPrefs.get().theme().getValue().getEmphasisColor().get(), dark ? 0.7 : 0.85)
-                    : Color.TRANSPARENT;
+            Color color;
+            if (AppPrefs.get() != null) {
+                var baseColor = AppPrefs.get().theme().getValue().getEmphasisColor().get();
+                if (baseColor == null) {
+                    baseColor = Platform.getPreferences().getAccentColor();
+                }
+                color = ColorHelper.withOpacity(baseColor, dark ? 0.7 : 0.85);
+            } else {
+                color = Color.TRANSPARENT;
+            }
             DropShadow shadow = new DropShadow();
             shadow.setRadius(10);
             shadow.setColor(color);
