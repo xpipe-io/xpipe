@@ -378,7 +378,7 @@ project.ext {
     jpackageReleaseCliArguments = getCliJPackageReleaseJvmArgs()
 
     // JavaFX config
-    devJavafxVersion = '27-ea+4'
+    devJavafxVersion = '27-ea+20'
     platformName = getPlatformName()
     useBundledJavaFx = fullVersion
     bundledJdkJavaFx = ModuleFinder.ofSystem().find("javafx.base").isPresent()
