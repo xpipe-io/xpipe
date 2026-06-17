@@ -12,6 +12,13 @@ public class ColorHelper {
         return hex;
     }
 
+    public static String toRgb(Color c) {
+        var s = String.format(
+                "%d,%d,%d",
+                (int) (c.getRed() * 255), (int) (c.getGreen() * 255), (int) (c.getBlue() * 255));
+        return s;
+    }
+
     public static Color withOpacity(Color c, double opacity) {
         return new Color(c.getRed(), c.getGreen(), c.getBlue(), opacity);
     }
