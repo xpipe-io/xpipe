@@ -32,7 +32,7 @@ public class ErrorHandlerDialog {
         try {
             var modal = new AtomicReference<ModalOverlay>();
             var comp = new ErrorHandlerComp(event, () -> {
-                AppDialog.closeDialog(modal.get());
+                AppDialog.hide(modal.get());
             });
             comp.prefWidth(event.getThrowable() != null ? 600 : 500);
             var headerId = event.isTerminal() ? "terminalErrorOccured" : "errorOccured";

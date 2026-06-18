@@ -98,6 +98,6 @@ public class ModalOverlay {
     }
 
     public void close() {
-        AppDialog.closeDialog(this);
+        AppDialog.hide(this);
     }
 }

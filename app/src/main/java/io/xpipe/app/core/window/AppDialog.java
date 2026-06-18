@@ -37,14 +37,6 @@ public class AppDialog {
         return Optional.of(modalOverlays.getLast());
     }
 
-    public static void closeDialog(ModalOverlay overlay) {
-        PlatformThread.runLaterIfNeeded(() -> {
-            synchronized (modalOverlays) {
-                modalOverlays.remove(overlay);
-            }
-        });
-    }
-
     public static void waitForAllDialogsClose() {
         while (!modalOverlays.isEmpty()) {
             ThreadHelper.sleep(10);
@@ -63,7 +55,18 @@ public class AppDialog {
 
     public static void hide(ModalOverlay o) {
         PlatformThread.runLaterIfNeeded(() -> {
-            modalOverlays.remove(o);
+            var firstElement = o.equals(modalOverlays.stream()
+                    .filter(modalOverlay -> modalOverlay != null)
+                    .findFirst().orElse(null));
+            var lastElement = modalOverlays.getLast().equals(o);
+            // Prevent indices from being moved when closing a modal in the back
+            if (firstElement && !lastElement) {
+                modalOverlays.set(modalOverlays.indexOf(o), null);
+            } else if (firstElement && lastElement) {
+                modalOverlays.clear();
+            } else {
+                modalOverlays.remove(o);
+            }
         });
     }
 

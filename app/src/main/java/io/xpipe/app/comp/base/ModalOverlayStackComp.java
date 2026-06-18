@@ -30,22 +30,12 @@ public class ModalOverlayStackComp extends SimpleRegionBuilder {
     }
 
     private BaseRegionBuilder<?, ?> buildModalOverlay(BaseRegionBuilder<?, ?> current, int index) {
-        AtomicInteger currentIndex = new AtomicInteger(index);
         var prop = new SimpleObjectProperty<>(modalOverlay.size() > index ? modalOverlay.get(index) : null);
         modalOverlay.addListener((ListChangeListener<? super ModalOverlay>) c -> {
-            var ex = prop.get();
-            // Don't shift just for an index change
-            if (ex != null && c.getList().contains(ex)) {
-                currentIndex.set(c.getList().indexOf(ex));
-                return;
-            } else {
-                currentIndex.set(index);
-            }
-
             prop.set(modalOverlay.size() > index ? modalOverlay.get(index) : null);
         });
         prop.addListener((observable, oldValue, newValue) -> {
-            if (newValue == null && modalOverlay.indexOf(oldValue) == currentIndex.get()) {
+            if (newValue == null) {
                 modalOverlay.remove(oldValue);
             }
         });
