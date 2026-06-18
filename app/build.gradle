@@ -55,7 +55,7 @@ dependencies {
 
     api "io.projectreactor:reactor-core:3.7.9"
     api "org.reactivestreams:reactive-streams:1.0.4"
-    api ("com.networknt:json-schema-validator:1.5.8") {
+    api ("com.networknt:json-schema-validator:2.0.0") {
         exclude group: "com.ethlo.time", module: "itu"
         exclude group: "com.fasterxml.jackson.dataformat", module: "jackson-dataformat-yaml"
     }
@@ -79,7 +79,9 @@ dependencies {
     api 'io.xpipe:modulefs:0.1.8'
     api 'net.synedra:validatorfx:0.4.2'
     api files("$rootDir/gradle/gradle_scripts/atlantafx-base-2.0.2.jar")
-    api("com.dlsc.atlantafx:themes:1.9.0")
+    api("com.dlsc.atlantafx:themes:1.9.0") {
+        exclude group: "io.github.mkpaz", module: "atlantafx-base"
+    }
 
     api("org.int4.fx:fx-values:0.4")
     api files("$rootDir/gradle/gradle_scripts/fx-builders-1.0.0-SNAPSHOT.jar")

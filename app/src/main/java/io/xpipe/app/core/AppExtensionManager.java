@@ -10,8 +10,12 @@ import io.xpipe.app.util.ModuleLayerLoader;
 
 import lombok.Getter;
 
+import java.io.IOException;
 import java.lang.module.Configuration;
 import java.lang.module.ModuleFinder;
+import java.net.URI;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -23,7 +27,9 @@ public class AppExtensionManager {
     private static AppExtensionManager INSTANCE;
     private final List<Module> loadedModules = new ArrayList<>();
     private final List<ModuleLayer> leafModuleLayers = new ArrayList<>();
-    private final List<Path> extensionBaseDirectories = new ArrayList<>();
+
+    private FileSystem externalModules;
+
     private ModuleLayer baseLayer = ModuleLayer.boot();
 
     @Getter
@@ -35,7 +41,6 @@ public class AppExtensionManager {
         }
 
         INSTANCE = new AppExtensionManager();
-        INSTANCE.determineExtensionDirectories();
         INSTANCE.loadBaseExtension();
         INSTANCE.loadAllExtensions();
         try {
@@ -49,6 +54,15 @@ public class AppExtensionManager {
     }
 
     public static void reset() {
+        if (INSTANCE.externalModules != null) {
+            try {
+                INSTANCE.externalModules.close();
+            } catch (IOException e) {
+                ErrorEventFactory.fromThrowable(e).handle();
+            }
+            INSTANCE.externalModules = null;
+        }
+
         INSTANCE = null;
     }
 
@@ -75,43 +89,6 @@ public class AppExtensionManager {
 
         baseLayer = baseModule.get().getLayer();
         loadedModules.add(baseModule.get());
-    }
-
-    private void determineExtensionDirectories() throws Exception {
-        if (!AppProperties.get().isFullVersion()) {
-            var localInstallation =
-                    !AppProperties.get().isStaging() && AppProperties.get().isLocatePtb()
-                            ? AppInstallation.ofDefault(true)
-                            : AppInstallation.ofCurrent();
-            Path p = localInstallation.getBaseInstallationPath();
-            if (!Files.exists(p)) {
-                throw new IllegalStateException(
-                        "Required local " + AppNames.ofCurrent().getName()
-                                + " installation was not found but is required for development. See https://github"
-                                + ".com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
-            }
-
-            if (AppProperties.get().isLocatorVersionCheck()) {
-                var iv = getLocalInstallVersion(localInstallation);
-                var installVersion = AppVersion.parse(iv)
-                        .orElseThrow(() -> new IllegalArgumentException("Invalid installation version: " + iv));
-                var sv = !AppProperties.get().isImage()
-                        ? Files.readString(Path.of("version")).strip()
-                        : AppProperties.get().getVersion();
-                var sourceVersion = AppVersion.parse(sv)
-                        .orElseThrow(() -> new IllegalArgumentException("Invalid source version: " + sv));
-                if (!installVersion.equals(sourceVersion)) {
-                    throw new IllegalStateException("Incompatible development version. Source: " + sv
-                            + ", Installation: "
-                            + iv
-                            + "\n\nPlease try to check out the matching release version in the repository. See https://github"
-                            + ".com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
-                }
-            }
-
-            var extensions = localInstallation.getExtensionsPath();
-            extensionBaseDirectories.add(extensions);
-        }
     }
 
     public Set<Module> getContentModules() {
@@ -157,12 +134,47 @@ public class AppExtensionManager {
             return inModulePath;
         }
 
-        for (Path extensionBaseDirectory : extensionBaseDirectories) {
-            var extensionDir = extensionBaseDirectory.resolve(name);
-            var found = parseExtensionDirectory(extensionDir, parent);
-            if (found.isPresent()) {
-                TrackEvent.info("Loaded extension " + name + " from module " + extensionDir);
-                return found;
+        if (!AppProperties.get().isFullVersion()) {
+            try {
+                if (externalModules == null) {
+                    var localInstallation = !AppProperties.get().isStaging() && AppProperties.get().isLocatePtb() ?
+                            AppInstallation.ofDefault(true) :
+                            AppInstallation.ofCurrent();
+                    Path p = localInstallation.getBaseInstallationPath();
+                    if (!Files.exists(p)) {
+                        throw new IllegalStateException("Required local " +
+                                AppNames.ofCurrent().getName() +
+                                " installation was not found but is required for development. See https://github" +
+                                ".com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
+                    }
+
+                    if (AppProperties.get().isLocatorVersionCheck()) {
+                        var iv = getLocalInstallVersion(localInstallation);
+                        var installVersion = AppVersion.parse(iv).orElseThrow(
+                                () -> new IllegalArgumentException("Invalid installation version: " + iv));
+                        var sv = !AppProperties.get().isImage() ? Files.readString(Path.of("version")).strip() : AppProperties.get().getVersion();
+                        var sourceVersion = AppVersion.parse(sv).orElseThrow(() -> new IllegalArgumentException("Invalid source version: " + sv));
+                        if (!installVersion.equals(sourceVersion)) {
+                            throw new IllegalStateException("Incompatible development version. Source: " +
+                                    sv +
+                                    ", Installation: " +
+                                    iv +
+                                    "\n\nPlease try to check out the matching release version in the repository. See https://github" +
+                                    ".com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
+                        }
+                    }
+
+                    externalModules = FileSystems.newFileSystem(URI.create("jrt:/"), Map.of("java.home", localInstallation.getRuntimePath()));
+                }
+
+                var basePath = externalModules.getPath("modules", "io.xpipe.ext." + name);
+                var found = parseExtensionDirectory(basePath, parent);
+                if (found.isPresent()) {
+                    TrackEvent.info("Loaded extension " + name + " from module " + basePath);
+                    return found;
+                }
+            } catch (Throwable t) {
+                ErrorEventFactory.fromThrowable(t).handle();
             }
         }
 

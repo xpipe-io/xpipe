@@ -175,7 +175,7 @@ public class AppProperties {
                 .orElse("info");
         loginTarget = Optional.ofNullable(System.getProperty(AppNames.propertyName("login")))
                 .orElse(null);
-        localWebtopDockerfile = Optional.of(System.getProperty(AppNames.propertyName("localWebtopDockerfile")))
+        localWebtopDockerfile = Optional.ofNullable(System.getProperty(AppNames.propertyName("localWebtopDockerfile")))
                 .map(s -> FilePath.parse(s)).orElse(null);
         isCli = Optional.ofNullable(System.getProperty(AppNames.propertyName("isCli")))
                 .map(Boolean::parseBoolean)

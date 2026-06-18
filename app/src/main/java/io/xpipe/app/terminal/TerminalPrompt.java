@@ -28,7 +28,7 @@ public interface TerminalPrompt {
     String getDocsLink();
 
     default FilePath getConfigurationDirectory(ShellControl sc) throws Exception {
-        var d = ShellTemp.createUserSpecificTempDataDirectory(sc, "prompt").join(getId());
+        var d = ShellTemp.createUserSpecificTempDataDirectory(sc, null).join(getId());
         sc.view().mkdir(d);
         return d;
     }

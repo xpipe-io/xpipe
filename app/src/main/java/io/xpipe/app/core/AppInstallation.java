@@ -172,6 +172,8 @@ public abstract class AppInstallation {
 
     public abstract Path getLogoPath();
 
+    public abstract Path getRuntimePath();
+
     public static class Windows extends AppInstallation {
 
         private Windows(Path base) {
@@ -208,6 +210,11 @@ public abstract class AppInstallation {
         public Path getLogoPath() {
             return getBaseInstallationPath().resolve("logo.ico");
         }
+
+        @Override
+        public Path getRuntimePath() {
+            return getBaseInstallationPath().resolve("runtime");
+        }
     }
 
     public static class WindowsDev extends Windows {
@@ -234,6 +241,11 @@ public abstract class AppInstallation {
 
         private Linux(Path base) {
             super(base);
+        }
+
+        @Override
+        public Path getRuntimePath() {
+            return getBaseInstallationPath().resolve("lib", "runtime");
         }
 
         @Override
@@ -291,6 +303,11 @@ public abstract class AppInstallation {
 
         private MacOs(Path base) {
             super(base);
+        }
+
+        @Override
+        public Path getRuntimePath() {
+            return getBaseInstallationPath().resolve("Contents", "runtime", "Contents", "Home");
         }
 
         @Override
