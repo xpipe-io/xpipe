@@ -26,7 +26,7 @@ public class ModuleAccess {
         }
 
         modifiers.setAccessible(true);
-        modifiers.invoke(source, pkg, target, false, true);
-        modifiers.invoke(source, pkg, target, true, true);
+        modifiers.invoke(source, pkg, target, false, true, true);
+        modifiers.invoke(source, pkg, target, true, true, true);
     }
 }

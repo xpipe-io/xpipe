@@ -76,7 +76,7 @@ dependencies {
     api "org.kordamp.ikonli:ikonli-javafx:12.4.0"
     api "org.slf4j:slf4j-api:2.0.18"
     api "org.slf4j:slf4j-jdk-platform-logging:2.0.18"
-    api 'io.xpipe:modulefs:0.1.8'
+    api 'io.xpipe:modulefs:0.1.9'
     api 'net.synedra:validatorfx:0.4.2'
     api files("$rootDir/gradle/gradle_scripts/atlantafx-base-2.0.2.jar")
     api("com.dlsc.atlantafx:themes:1.9.0") {

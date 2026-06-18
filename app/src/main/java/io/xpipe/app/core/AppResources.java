@@ -58,8 +58,12 @@ public class AppResources {
             }
 
             try {
-                var fs = (ModuleFileSystem)
-                        FileSystems.newFileSystem(URI.create("module:/" + module), Map.of("layer", layer));
+                var env = new HashMap<String, Object>();
+                env.put("layer", layer);
+                if (AppExtensionManager.getInstance().getExternalModules().contains(module)) {
+                    env.put("jrtFileSystem", AppExtensionManager.getInstance().getExternalModuleFileSystem());
+                }
+                var fs = (ModuleFileSystem) FileSystems.newFileSystem(URI.create("module:/" + module), env);
                 if (AppExtensionManager.getInstance() != null) {
                     fileSystems.put(module, fs);
                 }

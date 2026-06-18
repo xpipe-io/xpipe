@@ -28,7 +28,11 @@ public class AppExtensionManager {
     private final List<Module> loadedModules = new ArrayList<>();
     private final List<ModuleLayer> leafModuleLayers = new ArrayList<>();
 
-    private FileSystem externalModules;
+    @Getter
+    private final Set<String> externalModules = new HashSet<>();
+
+    @Getter
+    private FileSystem externalModuleFileSystem;
 
     private ModuleLayer baseLayer = ModuleLayer.boot();
 
@@ -54,13 +58,13 @@ public class AppExtensionManager {
     }
 
     public static void reset() {
-        if (INSTANCE.externalModules != null) {
+        if (INSTANCE.externalModuleFileSystem != null) {
             try {
-                INSTANCE.externalModules.close();
+                INSTANCE.externalModuleFileSystem.close();
             } catch (IOException e) {
                 ErrorEventFactory.fromThrowable(e).handle();
             }
-            INSTANCE.externalModules = null;
+            INSTANCE.externalModuleFileSystem = null;
         }
 
         INSTANCE = null;
@@ -136,7 +140,7 @@ public class AppExtensionManager {
 
         if (!AppProperties.get().isFullVersion()) {
             try {
-                if (externalModules == null) {
+                if (externalModuleFileSystem == null) {
                     var localInstallation = !AppProperties.get().isStaging() && AppProperties.get().isLocatePtb() ?
                             AppInstallation.ofDefault(true) :
                             AppInstallation.ofCurrent();
@@ -164,12 +168,14 @@ public class AppExtensionManager {
                         }
                     }
 
-                    externalModules = FileSystems.newFileSystem(URI.create("jrt:/"), Map.of("java.home", localInstallation.getRuntimePath().toString()));
+                    externalModuleFileSystem = FileSystems.newFileSystem(URI.create("jrt:/"), Map.of("java.home", localInstallation.getRuntimePath().toString()));
                 }
 
-                var basePath = externalModules.getPath("modules", "io.xpipe.ext." + name);
+                var moduleName = "io.xpipe.ext." + name;
+                var basePath = externalModuleFileSystem.getPath("modules", moduleName);
                 var found = parseExtensionDirectory(basePath, parent);
                 if (found.isPresent()) {
+                    externalModules.add(moduleName);
                     TrackEvent.info("Loaded extension " + name + " from module " + basePath);
                     return found;
                 }
