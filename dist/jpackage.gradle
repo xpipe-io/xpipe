@@ -112,21 +112,6 @@ tasks.named('jlink').get().dependsOn(rootProject.getTasksByName("jar", true))
 tasks.named('jlink').get().dependsOn(extLibrariesTasks)
 
 def outputName = os.isMacOsX() ? "${jpackageExecutableName}.app/Contents/Resources" : jpackageExecutableName
-tasks.register('copyBundledExtensions', DefaultTask) {
-    dependsOn extLibrariesTasks
-    doLast {
-        for (def extProject : extModules) {
-            def dir = "${extProject.buildDir}/libs_ext"
-            if (file(dir).exists()) {
-                copy {
-                    from(dir)
-                    into "$distDir/jpackage/$outputName/extensions/${extProject.name}"
-                    include '*.jar'
-                }
-            }
-        }
-    }
-}
 
 tasks.register('prepareMacOSResources', DefaultTask) {
     doLast {
@@ -159,5 +144,3 @@ if (os.isMacOsX()) {
     jpackageImage.finalizedBy(finalizeMacOSResources)
     jpackageImage.dependsOn(prepareMacOSResources)
 }
-
-tasks.jpackage.finalizedBy(copyBundledExtensions)

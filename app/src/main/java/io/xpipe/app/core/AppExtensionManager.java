@@ -164,7 +164,7 @@ public class AppExtensionManager {
                         }
                     }
 
-                    externalModules = FileSystems.newFileSystem(URI.create("jrt:/"), Map.of("java.home", localInstallation.getRuntimePath()));
+                    externalModules = FileSystems.newFileSystem(URI.create("jrt:/"), Map.of("java.home", localInstallation.getRuntimePath().toString()));
                 }
 
                 var basePath = externalModules.getPath("modules", "io.xpipe.ext." + name);

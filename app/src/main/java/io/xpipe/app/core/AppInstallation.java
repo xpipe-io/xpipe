@@ -168,8 +168,6 @@ public abstract class AppInstallation {
 
     public abstract Path getDaemonExecutablePath();
 
-    public abstract Path getExtensionsPath();
-
     public abstract Path getLogoPath();
 
     public abstract Path getRuntimePath();
@@ -199,11 +197,6 @@ public abstract class AppInstallation {
         @Override
         public Path getDaemonExecutablePath() {
             return getBaseInstallationPath().resolve(AppNames.ofCurrent().getExecutableName() + ".exe");
-        }
-
-        @Override
-        public Path getExtensionsPath() {
-            return getBaseInstallationPath().resolve("extensions");
         }
 
         @Override
@@ -270,11 +263,6 @@ public abstract class AppInstallation {
         }
 
         @Override
-        public Path getExtensionsPath() {
-            return getBaseInstallationPath().resolve("extensions");
-        }
-
-        @Override
         public Path getLogoPath() {
             if (!AppProperties.get().isImage()) {
                 return getBaseInstallationPath().resolve("dist").resolve("logo").resolve("logo.png");
@@ -338,11 +326,6 @@ public abstract class AppInstallation {
         public Path getDaemonExecutablePath() {
             return getBaseInstallationPath()
                     .resolve("Contents", "MacOS", AppNames.ofCurrent().getExecutableName());
-        }
-
-        @Override
-        public Path getExtensionsPath() {
-            return getBaseInstallationPath().resolve("Contents", "Resources", "extensions");
         }
 
         @Override

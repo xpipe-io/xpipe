@@ -101,6 +101,8 @@ application {
 }
 
 run {
+    dependsOn extensionJarDepList
+
     systemProperty propertyName('useVirtualThreads'), 'false'
     systemProperty propertyName('mode'), 'gui'
     systemProperty propertyName('writeLogs'), "true"
@@ -123,14 +125,18 @@ run {
     def exts = files(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0].outputs.files.singleFile).toList())
     classpath += exts
 
-    def cli = project(':cli').getTasksByName('jar', true)[0].outputs.files.singleFile
-    classpath += files(cli)
+    if (fullVersion) {
+        def cli = project(':cli').getTasksByName('jar', true)[0].outputs.files.singleFile
+        classpath += files(cli)
 
-    dependsOn(project(':cli').getTasksByName('jar', true)[0])
-    dependsOn(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0]).toList())
+        dependsOn(project(':cli').getTasksByName('jar', true)[0])
+        dependsOn(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0]).toList())
+    }
 }
 
 tasks.register('runAttachedDebugger', JavaExec) {
+    dependsOn extensionJarDepList
+
     workingDir = rootDir
     classpath = run.classpath
     mainModule = groupName + '.app'
