@@ -104,14 +104,14 @@ public class FileBridge {
                     + e.getLastModified());
             if (e.registerChange()) {
                 event("Registering change for file " + TEMP.relativize(e.file) + " for editor entry " + e.getName());
+                var size = Files.size(e.file);
                 try (var in = Files.newInputStream(e.file)) {
-                    var actualSize = (long) in.available();
                     var started = Instant.now();
-                    var fixedIn = new FixedSizeInputStream(new BufferedInputStream(in), actualSize);
-                    e.writer.accept(fixedIn, actualSize);
+                    var fixedIn = new FixedSizeInputStream(new BufferedInputStream(in), size);
+                    e.writer.accept(fixedIn, size);
                     in.transferTo(OutputStream.nullOutputStream());
                     var taken = Duration.between(started, Instant.now());
-                    event("Wrote " + HumanReadableFormat.byteCount(actualSize) + " in " + taken.toMillis() + "ms");
+                    event("Wrote " + HumanReadableFormat.byteCount(size) + " in " + taken.toMillis() + "ms");
                 } catch (NoSuchFileException ex) {
                     // The file might be removed meanwhile
                     ErrorEventFactory.fromThrowable(ex).expected().omit().handle();

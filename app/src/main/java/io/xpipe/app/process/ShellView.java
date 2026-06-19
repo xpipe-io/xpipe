@@ -203,8 +203,9 @@ public class ShellView {
     }
 
     public void transferLocalFile(Path localPath, FilePath target) throws Exception {
+        long size = Files.size(localPath);
         try (var in = Files.newInputStream(localPath)) {
-            writeStreamFile(target, in, in.available());
+            writeStreamFile(target, in, size);
         }
     }
 

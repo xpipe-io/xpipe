@@ -53,6 +53,14 @@ public class BlobManager {
         return file;
     }
 
+    public long getSize(UUID id) throws IOException {
+        if (memoryBlobs.containsKey(id)) {
+            return memoryBlobs.get(id).length;
+        } else {
+            return Files.size(fileBlobs.get(id));
+        }
+    }
+
     public void store(UUID uuid, byte[] blob) {
         memoryBlobs.put(uuid, blob);
     }

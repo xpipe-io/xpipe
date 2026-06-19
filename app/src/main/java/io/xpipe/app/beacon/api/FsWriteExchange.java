@@ -13,6 +13,7 @@ import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.nio.file.Files;
 import java.util.UUID;
 
 public class FsWriteExchange extends BeaconInterface<FsWriteExchange.Request> {
@@ -28,7 +29,7 @@ public class FsWriteExchange extends BeaconInterface<FsWriteExchange.Request> {
         var shell = AppBeaconServer.get().getCache().getShellSession(msg.getStore());
         var fs = new ConnectionFileSystem(shell.getControl());
         try (var in = BlobManager.get().getBlob(msg.getBlob());
-             var os = fs.openOutput(msg.getPath(), in.available())) {
+             var os = fs.openOutput(msg.getPath(), BlobManager.get().getSize(msg.getBlob()))) {
             in.transferTo(os);
         }
         return Response.builder().build();
