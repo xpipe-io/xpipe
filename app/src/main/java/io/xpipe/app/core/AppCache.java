@@ -62,7 +62,7 @@ public class AppCache {
     public static <T> T getNonNullMapEntry(String key, String mapKey, JavaType type, Supplier<T> notPresent) {
         var mapType = TypeFactory.defaultInstance().constructMapLikeType(Map.class, TypeFactory.defaultInstance().constructType(String.class), type);
         Map<String, T> map = getNonNull(key, mapType, () -> null);
-        if (map != null) {
+        if (map != null && map.containsKey(mapKey)) {
             return map.get(mapKey);
         } else {
             return notPresent.get();
