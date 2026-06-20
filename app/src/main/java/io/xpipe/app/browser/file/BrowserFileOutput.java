@@ -1,7 +1,7 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.ext.ConnectionFileSystem;
+import io.xpipe.app.ext.ShellFileSystem;
 import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.ext.FileInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -87,7 +87,7 @@ public interface BrowserFileOutput {
                                 .elevated(ElevationFunction.elevated(null))
                                 .start()
                         : model.getFileSystem().getShell().orElseThrow().start();
-        var fs = elevate ? new ConnectionFileSystem(sc) : model.getFileSystem();
+        var fs = elevate ? new ShellFileSystem(sc) : model.getFileSystem();
         var checkSudoersFile = shell.isPresent() && file.getPath().startsWith("/etc/sudo");
         var output = new BrowserFileOutput() {
 

@@ -2,7 +2,7 @@
     -fx-padding: 40 40 0 80;
 }
 
-.root:portrait .prefs-box {
+.root:compact .prefs-box {
     -fx-padding: 20 20 20 20;
 }
 
@@ -20,7 +20,7 @@
     -fx-padding: 0 0 0 1em;
 }
 
-.root:portrait .prefs .prefs-container.options-comp > .options-comp {
+.root:compact .prefs .prefs-container.options-comp > .options-comp {
     -fx-padding: 0 0 0 0.2em;
 }
 
@@ -48,7 +48,7 @@
     -fx-font-size: 1.5em;
 }
 
-.root:portrait .prefs-container > .title-header {
+.root:compact .prefs-container > .title-header {
     -fx-padding: 1.5em 0 -0.5em 0;
 }
 

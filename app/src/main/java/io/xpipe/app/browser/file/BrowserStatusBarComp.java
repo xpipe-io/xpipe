@@ -39,6 +39,7 @@ public class BrowserStatusBarComp extends SimpleRegionBuilder {
                 createClipboardStatus(),
                 createSelectionStatus(),
                 createKillButton()));
+        bar.minWidth(0);
         bar.spacing(15);
         bar.style("status-bar");
 

@@ -25,12 +25,12 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 @Getter
-public class ConnectionFileSystem implements FileSystem {
+public class ShellFileSystem implements FileSystem {
 
     @JsonIgnore
     protected final ShellControl shellControl;
 
-    public ConnectionFileSystem(ShellControl shellControl) {
+    public ShellFileSystem(ShellControl shellControl) {
         this.shellControl = shellControl;
     }
 
@@ -196,7 +196,7 @@ public class ConnectionFileSystem implements FileSystem {
                     .findProgram(ShellDialects.POWERSHELL_CORE.getExecutableName())
                     .isPresent();
             if (pwsh) {
-                return new ConnectionFileSystem(
+                return new ShellFileSystem(
                         shellControl.subShell(ShellDialects.POWERSHELL_CORE).start());
             }
 
@@ -205,7 +205,7 @@ public class ConnectionFileSystem implements FileSystem {
                     .findProgram(ShellDialects.POWERSHELL.getExecutableName())
                     .isPresent();
             if (powershell) {
-                return new ConnectionFileSystem(
+                return new ShellFileSystem(
                         shellControl.subShell(ShellDialects.POWERSHELL).start());
             }
         }

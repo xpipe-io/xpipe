@@ -184,7 +184,7 @@ public final class McpTools {
                     var shellStore = req.getShellStoreRef(system, false);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
                     var path = req.getFilePath(shellSession.getControl(), "path");
-                    var fs = new ConnectionFileSystem(shellSession.getControl());
+                    var fs = new ShellFileSystem(shellSession.getControl());
 
                     if (!fs.fileExists(path)) {
                         throw new BeaconClientException("File " + path + " does not exist");
@@ -210,7 +210,7 @@ public final class McpTools {
                     var recursive = req.getOptionalBooleanArgument("recursive").orElse(false);
                     var shellStore = req.getShellStoreRef(system, false);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
-                    var fs = new ConnectionFileSystem(shellSession.getControl());
+                    var fs = new ShellFileSystem(shellSession.getControl());
                     var path = req.getFilePath(shellSession.getControl(), "path");
 
                     if (!fs.directoryExists(path)) {
@@ -239,7 +239,7 @@ public final class McpTools {
                     var shellStore = req.getShellStoreRef(system, false);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
                     var path = req.getFilePath(shellSession.getControl(), "path");
-                    var fs = new ConnectionFileSystem(shellSession.getControl());
+                    var fs = new ShellFileSystem(shellSession.getControl());
 
                     if (!fs.directoryExists(path)) {
                         throw new BeaconClientException("Directory " + path + " does not exist");
@@ -271,7 +271,7 @@ public final class McpTools {
                     var shellStore = req.getShellStoreRef(system, false);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
                     var path = req.getFilePath(shellSession.getControl(), "path");
-                    var fs = new ConnectionFileSystem(shellSession.getControl());
+                    var fs = new ShellFileSystem(shellSession.getControl());
 
                     if (!fs.fileExists(path) && !fs.directoryExists(path)) {
                         throw new BeaconClientException("Path " + path + " does not exist");
@@ -312,7 +312,7 @@ public final class McpTools {
                     var shellStore = req.getShellStoreRef(system, true);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
                     var path = req.getFilePath(shellSession.getControl(), "path");
-                    var fs = new ConnectionFileSystem(shellSession.getControl());
+                    var fs = new ShellFileSystem(shellSession.getControl());
 
                     if (fs.fileExists(path)) {
                         throw new BeaconClientException("File " + path + " does already exist");
@@ -345,7 +345,7 @@ public final class McpTools {
                     var shellStore = req.getShellStoreRef(system, true);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
                     var path = req.getFilePath(shellSession.getControl(), "path");
-                    var fs = new ConnectionFileSystem(shellSession.getControl());
+                    var fs = new ShellFileSystem(shellSession.getControl());
 
                     var b = content.getBytes(StandardCharsets.UTF_8);
                     try (var out = fs.openOutput(path, b.length)) {
@@ -368,7 +368,7 @@ public final class McpTools {
                     var shellStore = req.getShellStoreRef(system, true);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
                     var path = req.getFilePath(shellSession.getControl(), "path");
-                    var fs = new ConnectionFileSystem(shellSession.getControl());
+                    var fs = new ShellFileSystem(shellSession.getControl());
 
                     if (fs.fileExists(path)) {
                         throw new BeaconClientException("Directory " + path + " does already exist");

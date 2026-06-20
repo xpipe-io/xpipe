@@ -47,7 +47,7 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
     @Override
     default FileSystem createFileSystem() throws Exception {
         var func = shellFunction();
-        return new ConnectionFileSystem(func.control());
+        return new ShellFileSystem(func.control());
     }
 
     ShellControlFunction shellFunction();

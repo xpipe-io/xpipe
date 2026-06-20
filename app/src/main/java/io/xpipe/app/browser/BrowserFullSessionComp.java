@@ -200,6 +200,9 @@ public class BrowserFullSessionComp extends SimpleRegionBuilder {
                     cache.keySet().removeIf(browserSessionTab -> !all.contains(browserSessionTab));
 
                     if (newValue == null) {
+                        struc.setMinWidth(0);
+                        struc.setPrefWidth(Region.USE_COMPUTED_SIZE);
+                        struc.setMaxWidth(Region.USE_COMPUTED_SIZE);
                         struc.getChildren().clear();
                         return;
                     }

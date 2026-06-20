@@ -5,7 +5,7 @@ import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BeaconClientException;
 import io.xpipe.app.beacon.BeaconInterface;
 import io.xpipe.app.beacon.BlobManager;
-import io.xpipe.app.ext.ConnectionFileSystem;
+import io.xpipe.app.ext.ShellFileSystem;
 import io.xpipe.app.util.FilePath;
 
 import io.xpipe.app.util.FixedSizeInputStream;
@@ -31,7 +31,7 @@ public class FsReadExchange extends BeaconInterface<FsReadExchange.Request> {
     @SneakyThrows
     public Object handle(HttpExchange exchange, Request msg) {
         var shell = AppBeaconServer.get().getCache().getShellSession(msg.getStore());
-        var fs = new ConnectionFileSystem(shell.getControl());
+        var fs = new ShellFileSystem(shell.getControl());
 
         if (!fs.fileExists(msg.getPath())) {
             throw new BeaconClientException("File does not exist");
