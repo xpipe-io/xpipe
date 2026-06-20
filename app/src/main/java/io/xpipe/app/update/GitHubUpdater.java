@@ -5,7 +5,7 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import java.nio.file.Files;
 import java.time.Instant;

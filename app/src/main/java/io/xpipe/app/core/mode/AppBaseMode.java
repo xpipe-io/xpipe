@@ -32,6 +32,7 @@ import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.terminal.TerminalDockHubManager;
 import io.xpipe.app.terminal.TerminalLauncherManager;
 import io.xpipe.app.terminal.TerminalView;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.update.UpdateAvailableDialog;
 import io.xpipe.app.update.UpdateChangelogDialog;
 import io.xpipe.app.update.UpdateNagDialog;
@@ -91,7 +92,9 @@ public class AppBaseMode extends AppOperationMode {
         // You can still update manually in the about tab
         if (AppPrefs.get().automaticallyUpdate().get()
                 || AppPrefs.get().checkForSecurityUpdates().get()) {
-            UpdateAvailableDialog.showIfNeeded(true);
+            if (AppDistributionType.get().getUpdateHandler().isUpdateSucceeded()) {
+                UpdateAvailableDialog.showIfNeeded(true);
+            }
         } else {
             UpdateNagDialog.showAndWaitIfNeeded();
         }

@@ -28,15 +28,10 @@ public class UpdateChangelogDialog {
                     .documentationLink(DocumentationLink.UPDATE_FAIL);
 
             if (OsType.ofLocal() == OsType.WINDOWS && AppDistributionType.get().getUpdateHandler() instanceof GitHubUpdater gh) {
-                var lastUpdateCheckResult = gh.getLastUpdateCheckResult().getValue();
                 var preparedUpdate = gh.getPreparedUpdate().getValue();
-                if (lastUpdateCheckResult != null && preparedUpdate != null) {
-                    var p = new UpdateHandler.PreparedUpdate(
-                            AppProperties.get().getVersion(), AppDistributionType.get().getId(), lastUpdateCheckResult.getVersion(),
-                            lastUpdateCheckResult.getReleaseUrl(), preparedUpdate.getFile(), preparedUpdate.getBody(), lastUpdateCheckResult.getAssetType(),
-                            lastUpdateCheckResult.isSecurityOnly());
+                if (preparedUpdate != null) {
                     eventBuilder.customAction(ErrorAction.translated("updateReinstallAction", () -> {
-                        gh.reinstallUpdateMsi(p);
+                        gh.reinstallUpdateMsi(preparedUpdate);
                         return true;
                     }));
                 }
