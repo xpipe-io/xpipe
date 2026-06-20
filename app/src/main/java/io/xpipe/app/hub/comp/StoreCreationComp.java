@@ -9,6 +9,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -37,16 +38,9 @@ public class StoreCreationComp extends ModalOverlayContentComp {
         var nameKey = model.storeTypeNameKey();
         var built = new OptionsBuilder()
                 .name(nameKey + "Name")
-                .description(nameKey + "NameDescription")
+                .description(model.isTemplate() ? nameKey + "TemplateNameDescription" : nameKey + "NameDescription")
                 .addString(model.getName())
-                .nonNull()
-                .check(val -> Validator.create(val, AppI18n.observable("readOnlyStoreError"), model.getName(), s -> {
-                    var same = s != null
-                            && model.getExistingEntry() != null
-                            && DataStorage.get().getEffectiveReadOnlyState(model.getExistingEntry())
-                            && s.equals(model.getExistingEntry().getName());
-                    return !same;
-                }));
+                .nonNullIf(new ReadOnlyBooleanWrapper(!model.isTemplate()));
         return built;
     }
 

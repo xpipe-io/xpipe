@@ -73,7 +73,7 @@ public class DataStoreEntry extends StorageElement {
 
     @NonFinal
     @Getter
-    boolean freeze;
+    boolean template;
 
     @NonFinal
     @Getter
@@ -105,7 +105,7 @@ public class DataStoreEntry extends StorageElement {
             DataStoreColor color,
             String notes,
             String icon,
-            boolean freeze,
+            boolean template,
             boolean pinToTop,
             int orderIndex,
             UUID breakOutCategory,
@@ -120,7 +120,7 @@ public class DataStoreEntry extends StorageElement {
         this.validity = this.provider != null ? validity : Validity.LOAD_FAILED;
         this.storePersistentStateNode = storePersistentState;
         this.notes = notes;
-        this.freeze = freeze;
+        this.template = template;
         this.pinToTop = pinToTop;
         this.orderIndex = orderIndex;
         this.breakOutCategory = breakOutCategory;
@@ -256,7 +256,7 @@ public class DataStoreEntry extends StorageElement {
                     }
                 })
                 .orElse(null);
-        var freeze = Optional.ofNullable(json.get("freeze"))
+        var template = Optional.ofNullable(json.get("template"))
                 .map(jsonNode -> jsonNode.booleanValue())
                 .orElse(false);
         var pinToTop = Optional.ofNullable(json.get("pinToTop"))
@@ -350,7 +350,7 @@ public class DataStoreEntry extends StorageElement {
                 color,
                 notes,
                 icon,
-                freeze,
+                template,
                 pinToTop,
                 orderIndex,
                 breakOutCategory,
@@ -543,7 +543,7 @@ public class DataStoreEntry extends StorageElement {
         obj.put("breakOutCategoryUuid", breakOutCategory != null ? breakOutCategory.toString() : null);
         obj.set("color", mapper.valueToTree(color));
         obj.set("icon", mapper.valueToTree(icon));
-        obj.put("freeze", freeze);
+        obj.put("template", template);
         obj.put("pinToTop", pinToTop);
         obj.put("orderIndex", orderIndex);
 
@@ -597,9 +597,9 @@ public class DataStoreEntry extends StorageElement {
         }
     }
 
-    public void setFreeze(boolean newValue) {
-        var changed = freeze != newValue;
-        this.freeze = newValue;
+    public void setTemplate(boolean newValue) {
+        var changed = template != newValue;
+        this.template = newValue;
         if (changed) {
             notifyUpdate(false, true);
         }

@@ -62,7 +62,7 @@ public class CloneHubLeafProvider implements HubLeafProvider<DataStore> {
             entry.setIcon(ref.get().getIcon(), true);
             entry.setColor(ref.get().getColor());
             entry.setExpanded(ref.get().isExpanded());
-            entry.setFreeze(ref.get().isFreeze());
+            entry.setTemplate(ref.get().isTemplate());
             entry.setCategoryUuid(ref.get().getCategoryUuid());
             entry.setPinToTop(ref.get().isPinToTop());
             entry.setOrderIndex(ref.get().getOrderIndex());

@@ -180,7 +180,7 @@ public class StoreCreationDialog {
     private static ModalOverlay createModalOverlay(StoreCreationModel model) {
         var comp = new StoreCreationComp(model);
         comp.prefWidth(650);
-        var nameKey = model.isQuickConnect() ? "quickConnect" : model.getTitleKey();
+        var nameKey = model.isTemplate() ? "quickConnect" : model.getTitleKey();
         var modal = ModalOverlay.of(nameKey, comp);
         comp.apply(struc -> {
             struc.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
@@ -194,25 +194,23 @@ public class StoreCreationDialog {
             });
         });
 
-        if (!model.isQuickConnect()) {
-            var queueEntry = StoreCreationQueueEntry.of(model, modal);
+        var queueEntry = StoreCreationQueueEntry.of(model, modal);
 
-            modal.setHideAction(() -> {
-                AppLayoutModel.get().getQueueEntries().add(queueEntry);
-                showNotice();
-            });
+        modal.setHideAction(() -> {
+            AppLayoutModel.get().getQueueEntries().add(queueEntry);
+            showNotice();
+        });
 
-            AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
-                if (model.getFinished().get() || !modal.isShowing()) {
-                    return;
-                }
+        AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
+            if (model.getFinished().get() || !modal.isShowing()) {
+                return;
+            }
 
-                modal.hide();
-                AppLayoutModel.get().getQueueEntries().add(queueEntry);
-                showNotice();
-            });
-            modal.setRequireCloseButtonForClose(true);
-        }
+            modal.hide();
+            AppLayoutModel.get().getQueueEntries().add(queueEntry);
+            showNotice();
+        });
+        modal.setRequireCloseButtonForClose(true);
 
         var loadingLabel = new LabelComp(Bindings.createStringBinding(
                 () -> {
@@ -232,17 +230,25 @@ public class StoreCreationDialog {
                 .augment(button -> {
                     button.visibleProperty().bind(Bindings.not(model.canShowDocs()));
                 }));
-        modal.addButton(new ModalButton(
-                        "connect",
-                        () -> {
-                            model.connect();
-                        },
-                        false,
-                        false)
-                .augment(button -> {
-                    button.visibleProperty().bind(Bindings.not(model.canConnect()));
-                }));
-        if (!model.isQuickConnect()) {
+        if (model.isTemplate() && !model.isQuickConnect()) {
+            modal.addButton(new ModalButton("saveAs", () -> {
+                model.commit(false);
+                modal.close();
+            }, false, false).augment(button -> {
+                button.disableProperty().bind(Bindings.not(model.canSave()));
+            }));
+        }
+        if (!model.isTemplate()) {
+            modal.addButton(new ModalButton(
+                    "connect",
+                    () -> {
+                        model.connect();
+                    },
+                    false,
+                    false)
+                    .augment(button -> {
+                        button.visibleProperty().bind(Bindings.not(model.canConnect()));
+                    }));
             modal.addButton(new ModalButton(
                             "skip",
                             () -> {
@@ -258,7 +264,7 @@ public class StoreCreationDialog {
         }
 
         modal.addButton(new ModalButton(
-                        model.isQuickConnect() ? "connect" : "finish",
+                        model.isTemplate() ? "connect" : "finish",
                         () -> {
                             model.finish();
                         },
@@ -279,7 +285,7 @@ public class StoreCreationDialog {
                             .bind(Bindings.createStringBinding(
                                     () -> {
                                         return !model.getBusy().get()
-                                                ? AppI18n.get(model.isQuickConnect() ? "connect" : "finish")
+                                                ? AppI18n.get(model.isTemplate() ? "connect" : "finish")
                                                 : null;
                                     },
                                     PlatformThread.sync(model.getBusy()),

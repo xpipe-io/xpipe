@@ -83,16 +83,19 @@ public class StoreQuickConnect {
 
         StoreCreationDialog.showEdit(quickConnectEntry, newStore, false, true, finished -> {
             update(finished.getStore());
-            ThreadHelper.runAsync(() -> {
-                try {
-                    DataStorage.get().addStoreEntryInProgress(quickConnectEntry);
-                    provider.get().open(quickConnectEntry);
-                } catch (Exception e) {
-                    ErrorEventFactory.fromThrowable(e).handle();
-                } finally {
-                    DataStorage.get().removeStoreEntryInProgress(quickConnectEntry);
-                }
-            });
+            var saved = !finished.getName().equals("quick-connect");
+            if (!saved) {
+                ThreadHelper.runAsync(() -> {
+                    try {
+                        DataStorage.get().addStoreEntryInProgress(quickConnectEntry);
+                        provider.get().open(quickConnectEntry);
+                    } catch (Exception e) {
+                        ErrorEventFactory.fromThrowable(e).handle();
+                    } finally {
+                        DataStorage.get().removeStoreEntryInProgress(quickConnectEntry);
+                    }
+                });
+            }
         });
 
         return true;

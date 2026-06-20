@@ -85,6 +85,10 @@ public abstract class StoreSectionBaseComp extends RegionBuilder<VBox> {
             BindingsHelper.attach(vbox, section.getWrapper().getPerUser(), val -> {
                 vbox.pseudoClassStateChanged(PseudoClass.getPseudoClass("per-user"), val);
             });
+
+            BindingsHelper.attach(vbox, section.getWrapper().getTemplate(), val -> {
+                vbox.pseudoClassStateChanged(PseudoClass.getPseudoClass("template"), val);
+            });
         }
     }
 

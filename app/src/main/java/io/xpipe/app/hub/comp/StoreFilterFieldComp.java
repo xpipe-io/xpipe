@@ -53,9 +53,6 @@ public class StoreFilterFieldComp extends SimpleRegionBuilder {
         field.focusedProperty().subscribe(focus -> {
             if (focus) {
                 popover.hide();
-                Platform.runLater(() -> {
-                    field.selectAll();
-                });
             } else {
                 state.onFocusLost();
             }

@@ -66,7 +66,13 @@ public class BindingsHelper {
             ObservableValue<T> observableValue, Function<? super T, ? extends ObservableValue<? extends U>> mapper) {
         var prop = new SimpleObjectProperty<U>();
         Runnable runnable = () -> {
-            prop.bind(mapper.apply(observableValue.getValue()));
+            var observable = mapper.apply(observableValue.getValue());
+            if (observable != null) {
+                prop.bind(observable);
+            } else {
+                prop.unbind();
+                prop.setValue(null);
+            }
         };
         runnable.run();
         observableValue.addListener((observable, oldValue, newValue) -> {

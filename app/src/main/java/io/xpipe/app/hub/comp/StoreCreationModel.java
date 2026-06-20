@@ -50,6 +50,7 @@ public class StoreCreationModel {
     StoreCreationConsumer consumer;
     ObservableBooleanValue syncable;
     UUID uuid;
+    String defaultName;
 
     public StoreCreationModel(
             Property<DataStoreProvider> provider,
@@ -62,8 +63,9 @@ public class StoreCreationModel {
         this.provider = provider;
         this.store = store;
         this.filter = filter;
-        this.name = new SimpleStringProperty(initialName != null && !initialName.isEmpty() ? initialName : null);
         this.existingEntry = existingEntry;
+        this.name = new SimpleStringProperty(!isTemplate() ? initialName != null && !initialName.isEmpty() ? initialName : null : null);
+        this.defaultName = isTemplate() && initialName != null && !initialName.isEmpty() ? initialName : null;
         this.existingDependencies = existingEntry != null
                 ? DataStorage.get().getDependencies(existingEntry).stream()
                         .<DataStore>map(ref -> ref.getStore())
@@ -71,7 +73,7 @@ public class StoreCreationModel {
                 : null;
         this.staticDisplay = staticDisplay;
         this.consumer = consumer;
-        this.uuid = existingEntry != null ? existingEntry.getUuid() : UUID.randomUUID();
+        this.uuid = existingEntry != null && !DataStorage.get().getEffectiveReadOnlyState(existingEntry) ? existingEntry.getUuid() : UUID.randomUUID();
 
         this.provider.addListener((c, o, n) -> {
             store.unbind();
@@ -96,19 +98,18 @@ public class StoreCreationModel {
 
         this.entry = Bindings.createObjectBinding(
                 () -> {
-                    if (name.getValue() == null
-                            || store.getValue() == null
-                            || name.getValue().isBlank()) {
+                    var effectiveName = name.getValue() != null ? name.getValue() : defaultName;
+                    if (effectiveName == null || store.getValue() == null) {
                         return null;
                     }
 
                     var initial = DataStoreEntry.createNew(
-                            uuid, DataStorage.get().getSelectedCategory().getUuid(), name.getValue(), store.getValue());
+                            uuid, DataStorage.get().getSelectedCategory().getUuid(), effectiveName, store.getValue());
                     var entryRef = existingEntry != null
                             ? existingEntry
                             : DataStorage.get().getDefaultDisplayParent(initial).orElse(initial);
                     var targetCategory = getTargetCategory(entryRef.getCategoryUuid());
-                    return DataStoreEntry.createNew(uuid, targetCategory.getUuid(), name.getValue(), store.getValue());
+                    return DataStoreEntry.createNew(uuid, targetCategory.getUuid(), effectiveName, store.getValue());
                 },
                 name,
                 store);
@@ -136,7 +137,7 @@ public class StoreCreationModel {
                             && store.get().isComplete()
                             && store.get() instanceof ValidatableStore) {
                         if (existingEntry != null) {
-                            return !existingEntry.isFreeze()
+                            return !existingEntry.isTemplate()
                                     || !existingEntry.getName().equals(name.getValue());
                         } else {
                             return true;
@@ -194,14 +195,26 @@ public class StoreCreationModel {
                         store));
     }
 
-    boolean isQuickConnect() {
-        return existingEntry != null && existingEntry.getUuid().equals(StoreQuickConnect.STORE_ID);
+    ObservableBooleanValue canSave() {
+        return Bindings.createBooleanBinding(
+                        () -> {
+                            return name.getValue() != null && store.get() != null && store.get().isComplete();
+                        },
+                        name, store);
+    }
+
+    boolean isTemplate() {
+        return existingEntry != null && (existingEntry.getUuid().equals(StoreQuickConnect.STORE_ID) || existingEntry.isTemplate());
     }
 
     void connect() {
         var temp = entry.getValue() != null ? entry.getValue() : DataStoreEntry.createTempWrapper(store.getValue());
         var action = OpenHubMenuLeafProvider.Action.builder().ref(temp.ref()).build();
         action.executeAsync();
+    }
+
+    boolean isQuickConnect() {
+        return existingEntry != null && existingEntry.getUuid().equals(StoreQuickConnect.STORE_ID);
     }
 
     boolean hasBeenModified() {
@@ -253,7 +266,7 @@ public class StoreCreationModel {
         }
 
         // We didn't change anything
-        if (store.getValue().isComplete() && !wasChanged() && !isQuickConnect()) {
+        if (store.getValue().isComplete() && !wasChanged() && !isTemplate()) {
             commit(false);
             return;
         }

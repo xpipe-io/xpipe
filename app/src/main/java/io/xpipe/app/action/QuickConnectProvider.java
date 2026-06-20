@@ -36,6 +36,8 @@ public interface QuickConnectProvider extends ActionProvider {
 
     String getPlaceholder();
 
+    String getTemplate();
+
     boolean skipDialogIfPossible();
 
     default void open(DataStoreEntry e) {

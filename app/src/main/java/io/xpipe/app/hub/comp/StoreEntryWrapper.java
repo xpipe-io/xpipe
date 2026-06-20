@@ -69,7 +69,7 @@ public class StoreEntryWrapper {
     private final ObservableValue<String> shownSummary;
     private final ObservableValue<String> shownDescription;
     private final Property<String> shownInformation;
-    private final BooleanProperty readOnly = new SimpleBooleanProperty();
+    private final BooleanProperty template = new SimpleBooleanProperty();
     private final BooleanProperty renaming = new SimpleBooleanProperty();
     private final BooleanProperty pinToTop = new SimpleBooleanProperty();
     private final IntegerProperty orderIndex = new SimpleIntegerProperty();
@@ -218,7 +218,7 @@ public class StoreEntryWrapper {
         orderIndex.setValue(entry.getOrderIndex());
         color.setValue(entry.getColor());
         notes.setValue(entry.getNotes());
-        readOnly.setValue(entry.isFreeze());
+        template.setValue(entry.isTemplate());
         iconFile.setValue(entry.getEffectiveIconFile());
         busy.setValue(entry.getBusyCounter().get() != 0);
         deletable.setValue(
@@ -300,60 +300,60 @@ public class StoreEntryWrapper {
         }
 
         if (!isInStorage()) {
+            minorActionProviders.clear();
             majorActionProviders.clear();
             defaultActionProvider.setValue(null);
         } else {
             try {
-                var defaultProvider = ActionProvider.ALL.stream()
-                        .filter(e -> entry.getStore() != null
-                                && e instanceof HubLeafProvider<?> def
-                                && (entry.getValidity().isUsable()
-                                        || (!def.requiresValidStore() && entry.getProvider() != null))
-                                && def.getApplicableClass()
-                                        .isAssignableFrom(entry.getStore().getClass())
-                                && def.isApplicable(entry.ref())
-                                && def.isDefault())
-                        .findFirst()
-                        .or(() -> {
-                            if (entry.getStore() instanceof GroupStore<?>) {
-                                return Optional.empty();
-                            } else if (entry.getProvider() != null
-                                    && entry.getProvider().canConfigure()) {
-                                return Optional.of(new EditHubLeafProvider());
-                            } else {
-                                return Optional.empty();
-                            }
-                        })
-                        .orElse(null);
-                this.defaultActionProvider.setValue(defaultProvider);
+                if (!template.get()) {
+                    var defaultProvider = ActionProvider.ALL.stream().filter(e -> entry.getStore() != null &&
+                            e instanceof HubLeafProvider<?> def &&
+                            (entry.getValidity().isUsable() || (!def.requiresValidStore() && entry.getProvider() != null)) &&
+                            def.getApplicableClass().isAssignableFrom(entry.getStore().getClass()) &&
+                            def.isApplicable(entry.ref()) &&
+                            def.isDefault()).findFirst().or(() -> {
+                        if (entry.getStore() instanceof GroupStore<?>) {
+                            return Optional.empty();
+                        } else if (entry.getProvider() != null && entry.getProvider().canConfigure()) {
+                            return Optional.of(new EditHubLeafProvider());
+                        } else {
+                            return Optional.empty();
+                        }
+                    }).orElse(null);
+                    this.defaultActionProvider.setValue(defaultProvider);
 
-                var newMajorProviders = ActionProvider.ALL.stream()
-                        .map(actionProvider -> actionProvider instanceof HubMenuItemProvider<?> sa ? sa : null)
-                        .filter(Objects::nonNull)
-                        .filter(dataStoreActionProvider -> {
-                            return showActionProvider(dataStoreActionProvider, true);
-                        })
-                        .toList();
-                if (!majorActionProviders.equals(newMajorProviders)) {
-                    majorActionProviders.setAll(newMajorProviders);
-                }
+                    var newMajorProviders = ActionProvider.ALL.stream()
+                            .map(actionProvider -> actionProvider instanceof HubMenuItemProvider<?> sa ? sa : null)
+                            .filter(Objects::nonNull)
+                            .filter(dataStoreActionProvider -> {
+                                return showActionProvider(dataStoreActionProvider, true);
+                            })
+                            .toList();
+                    if (!majorActionProviders.equals(newMajorProviders)) {
+                        majorActionProviders.setAll(newMajorProviders);
+                    }
 
-                var newMinorProviders = ActionProvider.ALL.stream()
-                        .map(actionProvider -> actionProvider instanceof HubMenuItemProvider<?> sa ? sa : null)
-                        .filter(Objects::nonNull)
-                        .filter(dataStoreActionProvider -> {
-                            return showActionProvider(dataStoreActionProvider, false);
-                        })
-                        .collect(Collectors.toCollection(ArrayList::new));
-                newMinorProviders.removeIf(storeActionProvider -> {
-                    return newMajorProviders.stream().anyMatch(mj -> {
-                        return mj instanceof HubBranchProvider<?> branch
-                                && branch.getChildren(entry.ref()).stream()
-                                        .anyMatch(c -> c.getClass().equals(storeActionProvider.getClass()));
+                    var newMinorProviders = ActionProvider.ALL.stream()
+                            .map(actionProvider -> actionProvider instanceof HubMenuItemProvider<?> sa ? sa : null)
+                            .filter(Objects::nonNull)
+                            .filter(dataStoreActionProvider -> {
+                                return showActionProvider(dataStoreActionProvider, false);
+                            })
+                            .collect(Collectors.toCollection(ArrayList::new));
+                    newMinorProviders.removeIf(storeActionProvider -> {
+                        return newMajorProviders.stream().anyMatch(mj -> {
+                            return mj instanceof HubBranchProvider<?> branch
+                                    && branch.getChildren(entry.ref()).stream()
+                                    .anyMatch(c -> c.getClass().equals(storeActionProvider.getClass()));
+                        });
                     });
-                });
-                if (!minorActionProviders.equals(newMinorProviders)) {
-                    minorActionProviders.setAll(newMinorProviders);
+                    if (!minorActionProviders.equals(newMinorProviders)) {
+                        minorActionProviders.setAll(newMinorProviders);
+                    }
+                } else {
+                    minorActionProviders.clear();
+                    majorActionProviders.clear();
+                    this.defaultActionProvider.setValue(new EditHubLeafProvider());
                 }
             } catch (Exception ex) {
                 ErrorEventFactory.fromThrowable(ex).omit().handle();

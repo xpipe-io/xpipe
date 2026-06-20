@@ -56,13 +56,11 @@ public class StoreFilterStateComp extends SimpleRegionBuilder {
         var quickConnectionsList =
                 new ListBoxViewComp<>(quickConnections, quickConnections, s -> createButton(s, s), false);
 
-        var quickConnectionsPlaceholders = FXCollections.observableArrayList(QuickConnectProvider.getAll().stream()
-                .map(p -> p.getPlaceholder())
-                .toList());
+        var quickConnectionsPlaceholders = FXCollections.observableArrayList(QuickConnectProvider.getAll());
         var quickConnectionsEmptyList = new ListBoxViewComp<>(
                 quickConnectionsPlaceholders,
                 quickConnectionsPlaceholders,
-                s -> createButton(s, s.split(" ")[0] + " "),
+                p -> createButton(p.getPlaceholder(), p.getTemplate()),
                 false);
 
         var options = new OptionsBuilder()

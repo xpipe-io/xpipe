@@ -1226,7 +1226,7 @@ public abstract class DataStorage {
         }
 
         var catConfig = getEffectiveCategoryConfig(cat.get());
-        return catConfig.getFreezeConfigurations() != null ? catConfig.getFreezeConfigurations() : entry.isFreeze();
+        return catConfig.getFreezeConfigurations() != null ? catConfig.getFreezeConfigurations() : entry.isTemplate();
     }
 
     public DataStoreColor getEffectiveColor(DataStoreEntry entry) {

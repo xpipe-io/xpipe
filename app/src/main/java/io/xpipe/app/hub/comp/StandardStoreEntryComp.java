@@ -35,6 +35,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         var tags = createTags().build();
         var index = createOrderIndex().build();
         var notes = new StoreNotesComp(getWrapper()).build();
+        var templateIcon = createTemplateIcon().build();
         var userIcon = createUserIcon().build();
         var pinIcon = createPinIcon().build();
         var active = new StoreActiveComp(getWrapper()).build();
@@ -60,7 +61,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         grid.add(storeIcon.build(), 1, 0, 1, 2);
         grid.getColumnConstraints().add(new ColumnConstraints(52));
 
-        var nameBox = new HBox(name, tags, index, active, userIcon, pinIcon, notes);
+        var nameBox = new HBox(name, tags, index, active, templateIcon, userIcon, pinIcon, notes);
         nameBox.setSpacing(4);
         nameBox.setAlignment(Pos.CENTER_LEFT);
         grid.add(nameBox, 2, 0);

@@ -280,6 +280,20 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         return button;
     }
 
+    protected BaseRegionBuilder<?, ?> createTemplateIcon() {
+        var button = new IconButtonComp("mdal-content_copy");
+        button.style("template-icon");
+        button.describe(d -> d.nameKey("template"));
+        button.apply(struc -> {
+            AppFontSizes.base(struc);
+            struc.setDisable(true);
+            struc.setOpacity(1.0);
+        });
+        button.hide(Bindings.not(getWrapper().getTemplate()).or(AppSizeBreakpoints.compactMode()));
+        button.apply(struc -> struc.setOpacity(0.85));
+        return button;
+    }
+
     protected BaseRegionBuilder<?, ?> createPinIcon() {
         var button = new IconButtonComp("mdi2p-pin-outline");
         button.disable(new SimpleBooleanProperty(true));
@@ -455,30 +469,19 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                 notes.visibleProperty().bind(BindingsHelper.map(getWrapper().getNotes(), s -> s == null));
                 items.add(items.size(), notes);
 
-                var freeze = new MenuItem();
-                freeze.graphicProperty()
-                        .bind(Bindings.createObjectBinding(
-                                () -> {
-                                    var is = getWrapper().getReadOnly().get();
-                                    return is
-                                            ? new FontIcon("mdi2l-lock-open-variant-outline")
-                                            : new FontIcon("mdi2l-lock-open-outline");
-                                },
-                                getWrapper().getReadOnly()));
-                freeze.textProperty()
-                        .bind(Bindings.createStringBinding(
-                                () -> {
-                                    var is = getWrapper().getReadOnly().get();
-                                    return is
-                                            ? AppI18n.get("unfreezeConfiguration")
-                                            : AppI18n.get("freezeConfiguration");
-                                },
-                                AppI18n.activeLanguage(),
-                                getWrapper().getReadOnly()));
-                freeze.setOnAction(event -> getWrapper()
-                        .getEntry()
-                        .setFreeze(!getWrapper().getReadOnly().get()));
-                items.add(freeze);
+                if (getWrapper().getEntry().getProvider() != null && getWrapper().getEntry().getProvider().getCreationCategory() != null) {
+                    var template = new MenuItem();
+                    template.graphicProperty().bind(Bindings.createObjectBinding(() -> {
+                        var is = getWrapper().getTemplate().get();
+                        return is ? new FontIcon("mdi2c-credit-card-off-outline") : new FontIcon("mdi2c-credit-card-multiple-outline");
+                    }, getWrapper().getTemplate()));
+                    template.textProperty().bind(Bindings.createStringBinding(() -> {
+                        var is = getWrapper().getTemplate().get();
+                        return is ? AppI18n.get("untemplateConfiguration") : AppI18n.get("templateConfiguration");
+                    }, AppI18n.activeLanguage(), getWrapper().getTemplate()));
+                    template.setOnAction(event -> getWrapper().getEntry().setTemplate(!getWrapper().getTemplate().get()));
+                    items.add(template);
+                }
             }
 
             if (cat == StoreActionCategory.DEVELOPER) {

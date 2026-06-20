@@ -287,7 +287,7 @@ public class RemoteDesktopWindow {
                 () -> {
                     var selected = this.selected.get();
                     if (selected == null) {
-                        return "Remote Desktop Dock";
+                        return "XPipe - Remote Desktop Connection";
                     }
 
                     var name = selected.getName();

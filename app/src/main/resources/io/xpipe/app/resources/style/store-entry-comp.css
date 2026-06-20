@@ -71,6 +71,10 @@
     -fx-icon-color: #5b2cffff;
 }
 
+.store-entry-grid .template-icon .ikonli-font-icon {
+    -fx-icon-color: #E6A616CC;
+}
+
 .store-entry-grid .icon > .background {
     -fx-background-radius: 5px;
     -fx-background-color: -color-bg-overlay;
@@ -205,6 +209,10 @@
 
 .root .store-entry-section-comp.color-box.vertical-comp:per-user {
     -fx-border-color: #5b2cffcc;
+}
+
+.root .store-entry-section-comp.color-box.vertical-comp:template {
+    -fx-border-color: #E6A616CC;
 }
 
 /* Light sub backgrounds */

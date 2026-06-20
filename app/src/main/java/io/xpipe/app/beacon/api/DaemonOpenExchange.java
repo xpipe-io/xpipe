@@ -5,14 +5,18 @@ import io.xpipe.app.beacon.BeaconInterface;
 
 import io.xpipe.app.beacon.BeaconServerException;
 import io.xpipe.app.core.AppOpenArguments;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.platform.PlatformInit;
+import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.OsType;
+import io.xpipe.app.util.ThreadHelper;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.nio.file.Path;
 import java.util.List;
 
 public class DaemonOpenExchange extends BeaconInterface<DaemonOpenExchange.Request> {
@@ -31,6 +35,14 @@ public class DaemonOpenExchange extends BeaconInterface<DaemonOpenExchange.Reque
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws BeaconServerException {
+        if (msg.getDirectory() != null && !AppProperties.get().getDataDir().equals(msg.getDirectory())) {
+            ThreadHelper.runAsync(() -> {
+                ThreadHelper.sleep(1000);
+                AppOperationMode.close();
+            });
+            return Response.builder().restartRequired(true).build();
+        }
+
         if (msg.getArguments().isEmpty()) {
             try {
                 // At this point we are already loading this on another thread
@@ -64,10 +76,15 @@ public class DaemonOpenExchange extends BeaconInterface<DaemonOpenExchange.Reque
     public static class Request {
         @NonNull
         List<String> arguments;
+
+        Path directory;
     }
 
     @Jacksonized
     @Builder
     @Value
-    public static class Response {}
+    public static class Response {
+
+        boolean restartRequired;
+    }
 }

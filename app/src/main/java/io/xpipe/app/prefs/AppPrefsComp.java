@@ -103,10 +103,14 @@ public class AppPrefsComp extends SimpleRegionBuilder {
     private double computeCategoryOffset(Region box, ScrollPane scrollPane, AppPrefsCategory val) {
         var node = val != null ? box.lookup("." + val.getId()) : null;
         if (node != null && scrollPane.getHeight() > 0.0) {
+            var minY = node.getBoundsInParent().getMinY();
+            if (minY <= 40.0) {
+                minY = 0.0;
+            }
             var s = Math.min(
                             box.getHeight(),
-                            node.getBoundsInParent().getMinY() > 0.0
-                                    ? node.getBoundsInParent().getMinY() + 20
+                            minY > 0.0
+                                    ? minY + 20
                                     : 0.0)
                     / box.getHeight();
             var off = (scrollPane.getHeight() * s * 1.02) / box.getHeight();
