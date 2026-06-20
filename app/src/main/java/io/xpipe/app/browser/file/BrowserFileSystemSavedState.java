@@ -59,8 +59,8 @@ public class BrowserFileSystemSavedState {
     }
 
     static BrowserFileSystemSavedState loadForStore(BrowserFileSystemTabModel model) {
-        var state = AppCache.getNonNull(
-                "fs-state-" + model.getEntry().get().getUuid(), BrowserFileSystemSavedState.class, () -> {
+        var state = AppCache.getNonNullMapEntry(
+                "fs-state", model.getEntry().get().getUuid().toString(), BrowserFileSystemSavedState.class, () -> {
                     return new BrowserFileSystemSavedState();
                 });
         state.setModel(model);
@@ -72,7 +72,7 @@ public class BrowserFileSystemSavedState {
             return;
         }
 
-        AppCache.update("fs-state-" + model.getEntry().get().getUuid(), this);
+        AppCache.updateMapEntry("fs-state", model.getEntry().get().getUuid().toString(), this);
     }
 
     public void cd(FilePath dir) {

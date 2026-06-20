@@ -9,10 +9,13 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public interface FileSystem extends Closeable, AutoCloseable {
+
+    boolean hasAccurateProgress();
 
     boolean writeInstantIfPossible(FileSystem sourceFs, FilePath sourceFile, FilePath targetFile) throws Exception;
 
@@ -141,4 +144,6 @@ public interface FileSystem extends Closeable, AutoCloseable {
     List<FilePath> listRoots() throws Exception;
 
     List<FilePath> listCommonDirectories() throws Exception;
+
+    Optional<UUID> getIdentifier();
 }

@@ -1,5 +1,6 @@
 package io.xpipe.app.core;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.JacksonMapper;
 
@@ -8,13 +9,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 
 public class AppCache {
@@ -49,6 +53,20 @@ public class AppCache {
 
     public static <T> T getNonNull(String key, Class<?> type, Supplier<T> notPresent) {
         return getNonNull(key, TypeFactory.defaultInstance().constructType(type), notPresent);
+    }
+
+    public static <T> T getNonNullMapEntry(String key, String mapKey, Class<?> type, Supplier<T> notPresent) {
+        return getNonNullMapEntry(key, mapKey, TypeFactory.defaultInstance().constructType(type), notPresent);
+    }
+
+    public static <T> T getNonNullMapEntry(String key, String mapKey, JavaType type, Supplier<T> notPresent) {
+        var mapType = TypeFactory.defaultInstance().constructMapLikeType(Map.class, TypeFactory.defaultInstance().constructType(String.class), type);
+        Map<String, T> map = getNonNull(key, mapType, () -> null);
+        if (map != null) {
+            return map.get(mapKey);
+        } else {
+            return notPresent.get();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -102,6 +120,22 @@ public class AppCache {
             }
         }
         return notPresent;
+    }
+
+    public static <T> void updateMapEntry(String key, String mapKey, T val) {
+        if (val == null) {
+            return;
+        }
+
+        var mapType = TypeFactory.defaultInstance().constructMapLikeType(Map.class, String.class, val.getClass());
+        Map<String, T> map = getNonNull(key, mapType, () -> null);
+        if (map != null) {
+            map.put(mapKey, val);
+            update(key, map);
+        } else {
+            var newMap = Map.of(mapKey, val);
+            update(key, newMap);
+        }
     }
 
     public static <T> void update(String key, T val) {

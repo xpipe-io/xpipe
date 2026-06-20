@@ -5,6 +5,7 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.OsType;
@@ -20,6 +21,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 @Getter
@@ -30,6 +32,11 @@ public class ConnectionFileSystem implements FileSystem {
 
     public ConnectionFileSystem(ShellControl shellControl) {
         this.shellControl = shellControl;
+    }
+
+    @Override
+    public boolean hasAccurateProgress() {
+        return true;
     }
 
     @Override
@@ -419,6 +426,11 @@ public class ConnectionFileSystem implements FileSystem {
             }
             return list;
         }
+    }
+
+    @Override
+    public Optional<UUID> getIdentifier() {
+        return !shellControl.isLocal() ? shellControl.getSourceStoreId() : Optional.of(DataStorage.LOCAL_ID);
     }
 
     @Override

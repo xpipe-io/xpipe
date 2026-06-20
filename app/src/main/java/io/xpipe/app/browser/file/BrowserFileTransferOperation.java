@@ -1,10 +1,12 @@
 package io.xpipe.app.browser.file;
 
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.ext.FileSystem;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.FilePath;
 
@@ -20,6 +22,7 @@ import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -262,7 +265,7 @@ public class BrowserFileTransferOperation {
             // Source might have been deleted meanwhile
             var exists = source.getFileSystem().directoryExists(source.getPath());
             if (!exists) {
-                progress.accept(BrowserTransferProgress.finished(source.getName(), 0));
+                updateProgress(BrowserTransferProgress.finished(source.getName(), 0));
                 return;
             }
 
@@ -274,7 +277,7 @@ public class BrowserFileTransferOperation {
             var baseRelative = source.getPath().getParent().toDirectory();
             source.getFileSystem().traverseFilesRecursively(source.getFileSystem(), source.getPath(), fileEntry -> {
                 if (cancelled()) {
-                    progress.accept(BrowserTransferProgress.finished(source.getName() + " ...", totalSize.get()));
+                    updateProgress(BrowserTransferProgress.finished(source.getName() + " ...", totalSize.get()));
                     return false;
                 }
 
@@ -290,7 +293,7 @@ public class BrowserFileTransferOperation {
                     // This one is up-to-date and does not need to be recalculated
                     // If we don't have a size, it doesn't matter that much as the total size is only for display
                     totalSize.addAndGet(fileEntry.getFileSizeLong().orElse(0));
-                    progress.accept(new BrowserTransferProgress(source.getName() + " ...", 0, totalSize.get()));
+                    updateProgress(new BrowserTransferProgress(source.getName() + " ...", 0, totalSize.get()));
                 }
                 return true;
             });
@@ -298,7 +301,7 @@ public class BrowserFileTransferOperation {
             // Source might have been deleted meanwhile
             var exists = source.getFileSystem().fileExists(source.getPath());
             if (!exists) {
-                progress.accept(BrowserTransferProgress.finished(source.getName(), 0));
+                updateProgress(BrowserTransferProgress.finished(source.getName(), 0));
                 return;
             }
 
@@ -307,7 +310,7 @@ public class BrowserFileTransferOperation {
             totalSize.addAndGet(source.getFileSizeLong().orElse(0));
         } else {
             // Unsupported type, e.g. a socket
-            progress.accept(BrowserTransferProgress.finished(source.getName(), 0));
+            updateProgress(BrowserTransferProgress.finished(source.getName(), 0));
             return;
         }
 
@@ -350,7 +353,45 @@ public class BrowserFileTransferOperation {
                         }
                     }
 
-                    transfer(sourceFile.getPath(), optimizedSourceFs, targetFile, targetFs, transferred, totalSize);
+                    var transferRunning = new AtomicBoolean(true);
+                    var sourceId = optimizedSourceFs.getIdentifier();
+                    var targetId = targetFs.getIdentifier();
+                    var fileSize = optimizedSourceFs.getFileSize(sourceFile.getPath());
+                    var startTransferred = transferred.get();
+                    if ((!optimizedSourceFs.hasAccurateProgress() || !targetFs.hasAccurateProgress()) && sourceId.isPresent() && targetId.isPresent()) {
+                        var mapKey = sourceId.get() + "-" + targetId.get();
+                        Long cachedSpeed = AppCache.getNonNullMapEntry("transferSpeedEstimate", mapKey, Long.class, () -> null);
+                        var counter = new AtomicInteger();
+                        if (cachedSpeed != null) {
+                            GlobalTimer.scheduleUntil(Duration.ofMillis(100), false, () -> {
+                                if (!transferRunning.get()) {
+                                    return true;
+                                }
+
+                                // Divide by 9 and not 10 to overreport progress a bit. Better than underreporting
+                                var addedProgress = Math.min(fileSize, (long) counter.incrementAndGet() * cachedSpeed / 9);
+                                updateProgress(
+                                        new BrowserTransferProgress(sourceFile.getName(), startTransferred + addedProgress, totalSize.get()));
+                                return false;
+                            });
+                        } else {
+                            updateProgress(new BrowserTransferProgress(sourceFile.getName(), 0, 0));
+                        }
+                    }
+
+                    var startProgress = new BrowserTransferProgress(source.getName(), transferred.get(), totalSize.get());
+                    try {
+                        transfer(sourceFile.getPath(), optimizedSourceFs, targetFile, targetFs, transferred, totalSize, fileSize);
+                    } finally {
+                        transferRunning.set(false);
+                    }
+
+                    if (sourceId.isPresent() && targetId.isPresent()) {
+                        var mapKey = sourceId.get() + "-" + targetId.get();
+                        var speed = BrowserTransferProgress.estimateTransferSpeed(List.of(startProgress),
+                                new BrowserTransferProgress(sourceFile.getName(), transferred.get(), totalSize.get()));
+                        AppCache.updateMapEntry("transferSpeedEstimate", mapKey, speed);
+                    }
                 }
             }
         } finally {
@@ -407,19 +448,19 @@ public class BrowserFileTransferOperation {
             FilePath targetFile,
             FileSystem targetFs,
             AtomicLong transferred,
-            AtomicLong totalSize)
+            AtomicLong totalSize,
+            long fileSize)
             throws Exception {
         if (cancelled()) {
             return;
         }
 
-        updateProgress(new BrowserTransferProgress(sourceFile.getFileName(), 0, 0));
-
-        var fileSize = sourceFs.getFileSize(sourceFile);
+        updateProgress(new BrowserTransferProgress(sourceFile.getFileName(), transferred.get(), totalSize.get()));
 
         if (transferInline(sourceFile, sourceFs, targetFile, targetFs) || cancelled()) {
             if (!cancelled()) {
-                updateProgress(BrowserTransferProgress.finished(sourceFile.getFileName(), fileSize));
+                transferred.addAndGet(fileSize);
+                updateProgress(new BrowserTransferProgress(sourceFile.getFileName(), transferred.get(), totalSize.get()));
             }
             return;
         }
@@ -442,7 +483,7 @@ public class BrowserFileTransferOperation {
             }
 
             outputStream = targetFs.openOutput(targetFile, fileSize);
-            transferFile(sourceFile, inputStream, outputStream, transferred, totalSize, fileSize);
+            transferFile(sourceFile, inputStream, outputStream, transferred, totalSize, fileSize, sourceFs.hasAccurateProgress() && targetFs.hasAccurateProgress());
         } catch (Exception ex) {
             // Mark progress as finished to reset any progress display
             updateProgress(BrowserTransferProgress.finished(sourceFile.getFileName(), transferred.get()));
@@ -516,7 +557,8 @@ public class BrowserFileTransferOperation {
             OutputStream outputStream,
             AtomicLong transferred,
             AtomicLong total,
-            long expectedFileSize)
+            long expectedFileSize,
+            boolean reportProgress)
             throws Exception {
         // Initialize progress immediately prior to reading anything
         updateProgress(new BrowserTransferProgress(sourceFile.getFileName(), transferred.get(), total.get()));
@@ -543,8 +585,9 @@ public class BrowserFileTransferOperation {
                     outputStream.write(buffer, 0, read);
                     transferred.addAndGet(read);
                     readCount.addAndGet(read);
-                    updateProgress(
-                            new BrowserTransferProgress(sourceFile.getFileName(), transferred.get(), total.get()));
+                    if (reportProgress) {
+                        updateProgress(new BrowserTransferProgress(sourceFile.getFileName(), transferred.get(), total.get()));
+                    }
                 }
 
                 outputStream.flush();

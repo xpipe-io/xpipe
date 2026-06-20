@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -32,6 +33,11 @@ public class WrapperFileSystem implements FileSystem {
         }
 
         consumer.accept(fs);
+    }
+
+    @Override
+    public boolean hasAccurateProgress() {
+        return fs.hasAccurateProgress();
     }
 
     @Override
@@ -376,6 +382,11 @@ public class WrapperFileSystem implements FileSystem {
         }
 
         return fs.listCommonDirectories();
+    }
+
+    @Override
+    public Optional<UUID> getIdentifier() {
+        return fs.getIdentifier();
     }
 
     @Override

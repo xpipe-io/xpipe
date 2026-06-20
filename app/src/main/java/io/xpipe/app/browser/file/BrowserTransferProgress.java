@@ -29,6 +29,11 @@ public class BrowserTransferProgress {
             return 0;
         }
 
+        if (list.size() == 1) {
+            var ms = Math.max(1, now.getTimestamp().toEpochMilli() - list.getFirst().getTimestamp().toEpochMilli());
+            return Math.round((now.getTransferred() - list.getFirst().getTransferred()) / (ms / 1000.0));
+        }
+
         var rSize = list.size() > 1 ? list.size() - 1 : list.size();
         var r = new double[rSize];
         for (int i = 0; i < rSize; i++) {
