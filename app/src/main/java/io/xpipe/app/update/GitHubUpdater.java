@@ -5,6 +5,7 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.Hyperlinks;
+import io.xpipe.core.OsType;
 
 import java.nio.file.Files;
 import java.time.Instant;
@@ -81,6 +82,30 @@ public class GitHubUpdater extends UpdateHandler {
         } catch (Throwable t) {
             ErrorEventFactory.fromThrowable(t).handle();
             preparedUpdate.setValue(null);
+        }
+    }
+
+    public void reinstallUpdateMsi(PreparedUpdate p) {
+        if (OsType.ofLocal() != OsType.WINDOWS) {
+            return;
+        }
+
+        var downloadFile = p.getFile();
+        if (!Files.exists(downloadFile)) {
+            event("Prepared update file does not exist");
+            return;
+        }
+
+        try {
+            var performedUpdate = new PerformedUpdate(p.getVersion(), p.getBody(), p.getVersion());
+            AppCache.update("performedUpdate", performedUpdate);
+
+            var a = p.getAssetType();
+            if (a instanceof AppInstaller.InstallerAssetType.Msi msi) {
+                msi.installLocal(downloadFile, true);
+            }
+        } catch (Throwable t) {
+            ErrorEventFactory.fromThrowable(t).handle();
         }
     }
 

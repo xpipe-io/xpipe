@@ -6,6 +6,7 @@ import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLogs;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
@@ -24,11 +25,28 @@ public class UpdateChangelogDialog {
         var update = AppDistributionType.get().getUpdateHandler().getPerformedUpdate();
         if (update != null && !AppDistributionType.get().getUpdateHandler().isUpdateSucceeded()) {
             ErrorEvent.ErrorEventBuilder eventBuilder = ErrorEventFactory.fromMessage(AppI18n.get("updateFail"))
-                    .documentationLink(DocumentationLink.UPDATE_FAIL)
-                    .customAction(ErrorAction.translated("updateFailAction", () -> {
+                    .documentationLink(DocumentationLink.UPDATE_FAIL);
+
+            if (OsType.ofLocal() == OsType.WINDOWS && AppDistributionType.get().getUpdateHandler() instanceof GitHubUpdater gh) {
+                var lastUpdateCheckResult = gh.getLastUpdateCheckResult().getValue();
+                var preparedUpdate = gh.getPreparedUpdate().getValue();
+                if (lastUpdateCheckResult != null && preparedUpdate != null) {
+                    var p = new UpdateHandler.PreparedUpdate(
+                            AppProperties.get().getVersion(), AppDistributionType.get().getId(), lastUpdateCheckResult.getVersion(),
+                            lastUpdateCheckResult.getReleaseUrl(), preparedUpdate.getFile(), preparedUpdate.getBody(), lastUpdateCheckResult.getAssetType(),
+                            lastUpdateCheckResult.isSecurityOnly());
+                    eventBuilder.customAction(ErrorAction.translated("updateReinstallAction", () -> {
+                        gh.reinstallUpdateMsi(p);
+                        return true;
+                    }));
+                }
+            }
+
+            eventBuilder.customAction(ErrorAction.translated("updateFailAction", () -> {
                         Hyperlinks.open(Hyperlinks.GITHUB_LATEST);
                         return true;
                     }));
+
             if (OsType.ofLocal() == OsType.WINDOWS) {
                 var installerLog =
                         AppLogs.get().getSessionLogsDirectory().getParent().resolve("installer.log");
