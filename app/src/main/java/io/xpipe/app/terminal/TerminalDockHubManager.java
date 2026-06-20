@@ -228,11 +228,12 @@ public class TerminalDockHubManager {
         var listener = new TerminalView.Listener() {
             @Override
             public void onSessionOpened(TerminalView.ShellSession session) {
-                if (!hubRequests.contains(session.getRequest())) {
+                if (!(session.getTerminal() instanceof TerminalView.ControllableTerminalSession t)) {
                     return;
                 }
 
-                if (!(session.getTerminal() instanceof TerminalView.ControllableTerminalSession t)) {
+                if (!hubRequests.contains(session.getRequest())) {
+                    t.getControllable().own(NativeWinWindowControl.MAIN_WINDOW);
                     return;
                 }
 
