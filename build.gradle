@@ -109,7 +109,7 @@ def getBaseJvmArgs() {
     jvmRunArgs += ["-Dfile.encoding=UTF-8"]
 
     // Make the app show up nicely in VisualVM
-    jvmRunArgs += ["-Dvisualvm.display.name=$productName"]
+    jvmRunArgs += ["-Dvisualvm.display.name=\"$productName\""]
 
     // Make virtual threads behave the same, independently of CPU core count
     jvmRunArgs += ["-Djdk.virtualThreadScheduler.parallelism=8"]
