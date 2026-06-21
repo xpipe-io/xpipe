@@ -106,11 +106,11 @@ public abstract class AppInstallation {
             }
             return getInstallationBasePathForJavaExecutable(path);
         } else {
-            return getInstallationBasePathForDaemonExecutable(path);
+            return getInstallationBasePathForLauncherExecutable(path);
         }
     }
 
-    private static Path getInstallationBasePathForDaemonExecutable(Path executable) {
+    private static Path getInstallationBasePathForLauncherExecutable(Path executable) {
         // Resolve root path of installation relative to executable in a JPackage installation
         return switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> {
@@ -120,6 +120,14 @@ public abstract class AppInstallation {
                 yield executable.getParent().getParent().getParent();
             }
             case OsType.Windows ignored -> {
+                // Check for linked CLI executable on Windows
+                if (AppProperties.get().isCli()) {
+                    var parent = executable.getParent();
+                    if (parent.getFileName().toString().equals("bin")) {
+                        yield parent.getParent();
+                    }
+                }
+
                 yield executable.getParent();
             }
         };
