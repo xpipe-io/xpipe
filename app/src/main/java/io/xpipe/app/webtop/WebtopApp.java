@@ -21,7 +21,7 @@ public enum WebtopApp {
     NETBIRD("netbird"),
     OPENBAO("openBao", "openbao"),
     PROTON_PASS("protonPass", "proton-pass"),
-    TAILSCALE("tailscale"),
+    TAILSCALE("tailscale", "tailscale", true),
     TELEPORT("teleport"),
     TMUX("tmux"),
     VSCODE("vscode"),
@@ -39,13 +39,19 @@ public enum WebtopApp {
 
     private final String translationKey;
     private final String id;
+    private final boolean requiresRestart;
 
     WebtopApp(String translationKey) {
         this(translationKey, translationKey);
     }
 
     WebtopApp(String translationKey, String id) {
+        this(translationKey, id, false);
+    }
+
+    WebtopApp(String translationKey, String id, boolean requiresRestart) {
         this.translationKey = translationKey;
         this.id = id;
+        this.requiresRestart = requiresRestart;
     }
 }

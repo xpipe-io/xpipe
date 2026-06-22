@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 @Builder
 public class OptionsChoiceBuilder {
@@ -123,13 +124,12 @@ public class OptionsChoiceBuilder {
     public <T> OptionsBuilder build() {
         Property<T> s = (Property<T>) property;
         var initial = s.getValue();
-        var sub = available;
         var selectedIndex = s.getValue() == null
                 ? (allowNull ? 0 : -1)
-                : sub.stream()
+                : available.stream()
                         .filter(c -> c.equals(s.getValue().getClass()))
                         .findFirst()
-                        .map(c -> sub.indexOf(c) + (allowNull ? 1 : 0))
+                        .map(c -> available.indexOf(c) + (allowNull ? 1 : 0))
                         .orElse(-1);
         var selected = new SimpleIntegerProperty(selectedIndex);
 
@@ -137,7 +137,7 @@ public class OptionsChoiceBuilder {
         if (allowNull) {
             properties.add(new SimpleObjectProperty<>());
         }
-        for (Class<?> aClass : sub) {
+        for (Class<?> aClass : available) {
             var compatible = aClass.isInstance(s.getValue());
             properties.add(
                     new SimpleObjectProperty<>(compatible ? s.getValue() : createDefaultInstanceForClass(aClass)));
@@ -148,8 +148,8 @@ public class OptionsChoiceBuilder {
                 return;
             }
 
-            for (int i = 0; i < sub.size(); i++) {
-                var c = sub.get(i);
+            for (int i = 0; i < available.size(); i++) {
+                var c = available.get(i);
                 if (c.isAssignableFrom(newValue.getClass())) {
                     properties.get(i + (allowNull ? 1 : 0)).setValue(newValue);
                     selected.setValue(i + (allowNull ? 1 : 0));
@@ -158,10 +158,10 @@ public class OptionsChoiceBuilder {
         });
 
         var map = new LinkedHashMap<ObservableValue<String>, OptionsBuilder>();
-        for (int i = 0; i < sub.size(); i++) {
+        for (int i = 0; i < available.size(); i++) {
             map.put(
-                    AppI18n.observable(createIdForClass(sub.get(i))),
-                    createOptionsForClass(sub.get(i), properties.get(i + (allowNull ? 1 : 0)), customConfiguration));
+                    AppI18n.observable(createIdForClass(available.get(i))),
+                    createOptionsForClass(available.get(i), properties.get(i + (allowNull ? 1 : 0)), customConfiguration));
         }
         if (allowNull) {
             var key = AppI18n.observable("none");

@@ -12,7 +12,13 @@ import java.util.List;
 
 public class WebtopAppListDialog {
 
-    public static void show(List<WebtopApp> include) {
+    private static List<WebtopApp> lastShown;
+
+    public static synchronized void show(List<WebtopApp> include) {
+        if (include.equals(lastShown)) {
+            return;
+        }
+
         ObservableList<WebtopApp> selected = FXCollections.observableArrayList();
         var m = WebtopAppListManager.get();
         selected.addAll(m.getSelected());
@@ -29,5 +35,6 @@ public class WebtopAppListDialog {
             });
         }, true, true));
         modal.show();
+        lastShown = include;
     }
 }

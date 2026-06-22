@@ -88,7 +88,6 @@ public class StoreStateFormat {
                 .flatMap(Optional::stream)
                 .findFirst()
                 .orElse(null);
-        var lic = licenseReq != null ? "[" + licenseReq + "]" : null;
         var name = this.name;
         var state = getStates() != null
                 ? Arrays.stream(getStates())
@@ -99,6 +98,7 @@ public class StoreStateFormat {
         if (state != null && state.isEmpty()) {
             state = null;
         }
+        var lic = licenseReq != null && (state != null || name != null) ? "[" + licenseReq + "]" : null;
         return DataStoreFormatter.join(lic, name, state);
     }
 }

@@ -41,6 +41,7 @@ import io.xpipe.app.util.XPipeDaemonMode;
 import io.xpipe.app.webtop.WebtopAppListManager;
 import io.xpipe.app.webtop.WebtopDisplayScale;
 import io.xpipe.app.webtop.WebtopMode;
+import io.xpipe.app.webtop.WebtopPreconfiguredDialog;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -83,6 +84,7 @@ public class AppBaseMode extends AppOperationMode {
         AppSid.init();
         AppBeaconServer.init();
         AppLayoutModel.init();
+        WebtopAppListManager.init();
 
         if (AppOperationMode.getStartupMode() == XPipeDaemonMode.GUI) {
             AppPtbDialog.showIfNeeded();
@@ -196,7 +198,7 @@ public class AppBaseMode extends AppOperationMode {
         UpdateChangelogDialog.showIfNeeded();
 
         WebtopMode.init();
-        WebtopAppListManager.init();
+        WebtopPreconfiguredDialog.showIfNeeded();
         WebtopDisplayScale.init();
 
         ActionProvider.initProviders();

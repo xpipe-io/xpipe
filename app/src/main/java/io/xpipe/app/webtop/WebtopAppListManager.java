@@ -32,7 +32,7 @@ public class WebtopAppListManager {
             return;
         }
 
-        var m = new  WebtopAppListManager();
+        var m = new WebtopAppListManager();
         m.load();
         INSTANCE = m;
         INSTANCE.showDialogIfNeeded(null);
@@ -70,12 +70,12 @@ public class WebtopAppListManager {
 
     public boolean showDialogIfNeeded(WebtopApp app) {
         var req = queryRequired();
-        if (!installed.containsAll(req)) {
-            var l = new ArrayList<WebtopApp>();
-            l.addAll(req);
-            if (app != null && !l.contains(app)) {
-                l.add(app);
-            }
+        var l = new ArrayList<WebtopApp>();
+        l.addAll(req);
+        if (app != null && !l.contains(app)) {
+            l.add(app);
+        }
+        if (!installed.containsAll(l)) {
             WebtopAppListDialog.show(l);
             return true;
         } else {
@@ -145,6 +145,17 @@ public class WebtopAppListManager {
             all.add(editor.getRequiredWebtopApp());
         }
 
+        var env = System.getenv("XPIPE_PREINSTALLED_WEBTOP_APPS");
+        if (env != null && !env.isEmpty()) {
+            var split = env.split(",");
+            for (String s : split) {
+                var app = WebtopApp.fromString(s);
+                if (app.isPresent()) {
+                    all.add(app.get());
+                }
+            }
+        }
+
         return all.stream().filter(webtopApp -> webtopApp != null).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
@@ -185,9 +196,11 @@ public class WebtopAppListManager {
             this.selected.add(webtopApp);
         }
 
+        var requiresRestart = rem.stream().anyMatch(webtopApp -> webtopApp.isRequiresRestart());
         var command = "/apps/install.sh " + rem.stream()
                 .map(webtopApp -> webtopApp.getId())
                 .collect(Collectors.joining(" "));
-        TerminalLaunch.builder().title("Install packages").localScript(ShellScript.of(command)).pauseOnExit(false).launch();
+        var restartCommand = requiresRestart ? "xpipe daemon stop --wait\nxpipe open" : null;
+        TerminalLaunch.builder().title("Install packages").localScript(ShellScript.lines(command, restartCommand)).pauseOnExit(false).launch();
     }
 }

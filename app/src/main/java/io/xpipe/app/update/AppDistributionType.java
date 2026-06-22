@@ -94,7 +94,10 @@ public enum AppDistributionType implements Translatable {
         }
 
         if (!AppProperties.get().isImage()) {
-            type = DEVELOPMENT;
+            // Simulate webtop dist even in dev mode when possible
+            var webtop = OsType.ofLocal() == OsType.LINUX && (Files.isDirectory(Path.of("/kclient")) ||
+                    Files.isRegularFile(Path.of("/defaults/startwm_wayland.sh")));
+            type = webtop ? WEBTOP : DEVELOPMENT;
             return;
         }
 

@@ -11,7 +11,9 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.net.URI;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -20,6 +22,27 @@ import java.util.Optional;
 @Jacksonized
 @AllArgsConstructor
 public class HttpProxy {
+
+    public static Optional<HttpProxy> detectFromEnvironment() {
+        var envOrder = List.of("HTTP_PROXY", "http_proxy", "HTTPS_PROXY", "https_proxy", "ALL_PROXY", "all_proxy");
+        for (String s : envOrder) {
+            var env =  System.getenv(s);
+            if (env != null) {
+                try {
+                    var parsed = URI.create(env);
+                    var isSocks = parsed.getScheme().equals("socks5");
+                    var host = parsed.getHost();
+                    var port = parsed.getPort() != -1 ? parsed.getPort() : isSocks ? 1080 : 8080;
+                    var userInfo = parsed.getUserInfo();
+                    var user = userInfo != null ? userInfo.split(":")[0] : null;
+                    var pass = userInfo != null && userInfo.contains(":") ? userInfo.split(":")[1] : null;
+                    return Optional.of(new HttpProxy(host, port, user, pass != null ? InPlaceSecretValue.of(pass) : null, isSocks));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+
+        return Optional.empty();
+    }
 
     public static Map<String, String> getEnvironmentVariables() {
         var proxy = getActiveProxy();
@@ -32,7 +55,7 @@ public class HttpProxy {
         map.put("http_proxy", http);
         map.put("HTTP_PROXY", http);
 
-        // Use HTTP protocol as well here as most proxies still require
+        // Use HTTP protocol as well here as most proxies still require that
         map.put("https_proxy", http);
         map.put("HTTPS_PROXY", http);
         return map;

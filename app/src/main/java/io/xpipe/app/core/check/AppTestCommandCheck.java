@@ -2,6 +2,7 @@ package io.xpipe.app.core.check;
 
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppNames;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.update.AppDistributionType;
@@ -14,7 +15,7 @@ public class AppTestCommandCheck {
             return;
         }
 
-        if (AppDistributionType.get() == AppDistributionType.DEVELOPMENT) {
+        if (AppProperties.get().isDevelopmentEnvironment()) {
             return;
         }
 
@@ -30,7 +31,7 @@ public class AppTestCommandCheck {
             } catch (ProcessOutputException ex) {
                 throw ProcessOutputException.withPrefix(
                         "Installation self test failed. Is your \"test\" shell command working as expected and is the "
-                                + AppNames.ofCurrent().getName() + " installation directory " + "accessible?",
+                                + AppNames.ofCurrent().getName() + " installation directory accessible?",
                         ex);
             }
         }

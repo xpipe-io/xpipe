@@ -170,7 +170,7 @@ public class HttpProxyCategory extends AppPrefsCategory {
                     null,
                     selected.defaultStore(DataStorage.get().getSelectedCategory()),
                     DataStoreCreationCategory.NETWORK,
-                    ignored -> {},
+                    e -> ref.set(e.ref()),
                     false);
         });
 

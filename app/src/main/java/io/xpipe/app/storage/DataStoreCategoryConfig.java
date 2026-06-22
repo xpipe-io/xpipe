@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 @Jacksonized
 @AllArgsConstructor
 public class DataStoreCategoryConfig {
