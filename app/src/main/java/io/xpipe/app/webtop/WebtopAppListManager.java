@@ -1,5 +1,6 @@
 package io.xpipe.app.webtop;
 
+import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
@@ -200,7 +201,8 @@ public class WebtopAppListManager {
         var command = "/apps/install.sh " + rem.stream()
                 .map(webtopApp -> webtopApp.getId())
                 .collect(Collectors.joining(" "));
-        var restartCommand = requiresRestart ? "xpipe daemon stop --wait\nxpipe open" : null;
-        TerminalLaunch.builder().title("Install packages").localScript(ShellScript.lines(command, restartCommand)).pauseOnExit(false).launch();
+        var exec = AppInstallation.ofCurrent().getCliExecutablePath();
+        var endCommand = requiresRestart ? exec + " daemon stop --wait\n" + exec + " open" : exec + " open";
+        TerminalLaunch.builder().title("Install packages").localScript(ShellScript.lines(command, endCommand)).pauseOnExit(false).launch();
     }
 }

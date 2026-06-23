@@ -15,7 +15,7 @@ public class WebtopAppListDialog {
     private static List<WebtopApp> lastShown;
 
     public static synchronized void show(List<WebtopApp> include) {
-        if (include.equals(lastShown)) {
+        if (!include.isEmpty() && include.equals(lastShown)) {
             return;
         }
 

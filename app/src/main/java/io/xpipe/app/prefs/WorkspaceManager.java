@@ -21,6 +21,7 @@ import javafx.collections.ObservableList;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import lombok.Getter;
+import org.apache.commons.io.FileUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,6 +51,7 @@ public class WorkspaceManager {
                 }
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).expected().handle();
+                FileUtils.deleteQuietly(file.toFile());
             }
         }
 

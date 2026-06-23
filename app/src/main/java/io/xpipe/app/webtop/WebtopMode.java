@@ -1,5 +1,6 @@
 package io.xpipe.app.webtop;
 
+import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
@@ -8,6 +9,7 @@ import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.ThreadHelper;
 
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 public class WebtopMode {
 
@@ -24,14 +26,11 @@ public class WebtopMode {
 
     public static void set(boolean mobile) {
         AppOperationMode.executeAfterShutdown(() -> {
-            var file = AppSystemInfo.ofCurrent().getUserHome().resolve(".xpipe", "webtop", "mobile");
+            var exec = AppInstallation.ofCurrent().getCliExecutablePath();
             if (!mobile) {
-                Files.deleteIfExists(file);
-                ExternalApplicationHelper.startAsync(CommandBuilder.of().add("bash", "-c").addQuoted("sleep 3 && /defaults/desktop.sh && plasmashell --replace && xpipe open"));
+                ExternalApplicationHelper.startAsync(CommandBuilder.of().add("bash", "-c").addQuoted("/defaults/desktop.sh && /defaults/reload.sh && /defaults/waitx.sh && " + exec + " open"));
             } else {
-                Files.createDirectories(file.getParent());
-                Files.createFile(file);
-                ExternalApplicationHelper.startAsync(CommandBuilder.of().add("bash", "-c").addQuoted("sleep 3 && /defaults/mobile.sh && plasmashell --replace && xpipe open"));
+                ExternalApplicationHelper.startAsync(CommandBuilder.of().add("bash", "-c").addQuoted("/defaults/mobile.sh && /defaults/reload.sh && /defaults/waitx.sh && " + exec + " open"));
             }
         });
     }

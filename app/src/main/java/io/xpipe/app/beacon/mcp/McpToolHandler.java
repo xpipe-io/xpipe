@@ -81,6 +81,10 @@ public interface McpToolHandler
         }
 
         public String getStringArgument(String key) throws BeaconClientException {
+            if (request.arguments() == null) {
+                throw new BeaconClientException("Missing argument for key " + key);
+            }
+
             var o = request.arguments().get(key);
             if (o == null) {
                 throw new BeaconClientException("Missing argument for key " + key);

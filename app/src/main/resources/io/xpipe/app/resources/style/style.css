@@ -278,14 +278,22 @@
 }
 
 .webtop-mode {
-    -fx-font-size: 1.7em;
+    -fx-font-size: 1.6em;
     -fx-padding: 1em;
 }
 
 .webtop-mode .toggle-button {
+    -fx-background-color: -color-bg-default;
+    -fx-text-fill: -color-fg-default;
+    -fx-border-color: -color-border-default;
     -fx-padding: 1em;
+    -fx-border-radius: 4;
+}
+
+.webtop-mode .toggle-button:selected {
+    -fx-border-color: -color-accent-muted;
 }
 
 .webtop-mode .ikonli-font-icon {
-    -fx-icon-size: 50;
+    -fx-icon-size: 35;
 }
