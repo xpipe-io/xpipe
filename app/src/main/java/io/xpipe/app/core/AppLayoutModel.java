@@ -225,7 +225,7 @@ public class AppLayoutModel {
                         null,
                         () -> Hyperlinks.open(DocumentationLink.getRoot()),
                         null)));
-        if (AppDistributionType.get() == AppDistributionType.WEBTOP) {
+        if (AppDistributionType.get() != AppDistributionType.WEBTOP) {
             l.add(
                     new Entry(
                             AppI18n.observable("visitGithubRepository"),
