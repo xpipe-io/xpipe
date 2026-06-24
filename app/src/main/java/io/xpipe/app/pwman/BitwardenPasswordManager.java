@@ -324,7 +324,7 @@ public class BitwardenPasswordManager implements PasswordManager {
         }
 
         if (r[1].contains("Vault is locked")) {
-            var pw = AskpassAlert.queryRaw("Unlock vault with your Bitwarden master password", null, false);
+            var pw = AskpassAlert.queryRaw(AppI18n.get("bitwardenUnlock"), null, false);
             if (pw.getSecret() == null) {
                 return false;
             }

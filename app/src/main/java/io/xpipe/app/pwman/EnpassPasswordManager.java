@@ -1,6 +1,7 @@
 package io.xpipe.app.pwman;
 
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -135,7 +136,7 @@ public class EnpassPasswordManager implements PasswordManager {
         }
 
         var pass = SecretManager.retrieve(
-                new SecretPromptStrategy(), "Enter Enpass vault master password", MASTER_PASSWORD_UUID, 0, true);
+                new SecretPromptStrategy(), AppI18n.get("enpassUnlock"), MASTER_PASSWORD_UUID, 0, true);
         if (pass == null) {
             return null;
         }

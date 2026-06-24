@@ -2,8 +2,11 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppSideWindow;
 
+import io.xpipe.app.secret.SecretQueryResult;
+import io.xpipe.app.secret.SecretQueryState;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -16,6 +19,10 @@ import java.util.Optional;
 public class AsktextAlert {
 
     public static Optional<String> query(String prompt, String value) {
+        if (AppOperationMode.isInShutdown()) {
+            return Optional.empty();
+        }
+
         var prop = new SimpleObjectProperty<>(value);
         var r = AppSideWindow.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("asktextAlertTitle"));

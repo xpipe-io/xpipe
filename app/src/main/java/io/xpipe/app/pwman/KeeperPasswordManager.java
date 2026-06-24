@@ -204,7 +204,7 @@ public class KeeperPasswordManager implements PasswordManager {
                           """;
                     return input;
                 } else {
-                    var totp = AskpassAlert.queryRaw("Enter Keeper Commander SMS Code", null, false);
+                    var totp = AskpassAlert.queryRaw(AppI18n.get("keeperSmsUnlock"), null, false);
                     if (totp.getState() != SecretQueryState.NORMAL) {
                         return null;
                     }
@@ -290,7 +290,7 @@ public class KeeperPasswordManager implements PasswordManager {
                           """;
                     return input;
                 } else {
-                    var totp = AskpassAlert.queryRaw("Enter Keeper 2FA Code", null, false);
+                    var totp = AskpassAlert.queryRaw(AppI18n.get("keeper2faUnlock"), null, false);
                     if (totp.getState() != SecretQueryState.NORMAL) {
                         return null;
                     }
@@ -531,7 +531,7 @@ public class KeeperPasswordManager implements PasswordManager {
 
             var r = SecretManager.retrieve(
                     new SecretPromptStrategy(),
-                    "Enter your Keeper master password to unlock",
+                    AppI18n.get("keeperUnlock"),
                     KEEPER_PASSWORD_ID,
                     0,
                     true);
