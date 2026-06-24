@@ -2,6 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppSideWindow;
 import io.xpipe.app.secret.SecretManager;
 import io.xpipe.app.secret.SecretQueryResult;
@@ -22,6 +23,10 @@ import javafx.stage.Window;
 public class AskpassAlert {
 
     public static SecretQueryResult queryRaw(String prompt, InPlaceSecretValue secretValue, boolean stealFocus) {
+        if (AppOperationMode.isInShutdown()) {
+            return new SecretQueryResult(null, SecretQueryState.CANCELLED);
+        }
+
         prompt = prompt.strip();
         if (prompt.endsWith(":") || prompt.endsWith("?")) {
             prompt = prompt.substring(0, prompt.length() - 1);
