@@ -1,5 +1,6 @@
 package io.xpipe.app.rdp;
 
+import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
@@ -11,6 +12,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+
+import java.util.Map;
 
 @JsonTypeName("freeRdp")
 @Value
@@ -97,27 +100,49 @@ public class FreeRdpClient implements ExternalRdpClient {
                 .add("-themes")
                 .add("/size:100%");
 
+        if (configuration.getPassword() != null) {
+            b.add(argument("/p", configuration.getPassword().getSecretValue()));
+        }
+
         var gateway = configuration.getGateway();
         if (gateway != null) {
-            b.add("/g").addQuoted(gateway.getHost());
-            if (gateway.getUsername() != null) {
-                b.add("/gu").addQuoted(gateway.getUsername());
-            }
-            if (gateway.getPassword() != null) {
-                var escapedPw = gateway.getPassword().getSecretValue().replaceAll("'", "\\\\'");
-                b.add("/gp:'" + escapedPw + "'");
+            if (exec.isV3()) {
+                // Horrible quoting rules: https://github.com/FreeRDP/FreeRDP/issues/11396
+                String s = "g:" + gateway.getHost();
+                if (gateway.getUsername() != null) {
+                    s += "," + gatewayArgument("u", gateway.getUsername());
+                }
+                if (gateway.getPassword() != null) {
+                    s += "," + gatewayArgument("p", gateway.getPassword().getSecretValue());
+                }
+                b.add(gatewayArgument("/gateway", s));
+            } else {
+                b.add(argument("/g", gateway.getHost()));
+                if (gateway.getUsername() != null) {
+                    b.add(argument("/gu", gateway.getUsername()));
+                }
+                if (gateway.getPassword() != null) {
+                    b.add(argument("/gp", gateway.getPassword().getSecretValue()));
+                }
             }
         }
 
-        if (configuration.getPassword() != null) {
-            var escapedPw = configuration.getPassword().getSecretValue().replaceAll("'", "\\\\'");
-            b.add("/p:'" + escapedPw + "'");
-        }
+        b.fixedEnvironment("FREERDP_ASKPASS", AppInstallation.ofCurrent().getCliExecutablePath().toString());
 
         try (var sc = LocalShell.getShell().start()) {
             var cmd = sc.getShellDialect().launchAsync(b, true);
             sc.command(cmd).sensitive().execute();
         }
+    }
+
+    private String gatewayArgument(String key, String value) {
+        var escaped = value.replaceAll("\"", "\\\\\"");
+        return "\"" + key + ":" + escaped + "\"";
+    }
+
+    private String argument(String key, String value) {
+        var escaped = value.replaceAll("'", "\\\\'");
+        return key + ":'" + escaped + "'";
     }
 
     @Override

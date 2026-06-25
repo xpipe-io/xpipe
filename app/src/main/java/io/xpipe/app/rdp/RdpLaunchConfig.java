@@ -26,7 +26,7 @@ public class RdpLaunchConfig {
         return Optional.ofNullable(domain);
     }
 
-    public String getUserWithoutDomain() {
+    public String getUsernameWithoutDomain() {
         if (username.contains("\\")) {
             return username.split("\\\\")[1];
         } else {

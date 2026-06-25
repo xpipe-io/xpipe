@@ -28,17 +28,14 @@ public class RemminaRdpClient implements ExternalApplicationType.LinuxApplicatio
             }
         }
 
-        var encrypted = RemminaHelper.encryptPassword(configuration.getPassword());
-        if (encrypted.isPresent()) {
-            var file = RemminaHelper.writeRemminaRdpConfigFile(configuration);
-            launch(CommandBuilder.of().add("-c").addFile(file.toString()));
-            return;
-        }
+        var file = RemminaHelper.writeRemminaRdpConfigFile(configuration);
+        LocalFileTracker.deleteOnExit(file);
+        launch(CommandBuilder.of().add("-c").addFile(file.toString()));
     }
 
     @Override
     public boolean supportsPasswordPassing(RdpLaunchConfig config) {
-        return config.isRemoteApp();
+        return true;
     }
 
     @Override

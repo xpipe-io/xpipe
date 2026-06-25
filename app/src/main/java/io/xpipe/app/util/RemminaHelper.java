@@ -95,10 +95,10 @@ public class RemminaHelper {
                      window_maximize=%s%s
                      """.formatted(
                 configuration.getTitle(),
-                configuration.getUsername(),
+                configuration.getUsernameWithoutDomain(),
                 configuration.getDomain().orElse(""),
                 configuration.getHost(),
-                configuration.getPassword() != null ? encryptPassword(configuration.getPassword()) : "",
+                configuration.getPassword() != null ? encryptPassword(configuration.getPassword()).orElse("") : "",
                 w,
                 h,
                 maximize,
