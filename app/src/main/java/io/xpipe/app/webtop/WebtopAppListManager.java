@@ -5,6 +5,7 @@ import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.GlobalTimer;
@@ -36,7 +37,7 @@ public class WebtopAppListManager {
         var m = new WebtopAppListManager();
         m.load();
         INSTANCE = m;
-        INSTANCE.showDialogIfNeeded(null);
+        INSTANCE.showDialogIfNeeded();
 
         AppPrefs.get().passwordManager().addListener((observable, oldValue, newValue) -> {
             INSTANCE.showDialogIfNeeded();
@@ -156,6 +157,12 @@ public class WebtopAppListManager {
                 }
             }
         }
+
+        var fromStores = DataStorage.get().getStoreEntries().stream()
+                .map(entry -> entry.getProvider() != null ? entry.getProvider().getRequiredWebtopApp(entry) : null)
+                .filter(Objects::nonNull)
+                .toList();
+        all.addAll(fromStores);
 
         return all.stream().filter(webtopApp -> webtopApp != null).collect(Collectors.toCollection(LinkedHashSet::new));
     }

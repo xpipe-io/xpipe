@@ -54,10 +54,15 @@ public class FlatpakCache {
     }
 
     public static CommandBuilder getRunCommand(String id) {
+        return getRunCommand(id, null);
+    }
+
+    public static CommandBuilder getRunCommand(String id, String exec) {
         return CommandBuilder.of()
                 .add("flatpak", "run")
                 .add("--filesystem=" + AppSystemInfo.ofLinux().getTemp())
                 .add("--filesystem=host")
-                .addQuoted(id);
+                .addQuoted(id)
+                .addQuoted(exec);
     }
 }

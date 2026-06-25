@@ -9,13 +9,20 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 public class WebtopAppListDialog {
 
+    private static Semaphore semaphore = new Semaphore(1);
     private static List<WebtopApp> lastShown;
 
-    public static synchronized void show(List<WebtopApp> include) {
+    public static void show(List<WebtopApp> include) {
+        if (!semaphore.tryAcquire()) {
+            return;
+        }
+
         if (!include.isEmpty() && include.equals(lastShown)) {
+            semaphore.release();
             return;
         }
 
@@ -36,5 +43,6 @@ public class WebtopAppListDialog {
         }, true, true));
         modal.show();
         lastShown = include;
+        semaphore.release();
     }
 }

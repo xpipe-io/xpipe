@@ -1,5 +1,6 @@
 package io.xpipe.app.rdp;
 
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.LocalShell;
@@ -17,8 +18,14 @@ import lombok.extern.jackson.Jacksonized;
 @Builder
 public class FreeRdpClient implements ExternalRdpClient {
 
-    @Override
-    public void launch(RdpLaunchConfig configuration) throws Exception {
+    @Value
+    private static class Executable {
+
+        CommandBuilder commandBase;
+        boolean v3;
+    }
+
+    private Executable getX11CommandBase() throws Exception {
         CommandBuilder exec;
         var v3 = CommandSupport.isInLocalPath("xfreerdp3");
         if (!v3) {
@@ -29,8 +36,7 @@ public class FreeRdpClient implements ExternalRdpClient {
                     exec = FlatpakCache.getRunCommand("com.freerdp.FreeRDP");
                     v3 = true;
                 } else {
-                    CommandSupport.isInPathOrThrow(LocalShell.getShell(), "xfreerdp");
-                    exec = CommandBuilder.of().add("xfreerdp");
+                    return null;
                 }
             } else {
                 CommandSupport.isInPathOrThrow(LocalShell.getShell(), "xfreerdp");
@@ -41,12 +47,49 @@ public class FreeRdpClient implements ExternalRdpClient {
         } else {
             exec = CommandBuilder.of().add("xfreerdp3");
         }
+        return new Executable(exec, v3);
+    }
+
+    private Executable getWaylandCommandBase() throws Exception {
+        CommandBuilder exec;
+        var v3 = CommandSupport.isInLocalPath("wlfreerdp3");
+        if (!v3) {
+            var v2 = CommandSupport.isInLocalPath("wlfreerdp");
+            if (!v2 && OsType.ofLocal() == OsType.LINUX) {
+                var flatpak = FlatpakCache.getApp("com.freerdp.FreeRDP");
+                if (flatpak.isPresent()) {
+                    exec = FlatpakCache.getRunCommand("com.freerdp.FreeRDP", "sdl-freerdp");
+                    v3 = true;
+                } else {
+                    return null;
+                }
+            } else {
+                // No wayland build exists on macOS
+                return null;
+            }
+        } else {
+            exec = CommandBuilder.of().add("wlfreerdp3");
+        }
+        return new Executable(exec, v3);
+    }
+
+    @Override
+    public void launch(RdpLaunchConfig configuration) throws Exception {
+        var preferWayland = OsType.ofLocal() == OsType.LINUX && "wayland".equalsIgnoreCase(System.getenv("XDG_SESSION_TYPE"));
+        var exec = preferWayland ? getWaylandCommandBase() : getX11CommandBase();
+        if (exec == null && preferWayland) {
+            exec = getX11CommandBase();
+        }
+
+        if (exec == null) {
+            throw ErrorEventFactory.expected(new IllegalStateException("Unable to find a FreeRDP v2 or v3 installation"));
+        }
 
         var file = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
         var b = CommandBuilder.of()
-                .add(exec)
+                .add(exec.getCommandBase())
                 .addFile(file.toString())
-                .add(v3 ? "/cert:ignore" : "/cert-ignore")
+                .add(exec.isV3() ? "/cert:ignore" : "/cert-ignore")
                 .add("/dynamic-resolution")
                 .add("/network:auto")
                 .add("/compression")
