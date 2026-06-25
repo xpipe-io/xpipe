@@ -883,6 +883,7 @@ public final class AppPrefs {
             var env = System.getenv("XPIPE_API_KEY");
             if (env != null && !env.isEmpty()) {
                 enableHttpApi.set(true);
+                allowExternalApiRequests.set(true);
                 apiKey.setValue(env);
             }
         }

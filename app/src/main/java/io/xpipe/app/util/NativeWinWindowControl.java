@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.sun.jna.win32.W32APIOptions.DEFAULT_OPTIONS;
+
 @Getter
 @EqualsAndHashCode
 public class NativeWinWindowControl {
@@ -268,7 +270,7 @@ public class NativeWinWindowControl {
 
     public interface Dwm extends Library {
 
-        Dwm INSTANCE = Native.load("dwmapi", Dwm.class);
+        Dwm INSTANCE = Native.load("dwmapi", Dwm.class, DEFAULT_OPTIONS);
 
         WinNT.HRESULT DwmSetWindowAttribute(
                 WinDef.HWND hwnd, int dwAttribute, PointerType pvAttribute, int cbAttribute);

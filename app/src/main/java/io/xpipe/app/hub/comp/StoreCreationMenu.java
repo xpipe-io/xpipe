@@ -1,11 +1,16 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.action.AbstractAction;
+import io.xpipe.app.browser.BrowserFileChooserSessionComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.*;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.MenuHelper;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ScanDialog;
 
+import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
@@ -169,6 +174,21 @@ public class StoreCreationMenu {
             item.setDisable(!dataStoreProvider.allowCreation());
             menu.getItems().add(item);
         }
+
+        if (categories[0].equals(DataStoreCreationCategory.DESKTOP)) {
+            var rdpFile = MenuHelper.createMenuItem(new LabelGraphic.ImageGraphic("rdpFile_icon.svg", 16), "rdpFile");
+            rdpFile.setOnAction(event -> {
+                BrowserFileChooserSessionComp.open(() -> DataStorage.get().local().ref(), () -> null, fileReference -> {
+                    var file = fileReference.getPath().asLocalPath();
+                    ThreadHelper.runFailableAsync(() -> {
+                        ProcessControlProvider.get().importRdpFile(file);
+                    });
+                }, false, false, entry -> entry.equals(DataStorage.get().local()), null);
+                event.consume();
+            });
+            menu.getItems().add(menu.getItems().size() - 2, rdpFile);
+        }
+
         return menu;
     }
 

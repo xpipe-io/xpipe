@@ -16,6 +16,7 @@ import javafx.beans.property.Property;
 
 import io.modelcontextprotocol.spec.McpSchema;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -91,4 +92,6 @@ public abstract class ProcessControlProvider {
     public abstract void refreshWsl();
 
     public abstract void showWebtopDeploymentDialog();
+
+    public abstract void importRdpFile(Path file) throws Exception;
 }

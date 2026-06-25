@@ -5,6 +5,7 @@ import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class Validators {
@@ -15,6 +16,15 @@ public class Validators {
                 || ref.getStore() == null
                 || !c.isAssignableFrom(ref.getStore().getClass())) {
             throw new ValidationException("Value must be an instance of " + c.getSimpleName());
+        }
+    }
+
+    public static <T extends DataStore> void isAnyType(DataStoreEntryRef<? extends T> ref, Class<?>... cs)
+            throws ValidationException {
+        if (ref == null
+                || ref.getStore() == null
+                || Arrays.stream(cs).noneMatch(c -> c.isAssignableFrom(ref.getStore().getClass()))) {
+            throw new ValidationException("Value must be an instance of " + Arrays.stream(cs).map(Class::getSimpleName).toList());
         }
     }
 

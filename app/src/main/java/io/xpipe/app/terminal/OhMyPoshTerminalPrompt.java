@@ -213,9 +213,9 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
                 lines.add("& ([ScriptBlock]::Create((oh-my-posh init $(oh-my-posh get shell) --print" + configArg
                         + ") -join \"`n\"))");
             } else if (dialect == ShellDialects.FISH) {
-                lines.add("oh-my-posh init fish" + configArg + " | source");
+                lines.add("sh -c \"oh-my-posh init fish" + configArg + "\" | source");
             } else {
-                lines.add("eval \"$(oh-my-posh init " + dialect.getId() + configArg + ")\"");
+                lines.add("eval \"$(sh -c \"oh-my-posh init " + dialect.getId() + configArg + "\")\"");
             }
         }
         return ShellScript.lines(lines);

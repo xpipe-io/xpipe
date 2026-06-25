@@ -54,6 +54,18 @@ public class FreeRdpClient implements ExternalRdpClient {
                 .add("-themes")
                 .add("/size:100%");
 
+        var gateway = configuration.getGateway();
+        if (gateway != null) {
+            b.add("/g").addQuoted(gateway.getHost());
+            if (gateway.getUsername() != null) {
+                b.add("/gu").addQuoted(gateway.getUsername());
+            }
+            if (gateway.getPassword() != null) {
+                var escapedPw = gateway.getPassword().getSecretValue().replaceAll("'", "\\\\'");
+                b.add("/gp:'" + escapedPw + "'");
+            }
+        }
+
         if (configuration.getPassword() != null) {
             var escapedPw = configuration.getPassword().getSecretValue().replaceAll("'", "\\\\'");
             b.add("/p:'" + escapedPw + "'");

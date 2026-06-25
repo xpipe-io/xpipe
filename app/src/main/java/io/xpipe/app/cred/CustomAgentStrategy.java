@@ -9,6 +9,7 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.Validator;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.Validators;
@@ -129,7 +130,7 @@ public class CustomAgentStrategy implements SshIdentityAgentStrategy {
                 agent = AppPrefs.get().defaultSshAgentSocket().getValue();
             }
             if (agent != null) {
-                return agent.resolveTildeHome(sc.view().userHome());
+                return FilePath.of(LocalShell.getShell().getShellDialect().evaluateExpression(LocalShell.getShell(), agent.toString()).readStdoutOrThrow());
             }
         }
 

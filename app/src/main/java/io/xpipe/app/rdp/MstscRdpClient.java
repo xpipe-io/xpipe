@@ -1,24 +1,22 @@
 package io.xpipe.app.rdp;
 
+import com.sun.jna.LastErrorException;
+import com.sun.jna.Memory;
+import com.sun.jna.Native;
+import com.sun.jna.Pointer;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppDisplayScale;
 import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.platform.ClipboardHelper;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.GlobalTimer;
-import io.xpipe.app.util.LocalExec;
-import io.xpipe.app.util.RdpConfig;
-import io.xpipe.app.util.RemoteDesktopWindow;
-import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.util.WindowsRegistry;
-import io.xpipe.app.util.OsType;
-import io.xpipe.app.util.SecretValue;
+import io.xpipe.app.util.*;
 
 import javafx.application.Platform;
 import javafx.beans.property.Property;
@@ -31,11 +29,15 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.io.FileUtils;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static io.xpipe.app.util.CredAdvapi32.*;
 
 @JsonTypeName("mstsc")
 @Value
@@ -186,9 +188,17 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
         }
         var setCache = prepareLocalhostRegistryCache(configuration);
 
-        var fullAddress = configuration.getConfig().get("full address");
-        if (fullAddress.isPresent()) {
-            disableSignatureWarning(fullAddress.get().getValue());
+        disableSignatureWarning(configuration);
+
+        if (configuration.getPassword() != null) {
+            WinCred.setCredential("TERMSRV/" + configuration.getHost(), CRED_TYPE_DOMAIN_PASSWORD, CRED_PERSIST_SESSION,
+                    configuration.getUsername(), configuration.getPassword());
+        }
+
+        var gateway = configuration.getGateway();
+        if (gateway != null && gateway.getPassword() != null) {
+            WinCred.setCredential(gateway.getHost(), CRED_TYPE_DOMAIN_PASSWORD, CRED_PERSIST_SESSION,
+                    gateway.getUsername(), gateway.getPassword());
         }
 
         var file = writeRdpConfigFile(configuration.getTitle(), adaptedRdpConfig);
@@ -204,26 +214,15 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
                     window.getDockBounds().getW(),
                     window.getDockBounds().getH(),
                     process,
-                    Duration.ofSeconds(60),
+                    Duration.ofSeconds(120),
                     p -> {
                         return !p.isDialog();
                     });
         }
 
-        GlobalTimer.delay(
-                () -> {
-                    FileUtils.deleteQuietly(file.toFile());
-                },
-                Duration.ofSeconds(1));
-
-        if (!setCache && configuration
-                .getConfig()
-                .get("full address").isPresent()) {
+        if (!setCache) {
             var localhost = configuration
-                    .getConfig()
-                    .get("full address")
-                    .orElseThrow()
-                    .getValue()
+                    .getHost()
                     .startsWith("localhost");
             if (localhost) {
                 saveLocalhostRegistryCache(configuration.getStoreId());
@@ -233,7 +232,7 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
 
     @Override
     public boolean supportsPasswordPassing(RdpLaunchConfig config) {
-        return LocalShell.getLocalPowershell().isPresent();
+        return true;
     }
 
     @Override
@@ -267,31 +266,32 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
         return input;
     }
 
-    private RdpConfig getAdaptedConfig(RdpLaunchConfig configuration) throws Exception {
+    private RdpConfig getAdaptedConfig(RdpLaunchConfig configuration) {
         var input = configuration.getConfig();
         var pass = configuration.getPassword();
-        if (input.get("password 51").isPresent() || !supportsPasswordPassing(configuration) || pass == null) {
-            return input.overlay(Map.of("smart sizing", new RdpConfig.TypedValue("i", smartSizing ? "1" : "0")));
-        }
-
         var adapted = input.overlay(Map.of(
-                "password 51",
-                new RdpConfig.TypedValue("b", encrypt(pass)),
                 "prompt for credentials",
-                new RdpConfig.TypedValue("i", "0"),
+                new RdpConfig.TypedValue("i", pass != null ? "0" : "1"),
                 "smart sizing",
                 new RdpConfig.TypedValue("i", smartSizing ? "1" : "0")));
         return adapted;
     }
 
-    private void disableSignatureWarning(String fullAddress) {
-        var hostname = fullAddress.split(":")[0];
+    private void disableSignatureWarning(RdpLaunchConfig config) {
         WindowsRegistry.local()
                 .setIntegerValue(
                         WindowsRegistry.HKEY_CURRENT_USER,
                         "Software\\Microsoft\\Terminal Server Client\\LocalDevices",
-                        hostname,
+                        config.getHost(),
                         0x4c);
+        if (config.getGateway() != null) {
+            WindowsRegistry.local()
+                    .setIntegerValue(
+                            WindowsRegistry.HKEY_CURRENT_USER,
+                            "Software\\Microsoft\\Terminal Server Client\\LocalDevices",
+                            config.getHost() + ";" + config.getGateway().getHost(),
+                            0x4c);
+        }
     }
 
     private void saveLocalhostRegistryCache(UUID entry) {
@@ -344,12 +344,8 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
                         WindowsRegistry.HKEY_CURRENT_USER,
                         "Software\\Microsoft\\Terminal Server Client\\Servers\\localhost");
 
-        var fullAddress = configuration.getConfig().get("full address");
-        if (fullAddress.isEmpty()) {
-            return false;
-        }
 
-        var localhost = fullAddress.get().getValue().startsWith("localhost");
+        var localhost = configuration.getHost().startsWith("localhost");
         if (localhost) {
             var found = getLocalhostRegistryCache(configuration.getStoreId());
             if (found.isPresent()) {
@@ -378,15 +374,6 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
         }
 
         return false;
-    }
-
-    private String encrypt(SecretValue password) throws Exception {
-        var ps = LocalShell.getLocalPowershell().orElseThrow();
-        var cmd = ps.command(CommandBuilder.of()
-                .add(sc -> "(" + sc.getShellDialect().literalArgument(password.getSecretValue())
-                        + " | ConvertTo-SecureString -AsPlainText -Force) | ConvertFrom-SecureString"));
-        cmd.sensitive();
-        return cmd.readStdoutOrThrow();
     }
 
     @Override

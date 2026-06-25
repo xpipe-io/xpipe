@@ -77,9 +77,9 @@ public class StarshipTerminalPrompt extends ConfigFileTerminalPrompt {
             if (ShellDialects.isPowershell(shellControl)) {
                 lines.add("Invoke-Expression (&starship init powershell)");
             } else if (dialect == ShellDialects.FISH) {
-                lines.add("starship init fish | source");
+                lines.add("sh -c \"starship init fish\" | source");
             } else {
-                lines.add("eval \"$(starship init " + dialect.getId() + ")\"");
+                lines.add("eval \"$(sh -c \"starship init " + dialect.getId() + "\")\"");
             }
         }
         return ShellScript.lines(lines);

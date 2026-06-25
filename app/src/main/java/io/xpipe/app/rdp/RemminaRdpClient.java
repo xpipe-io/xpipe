@@ -17,16 +17,6 @@ import java.util.*;
 @Builder
 public class RemminaRdpClient implements ExternalApplicationType.LinuxApplication, ExternalRdpClient {
 
-    private List<String> toStrip() {
-        return List.of("auto connect", "password 51", "prompt for credentials", "smart sizing");
-    }
-
-    private boolean containsOnlyRecognizedOptions(RdpLaunchConfig configuration) {
-        var l = new HashSet<>(configuration.getConfig().getContent().keySet());
-        toStrip().forEach(l::remove);
-        return l.size() == 2 && l.contains("username") && l.contains("full address");
-    }
-
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
         // Remmina does not support RemoteApps
@@ -38,24 +28,17 @@ public class RemminaRdpClient implements ExternalApplicationType.LinuxApplicatio
             }
         }
 
-        if (containsOnlyRecognizedOptions(configuration)) {
-            var encrypted = RemminaHelper.encryptPassword(configuration.getPassword());
-            if (encrypted.isPresent()) {
-                var file = RemminaHelper.writeRemminaRdpConfigFile(configuration, encrypted.get());
-                launch(CommandBuilder.of().add("-c").addFile(file.toString()));
-                return;
-            }
+        var encrypted = RemminaHelper.encryptPassword(configuration.getPassword());
+        if (encrypted.isPresent()) {
+            var file = RemminaHelper.writeRemminaRdpConfigFile(configuration);
+            launch(CommandBuilder.of().add("-c").addFile(file.toString()));
+            return;
         }
-
-        RdpConfig c = configuration.getConfig();
-        var file = writeRdpConfigFile(configuration.getTitle(), c);
-        launch(CommandBuilder.of().add("-c").addFile(file.toString()));
-        LocalFileTracker.deleteOnExit(file);
     }
 
     @Override
     public boolean supportsPasswordPassing(RdpLaunchConfig config) {
-        return config.isRemoteApp() || containsOnlyRecognizedOptions(config);
+        return config.isRemoteApp();
     }
 
     @Override
