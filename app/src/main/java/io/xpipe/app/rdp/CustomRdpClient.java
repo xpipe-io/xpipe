@@ -54,7 +54,7 @@ public class CustomRdpClient implements ExternalApplicationType, ExternalRdpClie
     }
 
     @Override
-    public boolean supportsPasswordPassing(RdpLaunchConfig config) {
+    public boolean supportsPasswordPassing() {
         return false;
     }
 

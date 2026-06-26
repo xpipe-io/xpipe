@@ -9,8 +9,6 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.*;
-
 @JsonTypeName("remmina")
 @Value
 @Jacksonized
@@ -34,7 +32,7 @@ public class RemminaRdpClient implements ExternalApplicationType.LinuxApplicatio
     }
 
     @Override
-    public boolean supportsPasswordPassing(RdpLaunchConfig config) {
+    public boolean supportsPasswordPassing() {
         return true;
     }
 

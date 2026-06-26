@@ -9,6 +9,7 @@ import io.xpipe.app.vnc.VncLaunchConfig;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Optional;
@@ -60,23 +61,17 @@ public class RemminaHelper {
         var name = OsFileSystem.ofLocal().makeFileSystemCompatible(configuration.getTitle());
         var file = AppLocalTemp.getLocalTempDataDirectory("remmina").resolve("xpipe-" + name + ".remmina");
 
-        var gateway = "";
+        var gateway = new ArrayList<String>();
         if (configuration.getGateway() != null) {
-            gateway += "gateway_server=" + configuration.getGateway().getHost();
+            gateway.add("gateway_server=" + configuration.getGateway().getHost());
             if (configuration.getGateway().getUsername() != null) {
-                var gatewayUser = configuration.getGateway().getUsername();
-                var gatewayDomain = gatewayUser.contains("\\") ? gatewayUser.split("\\\\")[0] : null;
-                if (gatewayDomain != null) {
-                    gatewayUser = gatewayUser.split("\\\\")[1];
-                }
-
-                gateway += "gateway_username=" + gatewayUser;
-                if (gatewayDomain != null) {
-                    gateway += "gateway_domain=" + gatewayDomain;
+                gateway.add("gateway_username=" + configuration.getGateway().getUsernameWithoutDomain());
+                if (configuration.getGateway().getDomain().isPresent()) {
+                    gateway.add("gateway_domain=" + configuration.getGateway().getDomain().get());
                 }
             }
             if (configuration.getGateway().getPassword() != null) {
-                gateway += "gateway_password=" + RemminaHelper.encryptPassword(configuration.getGateway().getPassword());
+                gateway.add("gateway_password=" + RemminaHelper.encryptPassword(configuration.getGateway().getPassword()).orElse(""));
             }
         }
 
@@ -102,7 +97,7 @@ public class RemminaHelper {
                 w,
                 h,
                 maximize,
-                !gateway.isEmpty() ? "\n" + gateway : "");
+                !gateway.isEmpty() ? "\n" + String.join("\n", gateway) : "");
         Files.createDirectories(file.getParent());
         Files.writeString(file, string);
         return file;

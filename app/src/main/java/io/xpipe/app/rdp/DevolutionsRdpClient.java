@@ -56,7 +56,7 @@ public class DevolutionsRdpClient implements ExternalApplicationType.WindowsType
     }
 
     @Override
-    public boolean supportsPasswordPassing(RdpLaunchConfig config) {
+    public boolean supportsPasswordPassing() {
         return false;
     }
 

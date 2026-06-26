@@ -1,19 +1,13 @@
 package io.xpipe.app.rdp;
 
-import com.sun.jna.LastErrorException;
-import com.sun.jna.Memory;
-import com.sun.jna.Native;
-import com.sun.jna.Pointer;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppDisplayScale;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.platform.ClipboardHelper;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
@@ -27,10 +21,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
-import org.apache.commons.io.FileUtils;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
@@ -231,7 +222,7 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
     }
 
     @Override
-    public boolean supportsPasswordPassing(RdpLaunchConfig config) {
+    public boolean supportsPasswordPassing() {
         return true;
     }
 

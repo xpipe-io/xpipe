@@ -13,8 +13,6 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.Map;
-
 @JsonTypeName("freeRdp")
 @Value
 @Jacksonized
@@ -33,7 +31,15 @@ public class FreeRdpClient implements ExternalRdpClient {
         var v3 = CommandSupport.isInLocalPath("xfreerdp3");
         if (!v3) {
             var v2 = CommandSupport.isInLocalPath("xfreerdp");
-            if (!v2 && OsType.ofLocal() == OsType.LINUX) {
+
+            // macOS uses xfreerdp3 by default
+            if (OsType.ofLocal() == OsType.MACOS && v2) {
+                exec = CommandBuilder.of().add("xfreerdp");
+                v3 = true;
+            } else if (v2) {
+                exec = CommandBuilder.of().add("xfreerdp");
+                v3 = false;
+            } else if (OsType.ofLocal() == OsType.LINUX) {
                 var flatpak = FlatpakCache.getApp("com.freerdp.FreeRDP");
                 if (flatpak.isPresent()) {
                     exec = FlatpakCache.getRunCommand("com.freerdp.FreeRDP");
@@ -42,10 +48,7 @@ public class FreeRdpClient implements ExternalRdpClient {
                     return null;
                 }
             } else {
-                CommandSupport.isInPathOrThrow(LocalShell.getShell(), "xfreerdp");
-                exec = CommandBuilder.of().add("xfreerdp");
-                // macOS uses xfreerdp3 by default
-                v3 = true;
+                return null;
             }
         } else {
             exec = CommandBuilder.of().add("xfreerdp3");
@@ -55,13 +58,16 @@ public class FreeRdpClient implements ExternalRdpClient {
 
     private Executable getWaylandCommandBase() throws Exception {
         CommandBuilder exec;
-        var v3 = CommandSupport.isInLocalPath("wlfreerdp3");
+        var v3 = CommandSupport.isInLocalPath("sdl-freerdp3") || CommandSupport.isInLocalPath("wlfreerdp3");
         if (!v3) {
             var v2 = CommandSupport.isInLocalPath("wlfreerdp");
-            if (!v2 && OsType.ofLocal() == OsType.LINUX) {
+            if (v2) {
+                exec = CommandBuilder.of().add("wlfreerdp");
+                v3 = false;
+            } else if (OsType.ofLocal() == OsType.LINUX) {
                 var flatpak = FlatpakCache.getApp("com.freerdp.FreeRDP");
                 if (flatpak.isPresent()) {
-                    exec = FlatpakCache.getRunCommand("com.freerdp.FreeRDP", "sdl-freerdp");
+                    exec = FlatpakCache.getRunCommand("com.freerdp.FreeRDP", "sdl-freerdp3");
                     v3 = true;
                 } else {
                     return null;
@@ -71,7 +77,7 @@ public class FreeRdpClient implements ExternalRdpClient {
                 return null;
             }
         } else {
-            exec = CommandBuilder.of().add("wlfreerdp3");
+            exec = CommandSupport.isInLocalPath("sdl-freerdp3") ? CommandBuilder.of().add("sdl-freerdp3") : CommandBuilder.of().add("wlfreerdp3");
         }
         return new Executable(exec, v3);
     }
@@ -85,7 +91,7 @@ public class FreeRdpClient implements ExternalRdpClient {
         }
 
         if (exec == null) {
-            throw ErrorEventFactory.expected(new IllegalStateException("Unable to find a FreeRDP v2 or v3 installation"));
+            throw ErrorEventFactory.expected(new IllegalStateException("Unable to find a FreeRDP executable for v2 or v3 in the PATH or as a flatpak"));
         }
 
         var file = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
@@ -100,6 +106,16 @@ public class FreeRdpClient implements ExternalRdpClient {
                 .add("-themes")
                 .add("/size:100%");
 
+        b.add(argument("/v", configuration.getHost()));
+
+        if (configuration.getUsername() != null) {
+            b.add(argument("/u", configuration.getUsernameWithoutDomain()));
+        }
+
+        if (configuration.getDomain().isPresent()) {
+            b.add(argument("/d", configuration.getDomain().get()));
+        }
+
         if (configuration.getPassword() != null) {
             b.add(argument("/p", configuration.getPassword().getSecretValue()));
         }
@@ -110,7 +126,10 @@ public class FreeRdpClient implements ExternalRdpClient {
                 // Horrible quoting rules: https://github.com/FreeRDP/FreeRDP/issues/11396
                 String s = "g:" + gateway.getHost();
                 if (gateway.getUsername() != null) {
-                    s += "," + gatewayArgument("u", gateway.getUsername());
+                    s += "," + gatewayArgument("u", gateway.getUsernameWithoutDomain());
+                }
+                if (gateway.getDomain().isPresent()) {
+                    s += "," + gatewayArgument("d", gateway.getDomain().get());
                 }
                 if (gateway.getPassword() != null) {
                     s += "," + gatewayArgument("p", gateway.getPassword().getSecretValue());
@@ -146,7 +165,7 @@ public class FreeRdpClient implements ExternalRdpClient {
     }
 
     @Override
-    public boolean supportsPasswordPassing(RdpLaunchConfig config) {
+    public boolean supportsPasswordPassing() {
         return true;
     }
 

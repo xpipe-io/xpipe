@@ -35,7 +35,7 @@ public class WindowsAppRdpClient implements ExternalApplicationType.MacApplicati
     }
 
     @Override
-    public boolean supportsPasswordPassing(RdpLaunchConfig config) {
+    public boolean supportsPasswordPassing() {
         return false;
     }
 

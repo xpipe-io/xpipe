@@ -34,7 +34,7 @@ public class KrdcRdpClient implements ExternalApplicationType.LinuxApplication, 
     }
 
     @Override
-    public boolean supportsPasswordPassing(RdpLaunchConfig config) {
+    public boolean supportsPasswordPassing() {
         return false;
     }
 

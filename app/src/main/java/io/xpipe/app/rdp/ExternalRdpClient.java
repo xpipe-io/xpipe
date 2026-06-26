@@ -87,7 +87,7 @@ public interface ExternalRdpClient extends PrefsValue {
 
     void launch(RdpLaunchConfig configuration) throws Exception;
 
-    boolean supportsPasswordPassing(RdpLaunchConfig config);
+    boolean supportsPasswordPassing();
 
     String getWebsite();
 
