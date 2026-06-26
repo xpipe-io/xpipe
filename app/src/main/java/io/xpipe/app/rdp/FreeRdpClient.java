@@ -1,7 +1,10 @@
 package io.xpipe.app.rdp;
 
+import io.xpipe.app.comp.base.TextAreaComp;
+import io.xpipe.app.core.AppDisplayScale;
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.LocalShell;
@@ -9,6 +12,12 @@ import io.xpipe.app.util.FlatpakCache;
 import io.xpipe.app.util.OsType;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.util.ThreadHelper;
+import javafx.application.Platform;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -18,6 +27,28 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @Builder
 public class FreeRdpClient implements ExternalRdpClient {
+
+    String arguments;
+
+    @SuppressWarnings("unused")
+    static OptionsBuilder createOptions(Property<FreeRdpClient> property) {
+        var arguments = new SimpleStringProperty(property.getValue().getArguments());
+
+        return new OptionsBuilder()
+                .nameAndDescription("freeRdpArguments")
+                .documentationLink("https://man.archlinux.org/man/extra/freerdp/xfreerdp3.1.en")
+                .addComp(new TextAreaComp(arguments).applyStructure(structure -> {
+                    structure.getTextArea().setPromptText(
+                          """
+                          /floatbar:sticky:off,default:visible,show:always
+                          /multimon
+                          /monitors:0,2
+                          """);
+                }).maxWidth(600), arguments)
+                .bind(
+                        () -> FreeRdpClient.builder().arguments(arguments.get()).build(),
+                        property);
+    }
 
     @Value
     private static class Executable {
@@ -105,6 +136,12 @@ public class FreeRdpClient implements ExternalRdpClient {
                 .add("+clipboard")
                 .add("-themes")
                 .add("/size:100%");
+
+        if (arguments != null) {
+            arguments.lines().filter(s -> !s.isBlank()).forEach(s -> {
+                b.add(s);
+            });
+        }
 
         b.add(argument("/v", configuration.getHost()));
 

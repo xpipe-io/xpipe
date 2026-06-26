@@ -54,8 +54,8 @@ public interface ExternalRdpClient extends PrefsValue {
 
         return switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> {
-                var freeRdp = new FreeRdpClient();
-                var remmina = new RemminaRdpClient();
+                var freeRdp = new FreeRdpClient(null);
+                var remmina = new RemminaRdpClient(null);
                 var krdc = new KrdcRdpClient();
                 yield remmina.isAvailable()
                         ? remmina
@@ -72,7 +72,7 @@ public interface ExternalRdpClient extends PrefsValue {
                     yield windowsApp;
                 }
 
-                var freeRdp = new FreeRdpClient();
+                var freeRdp = new FreeRdpClient(null);
                 if (freeRdp.isAvailable()) {
                     yield freeRdp;
                 }

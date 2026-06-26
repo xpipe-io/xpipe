@@ -2,6 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppLocalTemp;
 import io.xpipe.app.core.window.AppMainWindow;
+import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.rdp.RdpLaunchConfig;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -28,6 +30,15 @@ public class RemminaHelper {
             var prefSecretBase64 = sc.command("sed -n 's/^secret=//p' ~/.config/remmina/remmina.pref")
                     .sensitive()
                     .readStdoutIfPossible();
+
+            // Try to generate secret by running remmina once
+            if (prefSecretBase64.isEmpty()) {
+                sc.command(CommandBuilder.of().add("remmina", "help")).discardAndCheckExit();
+                prefSecretBase64 = sc.command("sed -n 's/^secret=//p' ~/.config/remmina/remmina.pref")
+                        .sensitive()
+                        .readStdoutIfPossible();
+            }
+
             if (prefSecretBase64.isEmpty()) {
                 return Optional.empty();
             }
@@ -51,7 +62,7 @@ public class RemminaHelper {
         }
     }
 
-    public static Path writeRemminaRdpConfigFile(RdpLaunchConfig configuration) throws Exception {
+    public static Path writeRemminaRdpConfigFile(RdpLaunchConfig configuration, String options) throws Exception {
         var w = Math.round(AppMainWindow.get().getStage().getWidth());
         // Remmina's height calculation does not take the titlebar into account
         var h = Math.round(AppMainWindow.get().getStage().getHeight()) - 38;
@@ -75,6 +86,8 @@ public class RemminaHelper {
             }
         }
 
+        var optionsString = options != null ? options.lines().filter(s -> !s.isBlank()).collect(Collectors.joining("\n")) : "";
+
         var string = """
                      [remmina]
                      protocol=RDP
@@ -87,7 +100,7 @@ public class RemminaHelper {
                      scale=2
                      window_width=%s
                      window_height=%s
-                     window_maximize=%s%s
+                     window_maximize=%s%s%s
                      """.formatted(
                 configuration.getTitle(),
                 configuration.getUsernameWithoutDomain(),
@@ -97,13 +110,14 @@ public class RemminaHelper {
                 w,
                 h,
                 maximize,
-                !gateway.isEmpty() ? "\n" + String.join("\n", gateway) : "");
+                !gateway.isEmpty() ? "\n" + String.join("\n", gateway) : "",
+                optionsString);
         Files.createDirectories(file.getParent());
         Files.writeString(file, string);
         return file;
     }
 
-    public static Path writeRemminaVncConfigFile(VncLaunchConfig configuration, String password) throws Exception {
+    public static Path writeRemminaVncConfigFile(VncLaunchConfig configuration, String password, String options) throws Exception {
         var name = OsFileSystem.ofLocal().makeFileSystemCompatible(configuration.getTitle());
         var file = AppLocalTemp.getLocalTempDataDirectory("remmina").resolve("xpipe-" + name + ".remmina");
 
@@ -112,6 +126,8 @@ public class RemminaHelper {
         var h = Math.round(AppMainWindow.get().getStage().getHeight()) - 38;
         // Use window size as remmina's autosize is broken
         var maximize = "0"; // AppMainWindow.get().getStage().isMaximized() ? "1" : "0";
+
+        var optionsString = options != null ? options.lines().filter(s -> !s.isBlank()).collect(Collectors.joining("\n")) : "";
 
         var string = """
                      [remmina]
@@ -123,7 +139,7 @@ public class RemminaHelper {
                      colordepth=32
                      window_width=%s
                      window_height=%s
-                     window_maximize=%s
+                     window_maximize=%s%s
                      """.formatted(
                         configuration.getTitle(),
                         configuration.retrieveUsername().orElse(""),
@@ -131,7 +147,8 @@ public class RemminaHelper {
                         password != null ? password : "",
                         w,
                         h,
-                        maximize);
+                        maximize,
+                optionsString);
         Files.createDirectories(file.getParent());
         Files.writeString(file, string);
         return file;

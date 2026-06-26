@@ -1,12 +1,14 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreCreationCategory;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -14,6 +16,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
@@ -23,6 +26,7 @@ import atlantafx.base.theme.Styles;
 import lombok.RequiredArgsConstructor;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.List;
 import java.util.function.Predicate;
 
 @RequiredArgsConstructor
@@ -140,7 +144,8 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
                         event.consume();
                     });
                 })
-                .style("choice-comp");
+                .style("choice-comp")
+                .style(Styles.LEFT_PILL);
 
         var r = button.build();
 
@@ -184,8 +189,20 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
             AnchorPane.setBottomAnchor(struc, 3.0);
         });
         pane.getChildren().add(clearButton.build());
-        pane.getStyleClass().add("store-choice-comp");
 
-        return pane;
+        var editGraphic = new LabelGraphic.IconGraphic("mdal-edit");
+        var editButton = new ButtonComp(null, editGraphic, () -> {
+            var ref = selected.getValue();
+            StoreCreationDialog.showEdit(ref.get());
+        });
+        editButton.disable(Bindings.createBooleanBinding(() -> {
+            return selected.getValue() == null || selected.get().get().getProvider() == null || !selected.get().get().getProvider().canConfigure();
+        }, selected));
+        editButton.describe(d -> d.nameKey("edit"));
+
+        var box = new InputGroupComp(List.of(RegionBuilder.of(() -> pane).hgrow(), editButton));
+        box.setMainReference(0);
+        box.style("store-choice-comp");
+        return box.build();
     }
 }

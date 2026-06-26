@@ -82,7 +82,7 @@ public class IdentityChoiceBuilder {
                     && r.unwrap() instanceof LocalIdentityStore) {
                 var modal = ModalOverlay.of(
                         "unsyncedIdentityTitle",
-                        AppDialog.dialogTextKey("unsyncedIdentityContent").prefWidth(600));
+                        AppDialog.dialogTextKey("unsyncedIdentityContent").prefWidth(800));
                 modal.addButton(new ModalButton(
                         "documentation",
                         () -> {

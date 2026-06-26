@@ -158,11 +158,14 @@ public class WebtopAppListManager {
             }
         }
 
-        var fromStores = DataStorage.get().getStoreEntries().stream()
-                .map(entry -> entry.getProvider() != null ? entry.getProvider().getRequiredWebtopApp(entry) : null)
-                .filter(Objects::nonNull)
-                .toList();
-        all.addAll(fromStores);
+        try {
+            var fromStores = DataStorage.get().getStoreEntries().stream().filter(entry -> entry.getValidity().isUsable()).map(
+                    entry -> entry.getProvider().getRequiredWebtopApp(entry)).filter(Objects::nonNull).toList();
+            all.addAll(fromStores);
+        } catch (Exception e) {
+            // Guard against exceptions in provider method
+            ErrorEventFactory.fromThrowable(e).handle();
+        }
 
         return all.stream().filter(webtopApp -> webtopApp != null).collect(Collectors.toCollection(LinkedHashSet::new));
     }

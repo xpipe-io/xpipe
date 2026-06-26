@@ -23,9 +23,9 @@
     -fx-icon-color: -color-fg-default;
 }
 
-.store-choice-comp.left-pill .choice-comp {
-    -fx-background-radius: 4 0 0 4;
-    -fx-border-radius: 4 0 0 4;
+.store-choice-comp.left-pill .center-pill {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
 }
 
 .choice-comp-content > .top {

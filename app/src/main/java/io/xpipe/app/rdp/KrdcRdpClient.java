@@ -20,7 +20,7 @@ public class KrdcRdpClient implements ExternalApplicationType.LinuxApplication, 
     public void launch(RdpLaunchConfig configuration) throws Exception {
         // Krdc does not support RemoteApps
         if (configuration.isRemoteApp()) {
-            var freerdp = new FreeRdpClient();
+            var freerdp = new FreeRdpClient(null);
             if (freerdp.isAvailable()) {
                 freerdp.launch(configuration);
                 return;

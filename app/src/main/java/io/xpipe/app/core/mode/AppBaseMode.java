@@ -84,7 +84,6 @@ public class AppBaseMode extends AppOperationMode {
         AppSid.init();
         AppBeaconServer.init();
         AppLayoutModel.init();
-        WebtopAppListManager.init();
 
         if (AppOperationMode.getStartupMode() == XPipeDaemonMode.GUI) {
             AppPtbDialog.showIfNeeded();
@@ -146,6 +145,7 @@ public class AppBaseMode extends AppOperationMode {
                     StoreFilterState.init();
                     StoreViewState.init();
                     StoreQuickConnect.init();
+                    WebtopAppListManager.init();
                     AppMainWindow.loadingText("loadingSettings");
                     TrackEvent.info("Connection storage initialization thread completed");
                 },
