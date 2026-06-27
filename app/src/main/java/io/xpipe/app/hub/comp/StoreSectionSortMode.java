@@ -123,7 +123,7 @@ public interface StoreSectionSortMode {
             return Stream.concat(
                             s.getShownChildren().getList().stream()
                                     .filter(section ->
-                                            section.getWrapper().getEntry().getValidity()
+                                            section.getEntry().getValidity()
                                                     != DataStoreEntry.Validity.LOAD_FAILED)
                                     .map(this::getRepresentative),
                             Stream.of(s))

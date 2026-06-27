@@ -88,7 +88,7 @@ public class ScriptCollectionSourceStoreProvider implements DataStoreProvider {
     @Override
     public ObservableValue<String> informationString(StoreSection section) {
         ScriptCollectionSourceStore st =
-                section.getWrapper().getEntry().getStore().asNeeded();
+                section.getEntry().getStore().asNeeded();
         return Bindings.createStringBinding(
                 () -> {
                     var s = st.getState();

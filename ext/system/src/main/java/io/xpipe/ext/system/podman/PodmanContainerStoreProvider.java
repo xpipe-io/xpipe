@@ -29,7 +29,7 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
         PodmanContainerStore s = w.getEntry().getStore().asNeeded();
         var state = s.getState();
         return Boolean.TRUE.equals(state.getRunning())
-                || s.getCmd().getStore().getState().isShowNonRunning();
+                || s.getCmd() == null || s.getCmd().getStore().getState().isShowNonRunning();
     }
 
     public void onParentRefresh(DataStoreEntry entry) {

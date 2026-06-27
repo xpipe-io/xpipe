@@ -130,7 +130,7 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
         return Bindings.createStringBinding(
                 () -> {
                     AbstractServiceStore s =
-                            section.getWrapper().getEntry().getStore().asNeeded();
+                            section.getEntry().getStore().asNeeded();
                     var desc = formatService(s);
                     var type = s.getServiceProtocolType() != null
                                     && !(s.getServiceProtocolType() instanceof ServiceProtocolType.Undefined)
@@ -156,12 +156,12 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     public BaseRegionBuilder<?, ?> stateDisplay(StoreSection section) {
         return new SystemStateComp(Bindings.createObjectBinding(
                 () -> {
-                    if (!section.getWrapper().getEntry().getValidity().isUsable()) {
+                    if (!section.getEntry().getValidity().isUsable()) {
                         return SystemStateComp.State.OTHER;
                     }
 
                     AbstractServiceStore s =
-                            section.getWrapper().getEntry().getStore().asNeeded();
+                            section.getEntry().getStore().asNeeded();
 
                     if (!s.requiresTunnel()) {
                         return SystemStateComp.State.SUCCESS;

@@ -64,6 +64,7 @@ public class StoreViewState {
     private final DerivedObservableList<StoreEntryWrapper> batchModeSelection =
             DerivedObservableList.synchronizedArrayList(true);
 
+    @Getter
     private final Set<StoreEntryWrapper> batchModeSelectionSet = new HashSet<>();
 
     @Getter
@@ -247,18 +248,11 @@ public class StoreViewState {
 
     private void initSections() {
         try {
-            currentTopLevelSection = StoreSection.createTopLevel(
-                    allEntries,
-                    batchModeSelectionSet,
-                    storeEntryWrapper -> true,
-                    StoreFilterState.get().getEffectiveFilter(),
-                    activeCategory,
-                    entriesListVisibilityObservable,
-                    entriesListUpdateObservable,
-                    new ReadOnlyBooleanWrapper(true));
+            var sectionState = new StoreSectionState(allEntries.getList(), StoreFilterState.get().getEffectiveFilter(), ignored -> true, activeCategory, batchModeSelection.getList(), new ReadOnlyBooleanWrapper(true));
+            currentTopLevelSection = sectionState.getRootSection();
         } catch (Exception exception) {
-            currentTopLevelSection = new StoreSection(
-                    null, DerivedObservableList.arrayList(true), DerivedObservableList.arrayList(true), 0);
+            var sectionState = new StoreSectionState(FXCollections.observableArrayList(), new ReadOnlyObjectWrapper<>(), ignored -> true, activeCategory, batchModeSelection.getList(), new ReadOnlyBooleanWrapper(true));
+            currentTopLevelSection = sectionState.getRootSection();
             ErrorEventFactory.fromThrowable(exception).handle();
         }
     }

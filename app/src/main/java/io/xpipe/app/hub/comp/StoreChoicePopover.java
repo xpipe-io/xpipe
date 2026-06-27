@@ -18,8 +18,10 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -116,16 +118,9 @@ public class StoreChoicePopover<T extends DataStore> {
             var initialExpanded = applicableCount < 20;
 
             var enabled = popover.showingProperty();
+            var sectionState = new StoreSectionState(StoreViewState.get().getAllEntries().getList(), storeFilter, applicable, selectedCategory, FXCollections.emptyObservableList(), enabled);
             var section = new StoreSectionMiniComp(
-                    StoreSection.createTopLevel(
-                            StoreViewState.get().getAllEntries(),
-                            Set.of(),
-                            applicable,
-                            storeFilter,
-                            selectedCategory,
-                            StoreViewState.get().getEntriesListVisibilityObservable(),
-                            StoreViewState.get().getEntriesListUpdateObservable(),
-                            enabled),
+                    sectionState.getRootSection(),
                     (s, comp) -> {
                         if (!applicable.test(s.getWrapper())) {
                             comp.disable(new SimpleBooleanProperty(true));

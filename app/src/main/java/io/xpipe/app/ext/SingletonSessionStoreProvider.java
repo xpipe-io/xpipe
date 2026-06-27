@@ -32,7 +32,7 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
         return new SystemStateComp(Bindings.createObjectBinding(
                 () -> {
                     SingletonSessionStore<?> s =
-                            section.getWrapper().getEntry().getStore().asNeeded();
+                            section.getEntry().getStore().asNeeded();
                     if (!supportsSession(s)) {
                         return SystemStateComp.State.SUCCESS;
                     }

@@ -68,16 +68,9 @@ public final class BrowserConnectionListComp extends SimpleRegionBuilder {
             });
         };
 
+        var sectionState = new StoreSectionState(StoreViewState.get().getAllEntries().getList(), filter, this::filter, category, FXCollections.emptyObservableList(), new ReadOnlyBooleanWrapper(true));
         var section = new StoreSectionMiniComp(
-                StoreSection.createTopLevel(
-                        StoreViewState.get().getAllEntries(),
-                        Set.of(),
-                        this::filter,
-                        filter,
-                        category,
-                        StoreViewState.get().getEntriesListVisibilityObservable(),
-                        StoreViewState.get().getEntriesListUpdateObservable(),
-                        new ReadOnlyBooleanWrapper(true)),
+                sectionState.getRootSection(),
                 augment,
                 selectedAction -> {
                     BooleanProperty busy = new SimpleBooleanProperty(false);

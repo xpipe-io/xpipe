@@ -38,7 +38,7 @@ public class StoreSectionComp extends StoreSectionBaseComp {
         paneComp.prefHeight(entryButton.getHeight());
 
         var effectiveExpanded = effectiveExpanded(section.getWrapper().getExpanded());
-        var content = createChildrenList(c -> StoreSection.customSection(c), Bindings.not(effectiveExpanded));
+        var content = createChildrenList(c -> new StoreSectionComp(c), Bindings.not(effectiveExpanded));
 
         var full = new VerticalComp(
                 List.of(paneComp, RegionBuilder.hseparator().hide(Bindings.not(effectiveExpanded)), content));

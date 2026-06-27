@@ -54,7 +54,7 @@ public class StoreToggleComp extends SimpleRegionBuilder {
                 ? new LabelGraphic.IconGraphic("mdi2c-circle-slice-8")
                 : new LabelGraphic.IconGraphic("mdi2p-power"));
         var t = new StoreToggleComp(nameKey, g, section, value, v -> {
-            setter.accept(section.getWrapper().getEntry().getStore().asNeeded(), v);
+            setter.accept(section.getEntry().getStore().asNeeded(), v);
         });
         t.value.subscribe((newValue) -> {
             val.set(newValue);
@@ -84,10 +84,10 @@ public class StoreToggleComp extends SimpleRegionBuilder {
                 g,
                 section,
                 new SimpleBooleanProperty(
-                        initial.apply(section.getWrapper().getEntry().getStore().asNeeded())),
+                        initial.apply(section.getEntry().getStore().asNeeded())),
                 v -> {
                     Platform.runLater(() -> {
-                        setter.accept(section.getWrapper().getEntry().getStore().asNeeded(), v);
+                        setter.accept(section.getEntry().getStore().asNeeded(), v);
                         StoreViewState.get().triggerStoreListVisibilityUpdate();
                     });
                 });
@@ -110,7 +110,6 @@ public class StoreToggleComp extends SimpleRegionBuilder {
                     return section.getWrapper().getValidity().getValue() == DataStoreEntry.Validity.COMPLETE;
                 },
                 section.getWrapper().getValidity(),
-                section.getShowDetails(),
                 this.customVisibility);
         var t = new ToggleSwitchComp(value, AppI18n.observable(nameKey), graphic)
                 .visible(visible)

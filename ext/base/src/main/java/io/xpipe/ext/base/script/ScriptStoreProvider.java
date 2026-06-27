@@ -185,7 +185,7 @@ public class ScriptStoreProvider implements DataStoreProvider {
 
     @Override
     public ObservableValue<String> informationString(StoreSection section) {
-        ScriptStore st = section.getWrapper().getEntry().getStore().asNeeded();
+        ScriptStore st = section.getEntry().getStore().asNeeded();
         var init = st.isInitScript() ? AppI18n.get("init") : null;
         var file = st.isFileScript() ? AppI18n.get("fileBrowser") : null;
         var shell = st.isShellScript() ? AppI18n.get("shell") : null;

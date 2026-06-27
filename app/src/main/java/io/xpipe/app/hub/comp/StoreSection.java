@@ -1,68 +1,138 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.platform.DerivedObservableList;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableBooleanValue;
-import javafx.beans.value.ObservableIntegerValue;
-import javafx.beans.value.ObservableValue;
-
+import javafx.collections.ObservableList;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 @Getter
 public class StoreSection {
 
     private final StoreEntryWrapper wrapper;
+    private final int depth;
+
     private final DerivedObservableList<StoreSection> allChildren;
     private final DerivedObservableList<StoreSection> shownChildren;
-    private final int depth;
-    private final ObservableBooleanValue showDetails;
 
-    public StoreSection(
-            StoreEntryWrapper wrapper,
-            DerivedObservableList<StoreSection> allChildren,
-            DerivedObservableList<StoreSection> shownChildren,
-            int depth) {
+    private final DerivedObservableList<StoreSection> allChildrenToApply;
+    private final DerivedObservableList<StoreSection> shownChildrenToApply;
+
+    public StoreSection(StoreEntryWrapper wrapper, int depth) {
         this.wrapper = wrapper;
-        this.allChildren = allChildren;
-        this.shownChildren = shownChildren;
         this.depth = depth;
-        if (wrapper != null) {
-            this.showDetails = Bindings.createBooleanBinding(
-                    () -> {
-                        return wrapper.getExpanded().get()
-                                || allChildren.getList().isEmpty();
-                    },
-                    wrapper.getExpanded(),
-                    allChildren.getList());
-        } else {
-            this.showDetails = new SimpleBooleanProperty(true);
+        this.allChildren = DerivedObservableList.arrayList(true);
+        this.shownChildren = DerivedObservableList.arrayList(true);
+        this.allChildrenToApply = DerivedObservableList.arrayList(true);
+        this.shownChildrenToApply = DerivedObservableList.arrayList(true);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof StoreSection s && (s.wrapper == wrapper || s.wrapper.getEntry().equals(wrapper.getEntry()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(wrapper != null ? wrapper.getEntry() : null);
+    }
+
+    public DataStoreEntry getEntry() {
+        return wrapper.getEntry();
+    }
+
+    public void apply() {
+        // Apply changes to newly added ones before they are added to reduce updates while active
+        for (StoreSection child : shownChildrenToApply.getList()) {
+            child.apply();
+        }
+
+        var delayedUpdates = new HashSet<StoreSection>();
+        delayedUpdates.addAll(allChildrenToApply.getList());
+        delayedUpdates.addAll(allChildren.getList());
+        shownChildrenToApply.getList().forEach(delayedUpdates::remove);
+
+        allChildren.setContent(allChildrenToApply.getList());
+        shownChildren.setContent(shownChildrenToApply.getList());
+
+        // Apply changes to other ones after they are removed to reduce updates while active
+        for (StoreSection child : delayedUpdates) {
+            child.apply();
         }
     }
 
-    public static BaseRegionBuilder<?, ?> customSection(StoreSection e) {
-        return new StoreSectionComp(e);
+    public void refreshAll(ObservableList<StoreEntryWrapper> all, StoreSectionConfig config) {
+        refreshAll(all, config, 0);
     }
 
-    private static DerivedObservableList<StoreSection> sorted(
-            StoreEntryWrapper wrapper,
-            DerivedObservableList<StoreSection> list,
-            ObservableIntegerValue updateObservable) {
+    public void refreshAll(ObservableList<StoreEntryWrapper> all, StoreSectionConfig config, int depth) {
+        if (wrapper != null) {
+            if (wrapper.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
+                allChildrenToApply.setContent(List.of());
+                shownChildrenToApply.setContent(List.of());
+                return;
+            }
+
+            if (!DataStorage.get().getStoreEntries().contains(wrapper.getEntry())) {
+                allChildrenToApply.setContent(List.of());
+                shownChildrenToApply.setContent(List.of());
+                return;
+            }
+        }
+
+        var applicable = all.stream().filter(other -> {
+            return wrapper != null ? config.isChild(this, other) : config.isTop(other);
+        }).toList();
+
+        var newAll = applicable.stream().map(wrapper -> {
+            var sec = new StoreSection(wrapper, depth + 1);
+            return sec;
+        }).toList();
+
+        allChildrenToApply.setContent(newAll);
+        sort(allChildrenToApply.getList());
+
+        var withParentConfig = config.withParent(wrapper);
+        for (StoreSection child : allChildrenToApply.getList()) {
+            child.refreshAll(all, withParentConfig, depth + 1);
+        }
+    }
+
+    public void refreshShown(StoreSectionConfig config) {
+        if (wrapper != null) {
+            if (wrapper.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
+                allChildrenToApply.setContent(List.of());
+                shownChildrenToApply.setContent(List.of());
+                return;
+            }
+
+            if (!DataStorage.get().getStoreEntries().contains(wrapper.getEntry())) {
+                allChildrenToApply.setContent(List.of());
+                shownChildrenToApply.setContent(List.of());
+                return;
+            }
+        }
+
+        shownChildrenToApply.setContent(allChildrenToApply.getList().stream().filter(other -> {
+            return wrapper != null ? config.showChild(other) : config.showTop(other);
+        }).toList());
+
+        var withParentConfig = config.withParent(wrapper);
+        for (StoreSection child : allChildrenToApply.getList()) {
+            child.refreshShown(withParentConfig);
+        }
+    }
+
+    private void sort(
+            List<StoreSection> list) {
         var sortMode = StoreViewState.get()
                 .createEffectiveSortMode(
-                        wrapper != null ? wrapper.getEntry().getProvider().getComparator() : null);
-        return list.sorted(
+                        wrapper != null && wrapper.getEntry().getProvider() != null ? wrapper.getEntry().getProvider().getComparator() : null);
+        list.sort(
                 (o1, o2) -> {
                     var r = sortMode.getValue().compare(o1, o2);
                     if (r != 0) {
@@ -75,239 +145,7 @@ public class StoreSection {
                     } else {
                         return 0;
                     }
-                },
-                sortMode,
-                updateObservable);
-    }
-
-    public static StoreSection createTopLevel(
-            DerivedObservableList<StoreEntryWrapper> all,
-            Set<StoreEntryWrapper> selected,
-            Predicate<StoreEntryWrapper> entryFilter,
-            ObservableValue<StoreFilter> filter,
-            ObservableValue<StoreCategoryWrapper> category,
-            ObservableIntegerValue visibilityObservable,
-            ObservableIntegerValue updateObservable,
-            ObservableBooleanValue enabled) {
-        var allEnabled = all.blockUpdatesIf(Bindings.not(enabled));
-        var topLevel = allEnabled.filtered(
-                section -> {
-                    if (!enabled.getValue()) {
-                        return false;
-                    }
-
-                    return DataStorage.get()
-                            .isRootEntry(section.getEntry(), category.getValue().getCategory());
-                },
-                enabled,
-                category,
-                updateObservable);
-        Predicate<StoreSection> showTopLevel = section -> {
-            // matches filter
-            return (filter == null || section.matchesFilter(filter.getValue()))
-                    &&
-                    // matches selector
-                    (section.anyMatches(entryFilter))
-                    &&
-                    // same category
-                    (showInCategory(category.getValue(), section.getWrapper()));
-        };
-        var cached = topLevel.mapped(storeEntryWrapper -> {
-            var section = new SimpleObjectProperty<StoreSection>();
-            var sectionEnabled = Bindings.createBooleanBinding(
-                    () -> {
-                        if (!enabled.getValue()) {
-                            return false;
-                        }
-
-                        return section.get() != null && showTopLevel.test(section.get());
-                    },
-                    section,
-                    enabled,
-                    category,
-                    filter,
-                    updateObservable);
-            section.set(create(
-                    List.of(),
-                    storeEntryWrapper,
-                    1,
-                    allEnabled,
-                    selected,
-                    entryFilter,
-                    filter,
-                    category,
-                    visibilityObservable,
-                    updateObservable,
-                    sectionEnabled));
-            return section.get();
-        });
-        var ordered = sorted(null, cached, updateObservable);
-        var shown = ordered.filtered(
-                section -> {
-                    if (!enabled.getValue()) {
-                        return false;
-                    }
-
-                    return showTopLevel.test(section);
-                },
-                enabled,
-                category,
-                filter,
-                updateObservable);
-        return new StoreSection(null, ordered, shown, 0);
-    }
-
-    private static StoreSection create(
-            List<StoreEntryWrapper> parents,
-            StoreEntryWrapper e,
-            int depth,
-            DerivedObservableList<StoreEntryWrapper> all,
-            Set<StoreEntryWrapper> selected,
-            Predicate<StoreEntryWrapper> entryFilter,
-            ObservableValue<StoreFilter> filter,
-            ObservableValue<StoreCategoryWrapper> category,
-            ObservableIntegerValue visibilityObservable,
-            ObservableIntegerValue updateObservable,
-            ObservableBooleanValue enabled) {
-        if (e.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
-            return new StoreSection(
-                    e, DerivedObservableList.arrayList(true), DerivedObservableList.arrayList(true), depth);
-        }
-
-        var allChildren = all.filtered(
-                other -> {
-                    // Legacy implementation that does not use children caches. Use for testing
-                    //                                if (true) return DataStorage.get()
-                    //                                        .getDefaultDisplayParent(other.getEntry())
-                    //                                        .map(found -> found.equals(e.getEntry()))
-                    //                                        .orElse(false);
-
-                    // is children. This check is fast as the children are cached in the storage
-                    if (DataStorage.get() == null
-                            || !DataStorage.get().getStoreChildren(e.getEntry()).contains(other.getEntry())) {
-                        return false;
-                    }
-
-                    return true;
-                },
-                enabled,
-                e.getPersistentState(),
-                e.getCache(),
-                updateObservable);
-        var l = new ArrayList<>(parents);
-        l.add(e);
-        Predicate<StoreSection> showSection = section -> {
-            if (!enabled.getValue()) {
-                return false;
-            }
-
-            var isBatchSelected = selected.contains(section.getWrapper());
-
-            var matchesFilter = filter == null
-                    || section.matchesFilter(filter.getValue())
-                    || l.stream().anyMatch(p -> p.matchesFilter(filter.getValue()));
-            if (!isBatchSelected && !matchesFilter) {
-                return false;
-            }
-
-            var hasFilter = filter != null && filter.getValue() != null;
-            if (!isBatchSelected && !hasFilter) {
-                var showProvider = true;
-                try {
-                    showProvider = section.getWrapper().getEntry().getProvider().shouldShow(section.getWrapper());
-                } catch (Exception ignored) {
-                }
-                if (!showProvider) {
-                    return false;
-                }
-            }
-
-            var matchesSelector = section.anyMatches(entryFilter);
-            if (!isBatchSelected && !matchesSelector) {
-                return false;
-            }
-
-            // Prevent updates for children on category switching by checking depth
-            var showCategory = showInCategory(category.getValue(), section.getWrapper()) || depth > 0;
-            if (!showCategory) {
-                return false;
-            }
-
-            // If this entry is already shown as root due to a different category than parent, don't
-            // show it
-            // again here
-            var notRoot = !DataStorage.get()
-                    .isRootEntry(
-                            section.getWrapper().getEntry(), category.getValue().getCategory());
-            if (!notRoot) {
-                return false;
-            }
-
-            return true;
-        };
-
-        var cached = allChildren.mapped(c -> {
-            var section = new SimpleObjectProperty<StoreSection>();
-            var sectionEnabled = Bindings.createBooleanBinding(
-                    () -> {
-                        if (!enabled.getValue()) {
-                            return false;
-                        }
-
-                        return section.get() != null && showSection.test(section.get());
-                    },
-                    section,
-                    enabled,
-                    category,
-                    filter,
-                    e.getPersistentState(),
-                    e.getCache(),
-                    visibilityObservable,
-                    updateObservable);
-            section.set(create(
-                    l,
-                    c,
-                    depth + 1,
-                    all,
-                    selected,
-                    entryFilter,
-                    filter,
-                    category,
-                    visibilityObservable,
-                    updateObservable,
-                    sectionEnabled));
-            return section.get();
-        });
-        var ordered = sorted(e, cached, updateObservable);
-        var filtered = ordered.filtered(
-                showSection,
-                enabled,
-                category,
-                filter,
-                e.getPersistentState(),
-                e.getCache(),
-                visibilityObservable,
-                updateObservable);
-        return new StoreSection(e, cached, filtered, depth);
-    }
-
-    private static boolean showInCategory(StoreCategoryWrapper categoryWrapper, StoreEntryWrapper entryWrapper) {
-        var current = entryWrapper.getCategory().getValue();
-        while (current != null) {
-            if (categoryWrapper
-                    .getCategory()
-                    .getUuid()
-                    .equals(current.getCategory().getUuid())) {
-                return true;
-            }
-
-            if (!AppPrefs.get().showChildCategoriesInParentCategory().get()) {
-                break;
-            }
-
-            current = current.getParent();
-        }
-        return false;
+                });
     }
 
     public boolean matchesFilter(StoreFilter filter) {

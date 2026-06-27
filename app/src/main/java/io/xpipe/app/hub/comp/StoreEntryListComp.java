@@ -38,7 +38,7 @@ public class StoreEntryListComp extends SimpleRegionBuilder {
                 shown,
                 all,
                 (StoreSection e) -> {
-                    var custom = StoreSection.customSection(e).hgrow();
+                    var custom = new StoreSectionComp(e).hgrow();
                     return custom;
                 },
                 true);
