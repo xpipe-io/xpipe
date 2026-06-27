@@ -31,16 +31,6 @@ public class StoreSection {
         this.shownChildrenToApply = DerivedObservableList.arrayList(true);
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof StoreSection s && (s.wrapper == wrapper || s.wrapper.getEntry().equals(wrapper.getEntry()));
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(wrapper != null ? wrapper.getEntry() : null);
-    }
-
     public DataStoreEntry getEntry() {
         return wrapper.getEntry();
     }
@@ -51,18 +41,18 @@ public class StoreSection {
             child.apply();
         }
 
-        var delayedUpdates = new HashSet<StoreSection>();
-        delayedUpdates.addAll(allChildrenToApply.getList());
-        delayedUpdates.addAll(allChildren.getList());
-        shownChildrenToApply.getList().forEach(delayedUpdates::remove);
+//        var delayedUpdates = new HashSet<StoreSection>();
+//        delayedUpdates.addAll(allChildrenToApply.getList());
+//        delayedUpdates.addAll(allChildren.getList());
+//        shownChildrenToApply.getList().forEach(delayedUpdates::remove);
 
         allChildren.setContent(allChildrenToApply.getList());
         shownChildren.setContent(shownChildrenToApply.getList());
 
-        // Apply changes to other ones after they are removed to reduce updates while active
-        for (StoreSection child : delayedUpdates) {
-            child.apply();
-        }
+//        // Apply changes to other ones after they are removed to reduce updates while active
+//        for (StoreSection child : delayedUpdates) {
+//            child.apply();
+//        }
     }
 
     public void refreshAll(ObservableList<StoreEntryWrapper> all, StoreSectionConfig config) {
@@ -89,7 +79,8 @@ public class StoreSection {
         }).toList();
 
         var newAll = applicable.stream().map(wrapper -> {
-            var sec = new StoreSection(wrapper, depth + 1);
+            var found = allChildren.getList().stream().filter(child -> child.getEntry().equals(wrapper.getEntry())).findFirst();
+            var sec = found.isPresent() ? found.get() : new StoreSection(wrapper, depth + 1);
             return sec;
         }).toList();
 
@@ -146,10 +137,6 @@ public class StoreSection {
                         return 0;
                     }
                 });
-    }
-
-    public boolean matchesFilter(StoreFilter filter) {
-        return anyMatches(storeEntryWrapper -> storeEntryWrapper.matchesFilter(filter));
     }
 
     public boolean anyMatches(Predicate<StoreEntryWrapper> c) {

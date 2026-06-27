@@ -372,6 +372,9 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
                     .filter(region -> region != null)
                     .toList();
 
+            var activeCount = newShown.stream().filter((r) -> r.getScene() != null).count();
+            int a = 0;
+
             if (vbox.getChildren().equals(newShown)) {
                 return;
             }

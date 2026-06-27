@@ -66,14 +66,13 @@ public class StoreSectionConfig {
         var isBatchSelected = selected.contains(section.getWrapper());
 
         var matchesFilter = filter == null
-                || section.matchesFilter(filter)
+                || matchesFilter(section, filter)
                 || parents.stream().anyMatch(p -> p.matchesFilter(filter));
         if (!isBatchSelected && !matchesFilter) {
             return false;
         }
 
-        var hasFilter = filter != null;
-        if (section.getEntry().getProvider() != null && !isBatchSelected && !hasFilter) {
+        if (section.getEntry().getProvider() != null && !isBatchSelected && filter == null) {
             var showProvider = true;
             try {
                 showProvider = section.getEntry().getProvider().shouldShow(section.getWrapper());
@@ -84,7 +83,7 @@ public class StoreSectionConfig {
             }
         }
 
-        var matchesSelector = section.anyMatches(entryFilter);
+        var matchesSelector = matchesFilter(section, entryFilter);
         if (!isBatchSelected && !matchesSelector) {
             return false;
         }
@@ -105,6 +104,19 @@ public class StoreSectionConfig {
         }
 
         return true;
+    }
+
+    private boolean matchesFilter(StoreSection section, StoreFilter filter) {
+        return filter == null
+                || (section.getWrapper() != null && section.getWrapper().matchesFilter(filter))
+                || section.getAllChildrenToApply().getList().stream().anyMatch(c -> matchesFilter(c, filter));
+    }
+
+
+    private boolean matchesFilter(StoreSection section, Predicate<StoreEntryWrapper> p) {
+        return p == null
+                || (section.getWrapper() != null && p.test(section.getWrapper()))
+                || section.getAllChildrenToApply().getList().stream().anyMatch(c -> matchesFilter(c, p));
     }
 
     private boolean showInCategory(StoreCategoryWrapper categoryWrapper, StoreEntryWrapper entryWrapper) {
@@ -128,7 +140,9 @@ public class StoreSectionConfig {
 
     public StoreSectionConfig withParent(StoreEntryWrapper parent) {
         var l = new HashSet<>(parents);
-        l.add(parent);
+        if (parent != null) {
+            l.add(parent);
+        }
         return new StoreSectionConfig(l, entryFilter, filter, category, selected);
     }
 }

@@ -54,6 +54,10 @@ public class StoreSectionState {
             updateAll();
         });
 
+        BindingsHelper.attach(enabled, selected, () -> {
+            updateShown();
+        });
+
         BindingsHelper.attach(enabled, filter, () -> {
             updateShown();
         });
