@@ -218,27 +218,9 @@ public class AppLayoutModel {
                         new LabelGraphic.IconGraphic("mdi2p-professional-hexagon"),
                         LicenseProvider.get().overviewPage(),
                         null,
-                        null),
-                new Entry(
-                        AppI18n.observable("docs"),
-                        new LabelGraphic.IconGraphic("mdi2b-book-open-variant"),
-                        null,
-                        () -> Hyperlinks.open(DocumentationLink.getRoot()),
                         null)));
+
         if (AppDistributionType.get() != AppDistributionType.WEBTOP) {
-            l.add(
-                    new Entry(
-                            AppI18n.observable("visitGithubRepository"),
-                            new LabelGraphic.IconGraphic("mdi2g-github"),
-                            null,
-                            () -> Hyperlinks.open(Hyperlinks.GITHUB),
-                            null));
-            l.add(new Entry(
-                            AppI18n.observable("discord"),
-                            new LabelGraphic.IconGraphic("bi-discord"),
-                            null,
-                            () -> Hyperlinks.open(Hyperlinks.DISCORD),
-                    null));
             l.add(new Entry(
                     AppI18n.observable("webtop"),
                     new LabelGraphic.IconGraphic("mdal-desktop_mac"),
@@ -260,6 +242,29 @@ public class AppLayoutModel {
                             null,
                             () -> WebtopAppListDialog.show(List.of()),
                             null));
+        }
+
+        l.add(new Entry(
+                        AppI18n.observable("docs"),
+                        new LabelGraphic.IconGraphic("mdi2b-book-open-variant"),
+                        null,
+                        () -> Hyperlinks.open(DocumentationLink.getRoot()),
+                        null));
+
+        if (AppDistributionType.get() != AppDistributionType.WEBTOP) {
+            l.add(
+                    new Entry(
+                            AppI18n.observable("visitGithubRepository"),
+                            new LabelGraphic.IconGraphic("mdi2g-github"),
+                            null,
+                            () -> Hyperlinks.open(Hyperlinks.GITHUB),
+                            null));
+            l.add(new Entry(
+                            AppI18n.observable("discord"),
+                            new LabelGraphic.IconGraphic("bi-discord"),
+                            null,
+                            () -> Hyperlinks.open(Hyperlinks.DISCORD),
+                    null));
         }
         return l;
     }

@@ -55,7 +55,12 @@ public class GuiErrorHandler extends GuiErrorHandlerBase implements ErrorHandler
             return;
         }
 
-        handleGui(event);
+        try {
+            handleGui(event);
+        } catch (Error e) {
+            // For serious errors, just log them to prevent loop
+            ErrorAction.ignore().handle(ErrorEventFactory.fromThrowable(e).build());
+        }
     }
 
     private void handleGui(ErrorEvent event) {
