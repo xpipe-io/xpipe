@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.storage.DataStoreEntry;
+import lombok.Getter;
 
 import java.time.Instant;
 import java.util.*;
@@ -16,7 +17,7 @@ public interface StoreSectionSortMode {
         }
 
         @Override
-        public Comparator<StoreSection> comparator() {
+        public Comparator<StoreSection> comparator(int updateIndex) {
             return Comparator.<StoreSection>comparingInt(
                             e -> e.getWrapper().getOrderIndex().getValue())
                     .reversed();
@@ -29,7 +30,7 @@ public interface StoreSectionSortMode {
         }
 
         @Override
-        public Comparator<StoreSection> comparator() {
+        public Comparator<StoreSection> comparator(int updateIndex) {
             return Comparator.comparingInt(e -> e.getWrapper().getOrderIndex().getValue());
         }
     };
@@ -41,7 +42,7 @@ public interface StoreSectionSortMode {
         }
 
         @Override
-        public Comparator<StoreSection> comparator() {
+        public Comparator<StoreSection> comparator(int updateIndex) {
             return Comparator.comparing(
                     e -> e.getWrapper().nameProperty().getValue().toLowerCase(Locale.ROOT));
         }
@@ -53,7 +54,7 @@ public interface StoreSectionSortMode {
         }
 
         @Override
-        public Comparator<StoreSection> comparator() {
+        public Comparator<StoreSection> comparator(int updateIndex) {
             return Comparator.<StoreSection, String>comparing(
                             e -> e.getWrapper().nameProperty().getValue().toLowerCase(Locale.ROOT))
                     .reversed();
@@ -112,30 +113,33 @@ public interface StoreSectionSortMode {
 
     String getId();
 
-    Comparator<StoreSection> comparator();
+    Comparator<StoreSection> comparator(int updateIndex);
 
     abstract class DateSortMode implements StoreSectionSortMode {
 
         private final Map<StoreSection, StoreSection> cachedRepresentatives = new IdentityHashMap<>();
         private int entriesListObservableIndex = -1;
 
-        public StoreSection computeRepresentative(StoreSection s) {
+        public StoreSection computeRepresentative(StoreSection s, int updateIndex) {
             return Stream.concat(
                             s.getShownChildren().getList().stream()
                                     .filter(section ->
                                             section.getEntry().getValidity()
                                                     != DataStoreEntry.Validity.LOAD_FAILED)
-                                    .map(this::getRepresentative),
+                                    .map(section -> getRepresentative(section, updateIndex)),
                             Stream.of(s))
                     .max(Comparator.comparing(section -> date(section)))
                     .orElseThrow();
         }
 
         public StoreSection getRepresentative(StoreSection s) {
-            if (StoreViewState.get().getEntriesListUpdateObservable().get() != entriesListObservableIndex) {
+            return getRepresentative(s, entriesListObservableIndex);
+        }
+
+        public StoreSection getRepresentative(StoreSection s, int updateIndex) {
+            if (updateIndex != entriesListObservableIndex) {
                 cachedRepresentatives.clear();
-                entriesListObservableIndex =
-                        StoreViewState.get().getEntriesListUpdateObservable().get();
+                entriesListObservableIndex = updateIndex;
             }
 
             var found = cachedRepresentatives.get(s);
@@ -143,7 +147,7 @@ public interface StoreSectionSortMode {
                 return found;
             }
 
-            var r = computeRepresentative(s);
+            var r = computeRepresentative(s, updateIndex);
             cachedRepresentatives.put(s, r);
             return r;
         }
@@ -153,10 +157,10 @@ public interface StoreSectionSortMode {
         protected abstract int compare(Instant s1, Instant s2);
 
         @Override
-        public Comparator<StoreSection> comparator() {
+        public Comparator<StoreSection> comparator(int updateIndex) {
             return (o1, o2) -> {
-                var r1 = getRepresentative(o1);
-                var r2 = getRepresentative(o2);
+                var r1 = getRepresentative(o1, updateIndex);
+                var r2 = getRepresentative(o2, updateIndex);
                 return DateSortMode.this.compare(date(r1), date(r2));
             };
         }

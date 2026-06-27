@@ -55,11 +55,7 @@ public class StoreSection {
 //        }
     }
 
-    public void refreshAll(ObservableList<StoreEntryWrapper> all, StoreSectionConfig config) {
-        refreshAll(all, config, 0);
-    }
-
-    public void refreshAll(ObservableList<StoreEntryWrapper> all, StoreSectionConfig config, int depth) {
+    public void refreshAll(ObservableList<StoreEntryWrapper> all, StoreSectionConfig config, int depth, int orderUpdateIndex) {
         if (wrapper != null) {
             if (wrapper.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
                 allChildrenToApply.setContent(List.of());
@@ -85,11 +81,11 @@ public class StoreSection {
         }).toList();
 
         allChildrenToApply.setContent(newAll);
-        sort(allChildrenToApply.getList());
+        sort(allChildrenToApply.getList(), orderUpdateIndex);
 
         var withParentConfig = config.withParent(wrapper);
         for (StoreSection child : allChildrenToApply.getList()) {
-            child.refreshAll(all, withParentConfig, depth + 1);
+            child.refreshAll(all, withParentConfig, depth + 1, orderUpdateIndex);
         }
     }
 
@@ -118,24 +114,19 @@ public class StoreSection {
         }
     }
 
-    private void sort(
-            List<StoreSection> list) {
+    private void sort(List<StoreSection> list, int orderUpdateIndex) {
+        var customComparator =
+                wrapper != null && wrapper.getEntry().getProvider() != null ? wrapper.getEntry().getProvider().getComparator() : null;
         var sortMode = StoreViewState.get()
-                .createEffectiveSortMode(
-                        wrapper != null && wrapper.getEntry().getProvider() != null ? wrapper.getEntry().getProvider().getComparator() : null);
+                .createEffectiveSortMode(customComparator, orderUpdateIndex);
         list.sort(
                 (o1, o2) -> {
-                    var r = sortMode.getValue().compare(o1, o2);
+                    var r = sortMode.compare(o1, o2);
                     if (r != 0) {
                         return r;
                     }
 
-                    var current = sortMode.getValue();
-                    if (current != null) {
-                        return current.compare(o1, o2);
-                    } else {
-                        return 0;
-                    }
+                    return sortMode.compare(o1, o2);
                 });
     }
 

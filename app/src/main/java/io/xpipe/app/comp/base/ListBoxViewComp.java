@@ -212,17 +212,6 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
                     });
                 });
             });
-
-            StoreViewState.get().getEntriesListUpdateObservable().addListener((observable, oldValue, newValue) -> {
-                // This is very ugly, but it just takes multiple iterations for the order to apply
-                Platform.runLater(() -> {
-                    Platform.runLater(() -> {
-                        Platform.runLater(() -> {
-                            dirty.set(true);
-                        });
-                    });
-                });
-            });
         }
 
         vbox.sceneProperty().addListener((observable, oldValue, newValue) -> {

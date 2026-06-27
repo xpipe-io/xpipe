@@ -24,6 +24,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 
 import lombok.Getter;
+import org.int4.fx.values.util.Trigger;
 
 import java.time.Duration;
 import java.util.*;
@@ -43,10 +44,10 @@ public class StoreViewState {
             DerivedObservableList.synchronizedArrayList(true);
 
     @Getter
-    private final IntegerProperty entriesListVisibilityObservable = new SimpleIntegerProperty();
+    private final Trigger<Void> entriesListVisibilityTrigger = Trigger.of();
 
     @Getter
-    private final IntegerProperty entriesListUpdateObservable = new SimpleIntegerProperty();
+    private final Trigger<Void> entriesListRefreshTrigger = Trigger.of();
 
     @Getter
     private final Property<StoreCategoryWrapper> activeCategory = new SimpleObjectProperty<>();
@@ -64,7 +65,6 @@ public class StoreViewState {
     private final DerivedObservableList<StoreEntryWrapper> batchModeSelection =
             DerivedObservableList.synchronizedArrayList(true);
 
-    @Getter
     private final Set<StoreEntryWrapper> batchModeSelectionSet = new HashSet<>();
 
     @Getter
@@ -75,9 +75,7 @@ public class StoreViewState {
                 }
 
                 return true;
-            },
-            entriesListVisibilityObservable,
-            entriesListUpdateObservable);
+            });
 
     @Getter
     private boolean initialized = false;
@@ -140,33 +138,21 @@ public class StoreViewState {
         return l.stream().sorted().toList();
     }
 
-    public ObservableValue<Comparator<StoreSection>> createEffectiveSortMode(
-            Comparator<StoreSection> customComparator) {
-        return Bindings.createObjectBinding(
-                () -> {
-                    var global = globalSortMode.getValue() != null
-                            ? globalSortMode.getValue().comparator()
-                            : null;
-                    var tie = customComparator != null
-                            ? customComparator
-                            : tieSortMode.getValue() != null
-                                    ? tieSortMode.getValue().comparator()
-                                    : StoreSectionSortMode.DATE_DESC.comparator();
-                    var fallback = Comparator.<StoreSection, String>comparing(
-                            sec -> sec.getWrapper().getName().getValue());
-                    var failed = Comparator.<StoreSection>comparingInt(value -> {
-                        if (value.getWrapper().getValidity().getValue() == DataStoreEntry.Validity.LOAD_FAILED) {
-                            return 1;
-                        }
+    public Comparator<StoreSection> createEffectiveSortMode(Comparator<StoreSection> customComparator, int updateIndex) {
+        var global = globalSortMode.getValue() != null ? globalSortMode.getValue().comparator(updateIndex) : null;
+        var tie = customComparator != null ? customComparator : tieSortMode.getValue() != null ?
+                tieSortMode.getValue().comparator(updateIndex) :
+                StoreSectionSortMode.DATE_DESC.comparator(updateIndex);
+        var fallback = Comparator.<StoreSection, String>comparing(sec -> sec.getWrapper().getName().getValue());
+        var failed = Comparator.<StoreSection>comparingInt(value -> {
+            if (value.getWrapper().getValidity().getValue() == DataStoreEntry.Validity.LOAD_FAILED) {
+                return 1;
+            }
 
-                        return 0;
-                    });
-                    return global != null
-                            ? failed.thenComparing(global.thenComparing(tie)).thenComparing(fallback)
-                            : failed.thenComparing(tie).thenComparing(fallback);
-                },
-                globalSortMode,
-                tieSortMode);
+            return 0;
+        });
+        return global != null ? failed.thenComparing(global.thenComparing(tie)).thenComparing(fallback) : failed.thenComparing(tie).thenComparing(
+                fallback);
     }
 
     public ObservableIntegerValue entriesCount(Predicate<StoreEntryWrapper> filter, ObservableValue<?>... observables) {
@@ -248,10 +234,11 @@ public class StoreViewState {
 
     private void initSections() {
         try {
-            var sectionState = new StoreSectionState(allEntries.getList(), StoreFilterState.get().getEffectiveFilter(), ignored -> true, activeCategory, batchModeSelection.getList(), new ReadOnlyBooleanWrapper(true));
+            var sectionState = new StoreSectionState(allEntries.getList(), entriesListRefreshTrigger,
+                    entriesListVisibilityTrigger, StoreFilterState.get().getEffectiveFilter(), ignored -> true, activeCategory, batchModeSelection.getList(), new ReadOnlyBooleanWrapper(true));
             currentTopLevelSection = sectionState.getRootSection();
         } catch (Exception exception) {
-            var sectionState = new StoreSectionState(FXCollections.observableArrayList(), new ReadOnlyObjectWrapper<>(), ignored -> true, activeCategory, batchModeSelection.getList(), new ReadOnlyBooleanWrapper(true));
+            var sectionState = new StoreSectionState(FXCollections.observableArrayList(), Trigger.of(), Trigger.of(), new ReadOnlyObjectWrapper<>(), ignored -> true, activeCategory, batchModeSelection.getList(), new ReadOnlyBooleanWrapper(true));
             currentTopLevelSection = sectionState.getRootSection();
             ErrorEventFactory.fromThrowable(exception).handle();
         }
@@ -358,7 +345,7 @@ public class StoreViewState {
         }
 
         PlatformThread.runLaterIfNeeded(() -> {
-            entriesListVisibilityObservable.set(entriesListVisibilityObservable.get() + 1);
+            entriesListVisibilityTrigger.fire(null);
         });
     }
 
@@ -368,7 +355,7 @@ public class StoreViewState {
         }
 
         PlatformThread.runLaterIfNeeded(() -> {
-            entriesListUpdateObservable.set(entriesListUpdateObservable.get() + 1);
+            entriesListRefreshTrigger.fire(null);
         });
     }
 

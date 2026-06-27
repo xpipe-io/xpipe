@@ -118,7 +118,7 @@ public class StoreChoicePopover<T extends DataStore> {
             var initialExpanded = applicableCount < 20;
 
             var enabled = popover.showingProperty();
-            var sectionState = new StoreSectionState(StoreViewState.get().getAllEntries().getList(), storeFilter, applicable, selectedCategory, FXCollections.emptyObservableList(), enabled);
+            var sectionState = new StoreSectionState(storeFilter, applicable, selectedCategory, FXCollections.emptyObservableList(), enabled);
             var section = new StoreSectionMiniComp(
                     sectionState.getRootSection(),
                     (s, comp) -> {
