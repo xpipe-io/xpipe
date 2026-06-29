@@ -3,6 +3,8 @@ package io.xpipe.core;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.util.DefaultIndenter;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
@@ -46,6 +48,8 @@ public class JacksonMapper {
                 .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
                 .withCreatorVisibility(JsonAutoDetect.Visibility.NONE)
                 .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE));
+        objectMapper.setDefaultPrettyPrinter(new DefaultPrettyPrinter()
+                .withObjectIndenter(new DefaultIndenter().withLinefeed("\n")));
     }
 
     public static synchronized void configure(Consumer<ObjectMapper> mapper) {
