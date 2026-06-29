@@ -1,5 +1,6 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.WindowDockComp;
 
 import javafx.application.Platform;
@@ -30,18 +31,20 @@ public class TerminalDockHubComp extends WindowDockComp<TerminalDockView> {
 
             var window = scene.getWindow();
             window.focusedProperty().subscribe(focus -> {
-                if (!model.isActive()) {
+                if (!focus) {
                     return;
                 }
 
-                if (focus) {
-                    var target = scene.getRoot().lookup(".icon-button-comp:hover");
-                    if (target == null) {
-                        Platform.runLater(() -> {
-                            model.focus();
-                        });
+                var target = scene.getRoot().lookup(".icon-button-comp:hover");
+                ThreadHelper.runFailableAsync(() -> {
+                    if (!model.isActive()) {
+                        return;
                     }
-                }
+
+                    if (target == null) {
+                        model.focus();
+                    }
+                });
             });
         });
         return stack;
