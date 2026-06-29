@@ -225,7 +225,7 @@ public class TerminalDockView implements WindowDockListener {
         TrackEvent.withTrace("Terminal view window shown").handle();
         terminalInstances.forEach(terminalInstance -> {
             var controllable = terminalInstance.getControllable();
-            if (controllable.isActive()) {
+            if (!controllable.isActive()) {
                 return;
             }
 

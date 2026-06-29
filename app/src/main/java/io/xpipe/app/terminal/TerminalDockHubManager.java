@@ -232,7 +232,6 @@ public class TerminalDockHubManager {
                 }
 
                 if (!hubRequests.contains(session.getRequest())) {
-                    t.getControllable().own(NativeWinWindowControl.MAIN_WINDOW);
                     return;
                 }
 
