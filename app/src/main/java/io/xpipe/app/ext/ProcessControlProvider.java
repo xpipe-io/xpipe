@@ -93,5 +93,7 @@ public abstract class ProcessControlProvider {
 
     public abstract void showWebtopDeploymentDialog();
 
+    public abstract void showLocalWebtopMobileConnectDialog();
+
     public abstract void importRdpFile(Path file) throws Exception;
 }

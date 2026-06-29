@@ -23,10 +23,7 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +73,11 @@ public interface ScriptCollectionSource {
         public void checkComplete() throws ValidationException {
             Validators.nonNull(path);
             // Check if path is invalid
-            path.toLocalAbsoluteFilePath().asLocalPath();
+            try {
+                path.toLocalAbsoluteFilePath().asLocalPath();
+            } catch (InvalidPathException e) {
+                throw new ValidationException(e.getMessage());
+            }
         }
 
         @Override

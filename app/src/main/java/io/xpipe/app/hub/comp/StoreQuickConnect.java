@@ -48,8 +48,15 @@ public class StoreQuickConnect {
             return false;
         }
 
-        var newStore = provider.get().createStore(arguments, quickConnectStore);
-        if (newStore == null) {
+        DataStore newStore;
+
+        try {
+            newStore = provider.get().createStore(arguments, quickConnectStore);
+            if (newStore == null) {
+                return false;
+            }
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable(e).expected().handle();
             return false;
         }
 

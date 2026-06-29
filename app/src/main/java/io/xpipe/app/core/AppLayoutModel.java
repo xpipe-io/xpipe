@@ -14,6 +14,7 @@ import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.AppPrefsComp;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.terminal.TerminalDockHubManager;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
@@ -241,6 +242,15 @@ public class AppLayoutModel {
                             new LabelGraphic.IconGraphic("mdi2a-archive-sync-outline"),
                             null,
                             () -> WebtopAppListDialog.show(List.of()),
+                            null));
+            l.add(
+                    new Entry(
+                            AppI18n.observable("webtopMobileConnect"),
+                            new LabelGraphic.IconGraphic("mdi2a-archive-sync-outline"),
+                            null,
+                            () -> {
+                                ProcessControlProvider.get().showLocalWebtopMobileConnectDialog();
+                            },
                             null));
         }
 
