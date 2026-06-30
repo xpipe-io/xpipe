@@ -225,26 +225,25 @@ public class TerminalDockView implements WindowDockListener {
         TrackEvent.withTrace("Terminal view window shown").handle();
         terminalInstances.forEach(terminalInstance -> {
             var controllable = terminalInstance.getControllable();
-            if (!controllable.isActive()) {
-                return;
-            }
 
             controllable.updateBoundsState();
             if (controllable.isCustomBounds()) {
                 return;
             }
 
-            controllable.show();
-            if (viewActive) {
-                controllable.removeIcon();
-                controllable.own(NativeWinWindowControl.MAIN_WINDOW);
-                controllable.removeStyle(terminalInstance.manageBorders());
-                controllable.focus();
-            } else {
-                controllable.restoreIcon();
-                controllable.disown();
-                controllable.backOfWindow(NativeWinWindowControl.MAIN_WINDOW);
+            if (controllable.isActive()) {
+                return;
             }
+
+            if (!viewActive) {
+                return;
+            }
+
+            controllable.show();
+            controllable.removeIcon();
+            controllable.own(NativeWinWindowControl.MAIN_WINDOW);
+            controllable.removeStyle(terminalInstance.manageBorders());
+            controllable.focus();
         });
     }
 

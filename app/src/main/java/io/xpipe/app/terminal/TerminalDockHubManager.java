@@ -14,6 +14,8 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.util.Rect;
+import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.OsType;
 import io.xpipe.app.util.OsType;
 
 import javafx.application.Platform;
@@ -165,9 +167,11 @@ public class TerminalDockHubManager {
                 if (!showing.get()) {
                     // Run later to guarantee order of operations
                     Platform.runLater(() -> {
-                        AppLayoutModel.get().selectConnections();
-                        showDock();
-                        attach();
+                        ThreadHelper.runAsync(() -> {
+                            AppLayoutModel.get().selectConnections();
+                            showDock();
+                            attach();
+                        });
                     });
                     return false;
                 }
@@ -209,18 +213,20 @@ public class TerminalDockHubManager {
         var wasShowing = new SimpleBooleanProperty();
         var wasAttached = new SimpleBooleanProperty();
         AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
-            if (AppLayoutModel.get().getEntries().indexOf(newValue) == 0) {
-                if (wasShowing.get()) {
-                    showDock();
+            ThreadHelper.runAsync(() -> {
+                if (AppLayoutModel.get().getEntries().indexOf(newValue) == 0) {
+                    if (wasShowing.get()) {
+                        showDock();
+                    }
+                    if (wasAttached.get()) {
+                        attach();
+                    }
+                } else if (AppLayoutModel.get().getEntries().indexOf(oldValue) == 0) {
+                    wasAttached.set(!minimized.get() && !detached.get() && showing.get());
+                    wasShowing.set(showing.get());
+                    hideDock();
                 }
-                if (wasAttached.get()) {
-                    attach();
-                }
-            } else if (AppLayoutModel.get().getEntries().indexOf(oldValue) == 0) {
-                wasAttached.set(!minimized.get() && !detached.get() && showing.get());
-                wasShowing.set(showing.get());
-                hideDock();
-            }
+            });
         });
     }
 
@@ -233,7 +239,6 @@ public class TerminalDockHubManager {
                 }
 
                 if (!hubRequests.contains(session.getRequest())) {
-                    t.getControllable().own(NativeWinWindowControl.MAIN_WINDOW);
                     return;
                 }
 
@@ -248,8 +253,10 @@ public class TerminalDockHubManager {
                 enableDock();
                 showDock();
                 Platform.runLater(() -> {
-                    dockModel.trackTerminal(t, dock);
-                    dockModel.closeOtherTerminals(session.getRequest());
+                    ThreadHelper.runAsync(() -> {
+                        dockModel.trackTerminal(t, dock);
+                        dockModel.closeOtherTerminals(session.getRequest());
+                    });
                 });
             }
 
@@ -316,35 +323,31 @@ public class TerminalDockHubManager {
     }
 
     public void enableDock() {
-        PlatformThread.runLaterIfNeeded(() -> {
-            if (enabled.get()) {
-                return;
-            }
+        if (enabled.get()) {
+            return;
+        }
 
-            dockModel.activateView();
-            enabled.set(true);
-            showing.set(true);
+        dockModel.activateView();
+        enabled.set(true);
+        showing.set(true);
 
-            NativeWinWindowControl.MAIN_WINDOW.setWindowsTransitionsEnabled(false);
-            AppLayoutModel.get().getQueueEntries().add(queueEntry);
-        });
+        NativeWinWindowControl.MAIN_WINDOW.setWindowsTransitionsEnabled(false);
+        AppLayoutModel.get().getQueueEntries().add(queueEntry);
     }
 
     public void disableDock() {
-        PlatformThread.runLaterIfNeeded(() -> {
-            if (!enabled.get()) {
-                return;
-            }
+        if (!enabled.get()) {
+            return;
+        }
 
-            dockModel.deactivateView();
-            enabled.set(false);
-            showing.set(false);
+        dockModel.deactivateView();
+        enabled.set(false);
+        showing.set(false);
 
-            showDialogIfNeeded();
+        showDialogIfNeeded();
 
-            NativeWinWindowControl.MAIN_WINDOW.setWindowsTransitionsEnabled(true);
-            AppLayoutModel.get().getQueueEntries().remove(queueEntry);
-        });
+        NativeWinWindowControl.MAIN_WINDOW.setWindowsTransitionsEnabled(true);
+        AppLayoutModel.get().getQueueEntries().remove(queueEntry);
     }
 
     public void triggerDock() {
@@ -358,26 +361,22 @@ public class TerminalDockHubManager {
     }
 
     public void showDock() {
-        PlatformThread.runLaterIfNeeded(() -> {
-            if (showing.get()) {
-                return;
-            }
+        if (showing.get()) {
+            return;
+        }
 
-            dockModel.activateView();
-            showing.set(true);
-            AppLayoutModel.get().selectConnections();
-        });
+        dockModel.activateView();
+        showing.set(true);
+        AppLayoutModel.get().selectConnections();
     }
 
     public void hideDock() {
-        PlatformThread.runLaterIfNeeded(() -> {
-            if (!showing.get()) {
-                return;
-            }
+        if (!showing.get()) {
+            return;
+        }
 
-            dockModel.deactivateView();
-            showing.set(false);
-        });
+        dockModel.deactivateView();
+        showing.set(false);
     }
 
     public void attach() {

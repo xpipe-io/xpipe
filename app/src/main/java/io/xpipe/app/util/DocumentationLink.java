@@ -63,6 +63,7 @@ public enum DocumentationLink {
     SSH_PUBLIC_KEY("guide/ssh#public-key-handling"),
     SSH_GATEWAYS("guide/ssh#gateways-and-jump-servers"),
     SSH_HOST_KEYS("troubleshoot/ssh#no-matching-host-key-type-found"),
+    SSH_CIPHERS("troubleshoot/ssh#no-matching-cipher-found"),
     SSH_BAD_FILE_DESCRIPTOR("troubleshoot/ssh#bad-file-descriptor"),
     SSH_KEX("troubleshoot/ssh#no-matching-key-exchange-method"),
     SSH_IPV6("troubleshoot/ssh#ipv6-issues"),

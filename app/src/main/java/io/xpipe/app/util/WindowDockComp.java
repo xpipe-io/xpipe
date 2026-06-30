@@ -62,14 +62,24 @@ public class WindowDockComp<T extends WindowDockListener> extends SimpleRegionBu
                 update(stack);
             }
         };
+        var maximized = new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                update(stack);
+            }
+        };
         var iconified = new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (newValue) {
-                    model.onWindowMinimize();
+                    ThreadHelper.runAsync(() -> {
+                        model.onWindowMinimize();
+                    });
                 } else {
                     Platform.runLater(() -> {
-                        model.onWindowShow();
+                        ThreadHelper.runAsync(() -> {
+                            model.onWindowShow();
+                        });
                     });
                 }
             }
@@ -89,7 +99,9 @@ public class WindowDockComp<T extends WindowDockListener> extends SimpleRegionBu
         var hide = new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
-                model.onClose();
+                ThreadHelper.runAsync(() -> {
+                    model.onClose();
+                });
             }
         };
 
@@ -101,6 +113,7 @@ public class WindowDockComp<T extends WindowDockListener> extends SimpleRegionBu
                 s.yProperty().removeListener(update);
                 s.widthProperty().removeListener(update);
                 s.heightProperty().removeListener(update);
+                s.maximizedProperty().removeListener(maximized);
                 s.iconifiedProperty().removeListener(iconified);
                 s.removeEventFilter(WindowEvent.WINDOW_SHOWN, show);
                 s.removeEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, hide);
@@ -116,6 +129,7 @@ public class WindowDockComp<T extends WindowDockListener> extends SimpleRegionBu
                 s.yProperty().addListener(update);
                 s.widthProperty().addListener(update);
                 s.heightProperty().addListener(update);
+                s.maximizedProperty().addListener(maximized);
                 s.iconifiedProperty().addListener(iconified);
                 s.outputScaleXProperty().removeListener(scale);
                 s.addEventFilter(WindowEvent.WINDOW_SHOWN, show);
@@ -146,27 +160,29 @@ public class WindowDockComp<T extends WindowDockListener> extends SimpleRegionBu
             return;
         }
 
-        var windowRect = new NativeWinWindowControl(handle.get()).getBounds();
-        if (windowRect.getX() == 0.0 && windowRect.getY() == 0.0 && windowRect.getW() == 0 && windowRect.getH() == 0) {
-            return;
-        }
+        ThreadHelper.runAsync(() -> {
+            var windowRect = new NativeWinWindowControl(handle.get()).getBounds();
+            if (windowRect.getX() == 0.0 && windowRect.getY() == 0.0 && windowRect.getW() == 0 && windowRect.getH() == 0) {
+                return;
+            }
 
-        var xPadding = ((bounds.getMinX() + p.getLeft() + scene.getX()) * sx);
-        var yPadding = ((bounds.getMinY() + p.getTop() + scene.getY()) * sy);
-        var x = windowRect.getX() + xPadding;
-        var y = windowRect.getY() + yPadding;
-        var w = (bounds.getWidth() * sx) - p.getRight() - p.getLeft();
-        var h = (bounds.getHeight() * sy) - p.getBottom() - p.getTop();
+            var xPadding = ((bounds.getMinX() + p.getLeft() + scene.getX()) * sx);
+            var yPadding = ((bounds.getMinY() + p.getTop() + scene.getY()) * sy);
+            var x = windowRect.getX() + xPadding;
+            var y = windowRect.getY() + yPadding;
+            var w = (bounds.getWidth() * sx) - p.getRight() - p.getLeft();
+            var h = (bounds.getHeight() * sy) - p.getBottom() - p.getTop();
 
-        if (x + w > windowRect.getX() + windowRect.getW()) {
-            x = windowRect.getX() + 10;
-            w = windowRect.getW() - 20;
-        }
-        if (y + h > windowRect.getY() + windowRect.getH()) {
-            y = windowRect.getY() + 10;
-            h = windowRect.getH() - 20;
-        }
+            if (x + w > windowRect.getX() + windowRect.getW()) {
+                x = windowRect.getX() + 10;
+                w = windowRect.getW() - 20;
+            }
+            if (y + h > windowRect.getY() + windowRect.getH()) {
+                y = windowRect.getY() + 10;
+                h = windowRect.getH() - 20;
+            }
 
-        model.resizeView((int) Math.round(x), (int) Math.round(y), (int) Math.round(w), (int) Math.round(h));
+            model.resizeView((int) Math.round(x), (int) Math.round(y), (int) Math.round(w), (int) Math.round(h));
+        });
     }
 }
