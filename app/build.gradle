@@ -83,8 +83,10 @@ dependencies {
         exclude group: "io.github.mkpaz", module: "atlantafx-base"
     }
 
-    api("org.int4.fx:fx-values:0.4")
+    api "org.int4.fx:fx-values:0.4"
     api files("$rootDir/gradle/gradle_scripts/fx-builders-1.0.0-SNAPSHOT.jar")
+
+    api "com.google.zxing:core:3.5.4"
 }
 
 apply from: "$rootDir/gradle/gradle_scripts/local_junit_suite.gradle"

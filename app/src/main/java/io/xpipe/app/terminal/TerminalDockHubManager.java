@@ -15,7 +15,6 @@ import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.util.Rect;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.OsType;
 import io.xpipe.app.util.OsType;
 
 import javafx.application.Platform;
@@ -194,18 +193,20 @@ public class TerminalDockHubManager {
         var wasShowing = new SimpleBooleanProperty();
         var wasAttached = new SimpleBooleanProperty();
         AppDialog.getModalOverlays().addListener((ListChangeListener<? super ModalOverlay>) c -> {
-            if (c.getList().isEmpty()) {
-                if (wasShowing.get()) {
-                    showDock();
+            ThreadHelper.runAsync(() -> {
+                if (c.getList().isEmpty()) {
+                    if (wasShowing.get()) {
+                        showDock();
+                    }
+                    if (wasAttached.get()) {
+                        attach();
+                    }
+                } else {
+                    wasAttached.set(!minimized.get() && !detached.get() && showing.get());
+                    wasShowing.set(showing.get());
+                    hideDock();
                 }
-                if (wasAttached.get()) {
-                    attach();
-                }
-            } else {
-                wasAttached.set(!minimized.get() && !detached.get() && showing.get());
-                wasShowing.set(showing.get());
-                hideDock();
-            }
+            });
         });
     }
 

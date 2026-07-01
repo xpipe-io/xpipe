@@ -24,9 +24,11 @@ import java.util.List;
 @Value
 public class HostAddressChoice {
 
+    String nameKey;
     Property<HostAddress> addressProperty;
     Property<Integer> portProperty;
     boolean allowMutation;
+    boolean allowMultiple;
 
     public OptionsBuilder build() {
         var existing = addressProperty.getValue();
@@ -38,7 +40,7 @@ public class HostAddressChoice {
             listHashProp.set(c.getList().hashCode());
         });
         var options = new OptionsBuilder();
-        var addressField = new HostAddressChoiceComp(val, list, allowMutation).hgrow();
+        var addressField = new HostAddressChoiceComp(val, list, allowMutation, allowMultiple).hgrow();
         var sepLabel =
                 new LabelComp(":").apply(label -> AppFontSizes.xxl(label)).padding(new Insets(0, 0, 3, 0));
         var portField = new IntFieldComp(portProperty)
@@ -49,7 +51,7 @@ public class HostAddressChoice {
             portField.disable(true);
         }
         var box = new HorizontalComp(List.of(addressField, sepLabel, portField)).spacing(5);
-        options.nameAndDescription("connectionInformation");
+        options.nameAndDescription(nameKey != null ? nameKey : "connectionInformation");
         options.addComp(box);
         options.addProperty(portProperty);
         options.nonNull();

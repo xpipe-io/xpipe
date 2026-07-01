@@ -84,9 +84,6 @@ public class StoreCreationComp extends ModalOverlayContentComp {
 
                 model.getInitialStore().setValue(model.getStore().getValue());
 
-                var valSp = new GraphicDecorationStackPane();
-                valSp.setFocusTraversable(false);
-
                 var full = new OptionsBuilder();
 
                 // Start focus on top for newly created stores
@@ -104,13 +101,12 @@ public class StoreCreationComp extends ModalOverlayContentComp {
 
                 var comp = full.buildComp();
                 var region = comp.style("store-creator-options").build();
-                valSp.getChildren().add(region);
 
-                var sp = new ScrollPane(valSp);
+                var sp = new ScrollPane(region);
                 sp.setFocusTraversable(false);
                 sp.setSkin(new ScrollPaneSkin(sp));
                 sp.setFitToWidth(true);
-                sp.prefHeightProperty().bind(valSp.heightProperty());
+                sp.prefHeightProperty().bind(region.heightProperty());
                 var vbar = (ScrollBar) sp.lookup(".scroll-bar:vertical");
 
                 var topSep = new Separator();

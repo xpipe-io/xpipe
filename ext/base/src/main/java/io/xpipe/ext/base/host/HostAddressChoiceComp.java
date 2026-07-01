@@ -29,12 +29,14 @@ public class HostAddressChoiceComp extends RegionBuilder<HBox> {
     private final ObjectProperty<String> currentAddress;
     private final ObservableList<String> allAddresses;
     private final boolean mutable;
+    private final boolean allowMultiple;
 
     public HostAddressChoiceComp(
-            ObjectProperty<String> currentAddress, ObservableList<String> allAddresses, boolean mutable) {
+            ObjectProperty<String> currentAddress, ObservableList<String> allAddresses, boolean mutable, boolean allowMultiple) {
         this.currentAddress = currentAddress;
         this.allAddresses = allAddresses;
         this.mutable = mutable;
+        this.allowMultiple = allowMultiple;
     }
 
     @Override
@@ -59,7 +61,7 @@ public class HostAddressChoiceComp extends RegionBuilder<HBox> {
 
         var nodes = new ArrayList<BaseRegionBuilder<?, ?>>();
         nodes.add(combo);
-        if (mutable) {
+        if (mutable && allowMultiple) {
             nodes.add(addButton);
         }
 

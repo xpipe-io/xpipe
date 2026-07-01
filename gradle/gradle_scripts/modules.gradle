@@ -76,3 +76,9 @@ extraJavaModuleInfo {
         exportAllPackages()
     }
 }
+
+extraJavaModuleInfo {
+    module("com.google.zxing:core", "com.google.zxing") {
+        exportAllPackages()
+    }
+}

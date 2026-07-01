@@ -35,6 +35,10 @@ public class ModalButton {
         return new ModalButton("ok", null, true, true);
     }
 
+    public static ModalButton done() {
+        return new ModalButton("done", null, true, true);
+    }
+
     public static ModalButton cancel() {
         return cancel(null);
     }
