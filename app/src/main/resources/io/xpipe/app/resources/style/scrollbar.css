@@ -1,7 +1,3 @@
-.scroll-bar {
-    -fx-opacity: 1.0;
-}
-
 .scroll-bar .thumb {
     -fx-opacity: 0.5;
 }
@@ -12,6 +8,10 @@
     -fx-max-width: 7px;
     -fx-padding: 1;
     -fx-background-color: transparent;
+}
+
+.scroll-bar:hidden .thumb {
+    -fx-opacity: 0;
 }
 
 .scroll-bar:horizontal {

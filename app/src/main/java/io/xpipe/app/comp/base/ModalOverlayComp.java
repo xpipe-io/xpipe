@@ -61,8 +61,8 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
             protected void registerListeners() {
                 super.registerListeners();
 
-                scrollPane.removeEventFilter(MouseEvent.MOUSE_PRESSED, mouseHandler);
-                scrollPane.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+                contentWrapper.removeEventFilter(MouseEvent.MOUSE_PRESSED, mouseHandler);
+                contentWrapper.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
                     var lastShowValue = lastShow.getValue();
                     if (lastShowValue != null
                             && java.time.Duration.between(lastShowValue, Instant.now())

@@ -89,15 +89,12 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
             scroll.skinProperty().subscribe(newValue -> {
                 if (newValue != null) {
                     ScrollBar bar = (ScrollBar) scroll.lookup(".scroll-bar:vertical");
-                    bar.opacityProperty()
-                            .bind(Bindings.createDoubleBinding(
-                                    () -> {
-                                        var v = bar.getVisibleAmount();
-                                        // Check for rounding and accuracy issues
-                                        // It might not be exactly equal to 1.0
-                                        return v < 0.99 ? 1.0 : 0.0;
-                                    },
-                                    bar.visibleAmountProperty()));
+                    bar.visibleAmountProperty().subscribe(v -> {
+                        // Check for rounding and accuracy issues
+                        // It might not be exactly equal to 1.0
+                        var notNeeded = v.doubleValue() > 0.99;
+                        bar.pseudoClassStateChanged(PseudoClass.getPseudoClass("hidden"), notNeeded);
+                    });
                 }
             });
         } else {

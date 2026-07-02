@@ -2,15 +2,15 @@
     -fx-focus-color: transparent;
 }
 
-.combo-box-base:hover .arrow-button:hover .arrow {
+.combo-box-base > .arrow-button:hover .arrow {
     -fx-background-color: -color-accent-fg;
 }
 
-.clear-button:hover .ikonli-font-icon {
+.combo-box-base .clear-button:hover .ikonli-font-icon {
     -fx-icon-color: -color-accent-fg;
 }
 
-.clear-button {
+.combo-box-base .clear-button {
     -fx-background-color: transparent;
 }
 
@@ -41,6 +41,6 @@
     -fx-border-color: -color-border-default;
 }
 
-.host-address-choice-comp:empty .arrow-button .arrow, .host-address-choice-comp:empty:hover .arrow-button .arrow {
+.host-address-choice-comp:empty .arrow-button .arrow {
     -fx-shape: "";
 }

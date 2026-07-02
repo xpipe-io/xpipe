@@ -4,6 +4,7 @@ import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 
 import javafx.beans.binding.Bindings;
+import javafx.css.PseudoClass;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.skin.ScrollPaneSkin;
@@ -31,15 +32,12 @@ public class ScrollComp extends RegionBuilder<ScrollPane> {
         sp.setSkin(new ScrollPaneSkin(sp));
 
         ScrollBar bar = (ScrollBar) sp.lookup(".scroll-bar:vertical");
-        bar.opacityProperty()
-                .bind(Bindings.createDoubleBinding(
-                        () -> {
-                            var v = bar.getVisibleAmount();
-                            // Check for rounding and accuracy issues
-                            // It might not be exactly equal to 1.0
-                            return v < 0.99 ? 1.0 : 0.0;
-                        },
-                        bar.visibleAmountProperty()));
+        bar.visibleAmountProperty().subscribe(v -> {
+            // Check for rounding and accuracy issues
+            // It might not be exactly equal to 1.0
+            var notNeeded = v.doubleValue() > 0.99;
+            bar.pseudoClassStateChanged(PseudoClass.getPseudoClass("hidden"), notNeeded);
+        });
 
         StackPane viewport = (StackPane) sp.lookup(".viewport");
         var child = viewport.getChildren().getFirst();
