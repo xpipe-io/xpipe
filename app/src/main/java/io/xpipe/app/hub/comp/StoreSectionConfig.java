@@ -129,7 +129,8 @@ public class StoreSectionConfig {
                 return true;
             }
 
-            if (!AppPrefs.get().showChildCategoriesInParentCategory().get()) {
+            // Show everything in top level category
+            if (categoryWrapper.getParent() != null && !AppPrefs.get().showChildCategoriesInParentCategory().get()) {
                 break;
             }
 
