@@ -32,6 +32,7 @@ public class StoreActiveComp extends SimpleRegionBuilder {
         var pane = new StackPane(c);
         pane.setAlignment(Pos.CENTER);
         pane.visibleProperty().bind(wrapper.getSessionActive());
+        pane.managedProperty().bind(pane.visibleProperty());
         pane.getStyleClass().add("store-active-comp");
         Tooltip.install(pane, TooltipHelper.create(AppI18n.observable("sessionActive")));
         return pane;

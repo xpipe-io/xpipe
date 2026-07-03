@@ -1,5 +1,6 @@
 package io.xpipe.app.hub.comp;
 
+import atlantafx.base.controls.Spacer;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
@@ -8,10 +9,15 @@ import io.xpipe.app.core.AppSizeBreakpoints;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.layout.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DenseStoreEntryComp extends StoreEntryComp {
 
@@ -117,8 +123,12 @@ public class DenseStoreEntryComp extends StoreEntryComp {
             return contentRegion != null && contentRegion.isVisible() ? 140.0 : 70.0;
         }, INFO_WIDTH, AppSizeBreakpoints.compactMode());
         var infoWidth = Bindings.createDoubleBinding(() -> {
+            if (getWrapper().getShownInformation().getValue() == null) {
+                return 0.0;
+            }
+
             return INFO_WIDTH.get() - (customWidth.get());
-        }, INFO_WIDTH, customWidth);
+        }, INFO_WIDTH, customWidth, getWrapper().getShownInformation());
 
         var custom = new ColumnConstraints();
         custom.setMinWidth(0);
@@ -135,7 +145,12 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         nameCC.setHgrow(Priority.ALWAYS);
         grid.getColumnConstraints().addAll(nameCC);
 
-        var nameBox = new HBox(name, tags, index, active, templateIcon, userIcon, pinIcon, notes);
+        var nameBoxEntries = new ArrayList<Node>();
+        nameBoxEntries.add(name);
+        nameBoxEntries.add(new Spacer(2, Orientation.HORIZONTAL));
+        nameBoxEntries.add(tags);
+        nameBoxEntries.addAll(List.of(index, active, templateIcon, userIcon, pinIcon, notes));
+        var nameBox = new HBox(nameBoxEntries.toArray(Node[]::new));
         nameBox.setSpacing(4);
         nameBox.setAlignment(Pos.CENTER_LEFT);
         grid.addRow(0, nameBox);

@@ -23,6 +23,9 @@ import io.xpipe.app.util.OsType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableDoubleValue;
+import javafx.beans.value.ObservableObjectValue;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -236,20 +239,24 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         return name;
     }
 
-    protected BaseRegionBuilder<?, ?> createTags() {
-        var tagsProp = Bindings.createStringBinding(
-                () -> {
-                    return getWrapper().getTags().stream()
-                            .map(s -> {
-                                return "[" + s + "]";
-                            })
-                            .collect(Collectors.joining(" "));
-                },
-                getWrapper().getTags());
-        var tagsLabel = new LabelComp(tagsProp);
+    private BaseRegionBuilder<?, ?> createTag(ObservableObjectValue<String> val) {
+        var tagsLabel = new LabelComp(val);
+        tagsLabel.minWidth(Region.USE_PREF_SIZE);
+        tagsLabel.style("store-entry-tag");
         tagsLabel.apply(struc -> struc.setOpacity(0.85));
-        tagsLabel.hide(AppSizeBreakpoints.compactMode());
+        tagsLabel.hide(Bindings.or(AppSizeBreakpoints.compactMode(), Bindings.isNull(val)));
         return tagsLabel;
+    }
+
+    protected BaseRegionBuilder<?, ?> createTags() {
+        var l = FXCollections.<BaseRegionBuilder<?, ?>>observableArrayList();
+        BindingsHelper.subscribeList(getWrapper().getTags(), () -> {
+            l.clear();
+            for (String tag : getWrapper().getTags()) {
+                l.add(createTag(new ReadOnlyStringWrapper(tag)));
+            }
+        });
+        return new HorizontalComp(l).spacing(4);
     }
 
     protected BaseRegionBuilder<?, ?> createOrderIndex() {
@@ -257,13 +264,9 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         getWrapper().getOrderIndex().subscribe(number -> {
             var i = number.intValue();
             var displayed = i == Integer.MIN_VALUE ? "-" : i == Integer.MAX_VALUE ? "+" : i != 0 ? "" + i : null;
-            prop.set(displayed != null ? "[" + displayed + "]" : null);
+            prop.set(displayed);
         });
-        var comp = new LabelComp(prop);
-        comp.style("orderIndex");
-        comp.apply(struc -> struc.setOpacity(0.85));
-        comp.hide(AppSizeBreakpoints.compactMode());
-        return comp;
+        return createTag(prop);
     }
 
     protected BaseRegionBuilder<?, ?> createUserIcon() {

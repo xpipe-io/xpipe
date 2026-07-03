@@ -259,5 +259,19 @@
     -fx-background-color: #2224;
 }
 
+.store-entry-tag {
+    -fx-border-width: 1;
+    -fx-border-color: -color-border-default;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-font-size: 0.8em;
+    -fx-padding: 0 4 0 4;
+}
+
+.root:nord .store-entry-tag {
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+
 
 

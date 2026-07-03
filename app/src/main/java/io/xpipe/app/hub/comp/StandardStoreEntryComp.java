@@ -1,5 +1,6 @@
 package io.xpipe.app.hub.comp;
 
+import atlantafx.base.controls.Spacer;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
@@ -9,10 +10,15 @@ import io.xpipe.app.util.OsType;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.layout.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class StandardStoreEntryComp extends StoreEntryComp {
 
@@ -61,7 +67,12 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         grid.add(storeIcon.build(), 1, 0, 1, 2);
         grid.getColumnConstraints().add(new ColumnConstraints(52));
 
-        var nameBox = new HBox(name, tags, index, active, templateIcon, userIcon, pinIcon, notes);
+        var nameBoxEntries = new ArrayList<Node>();
+        nameBoxEntries.add(name);
+        nameBoxEntries.add(new Spacer(2, Orientation.HORIZONTAL));
+        nameBoxEntries.add(tags);
+        nameBoxEntries.addAll(List.of(index, active, templateIcon, userIcon, pinIcon, notes));
+        var nameBox = new HBox(nameBoxEntries.toArray(Node[]::new));
         nameBox.setSpacing(4);
         nameBox.setAlignment(Pos.CENTER_LEFT);
         grid.add(nameBox, 2, 0);
@@ -87,8 +98,12 @@ public class StandardStoreEntryComp extends StoreEntryComp {
             return contentRegion != null && contentRegion.isVisible() ? 140.0 : 70.0;
         }, INFO_WIDTH, AppSizeBreakpoints.compactMode());
         var infoWidth = Bindings.createDoubleBinding(() -> {
+            if (getWrapper().getShownInformation().getValue() == null) {
+                return 0.0;
+            }
+
             return INFO_WIDTH.get() - (customWidth.get());
-        }, INFO_WIDTH, customWidth);
+        }, INFO_WIDTH, customWidth, getWrapper().getShownInformation());
 
         grid.add(createInformation(), 3, 0, 1, 2);
         var info = new ColumnConstraints();

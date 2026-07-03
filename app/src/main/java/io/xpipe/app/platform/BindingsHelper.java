@@ -65,6 +65,14 @@ public class BindingsHelper {
                 observableValue);
     }
 
+    public static <T> void subscribeList(
+            ObservableList<T> l, Runnable r) {
+        r.run();
+        l.addListener((ListChangeListener<? super T>) c -> {
+            r.run();
+        });
+    }
+
     public static <T, U> ObservableValue<U> flatMap(
             ObservableValue<T> observableValue, Function<? super T, ? extends ObservableValue<? extends U>> mapper) {
         var prop = new SimpleObjectProperty<U>();
