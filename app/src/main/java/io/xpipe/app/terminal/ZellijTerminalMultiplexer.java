@@ -108,7 +108,21 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
         // Set proper env variables for a terminal
         try (var sub = sc.identicalDialectSubShell().start()) {
             sub.writeLine(sub.getShellDialect().prepareTerminalEnvironmentCommands(true));
-            sub.command("zellij delete-session -f xpipe > /dev/null 2>&1").executeAndCheck();
+
+            var countDown = CountDown.of().start(5000);
+            var deleteCommand = sub.command("zellij delete-session -f xpipe");
+            deleteCommand.killOnTimeout(countDown);
+            // This way it doesn't throw an exception on timeout
+            deleteCommand.readStdoutAndStderr();
+            if (deleteCommand.getExitCode() == CommandControl.EXIT_TIMEOUT_EXIT_CODE) {
+                sub.kill();
+                sc.start();
+                sub.start();
+                sub.writeLine(sub.getShellDialect().prepareTerminalEnvironmentCommands(true));
+                sub.command(CommandBuilder.of().add("killall", "zellij")).executeAndCheck();
+                sub.command("zellij delete-session -f xpipe").execute();
+            }
+
             sub.command("zellij attach --create-background xpipe").executeAndCheck();
         }
 
