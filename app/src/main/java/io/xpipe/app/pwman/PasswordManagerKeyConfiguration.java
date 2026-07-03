@@ -7,15 +7,15 @@ import java.nio.file.Path;
 public interface PasswordManagerKeyConfiguration {
 
     static PasswordManagerKeyConfiguration of(
-            boolean inline,
-            boolean joined,
+            boolean supportsInline,
+            boolean supportedJoined,
             boolean supportsAgentKeyNames,
             PasswordManagerKeyStrategy strategy,
             Path socket) {
         return new PasswordManagerKeyConfiguration() {
             @Override
             public boolean useInline() {
-                return (strategy == null || !strategy.useAgent()) && inline && joined;
+                return (strategy == null || !strategy.useAgent()) && supportsInline && supportedJoined;
             }
 
             @Override

@@ -118,6 +118,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
                 .addComp(new PasswordManagerTestComp(true))
                 .nameAndDescription("passwordManagerKeyStrategy")
                 .sub(keyStrategyChoice.build(), keyStrategy)
+                .nonNull()
                 .bind(
                         () -> {
                             return new KeePassXcPasswordManager(prop, keyStrategy.getValue());

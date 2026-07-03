@@ -1,10 +1,12 @@
 package io.xpipe.app.pwman;
 
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.*;
+import io.xpipe.app.util.HashicorpVaultConfig;
 import io.xpipe.app.util.OpenBaoConfig;
 
 import io.xpipe.app.webtop.WebtopApp;
@@ -36,6 +38,10 @@ public class OpenBaoPasswordManager implements PasswordManager {
 
     private final String vaultAddress;
     private final String vaultNamespace;
+    private final String userKey;
+    private final String passwordKey;
+    private final String publicKeyKey;
+    private final String privateKeyKey;
 
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {
@@ -51,6 +57,10 @@ public class OpenBaoPasswordManager implements PasswordManager {
     public static OptionsBuilder createOptions(Property<OpenBaoPasswordManager> p) {
         var vaultAddress = new SimpleStringProperty(p.getValue().getVaultAddress());
         var vaultNamespace = new SimpleStringProperty(p.getValue().getVaultNamespace());
+        var userKey = new SimpleStringProperty(p.getValue().getUserKey());
+        var passwordKey = new SimpleStringProperty(p.getValue().getPasswordKey());
+        var publicKeyKey = new SimpleStringProperty(p.getValue().getPublicKeyKey());
+        var privateKeyKey = new SimpleStringProperty(p.getValue().getPrivateKeyKey());
 
         return new OptionsBuilder()
                 .nameAndDescription("hashicorpVaultAddress")
@@ -64,6 +74,20 @@ public class OpenBaoPasswordManager implements PasswordManager {
                 .nonNull()
                 .nameAndDescription("hashicorpVaultNamespace")
                 .addString(vaultNamespace)
+                .nameAndDescription("hashicorpVaultMapping")
+                .addComp(RegionBuilder.empty())
+                .name("hashicorpVaultUserMapping")
+                .addString(userKey)
+                .nonNull()
+                .name("hashicorpVaultPasswordMapping")
+                .addString(passwordKey)
+                .nonNull()
+                .name("hashicorpVaultPublicKeyMapping")
+                .addString(publicKeyKey)
+                .nonNull()
+                .name("hashicorpVaultPrivateKeyMapping")
+                .addString(privateKeyKey)
+                .nonNull()
                 .nameAndDescription("passwordManagerTest")
                 .addComp(new PasswordManagerTestComp(true))
                 .bind(
@@ -71,6 +95,10 @@ public class OpenBaoPasswordManager implements PasswordManager {
                             return OpenBaoPasswordManager.builder()
                                     .vaultAddress(vaultAddress.get())
                                     .vaultNamespace(vaultNamespace.get())
+                                    .userKey(userKey.get())
+                                    .passwordKey(passwordKey.get())
+                                    .publicKeyKey(publicKeyKey.get())
+                                    .privateKeyKey(privateKeyKey.get())
                                     .build();
                         },
                         p);
@@ -82,7 +110,7 @@ public class OpenBaoPasswordManager implements PasswordManager {
                 .vaultAddress(vaultAddress)
                 .vaultNamespace(vaultNamespace)
                 .build();
-        return config.querySecret(key);
+        return config.querySecret(key, new OpenBaoConfig.KeyMap(userKey, passwordKey, publicKeyKey, privateKeyKey));
     }
 
     @Override

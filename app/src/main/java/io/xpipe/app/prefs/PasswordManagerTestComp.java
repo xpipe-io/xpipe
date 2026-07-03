@@ -146,14 +146,15 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
                 elements.add("<no credentials>");
             }
 
-            if (prefs.passwordManager.getValue() != null
-                    && prefs.passwordManager.getValue().getKeyConfiguration().useInline()) {
+            if (prefs.passwordManager.getValue() != null) {
                 if (r.getSshKey() != null) {
-                    elements.add(AppI18n.get("sshKey"));
+                    var noRetrievalStrategy = !prefs.passwordManager.getValue().getKeyConfiguration().useInline() &&
+                            !prefs.passwordManager.getValue().getKeyConfiguration().useAgent();
+                    elements.add(AppI18n.get(noRetrievalStrategy ? "sshKeyRetrievedMissingStrategy" : "sshKeyRetrieved"));
                 }
             }
 
-            var formatted = String.join(" / ", elements);
+            var formatted = String.join(" + ", elements);
             Platform.runLater(() -> {
                 testPasswordManagerResult.set("    " + AppI18n.get("retrievedPassword", formatted));
             });

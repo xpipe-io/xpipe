@@ -16,10 +16,7 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 
 import java.nio.charset.StandardCharsets;
@@ -202,7 +199,35 @@ public class OpenBaoConfig implements Checkable {
                 .launch();
     }
 
-    public PasswordManager.Result querySecret(String key) {
+    @Value
+    @Jacksonized
+    @Builder
+    @AllArgsConstructor
+    public static class KeyMap {
+
+        public static OpenBaoConfig.KeyMap overlay(OpenBaoConfig.KeyMap global, OpenBaoConfig.KeyMap override) {
+            return new OpenBaoConfig.KeyMap(override.user != null ? override.user : global.user,
+                    override.password != null ? override.password : global.password,
+                    override.publicKey != null ? override.publicKey : global.publicKey,
+                    override.privateKey != null ? override.privateKey : global.privateKey
+            );
+        }
+
+        public static OpenBaoConfig.KeyMap fromInput(String key) {
+            var keySplit = key.split("\\?", 2);
+            var keys = Arrays.stream((keySplit.length > 1 ? keySplit[1] : "").split("&"))
+                    .filter(s -> s.split("=").length == 2)
+                    .collect(Collectors.toMap(s -> s.split("=", 2)[0], s -> s.split("=", 2)[1]));
+            return new OpenBaoConfig.KeyMap(keys.get("user"), keys.get("pass"), keys.get("public-key"), keys.get("private-key"));
+        }
+
+        String user;
+        String password;
+        String publicKey;
+        String privateKey;
+    }
+
+    public PasswordManager.Result querySecret(String key, OpenBaoConfig.KeyMap globalKeyMap) {
         if (vaultAddress == null) {
             return null;
         }
@@ -225,17 +250,7 @@ public class OpenBaoConfig implements Checkable {
             }
 
             var keySplit = key.split("\\?", 2);
-            if (keySplit.length != 2 || keySplit[0].isEmpty() || keySplit[1].isEmpty()) {
-                throw ErrorEventFactory.expected(new IllegalArgumentException("Invalid secret reference format"));
-            }
-
             var secretPath = keySplit[0];
-            var keys = Arrays.stream(keySplit[1].split("&"))
-                    .filter(s -> s.split("=").length == 2)
-                    .collect(Collectors.toMap(s -> s.split("=", 2)[0], s -> s.split("=", 2)[1]));
-            if (keys.isEmpty()) {
-                throw ErrorEventFactory.expected(new IllegalArgumentException("Invalid secret reference format"));
-            }
 
             var b = CommandBuilder.of().add("bao", "read", "-format=json", "-non-interactive");
             if (vaultNamespace != null) {
@@ -257,16 +272,18 @@ public class OpenBaoConfig implements Checkable {
                 return null;
             }
 
-            var username = Optional.ofNullable(subData.get(keys.get("user")))
+            var overrideKeyMap = OpenBaoConfig.KeyMap.fromInput(key);
+            var effectiveKeyMap = OpenBaoConfig.KeyMap.overlay(globalKeyMap, overrideKeyMap);
+            var username = Optional.ofNullable(subData.get(effectiveKeyMap.getUser()))
                     .map(JsonNode::textValue)
                     .orElse(null);
-            var password = Optional.ofNullable(subData.get(keys.get("pass")))
+            var password = Optional.ofNullable(subData.get(effectiveKeyMap.getPassword()))
                     .map(JsonNode::textValue)
                     .orElse(null);
-            var publicKey = Optional.ofNullable(subData.get(keys.get("public-key")))
+            var publicKey = Optional.ofNullable(subData.get(effectiveKeyMap.getPublicKey()))
                     .map(JsonNode::textValue)
                     .orElse(null);
-            var privateKey = Optional.ofNullable(subData.get(keys.get("private-key")))
+            var privateKey = Optional.ofNullable(subData.get(effectiveKeyMap.getPrivateKey()))
                     .map(JsonNode::textValue)
                     .orElse(null);
             var creds = PasswordManager.Credentials.of(username, password);

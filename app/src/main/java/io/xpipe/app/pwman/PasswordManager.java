@@ -11,7 +11,7 @@ import io.xpipe.app.util.SecretValue;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.webtop.WebtopAppProvider;
+import io.xpipe.app.webtop.WebtopApp;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -20,7 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-public interface PasswordManager extends WebtopAppProvider {
+public interface PasswordManager {
+
+    default WebtopApp getRequiredWebtopApp() {
+        return null;
+    }
 
     default String getDisplayName() {
         var a = getClass().getAnnotation(JsonTypeName.class);
