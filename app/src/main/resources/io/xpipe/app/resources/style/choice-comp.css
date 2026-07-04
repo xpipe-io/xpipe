@@ -2,7 +2,7 @@
     -fx-focus-color: transparent;
 }
 
-.combo-box-base > .arrow-button:hover .arrow {
+.combo-box-base:hover > .arrow-button .arrow {
     -fx-background-color: -color-accent-fg;
 }
 

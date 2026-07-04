@@ -66,7 +66,7 @@ public abstract class ConfigFileTerminalPrompt implements TerminalPrompt {
                 var s = shellControl
                         .getShellDialect()
                         .addToPathVariableCommand(
-                                List.of(getBinaryDirectory(shellControl).toString()), false);
+                                List.of(getBinaryDirectory(shellControl).toString()), true);
                 return Optional.of(s + "\n"
                         + setupTerminalCommand(shellControl, configFile).toString());
             }
