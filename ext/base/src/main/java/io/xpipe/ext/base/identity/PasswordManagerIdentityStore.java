@@ -117,6 +117,11 @@ public class PasswordManagerIdentityStore extends IdentityStore
         return r;
     }
 
+    @Override
+    public DataStoreEntryRef<IdentityStore> getCustomEditTarget() {
+        return null;
+    }
+
     public UsernameStrategy getUsername() {
         return new UsernameStrategy.Dynamic(() -> {
             var r = retrieve();

@@ -82,7 +82,11 @@ public class IdentityApplyHubLeafProvider implements HubLeafProvider<IdentitySto
                     && !(ref.getStore().getSshIdentity() instanceof NoIdentityStrategy)
                     && ref.getStore().getSshIdentity().getPublicKeyStrategy() == null) {
                 AppDialog.confirm("identityApplyMissingPublicKey");
-                StoreCreationDialog.showEdit(ref.get());
+                var toEdit = ref.getStore().getCustomEditTarget();
+                if (toEdit == null) {
+                    toEdit = ref;
+                }
+                StoreCreationDialog.showEdit(toEdit.get());
                 return;
             }
 

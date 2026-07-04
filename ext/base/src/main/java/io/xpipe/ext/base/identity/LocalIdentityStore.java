@@ -27,6 +27,11 @@ public class LocalIdentityStore extends IdentityStore {
     EncryptedValue<SecretRetrievalStrategy> password;
     EncryptedValue<SshIdentityStrategy> sshIdentity;
 
+    @Override
+    public DataStoreEntryRef<IdentityStore> getCustomEditTarget() {
+        return null;
+    }
+
     public UsernameStrategy.Fixed getUsername() {
         return new UsernameStrategy.Fixed(username);
     }

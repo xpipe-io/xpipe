@@ -315,7 +315,7 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
                     null,
                     selectedReference,
                     IdentityStore.class,
-                    null,
+                    ref -> !MultiIdentityStore.isExclusivelyHeld(ref),
                     StoreViewState.get().getAllIdentitiesCategory(),
                     null,
                     true,

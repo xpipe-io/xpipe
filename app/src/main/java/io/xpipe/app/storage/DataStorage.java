@@ -362,6 +362,7 @@ public abstract class DataStorage {
 
         finalizeWithDependencies(entry);
 
+        var flatChildren = getStoreChildren(entry);
         var children = getDeepStoreChildren(entry);
         if (!sameParent) {
             var toRemove = Stream.concat(Stream.of(entry), children.stream()).toArray(DataStoreEntry[]::new);
@@ -404,6 +405,12 @@ public abstract class DataStorage {
 
         if (categoryChanged) {
             listeners.forEach(storageListener -> storageListener.onEntryCategoryChange());
+            listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
+        }
+
+        entry.setChildrenCache(null);
+        var newFlatChildren = getStoreChildren(entry);
+        if (!flatChildren.equals(newFlatChildren)) {
             listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
         }
 

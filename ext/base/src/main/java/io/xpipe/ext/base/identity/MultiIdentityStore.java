@@ -4,12 +4,14 @@ import io.xpipe.app.cred.SshIdentityStrategy;
 import io.xpipe.app.cred.UsernameStrategy;
 import io.xpipe.app.ext.StatefulDataStore;
 import io.xpipe.app.ext.UserScopeStore;
+import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.util.Validators;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
@@ -29,8 +31,20 @@ import java.util.UUID;
 public class MultiIdentityStore extends IdentityStore
         implements StatefulDataStore<MultiIdentityStoreState>, UserScopeStore {
 
+    public static boolean isExclusivelyHeld(DataStoreEntryRef<IdentityStore> ref) {
+        return getExclusiveHolder(ref).isPresent();
+    }
+
+    public static Optional<DataStoreEntryRef<MultiIdentityStore>> getExclusiveHolder(DataStoreEntryRef<IdentityStore> ref) {
+        var exclusiveHolder = DataStorage.get().getStoreEntries().stream()
+                .filter(entry -> entry.getValidity().isUsable() && entry.getStore() instanceof MultiIdentityStore m &&
+                        m.getExclusive() != null && m.getExclusive() && m.getAvailableIdentities().contains(ref)).findFirst();
+        return exclusiveHolder.map(entry -> entry.ref());
+    }
+
     List<UUID> identities;
-    boolean perUser;
+    Boolean exclusive;
+    Boolean perUser;
 
     @Override
     public String getName() {
@@ -87,12 +101,17 @@ public class MultiIdentityStore extends IdentityStore
 
     @Override
     public List<DataStoreEntryRef<?>> getDependencies() {
-        return List.of();
+        return getAvailableIdentities().stream().<DataStoreEntryRef<?>>map(DataStoreEntryRef::asNeeded).toList();
     }
 
     @Override
-    public void checkComplete() {
+    public void checkComplete() throws ValidationException {
         getSelectedOrThrow();
+    }
+
+    @Override
+    public DataStoreEntryRef<IdentityStore> getCustomEditTarget() {
+        return getSelected().orElse(null);
     }
 
     public UsernameStrategy getUsername() {
@@ -112,5 +131,10 @@ public class MultiIdentityStore extends IdentityStore
     @Override
     public Class<MultiIdentityStoreState> getStateClass() {
         return MultiIdentityStoreState.class;
+    }
+
+    @Override
+    public boolean isPerUser() {
+        return perUser != null && perUser;
     }
 }

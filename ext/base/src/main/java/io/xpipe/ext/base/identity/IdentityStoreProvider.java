@@ -4,6 +4,8 @@ import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.StoreSection;
 import io.xpipe.app.hub.comp.SystemStateComp;
+import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.DocumentationLink;
 
 import javafx.beans.binding.Bindings;
@@ -13,6 +15,11 @@ import javafx.beans.value.ObservableValue;
 import java.util.List;
 
 public abstract class IdentityStoreProvider implements DataStoreProvider {
+
+    @Override
+    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
+        return MultiIdentityStore.getExclusiveHolder(store.ref()).map(DataStoreEntryRef::get).orElse(null);
+    }
 
     @Override
     public DocumentationLink getHelpLink() {

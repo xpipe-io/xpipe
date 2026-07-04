@@ -38,6 +38,11 @@ public class SyncedIdentityStore extends IdentityStore implements UserScopeStore
         return getSelfEntry().getName();
     }
 
+    @Override
+    public DataStoreEntryRef<IdentityStore> getCustomEditTarget() {
+        return null;
+    }
+
     public UsernameStrategy.Fixed getUsername() {
         return new UsernameStrategy.Fixed(username);
     }

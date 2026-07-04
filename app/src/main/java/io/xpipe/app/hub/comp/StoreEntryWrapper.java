@@ -572,6 +572,7 @@ public class StoreEntryWrapper {
         }
         l.add(information.getValue());
         l.add(summary.getValue());
+        l.add(notes.getValue());
         l.addAll(tags);
         return filter.matches(l);
     }

@@ -24,8 +24,10 @@ import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Styles;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -35,6 +37,9 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
     private final ObjectProperty<DataStoreEntryRef<T>> selected;
 
     private StoreChoicePopover<T> popover;
+
+    @Setter
+    private boolean editable = true;
 
     public StoreChoiceComp(
             DataStoreEntry self,
@@ -200,7 +205,12 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
         }, selected));
         editButton.describe(d -> d.nameKey("edit"));
 
-        var box = new InputGroupComp(List.of(RegionBuilder.of(() -> pane).hgrow(), editButton));
+        var l = new ArrayList<BaseRegionBuilder<?,?>>();
+        l.add(RegionBuilder.of(() -> pane).hgrow());
+        if (editable) {
+            l.add(editButton);
+        }
+        var box = new InputGroupComp(l);
         box.setMainReference(0);
         box.style("store-choice-comp");
         return box.build();

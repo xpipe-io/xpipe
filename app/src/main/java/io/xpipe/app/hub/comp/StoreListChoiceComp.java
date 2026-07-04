@@ -7,14 +7,17 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreCreationCategory;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,12 +25,11 @@ import java.util.function.Predicate;
 
 public class StoreListChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
 
-    private final ListProperty<DataStoreEntryRef<T>> selectedList;
+    protected final ListProperty<DataStoreEntryRef<T>> selectedList;
     private final Class<T> storeClass;
     private final Predicate<DataStoreEntryRef<T>> applicableCheck;
     private final StoreCategoryWrapper initialCategory;
     private final DataStoreCreationCategory creationCategory;
-    private final Predicate<DataStoreEntryRef<T>> activeCheck;
     private boolean editable;
 
     public StoreListChoiceComp(
@@ -35,20 +37,31 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleRegionBuilde
             Class<T> storeClass,
             Predicate<DataStoreEntryRef<T>> applicableCheck,
             StoreCategoryWrapper initialCategory,
-            DataStoreCreationCategory creationCategory, Predicate<DataStoreEntryRef<T>> activeCheck
+            DataStoreCreationCategory creationCategory
     ) {
         this.selectedList = selectedList;
         this.storeClass = storeClass;
         this.applicableCheck = applicableCheck;
         this.initialCategory = initialCategory;
         this.creationCategory = creationCategory;
-        this.activeCheck = activeCheck;
         this.editable = true;
     }
 
     public StoreListChoiceComp<T> setEditable(boolean editable) {
         this.editable = editable;
         return this;
+    }
+
+    protected ObservableValue<String> getName(DataStoreEntryRef<T> ref) {
+        var labelName = Bindings.createStringBinding(() -> {
+            var base = ref.get().getName();
+            return base;
+        }, selectedList, AppI18n.activeLanguage());
+        return labelName;
+    }
+
+    protected BaseRegionBuilder<?, ?> buildCustomButtons(DataStoreEntryRef<T> ref) {
+        return null;
     }
 
     @Override
@@ -61,12 +74,7 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleRegionBuilde
                                 return null;
                             }
 
-                            var labelName = Bindings.createStringBinding(() -> {
-                                var base = t.get().getName();
-                                var active = activeCheck != null && activeCheck.test(t);
-                                return base + (active ? " (" + AppI18n.get("active") + ")" : "");
-                            }, selectedList, AppI18n.activeLanguage());
-
+                            var labelName = getName(t);
                             var label = new LabelComp(labelName).apply(struc -> {
                                 struc.setGraphic(PrettyImageHelper.ofFixedSizeSquare(
                                                 t.get().getEffectiveIconFile(), 16)
@@ -82,6 +90,7 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleRegionBuilde
                                     selectedList.get().add(prior, t);
                                 }
                             });
+                            up.describe(d -> d.nameKey("moveUp"));
                             up.disable(Bindings.createBooleanBinding(
                                     () -> {
                                         return selectedList.get().indexOf(t) == 0;
@@ -96,6 +105,7 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleRegionBuilde
                                     selectedList.get().add(next, t);
                                 }
                             });
+                            down.describe(d -> d.nameKey("moveDown"));
                             down.disable(Bindings.createBooleanBinding(
                                     () -> {
                                         return selectedList.get().indexOf(t) == selectedList.size() - 1;
@@ -105,10 +115,20 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleRegionBuilde
                             var delete = new IconButtonComp("mdal-delete_outline", () -> {
                                 selectedList.remove(t);
                             });
-                            var row = editable
-                                    ? new HorizontalComp(List.of(label, RegionBuilder.hspacer(), up, down, delete))
-                                            .spacing(5)
-                                    : new HorizontalComp(List.of(label, RegionBuilder.hspacer()));
+                            delete.describe(d -> d.nameKey("delete"));
+                            var l = new ArrayList<BaseRegionBuilder<?, ?>>();
+                            l.add(label);
+                            l.add(RegionBuilder.hspacer());
+                            var custom = buildCustomButtons(t);
+                            if (custom != null) {
+                                l.add(custom);
+                            }
+                            if (editable) {
+                                l.add(up);
+                                l.add(down);
+                                l.add(delete);
+                            }
+                            var row = new HorizontalComp(l).spacing(5);
                             return row.style("entry");
                         },
                         false)
@@ -117,6 +137,7 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleRegionBuilde
                 .apply(struc -> ((VBox) struc.getContent()).setSpacing(5));
         var selected = new SimpleObjectProperty<DataStoreEntryRef<T>>();
         var add = new StoreChoiceComp<>(null, selected, storeClass, applicableCheck, initialCategory, creationCategory);
+        add.setEditable(false);
         selected.addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 if (!selectedList.contains(newValue) && (applicableCheck == null || applicableCheck.test(newValue))) {

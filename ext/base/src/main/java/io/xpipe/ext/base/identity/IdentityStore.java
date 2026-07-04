@@ -7,6 +7,7 @@ import io.xpipe.app.ext.SelfReferentialStore;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 
+import io.xpipe.app.storage.DataStoreEntryRef;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -17,6 +18,8 @@ import lombok.experimental.SuperBuilder;
 @ToString
 @Getter
 public abstract class IdentityStore implements SelfReferentialStore, DataStore {
+
+    public abstract DataStoreEntryRef<IdentityStore> getCustomEditTarget();
 
     public abstract UsernameStrategy getUsername();
 
