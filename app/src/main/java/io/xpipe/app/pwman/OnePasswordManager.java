@@ -42,7 +42,7 @@ public class OnePasswordManager implements PasswordManager {
 
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {
-        return PasswordManagerKeyConfiguration.of(true, true, true, keyStrategy, getSocketLocation());
+        return PasswordManagerKeyConfiguration.of(true, false, true, keyStrategy, getSocketLocation());
     }
 
     @Override
@@ -78,7 +78,7 @@ public class OnePasswordManager implements PasswordManager {
 
         var keyStrategyChoice = OptionsChoiceBuilder.builder()
                 .allowNull(true)
-                .available(List.of(PasswordManagerKeyStrategy.Agent.class, PasswordManagerKeyStrategy.Inline.class))
+                .available(List.of(PasswordManagerKeyStrategy.Agent.class))
                 .property(keyStrategy)
                 .build();
 

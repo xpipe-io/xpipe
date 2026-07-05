@@ -246,7 +246,7 @@ public class BitwardenPasswordManager implements PasswordManager {
 
         var keyStrategyChoice = OptionsChoiceBuilder.builder()
                 .allowNull(true)
-                .available(List.of(PasswordManagerKeyStrategy.Agent.class, PasswordManagerKeyStrategy.Inline.class))
+                .available(List.of(PasswordManagerKeyStrategy.Agent.class))
                 .property(keyStrategy)
                 .build();
 

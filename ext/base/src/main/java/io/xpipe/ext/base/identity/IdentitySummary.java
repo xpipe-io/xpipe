@@ -17,7 +17,7 @@ public class IdentitySummary {
         if (st instanceof PasswordManagerIdentityStore pmis) {
             var s = "Credentials " + pmis.getKey();
             if (pmis.hasAgentKey()) {
-                s += " + agent key";
+                s += " + explicit agent key";
             }
             return s;
         }

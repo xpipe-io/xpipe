@@ -1,5 +1,6 @@
 package io.xpipe.app.pwman;
 
+import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
@@ -138,7 +139,8 @@ public class KeeperPasswordManager implements PasswordManager {
                         .name("keeperTotpDuration")
                         .description(AppI18n.observable(
                                 "keeperTotpDurationDescription", "login | 12_hours | 24_hours | 30_days | forever"))
-                        .addString(duration)
+                        .addComp(new TextFieldComp(duration).apply(textField -> textField.promptTextProperty()
+                                .bind(AppI18n.observable("useSystemDefault"))), duration)
                         .bind(
                                 () -> {
                                     return Sms.builder()
@@ -266,7 +268,8 @@ public class KeeperPasswordManager implements PasswordManager {
                         .name("keeperTotpDuration")
                         .description(AppI18n.observable(
                                 "keeperTotpDurationDescription", "login | 12_hours | 24_hours | 30_days | forever"))
-                        .addString(duration)
+                        .addComp(new TextFieldComp(duration).apply(textField -> textField.promptTextProperty()
+                                .bind(AppI18n.observable("useSystemDefault"))), duration)
                         .bind(
                                 () -> {
                                     return AuthenticatorApp.builder()

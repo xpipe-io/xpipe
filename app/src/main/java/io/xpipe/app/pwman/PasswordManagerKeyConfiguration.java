@@ -14,6 +14,11 @@ public interface PasswordManagerKeyConfiguration {
             Path socket) {
         return new PasswordManagerKeyConfiguration() {
             @Override
+            public boolean supportsJoinedInformation() {
+                return supportedJoined;
+            }
+
+            @Override
             public boolean useInline() {
                 return (strategy == null || !strategy.useAgent()) && supportsInline && supportedJoined;
             }
@@ -43,6 +48,11 @@ public interface PasswordManagerKeyConfiguration {
     static PasswordManagerKeyConfiguration none() {
         return new PasswordManagerKeyConfiguration() {
             @Override
+            public boolean supportsJoinedInformation() {
+                return false;
+            }
+
+            @Override
             public boolean useInline() {
                 return false;
             }
@@ -68,6 +78,8 @@ public interface PasswordManagerKeyConfiguration {
             }
         };
     }
+
+    boolean supportsJoinedInformation();
 
     boolean useInline();
 

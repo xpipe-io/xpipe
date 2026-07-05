@@ -244,7 +244,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         tagsLabel.minWidth(Region.USE_PREF_SIZE);
         tagsLabel.style("store-entry-tag");
         tagsLabel.apply(struc -> struc.setOpacity(0.85));
-        tagsLabel.hide(Bindings.or(AppSizeBreakpoints.compactMode(), Bindings.isNull(val)));
+        tagsLabel.hide(Bindings.isNull(val));
         return tagsLabel;
     }
 

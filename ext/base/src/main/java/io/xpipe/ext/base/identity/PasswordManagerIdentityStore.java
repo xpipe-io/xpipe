@@ -23,6 +23,7 @@ import lombok.ToString;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -200,60 +201,112 @@ public class PasswordManagerIdentityStore extends IdentityStore
         }
 
         if (strat.useInline()) {
-            return new SshIdentityStrategy() {
-                @Override
-                public void prepareParent(ShellControl parent) throws Exception {
-                    var r = retrieve();
-                    if (r == null || r.getSshKey() == null || r.getSshKey().getPrivateKey() == null) {
-                        return;
-                    }
-
-                    var inPlace =
-                            new InPlaceKeyStrategy(r.getSshKey().getPrivateKey(), null, new SecretPromptStrategy());
-                    inPlace.prepareParent(parent);
-                }
-
-                @Override
-                public void buildCommand(CommandBuilder builder) {
-                    var r = retrieve();
-                    if (r == null || r.getSshKey() == null || r.getSshKey().getPrivateKey() == null) {
-                        return;
-                    }
-
-                    var inPlace =
-                            new InPlaceKeyStrategy(r.getSshKey().getPrivateKey(), null, new SecretPromptStrategy());
-                    inPlace.buildCommand(builder);
-                }
-
-                @Override
-                public List<KeyValue> configOptions(ShellControl sc) {
-                    var r = retrieve();
-                    if (r == null || r.getSshKey() == null || r.getSshKey().getPrivateKey() == null) {
-                        return List.of();
-                    }
-
-                    var inPlace =
-                            new InPlaceKeyStrategy(r.getSshKey().getPrivateKey(), null, new SecretPromptStrategy());
-                    return inPlace.configOptions(sc);
-                }
-
-                @Override
-                public PublicKeyStrategy getPublicKeyStrategy() {
-                    var r = retrieve();
-                    if (r == null || r.getSshKey() == null || r.getSshKey().getPublicKey() == null) {
-                        return null;
-                    }
-
-                    return PublicKeyStrategy.Fixed.of(r.getSshKey().getPublicKey());
-                }
-            };
+            return createInlineIdentityStrategy();
         }
 
-        if (strat.useAgent() && sshKey != null) {
-            return sshKey;
+        if (strat.useAgent()) {
+            if (sshKey != null) {
+                return sshKey;
+            } else {
+                return createAgentJoinedIdentityStrategy();
+            }
         }
 
         return new NoIdentityStrategy();
+    }
+
+    private SshIdentityStrategy createInlineIdentityStrategy() {
+        return new SshIdentityStrategy() {
+            @Override
+            public void prepareParent(ShellControl parent) throws Exception {
+                var r = retrieve();
+                if (r == null || r.getSshKey() == null || r.getSshKey().getPrivateKey() == null) {
+                    return;
+                }
+
+                var inPlace = new InPlaceKeyStrategy(r.getSshKey().getPrivateKey(), null, new SecretPromptStrategy());
+                inPlace.prepareParent(parent);
+            }
+
+            @Override
+            public void buildCommand(CommandBuilder builder) {
+                var r = retrieve();
+                if (r == null || r.getSshKey() == null || r.getSshKey().getPrivateKey() == null) {
+                    return;
+                }
+
+                var inPlace = new InPlaceKeyStrategy(r.getSshKey().getPrivateKey(), null, new SecretPromptStrategy());
+                inPlace.buildCommand(builder);
+            }
+
+            @Override
+            public List<KeyValue> configOptions(ShellControl sc) {
+                var r = retrieve();
+                if (r == null || r.getSshKey() == null || r.getSshKey().getPrivateKey() == null) {
+                    return List.of();
+                }
+
+                var inPlace = new InPlaceKeyStrategy(r.getSshKey().getPrivateKey(), null, new SecretPromptStrategy());
+                return inPlace.configOptions(sc);
+            }
+
+            @Override
+            public PublicKeyStrategy getPublicKeyStrategy() {
+                var r = retrieve();
+                if (r == null || r.getSshKey() == null || r.getSshKey().getPublicKey() == null) {
+                    return null;
+                }
+
+                return PublicKeyStrategy.Fixed.of(r.getSshKey().getPublicKey());
+            }
+        };
+    }
+
+    private SshIdentityStrategy createAgentJoinedIdentityStrategy() {
+        return new SshIdentityStrategy() {
+            @Override
+            public void prepareParent(ShellControl parent) throws Exception {
+                var r = retrieve();
+                if (r == null || r.getSshKey() == null || r.getSshKey().getPrivateKey() == null) {
+                    return;
+                }
+
+                var strat = PasswordManagerAgentStrategy.builder().identifier(r.getSshKey().getPublicKey()).build();
+                strat.prepareParent(parent);
+            }
+
+            @Override
+            public void buildCommand(CommandBuilder builder) {
+                var r = retrieve();
+                if (r == null || r.getSshKey() == null || r.getSshKey().getPrivateKey() == null) {
+                    return;
+                }
+
+                var strat = PasswordManagerAgentStrategy.builder().identifier(r.getSshKey().getPublicKey()).build();
+                strat.buildCommand(builder);
+            }
+
+            @Override
+            public List<KeyValue> configOptions(ShellControl sc) throws Exception {
+                var r = retrieve();
+                if (r == null || r.getSshKey() == null || r.getSshKey().getPrivateKey() == null) {
+                    return List.of();
+                }
+
+                var strat = PasswordManagerAgentStrategy.builder().identifier(r.getSshKey().getPublicKey()).build();
+                return strat.configOptions(sc);
+            }
+
+            @Override
+            public PublicKeyStrategy getPublicKeyStrategy() {
+                var r = retrieve();
+                if (r == null || r.getSshKey() == null || r.getSshKey().getPublicKey() == null) {
+                    return null;
+                }
+
+                return PublicKeyStrategy.Fixed.of(r.getSshKey().getPublicKey());
+            }
+        };
     }
 
     @Override
