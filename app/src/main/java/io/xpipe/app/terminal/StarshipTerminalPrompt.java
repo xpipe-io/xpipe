@@ -74,6 +74,14 @@ public class StarshipTerminalPrompt extends ConfigFileTerminalPrompt {
                     List.of(ClinkHelper.getTargetDir(shellControl).toString()), false));
             lines.add("clink inject --quiet --profile \"" + configDir + "\"");
         } else {
+            String runLine;
+            if (ShellDialects.isPowershell(shellControl)) {
+                runLine = "Invoke-Expression (&starship init powershell)";
+            } else if (dialect == ShellDialects.FISH) {
+                runLine = "starship init fish | source";
+            } else {
+                runLine = "eval \"$(starship init " + dialect.getId() + ")\"";
+            }
             if (shellControl.getOsType() != OsType.WINDOWS && !ShellDialects.isPowershell(shellControl)) {
                 var file = getBinaryDirectory(shellControl).join("starship");
                 lines.add("""
@@ -83,16 +91,12 @@ public class StarshipTerminalPrompt extends ConfigFileTerminalPrompt {
                             else
                               echo "This system's /tmp file system is protected via a noexec flag. The starship prompt won't be able to be used from there. XPipe can use run starship by installing it into /usr/bin with root permissions. See https://starship.rs/#quick-install"
                             fi
+                          else
+                            %s
                           fi
-                          """.formatted(file, file));
-            }
-
-            if (ShellDialects.isPowershell(shellControl)) {
-                lines.add("Invoke-Expression (&starship init powershell)");
-            } else if (dialect == ShellDialects.FISH) {
-                lines.add("starship init fish | source");
+                          """.formatted(file, file, runLine));
             } else {
-                lines.add("eval \"$(starship init " + dialect.getId() + ")\"");
+                lines.add(runLine);
             }
         }
         return ShellScript.lines(lines);

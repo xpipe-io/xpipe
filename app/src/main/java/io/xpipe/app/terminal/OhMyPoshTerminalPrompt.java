@@ -208,14 +208,32 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
                     List.of(ClinkHelper.getTargetDir(shellControl).toString()), false));
             lines.add("clink inject --quiet --profile \"" + configDir + "\"");
         } else {
+
+            String runLine;
             var configArg = config != null ? " --config \"" + config + "\"" : "";
             if (ShellDialects.isPowershell(shellControl)) {
-                lines.add("& ([ScriptBlock]::Create((oh-my-posh init $(oh-my-posh get shell) --print" + configArg
-                        + ") -join \"`n\"))");
+                runLine = "& ([ScriptBlock]::Create((oh-my-posh init $(oh-my-posh get shell) --print" + configArg
+                        + ") -join \"`n\"))";
             } else if (dialect == ShellDialects.FISH) {
-                lines.add("sh -c \"oh-my-posh init fish" + configArg + "\" | source");
+                runLine = "oh-my-posh init fish" + configArg + " | source";
             } else {
-                lines.add("eval \"$(sh -c \"oh-my-posh init " + dialect.getId() + configArg + "\")\"");
+                runLine = "eval \"$(oh-my-posh init " + dialect.getId() + configArg + ")\"";
+            }
+            if (shellControl.getOsType() != OsType.WINDOWS && !ShellDialects.isPowershell(shellControl)) {
+                var file = getBinaryDirectory(shellControl).join("oh-my-posh");
+                lines.add("""
+                          if [ ! -x "%s" ]; then
+                            if [ $UID = 0 ]; then
+                              mv "%s" /usr/bin/
+                            else
+                              echo "This system's /tmp file system is protected via a noexec flag. The oh-my-posh prompt won't be able to be used from there. XPipe can use run oh-my-posh by installing it into /usr/bin with root permissions. See https://ohmyposh.dev/docs/installation/linux"
+                            fi
+                          else
+                            %s
+                          fi
+                          """.formatted(file, file, runLine));
+            } else {
+                lines.add(runLine);
             }
         }
         return ShellScript.lines(lines);
