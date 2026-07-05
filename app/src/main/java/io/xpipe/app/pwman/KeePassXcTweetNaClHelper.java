@@ -19,7 +19,7 @@ import java.util.Base64;
  * implementing X25519 key exchange and XSalsa20-Poly1305 authenticated encryption
  * which is what KeePassXC expects.
  */
-public class TweetNaClHelper {
+public class KeePassXcTweetNaClHelper {
     public static final int NONCE_SIZE = 24;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     // Sigma constant ("expand 32-byte k")

@@ -22,6 +22,14 @@ import java.util.List;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface PasswordManager {
 
+    default boolean supportsList() {
+        return false;
+    }
+
+    default List<ListEntry> listKeys() {
+        return List.of();
+    }
+
     default WebtopApp getRequiredWebtopApp() {
         return null;
     }
@@ -125,6 +133,22 @@ public interface PasswordManager {
 
     default ShellControl getShell() throws Exception {
         return LocalShell.get(getClass());
+    }
+
+    enum ListEntryType {
+
+        LOGIN,
+        KEY,
+        BOTH
+    }
+
+    @Getter
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    @AllArgsConstructor
+    class ListEntry {
+
+        String key;
+        ListEntryType type;
     }
 
     @Getter

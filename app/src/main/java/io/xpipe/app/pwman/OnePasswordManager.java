@@ -31,6 +31,41 @@ import java.util.regex.Pattern;
 public class OnePasswordManager implements PasswordManager {
 
     @Override
+    public boolean supportsList() {
+        return true;
+    }
+
+
+    @Override
+    public List<ListEntry> listKeys() {
+        var b = CommandBuilder.of()
+                .add("list")
+                .add("--format", "json");
+        var r = runCommand(b);
+        if (r.isEmpty()) {
+            return null;
+        }
+
+        var json = r.get();
+        if (!json.isArray()) {
+            return null;
+        }
+
+        var l = new ArrayList<ListEntry>();
+        for (JsonNode jsonNode : json) {
+            var name = jsonNode.required("title").textValue();
+            var typeString = jsonNode.required("category").textValue();
+            var type = typeString.equals("SSH_KEY") ? ListEntryType.KEY : typeString.equals("LOGIN") ? ListEntryType.LOGIN : null;
+            if (type == null) {
+                continue;
+            }
+
+            l.add(new ListEntry(name, type));
+        }
+        return l;
+    }
+
+    @Override
     public WebtopApp getRequiredWebtopApp() {
         return WebtopApp.ONE_PASSWORD;
     }
@@ -172,16 +207,6 @@ public class OnePasswordManager implements PasswordManager {
 
     @Override
     public synchronized Result query(String key) {
-        try {
-            CommandSupport.isInLocalPathOrThrow("1Password CLI", "op");
-        } catch (Exception e) {
-            ErrorEventFactory.fromThrowable(e)
-                    .expected()
-                    .link("https://developer.1password.com/docs/cli/get-started/")
-                    .handle();
-            return null;
-        }
-
         String vault = null;
         String name = key;
 
@@ -193,39 +218,25 @@ public class OnePasswordManager implements PasswordManager {
             }
         }
 
-        try {
-            var b = CommandBuilder.of().add("op", "item", "get").addLiteral(name);
-            var account = getActiveAccount();
-            if (account != null) {
-                b.add("--account").addLiteral(account);
-            }
-            b.add("--format", "json");
-            if (vault != null) {
-                b.add("--vault").addLiteral(vault);
-            }
-
-            var r = getOrStartShell().command(b).sensitive().readStdoutOrThrow();
-            var tree = JacksonMapper.getDefault().readTree(r);
-
-            var username = getValue(tree, "username");
-            var password = getValue(tree, "password");
-            var creds = Credentials.of(username, password);
-
-            var publicKey = getValue(tree, "public_key");
-            var privateKey = getValue(tree, "private_key");
-            var sshKey = SshKey.of(publicKey, privateKey);
-
-            return Result.of(creds, sshKey);
-        } catch (Exception e) {
-            var event = ErrorEventFactory.fromThrowable(e);
-            if (!key.startsWith("op://")
-                    && e instanceof ProcessOutputException pex
-                    && pex.getOutput().contains("Specify the item")) {
-                event.documentationLink(DocumentationLink.ONE_PASSWORD_KEYS).expected();
-            }
-            event.handle();
+        var b = CommandBuilder.of().add("item", "get").addQuoted(name);
+        if (vault != null) {
+            b.add("--vault").addLiteral(vault);
+        }
+        var r = runCommand(b);
+        if (r.isEmpty()) {
             return null;
         }
+
+        var tree = r.get();
+        var username = getValue(tree, "username");
+        var password = getValue(tree, "password");
+        var creds = Credentials.of(username, password);
+
+        var publicKey = getValue(tree, "public_key");
+        var privateKey = getValue(tree, "private_key");
+        var sshKey = SshKey.of(publicKey, privateKey);
+
+        return Result.of(creds, sshKey);
     }
 
     @Override
@@ -236,5 +247,34 @@ public class OnePasswordManager implements PasswordManager {
     @Override
     public String getWebsite() {
         return "https://1password.com/";
+    }
+
+    private Optional<JsonNode> runCommand(CommandBuilder b) {
+        try {
+            CommandSupport.isInLocalPathOrThrow("1Password CLI", "op");
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable(e).expected().link("https://developer.1password.com/docs/cli/get-started/").handle();
+            return Optional.empty();
+        }
+
+        try {
+            var cmd = CommandBuilder.of().add("op").add(b);
+            var account = getActiveAccount();
+            if (account != null) {
+                cmd.add("--account").addLiteral(account);
+            }
+            cmd.add("--format", "json");
+
+            var r = getOrStartShell().command(cmd).sensitive().readStdoutOrThrow();
+            var tree = JacksonMapper.getDefault().readTree(r);
+            return Optional.ofNullable(tree);
+        } catch (Exception ex) {
+            var event = ErrorEventFactory.fromThrowable(ex);
+            if (ex instanceof ProcessOutputException pex && pex.getOutput().contains("Specify the item")) {
+                event.documentationLink(DocumentationLink.ONE_PASSWORD_KEYS).expected();
+            }
+            event.handle();
+            return Optional.empty();
+        }
     }
 }

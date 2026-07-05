@@ -38,7 +38,7 @@ public class KeePassXcProxyClient {
     private final Path proxyExecutable;
     private Process process;
     private String clientId;
-    private TweetNaClHelper.KeyPair keyPair;
+    private KeePassXcTweetNaClHelper.KeyPair keyPair;
     private byte[] serverPublicKey;
 
     public KeePassXcProxyClient(Path proxyExecutable) {
@@ -69,10 +69,10 @@ public class KeePassXcProxyClient {
      */
     public void connect() throws IOException {
         // Generate a random client ID (24 bytes base64 encoded)
-        this.clientId = TweetNaClHelper.encodeBase64(TweetNaClHelper.randomBytes(TweetNaClHelper.NONCE_SIZE));
+        this.clientId = KeePassXcTweetNaClHelper.encodeBase64(KeePassXcTweetNaClHelper.randomBytes(KeePassXcTweetNaClHelper.NONCE_SIZE));
 
         // Generate actual cryptographic keys
-        this.keyPair = TweetNaClHelper.generateKeyPair();
+        this.keyPair = KeePassXcTweetNaClHelper.generateKeyPair();
 
         var l = new ArrayList<String>();
         if (proxyExecutable.toString().contains("flatpak")) {
@@ -92,11 +92,11 @@ public class KeePassXcProxyClient {
     public void exchangeKeys() throws IOException {
         if (process.isAlive()) {
             // Generate a nonce
-            byte[] nonceBytes = TweetNaClHelper.randomBytes(TweetNaClHelper.NONCE_SIZE);
-            String nonce = TweetNaClHelper.encodeBase64(nonceBytes);
+            byte[] nonceBytes = KeePassXcTweetNaClHelper.randomBytes(KeePassXcTweetNaClHelper.NONCE_SIZE);
+            String nonce = KeePassXcTweetNaClHelper.encodeBase64(nonceBytes);
 
             // Convert our public key to base64
-            String publicKeyB64 = TweetNaClHelper.encodeBase64(keyPair.getPublicKey());
+            String publicKeyB64 = KeePassXcTweetNaClHelper.encodeBase64(keyPair.getPublicKey());
 
             // Build the key exchange message - NOTE: This is NOT encrypted
             String requestId = UUID.randomUUID().toString();
@@ -139,7 +139,7 @@ public class KeePassXcProxyClient {
                             String serverPubKeyB64 = matcher.group(1);
 
                             // Store the server's public key
-                            this.serverPublicKey = TweetNaClHelper.decodeBase64(serverPubKeyB64);
+                            this.serverPublicKey = KeePassXcTweetNaClHelper.decodeBase64(serverPubKeyB64);
 
                             // Check for success in the response
                             boolean success = response.contains("\"success\":\"true\"");
@@ -177,7 +177,7 @@ public class KeePassXcProxyClient {
         }
 
         // Generate a nonce
-        String nonce = TweetNaClHelper.encodeBase64(TweetNaClHelper.randomBytes(TweetNaClHelper.NONCE_SIZE));
+        String nonce = KeePassXcTweetNaClHelper.encodeBase64(KeePassXcTweetNaClHelper.randomBytes(KeePassXcTweetNaClHelper.NONCE_SIZE));
 
         // Create the unencrypted message
         Map<String, Object> messageData = new HashMap<>();
@@ -234,7 +234,7 @@ public class KeePassXcProxyClient {
      */
     private String getLoginsMessage(List<KeePassXcAssociationKey> associationKeys, String url) throws IOException {
         // Generate a nonce
-        String nonce = TweetNaClHelper.encodeBase64(TweetNaClHelper.randomBytes(TweetNaClHelper.NONCE_SIZE));
+        String nonce = KeePassXcTweetNaClHelper.encodeBase64(KeePassXcTweetNaClHelper.randomBytes(KeePassXcTweetNaClHelper.NONCE_SIZE));
 
         // Create the unencrypted message
         Map<String, Object> messageData = new HashMap<>();
@@ -426,11 +426,11 @@ public class KeePassXcProxyClient {
     private String encrypt(Map<String, Object> message, String nonce) {
         String messageJson = mapToJson(message);
         byte[] messageBytes = messageJson.getBytes(StandardCharsets.UTF_8);
-        byte[] nonceBytes = TweetNaClHelper.decodeBase64(nonce);
+        byte[] nonceBytes = KeePassXcTweetNaClHelper.decodeBase64(nonce);
 
-        byte[] encrypted = TweetNaClHelper.box(messageBytes, nonceBytes, serverPublicKey, keyPair.getSecretKey());
+        byte[] encrypted = KeePassXcTweetNaClHelper.box(messageBytes, nonceBytes, serverPublicKey, keyPair.getSecretKey());
 
-        return TweetNaClHelper.encodeBase64(encrypted);
+        return KeePassXcTweetNaClHelper.encodeBase64(encrypted);
     }
 
     /**
@@ -441,10 +441,10 @@ public class KeePassXcProxyClient {
      * @return The decrypted message, or null if decryption failed
      */
     private String decrypt(String encryptedMessage, String nonce) {
-        byte[] messageBytes = TweetNaClHelper.decodeBase64(encryptedMessage);
-        byte[] nonceBytes = TweetNaClHelper.decodeBase64(nonce);
+        byte[] messageBytes = KeePassXcTweetNaClHelper.decodeBase64(encryptedMessage);
+        byte[] nonceBytes = KeePassXcTweetNaClHelper.decodeBase64(nonce);
 
-        byte[] decrypted = TweetNaClHelper.boxOpen(messageBytes, nonceBytes, serverPublicKey, keyPair.getSecretKey());
+        byte[] decrypted = KeePassXcTweetNaClHelper.boxOpen(messageBytes, nonceBytes, serverPublicKey, keyPair.getSecretKey());
 
         if (decrypted == null) {
             throw new IllegalArgumentException("Message decryption failed");
@@ -460,16 +460,16 @@ public class KeePassXcProxyClient {
      */
     public KeePassXcAssociationKey associate() throws IOException {
         // Generate a key pair for identification
-        TweetNaClHelper.KeyPair idKeyPair = TweetNaClHelper.generateKeyPair();
+        KeePassXcTweetNaClHelper.KeyPair idKeyPair = KeePassXcTweetNaClHelper.generateKeyPair();
 
         // Generate a nonce
-        String nonce = TweetNaClHelper.encodeBase64(TweetNaClHelper.randomBytes(TweetNaClHelper.NONCE_SIZE));
+        String nonce = KeePassXcTweetNaClHelper.encodeBase64(KeePassXcTweetNaClHelper.randomBytes(KeePassXcTweetNaClHelper.NONCE_SIZE));
 
         // Create the unencrypted message
         Map<String, Object> messageData = new HashMap<>();
         messageData.put("action", "associate");
-        messageData.put("key", TweetNaClHelper.encodeBase64(keyPair.getPublicKey()));
-        messageData.put("idKey", TweetNaClHelper.encodeBase64(idKeyPair.getPublicKey()));
+        messageData.put("key", KeePassXcTweetNaClHelper.encodeBase64(keyPair.getPublicKey()));
+        messageData.put("idKey", KeePassXcTweetNaClHelper.encodeBase64(idKeyPair.getPublicKey()));
 
         // Encrypt the message
         String encryptedMessage = encrypt(messageData, nonce);
@@ -503,7 +503,7 @@ public class KeePassXcProxyClient {
 
             if (success && parsedResponse.containsKey("id") && parsedResponse.containsKey("hash")) {
                 String id = (String) parsedResponse.get("id");
-                var key = InPlaceSecretValue.of(TweetNaClHelper.encodeBase64(idKeyPair.getPublicKey()));
+                var key = InPlaceSecretValue.of(KeePassXcTweetNaClHelper.encodeBase64(idKeyPair.getPublicKey()));
                 return new KeePassXcAssociationKey(id, key);
             }
         }

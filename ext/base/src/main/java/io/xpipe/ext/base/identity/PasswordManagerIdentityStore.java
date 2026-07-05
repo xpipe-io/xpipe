@@ -23,7 +23,6 @@ import lombok.ToString;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
-import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 import java.time.Instant;

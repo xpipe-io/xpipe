@@ -45,6 +45,40 @@ import java.util.stream.Collectors;
 public class KeeperPasswordManager implements PasswordManager {
 
     @Override
+    public boolean supportsList() {
+        return true;
+    }
+
+    @Override
+    public List<ListEntry> listKeys() {
+        var b = CommandBuilder.of()
+                .add("list")
+                .add("--format", "json");
+        var r = runCommand(b);
+        if (r.isEmpty()) {
+            return null;
+        }
+
+        var json = r.get().getJson();
+        if (!json.isArray()) {
+            return null;
+        }
+
+        var l = new ArrayList<ListEntry>();
+        for (JsonNode jsonNode : json) {
+            var uid = jsonNode.required("record_uid").textValue();
+            var typeString = jsonNode.required("type").textValue();
+            var type = typeString.equals("sshKeys") ? ListEntryType.KEY : typeString.equals("login") ? ListEntryType.LOGIN : null;
+            if (type == null) {
+                continue;
+            }
+
+            l.add(new ListEntry(uid, type));
+        }
+        return l;
+    }
+
+    @Override
     public WebtopApp getRequiredWebtopApp() {
         return WebtopApp.KEEPER;
     }
@@ -513,68 +547,117 @@ public class KeeperPasswordManager implements PasswordManager {
         // The copy UID button copies the whole URL in the Keeper UI. Why? ...
         key = key.replaceFirst("https://\\w+\\.\\w+/vault/#detail/", "");
 
+        var b = CommandBuilder.of()
+                .add("get")
+                .addLiteral(key)
+                .add("--format", "json", "--unmask");
+        var r = runCommand(b);
+        if (r.isEmpty()) {
+            return null;
+        }
+
+        hasCompletedRequestInSession = true;
+
+        var tree = r.get().getJson();
+        var fields = tree.get("fields");
+        // There multiple schemas
+        if (fields == null || !fields.isArray()) {
+            String login = null;
+            String password = null;
+
+            var l = tree.get("login");
+            if (l != null && l.isTextual()) {
+                login = l.asText();
+            }
+
+            var p = tree.get("password");
+            if (p != null && p.isTextual()) {
+                password = p.asText();
+            }
+
+            if (login == null && password == null) {
+                var message = !r.get().getRawErr().isEmpty() ? r.get().getRawOut() + "\n" + r.get().getRawErr() : r.get().getRawOut();
+                ErrorEventFactory.fromMessage("Received invalid response: " + message.trim())
+                        .expected()
+                        .handle();
+                return null;
+            }
+
+            var creds = Credentials.of(login, password);
+            return Result.of(creds, null);
+        }
+
+        var username = Optional.ofNullable(getValue(tree, "login"))
+                .map(n -> n.size() > 0 ? n.get(0).textValue() : null)
+                .orElse(null);
+        var password = Optional.ofNullable(getValue(tree, "password"))
+                .map(n -> n.size() > 0 ? n.get(0).textValue() : null)
+                .orElse(null);
+        var creds = Credentials.of(username, password);
+
+        var keyPairNode = getValue(tree, "keyPair");
+        SshKey sshKey = null;
+        if (keyPairNode != null && keyPairNode.size() > 0) {
+            var publicKey = Optional.ofNullable(keyPairNode.get(0).get("publicKey"))
+                    .map(JsonNode::textValue)
+                    .orElse(null);
+            var privateKey = Optional.ofNullable(keyPairNode.get(0).get("privateKey"))
+                    .map(JsonNode::textValue)
+                    .orElse(null);
+            sshKey = SshKey.of(publicKey, privateKey);
+        }
+
+        return Result.of(creds, sshKey);
+    }
+
+    @Value
+    private static class Out {
+
+        String rawOut;
+        String rawErr;
+        JsonNode json;
+    }
+
+    private Optional<Out> runCommand(CommandBuilder command) {
         try {
             CommandSupport.isInLocalPathOrThrow("Keeper Commander CLI", getExecutable());
         } catch (Exception e) {
-            ErrorEventFactory.fromThrowable(e)
-                    .link("https://docs.keeper.io/en/keeperpam/commander-cli/commander-installation-setup")
-                    .handle();
-            return null;
+            ErrorEventFactory.fromThrowable(e).link("https://docs.keeper.io/en/keeperpam/commander-cli/commander-installation-setup").handle();
+            return Optional.empty();
         }
 
         try {
             var sc = getOrStartShell();
             var config = sc.view().userHome().join(".keeper", "config.json");
             if (!sc.view().fileExists(config)) {
-                var script = ShellScript.lines(
-                        sc.getShellDialect().getEchoCommand("Log in into your Keeper account from the CLI:", false),
+                var script = ShellScript.lines(sc.getShellDialect().getEchoCommand("Log in into your Keeper account from the CLI:", false),
                         getExecutable() + " login");
-                TerminalLaunch.builder()
-                        .title("Keeper login")
-                        .localScript(script)
-                        .logIfEnabled(false)
-                        .pauseOnExit(true)
-                        .launch();
-                return null;
+                TerminalLaunch.builder().title("Keeper login").localScript(script).logIfEnabled(false).pauseOnExit(true).launch();
+                return Optional.empty();
             }
 
-            var r = SecretManager.retrieve(
-                    new SecretPromptStrategy(),
-                    AppI18n.get("keeperUnlock"),
-                    KEEPER_PASSWORD_ID,
-                    0,
-                    true);
+            var r = SecretManager.retrieve(new SecretPromptStrategy(), AppI18n.get("keeperUnlock"), KEEPER_PASSWORD_ID, 0, true);
             if (r == null) {
-                return null;
+                return Optional.empty();
             }
 
             if (r.getSecretValue().contains("\"")) {
                 SecretManager.clearAll(KEEPER_PASSWORD_ID);
-                throw ErrorEventFactory.expected(
-                        new IllegalArgumentException(
-                                "Keeper password contains double quote \" character, which is not supported by the Keeper Commander application"));
+                throw ErrorEventFactory.expected(new IllegalArgumentException(
+                        "Keeper password contains double quote \" character, which is not supported by the Keeper Commander application"));
             }
 
-            var b = CommandBuilder.of()
-                    .add(getExecutable(), "get")
-                    .addLiteral(key)
-                    .add("--format", "json", "--unmask")
-                    .add("--password")
-                    .addLiteral(r.getSecretValue());
+            var b = CommandBuilder.of().add(getExecutable()).add(command).add("--password").addLiteral(r.getSecretValue());
             FilePath file = sc.getSystemTemporaryDirectory().join("keeper" + Math.abs(new Random().nextInt()) + ".txt");
 
             var effectiveTwoFactor = twoFactorAuth != null ? twoFactorAuth : new KeeperAuth.None();
             var input = effectiveTwoFactor.constructKeeperInput(this, r);
             if (input == null) {
-                return null;
+                return Optional.empty();
             }
             sc.view().writeTextFile(file, input);
 
-            var fullB = CommandBuilder.of()
-                    .add(sc.getShellDialect() == ShellDialects.CMD ? "type" : "cat")
-                    .addFile(file)
-                    .add("|")
-                    .add(b);
+            var fullB = CommandBuilder.of().add(sc.getShellDialect() == ShellDialects.CMD ? "type" : "cat").addFile(file).add("|").add(b);
             var queryCommand = sc.command(fullB);
             queryCommand.sensitive();
 
@@ -592,10 +675,7 @@ public class KeeperPasswordManager implements PasswordManager {
             out = effectiveTwoFactor.cleanMessage(out);
             out = out.replace("Selection:", "").strip();
 
-            var err = result[1]
-                    .replace("\r\n", "\n")
-                    .replace("EOF when reading a line", "")
-                    .strip();
+            var err = result[1].replace("\r\n", "\n").replace("EOF when reading a line", "").strip();
 
             var jsonStart = out.indexOf("{\n");
             var jsonEnd = out.indexOf("\n}");
@@ -604,40 +684,32 @@ public class KeeperPasswordManager implements PasswordManager {
             }
 
             var outPrefix = jsonStart <= 0 ? out : out.substring(0, jsonStart);
-            outPrefix = outPrefix
-                    .lines()
-                    .filter(s -> !s.isBlank())
-                    .map(s -> s.strip())
-                    .collect(Collectors.joining("\n"));
+            outPrefix = outPrefix.lines().filter(s -> !s.isBlank()).map(s -> s.strip()).collect(Collectors.joining("\n"));
 
-            var outJson = jsonStart <= 0
-                    ? (jsonEnd != -1 ? out.substring(0, jsonEnd) : out)
-                    : (jsonEnd != -1 ? out.substring(jsonStart, jsonEnd) : out.substring(jsonStart));
+            var outJson = jsonStart <= 0 ? (jsonEnd != -1 ? out.substring(0, jsonEnd) : out) : (jsonEnd != -1 ?
+                    out.substring(jsonStart, jsonEnd) :
+                    out.substring(jsonStart));
 
             if (exitCode != 0) {
                 // Another password prompt was made
-                var wrongPw =
-                        (outPrefix.contains("Enter password for") || exitCode == CommandControl.EXIT_TIMEOUT_EXIT_CODE)
-                                && !hasCompletedRequestInSession;
+                var wrongPw = (outPrefix.contains("Enter password for") || exitCode == CommandControl.EXIT_TIMEOUT_EXIT_CODE) &&
+                        !hasCompletedRequestInSession;
                 if (wrongPw) {
                     SecretManager.clearAll(KEEPER_PASSWORD_ID);
-                    ErrorEventFactory.fromMessage("Master password was not accepted by Keeper. Is it correct?")
-                            .expected()
-                            .handle();
-                    return null;
+                    ErrorEventFactory.fromMessage("Master password was not accepted by Keeper. Is it correct?").expected().handle();
+                    return Optional.empty();
                 }
 
                 if (exitCode == CommandControl.EXIT_TIMEOUT_EXIT_CODE) {
-                    ErrorEventFactory.fromMessage("Keeper request timed out")
-                            .expected()
-                            .handle();
-                    return null;
+                    ErrorEventFactory.fromMessage("Keeper request timed out").expected().handle();
+                    return Optional.empty();
                 }
 
                 var message = !err.isEmpty() ? outPrefix + "\n" + err : outPrefix;
                 ErrorEventFactory.fromMessage(message).expected().handle();
-                return null;
+                return Optional.empty();
             }
+
 
             JsonNode tree;
             try {
@@ -645,63 +717,13 @@ public class KeeperPasswordManager implements PasswordManager {
             } catch (JsonProcessingException e) {
                 var message = !err.isEmpty() ? outPrefix + "\n" + err : outPrefix;
                 ErrorEventFactory.fromMessage(message).expected().handle();
-                return null;
+                return Optional.empty();
             }
 
-            hasCompletedRequestInSession = true;
-
-            var fields = tree.get("fields");
-            // There multiple schemas
-            if (fields == null || !fields.isArray()) {
-                String login = null;
-                String password = null;
-
-                var l = tree.get("login");
-                if (l != null && l.isTextual()) {
-                    login = l.asText();
-                }
-
-                var p = tree.get("password");
-                if (p != null && p.isTextual()) {
-                    password = p.asText();
-                }
-
-                if (login == null && password == null) {
-                    var message = !err.isEmpty() ? out + "\n" + err : out;
-                    ErrorEventFactory.fromMessage("Received invalid response: " + message.trim())
-                            .expected()
-                            .handle();
-                    return null;
-                }
-
-                var creds = Credentials.of(login, password);
-                return Result.of(creds, null);
-            }
-
-            var username = Optional.ofNullable(getValue(tree, "login"))
-                    .map(n -> n.size() > 0 ? n.get(0).textValue() : null)
-                    .orElse(null);
-            var password = Optional.ofNullable(getValue(tree, "password"))
-                    .map(n -> n.size() > 0 ? n.get(0).textValue() : null)
-                    .orElse(null);
-            var creds = Credentials.of(username, password);
-
-            var keyPairNode = getValue(tree, "keyPair");
-            SshKey sshKey = null;
-            if (keyPairNode != null && keyPairNode.size() > 0) {
-                var publicKey = Optional.ofNullable(keyPairNode.get(0).get("publicKey"))
-                        .map(JsonNode::textValue)
-                        .orElse(null);
-                var privateKey = Optional.ofNullable(keyPairNode.get(0).get("privateKey"))
-                        .map(JsonNode::textValue)
-                        .orElse(null);
-                sshKey = SshKey.of(publicKey, privateKey);
-            }
-
-            return Result.of(creds, sshKey);
+            return Optional.of(new Out(out, err, tree));
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();
-            return null;
+            return Optional.empty();
         }
     }
 

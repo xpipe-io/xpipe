@@ -1,5 +1,6 @@
 package io.xpipe.app.pwman;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
@@ -33,6 +34,7 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -41,6 +43,40 @@ import java.util.concurrent.atomic.AtomicReference;
 @Builder
 @Jacksonized
 public class BitwardenPasswordManager implements PasswordManager {
+
+    @Override
+    public boolean supportsList() {
+        return true;
+    }
+
+    @Override
+    public List<ListEntry> listKeys() {
+        var b = CommandBuilder.of()
+                .add("list", "items");
+        var r = runCommand(b);
+        if (r.isEmpty()) {
+            return null;
+        }
+
+        var json = r.get();
+        if (!json.isArray()) {
+            return null;
+        }
+
+        var l = new ArrayList<ListEntry>();
+        for (JsonNode jsonNode : json) {
+            var name = jsonNode.required("name").textValue();
+            var hasLogin = jsonNode.has("login");
+            var hasKey = jsonNode.has("sshKey");
+            var type = hasLogin && hasKey ? ListEntryType.BOTH : hasLogin ? ListEntryType.LOGIN : hasKey ? ListEntryType.KEY : null;
+            if (type == null) {
+                continue;
+            }
+
+            l.add(new ListEntry(name, type));
+        }
+        return l;
+    }
 
     @Override
     public WebtopApp getRequiredWebtopApp() {
@@ -349,67 +385,41 @@ public class BitwardenPasswordManager implements PasswordManager {
 
     @Override
     public synchronized Result query(String key) {
-        if (Dist.get().checkInPath()) {
-            try {
-                CommandSupport.isInLocalPathOrThrow("Bitwarden CLI", "bw");
-            } catch (Exception e) {
-                ErrorEventFactory.fromThrowable(e)
-                        .link("https://bitwarden.com/help/cli/#download-and-install")
-                        .handle();
-                return null;
-            }
-        }
-
-        // Copy existing file if possible to retain configuration
-        copyConfigIfNeeded();
-
-        try {
-            if (!loginOrUnlock()) {
-                return null;
-            }
-
-            var sc = getOrStartShell();
-            var cmd = CommandBuilder.of()
-                    .add(Dist.get().commandBase())
-                    .add("get", "item")
-                    .addLiteral(key)
-                    .add("--nointeraction");
-            var json = JacksonMapper.getDefault()
-                    .readTree(sc.command(cmd).sensitive().readStdoutOrThrow());
-
-            SshKey credentialSshKey;
-            var sshKey = json.get("sshKey");
-            if (sshKey != null) {
-                var privateKey = Optional.ofNullable(sshKey.get("privateKey"))
-                        .map(jsonNode -> jsonNode.textValue())
-                        .orElse(null);
-                var publicKey = Optional.ofNullable(sshKey.get("publicKey"))
-                        .map(jsonNode -> jsonNode.textValue())
-                        .orElse(null);
-                credentialSshKey = SshKey.of(publicKey, privateKey);
-            } else {
-                credentialSshKey = null;
-            }
-
-            Credentials creds;
-            var login = json.get("login");
-            if (login != null) {
-                var username = Optional.ofNullable(login.get("username"))
-                        .map(jsonNode -> jsonNode.textValue())
-                        .orElse(null);
-                var password = Optional.ofNullable(login.get("password"))
-                        .map(jsonNode -> jsonNode.textValue())
-                        .orElse(null);
-                creds = Credentials.of(username, password);
-            } else {
-                creds = null;
-            }
-
-            return Result.of(creds, credentialSshKey);
-        } catch (Exception ex) {
-            ErrorEventFactory.fromThrowable(ex).expected().handle();
+        var r = runCommand(CommandBuilder.of().add("get", "item").addLiteral(key));
+        if (r.isEmpty()) {
             return null;
         }
+
+        var json = r.get();
+        SshKey credentialSshKey;
+        var sshKey = json.get("sshKey");
+        if (sshKey != null) {
+            var privateKey = Optional.ofNullable(sshKey.get("privateKey"))
+                    .map(jsonNode -> jsonNode.textValue())
+                    .orElse(null);
+            var publicKey = Optional.ofNullable(sshKey.get("publicKey"))
+                    .map(jsonNode -> jsonNode.textValue())
+                    .orElse(null);
+            credentialSshKey = SshKey.of(publicKey, privateKey);
+        } else {
+            credentialSshKey = null;
+        }
+
+        Credentials creds;
+        var login = json.get("login");
+        if (login != null) {
+            var username = Optional.ofNullable(login.get("username"))
+                    .map(jsonNode -> jsonNode.textValue())
+                    .orElse(null);
+            var password = Optional.ofNullable(login.get("password"))
+                    .map(jsonNode -> jsonNode.textValue())
+                    .orElse(null);
+            creds = Credentials.of(username, password);
+        } else {
+            creds = null;
+        }
+
+        return Result.of(creds, credentialSshKey);
     }
 
     private static Path getDefaultConfigPath() {
@@ -450,5 +460,35 @@ public class BitwardenPasswordManager implements PasswordManager {
     @Override
     public boolean selectInitial() throws Exception {
         return LocalShell.getShell().view().findProgram("bw").isPresent();
+    }
+
+    private Optional<JsonNode> runCommand(CommandBuilder b) {
+        if (Dist.get().checkInPath()) {
+            try {
+                CommandSupport.isInLocalPathOrThrow("Bitwarden CLI", "bw");
+            } catch (Exception e) {
+                ErrorEventFactory.fromThrowable(e)
+                        .link("https://bitwarden.com/help/cli/#download-and-install")
+                        .handle();
+                return Optional.empty();
+            }
+        }
+
+        // Copy existing file if possible to retain configuration
+        copyConfigIfNeeded();
+
+        try {
+            if (!loginOrUnlock()) {
+                return Optional.empty();
+            }
+
+            var sc = getOrStartShell();
+            var cmd = CommandBuilder.of().add(Dist.get().commandBase()).add(b).add("--nointeraction");
+            var json = JacksonMapper.getDefault().readTree(sc.command(cmd).sensitive().readStdoutOrThrow());
+            return Optional.of(json);
+        } catch (Exception ex) {
+            ErrorEventFactory.fromThrowable(ex).expected().handle();
+            return Optional.empty();
+        }
     }
 }
