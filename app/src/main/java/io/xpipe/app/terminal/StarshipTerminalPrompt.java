@@ -3,9 +3,9 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.*;
 import io.xpipe.app.util.GithubReleaseDownloader;
+
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
-
 import javafx.beans.property.Property;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -74,12 +74,25 @@ public class StarshipTerminalPrompt extends ConfigFileTerminalPrompt {
                     List.of(ClinkHelper.getTargetDir(shellControl).toString()), false));
             lines.add("clink inject --quiet --profile \"" + configDir + "\"");
         } else {
+            String runLine;
             if (ShellDialects.isPowershell(shellControl)) {
-                lines.add("Invoke-Expression (&starship init powershell)");
+                runLine = "Invoke-Expression (&starship init powershell)";
             } else if (dialect == ShellDialects.FISH) {
-                lines.add("starship init fish | source");
+                runLine = "starship init fish | source";
             } else {
-                lines.add("eval \"$(starship init " + dialect.getId() + ")\"");
+                runLine = "eval \"$(starship init " + dialect.getId() + ")\"";
+            }
+            if (shellControl.getOsType() != OsType.WINDOWS && !ShellDialects.isPowershell(shellControl)) {
+                var file = getBinaryDirectory(shellControl).join("starship");
+                lines.add("""
+                          if [ ! -x "%s" ]; then
+                            echo "This system's /tmp file system is protected via a noexec flag. The starship prompt won't be able to be used from there. XPipe can use run starship by installing it into /usr/bin with root permissions. See https://starship.rs/#quick-install"
+                          else
+                            %s
+                          fi
+                          """.formatted(file, runLine));
+            } else {
+                lines.add(runLine);
             }
         }
         return ShellScript.lines(lines);

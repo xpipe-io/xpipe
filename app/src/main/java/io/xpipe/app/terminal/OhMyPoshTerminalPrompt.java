@@ -227,7 +227,7 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
                           else
                             %s
                           fi
-                          """.formatted(file, file, runLine));
+                          """.formatted(file, runLine));
             } else {
                 lines.add(runLine);
             }
