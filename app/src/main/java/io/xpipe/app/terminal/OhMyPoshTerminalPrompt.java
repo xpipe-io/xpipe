@@ -3,9 +3,9 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.*;
 import io.xpipe.app.util.GithubReleaseDownloader;
+
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
-
 import javafx.beans.property.Property;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -208,14 +208,28 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
                     List.of(ClinkHelper.getTargetDir(shellControl).toString()), false));
             lines.add("clink inject --quiet --profile \"" + configDir + "\"");
         } else {
+
+            String runLine;
             var configArg = config != null ? " --config \"" + config + "\"" : "";
             if (ShellDialects.isPowershell(shellControl)) {
-                lines.add("& ([ScriptBlock]::Create((oh-my-posh init $(oh-my-posh get shell) --print" + configArg
-                        + ") -join \"`n\"))");
+                runLine = "& ([ScriptBlock]::Create((oh-my-posh init $(oh-my-posh get shell) --print" + configArg
+                        + ") -join \"`n\"))";
             } else if (dialect == ShellDialects.FISH) {
-                lines.add("oh-my-posh init fish" + configArg + " | source");
+                runLine = "oh-my-posh init fish" + configArg + " | source";
             } else {
-                lines.add("eval \"$(oh-my-posh init " + dialect.getId() + configArg + ")\"");
+                runLine = "eval \"$(oh-my-posh init " + dialect.getId() + configArg + ")\"";
+            }
+            if (shellControl.getOsType() != OsType.WINDOWS && !ShellDialects.isPowershell(shellControl)) {
+                var file = getBinaryDirectory(shellControl).join("oh-my-posh");
+                lines.add("""
+                          if [ ! -x "%s" ]; then
+                            echo "This system's /tmp file system is protected via a noexec flag. The oh-my-posh prompt won't be able to be used from there. XPipe can use run oh-my-posh by installing it into /usr/bin with root permissions. See https://ohmyposh.dev/docs/installation/linux"
+                          else
+                            %s
+                          fi
+                          """.formatted(file, file, runLine));
+            } else {
+                lines.add(runLine);
             }
         }
         return ShellScript.lines(lines);
