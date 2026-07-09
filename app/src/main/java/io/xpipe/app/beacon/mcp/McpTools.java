@@ -4,6 +4,7 @@ import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.ext.*;
+import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.ScriptHelper;
@@ -141,12 +142,11 @@ public final class McpTools {
                             continue;
                         }
 
+                        var wrapper = StoreViewState.get().getEntryWrapper(e);
                         var section = StoreViewState.get()
-                                .getSectionForWrapper(StoreViewState.get().getEntryWrapper(e));
+                                .getSectionForWrapper(wrapper);
                         var info = section.isPresent()
-                                ? e.getProvider()
-                                        .informationString(section.get())
-                                        .getValue()
+                                ? wrapper.getShownInformation().getValue()
                                 : null;
 
                         var r = ConnectionResource.builder()
