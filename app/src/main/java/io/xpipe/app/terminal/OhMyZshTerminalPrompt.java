@@ -115,6 +115,9 @@ public class OhMyZshTerminalPrompt extends ConfigFileTerminalPrompt {
     }
 
     @Override
+    public void checkValidInstall(ShellControl sc) throws Exception {}
+
+    @Override
     public void checkCanInstall(ShellControl sc) throws Exception {
         CommandSupport.isInPathOrThrow(sc, "curl");
     }

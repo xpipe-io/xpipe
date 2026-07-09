@@ -1,5 +1,6 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.*;
 import io.xpipe.app.util.GithubReleaseDownloader;
@@ -24,6 +25,20 @@ import java.util.List;
 @Jacksonized
 @JsonTypeName("starship")
 public class StarshipTerminalPrompt extends ConfigFileTerminalPrompt {
+
+    @Override
+    public void checkValidInstall(ShellControl sc) throws Exception {
+        if (sc.getOsType() != OsType.WINDOWS) {
+            var dir = getBinaryDirectory(sc);
+            var executable = sc.command(CommandBuilder.of().add("test", "-x").addFile(dir.join("starship"))).executeAndCheck();
+            if (!executable) {
+                throw ErrorEventFactory.expected(new IllegalStateException("This system's /tmp file system is protected via a noexec flag. " +
+                        "The starship prompt won't be able to be used from there. " +
+                        "XPipe can use run starship by installing it into /usr/bin with root permissions. " +
+                        "See https://starship.rs/#quick-install"));
+            }
+        }
+    }
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<StarshipTerminalPrompt> p) {
@@ -82,18 +97,7 @@ public class StarshipTerminalPrompt extends ConfigFileTerminalPrompt {
             } else {
                 runLine = "eval \"$(starship init " + dialect.getId() + ")\"";
             }
-            if (shellControl.getOsType() != OsType.WINDOWS && !ShellDialects.isPowershell(shellControl)) {
-                var file = getBinaryDirectory(shellControl).join("starship");
-                lines.add("""
-                          if [ ! -x "%s" ]; then
-                            echo "This system's /tmp file system is protected via a noexec flag. The starship prompt won't be able to be used from there. XPipe can use run starship by installing it into /usr/bin with root permissions. See https://starship.rs/#quick-install"
-                          else
-                            %s
-                          fi
-                          """.formatted(file, runLine));
-            } else {
-                lines.add(runLine);
-            }
+            lines.add(runLine);
         }
         return ShellScript.lines(lines);
     }

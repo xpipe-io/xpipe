@@ -42,27 +42,31 @@ public interface TerminalPrompt {
     String getId();
 
     default boolean installIfNeeded(ShellControl sc) throws Exception {
-        if (!checkIfInstalled(sc)) {
-            try {
+        try {
+            if (!checkIfInstalled(sc)) {
                 checkCanInstall(sc);
                 install(sc);
-            } catch (Exception e) {
-                var name = sc.getSourceStoreId()
-                        .flatMap(uuid -> DataStorage.get().getStoreEntryIfPresent(uuid))
-                        .map(DataStoreEntry::getName)
-                        .orElse(null);
-                ErrorEventFactory.fromThrowable(e)
-                        .omit()
-                        .description("Prompt installation for " + getId() + " failed on remote system"
-                                + (name != null ? " " + name : ""))
-                        .expected()
-                        .handle();
-                return false;
+                checkValidInstall(sc);
+                return true;
             }
+            checkValidInstall(sc);
             return true;
+        } catch (Exception e) {
+            var name = sc.getSourceStoreId()
+                    .flatMap(uuid -> DataStorage.get().getStoreEntryIfPresent(uuid))
+                    .map(DataStoreEntry::getName)
+                    .orElse(null);
+            ErrorEventFactory.fromThrowable(e)
+                    .omit()
+                    .description("Prompt installation for " + getId() + " failed on remote system"
+                            + (name != null ? " " + name : ""))
+                    .expected()
+                    .handle();
+            return false;
         }
-        return true;
     }
+
+    void checkValidInstall(ShellControl sc) throws Exception;
 
     void checkCanInstall(ShellControl sc) throws Exception;
 
