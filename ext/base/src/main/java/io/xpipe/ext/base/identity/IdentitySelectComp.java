@@ -135,7 +135,7 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
 
     private void editNamedIdentity() {
         var id = selectedReference.get();
-        if (id == null) {
+        if (id == null || id.get().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
             return;
         }
 
@@ -178,7 +178,7 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
 
     private String formatName(DataStoreEntry storeEntry) {
         if (storeEntry.getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
-            return null;
+            return storeEntry.getName();
         }
 
         IdentityStore id = storeEntry.getStore().asNeeded();
