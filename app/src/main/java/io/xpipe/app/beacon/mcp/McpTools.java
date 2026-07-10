@@ -143,11 +143,7 @@ public final class McpTools {
                         }
 
                         var wrapper = StoreViewState.get().getEntryWrapper(e);
-                        var section = StoreViewState.get()
-                                .getSectionForWrapper(wrapper);
-                        var info = section.isPresent()
-                                ? wrapper.getShownInformation().getValue()
-                                : null;
+                        var info = wrapper.getShownInformation().getValue();
 
                         var r = ConnectionResource.builder()
                                 .name(e.getName())
