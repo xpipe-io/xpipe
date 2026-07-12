@@ -278,19 +278,20 @@ public final class McpTools {
                         throw new BeaconClientException("Path " + path + " does not exist");
                     }
 
+                    var e = entry.get();
                     var map = new LinkedHashMap<String, Object>();
-                    map.put("path", entry.get().getPath().toString());
-                    map.put("size", entry.get().getSize());
-                    if (entry.get().getInfo() instanceof FileInfo.Unix u) {
+                    map.put("path", e.getPath().toString());
+                    map.put("size", e.getSize());
+                    if (e.getInfo() instanceof FileInfo.Unix u) {
                         map.put("permissions", u.getPermissions());
                         map.put("user", u.getUser());
                         map.put("group", u.getGroup());
-                    } else if (entry.get().getInfo() instanceof FileInfo.Windows w) {
+                    } else if (e.getInfo() instanceof FileInfo.Windows w) {
                         map.put("attributes", w.getAttributes());
                     }
-                    map.put("type", entry.get().getKind().toString().toLowerCase());
-                    map.put("date", entry.get().getDate().toString());
-                    map.entrySet().removeIf(e -> e.getValue() == null);
+                    map.put("type", e.getKind().toString().toLowerCase());
+                    map.put("date", e.getDate() != null ? e.getDate().toString() : null);
+                    map.entrySet().removeIf(me -> me.getValue() == null);
 
                     return McpSchema.CallToolResult.builder()
                             .structuredContent(map)
