@@ -295,6 +295,9 @@ public class StandardStorage extends DataStorage {
                     addStoreEntryIfNotPresent(e);
                 });
 
+        // Refresh validities after entries have potentially been removed
+        refreshEntries();
+
         deleteLeftovers();
 
         this.dataStorageSyncHandler.afterStorageLoad();
