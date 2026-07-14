@@ -63,9 +63,7 @@ public class WingetUpdater extends UpdateHandler {
             AppCache.update("performedUpdate", performedUpdate);
             AppOperationMode.executeAfterShutdown(() -> {
                 TerminalLaunch.builder().title("XPipe Updater").localScript(sc -> {
-                    var systemWide = Files.exists(AppInstallation.ofCurrent()
-                            .getBaseInstallationPath()
-                            .resolve("system"));
+                    var systemWide = AppInstallation.ofWindows().isSystemWide();
                     var pkgId = "xpipe-io.xpipe";
                     if (systemWide) {
                         return ShellScript.lines(

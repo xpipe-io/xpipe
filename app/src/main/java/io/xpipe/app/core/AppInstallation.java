@@ -50,6 +50,30 @@ public abstract class AppInstallation {
         };
     }
 
+    public static AppInstallation.Windows ofWindows() {
+        if (OsType.ofLocal() != OsType.WINDOWS) {
+            throw new IllegalStateException();
+        }
+
+        return WINDOWS;
+    }
+
+    public static AppInstallation.Linux ofLinux() {
+        if (OsType.ofLocal() != OsType.LINUX) {
+            throw new IllegalStateException();
+        }
+
+        return LINUX;
+    }
+
+    public static AppInstallation.MacOs ofMacOs() {
+        if (OsType.ofLocal() != OsType.MACOS) {
+            throw new IllegalStateException();
+        }
+
+        return MACOS;
+    }
+
     private static Path determineDefaultInstallationBasePath(boolean stage) {
         return switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> {
@@ -176,6 +200,10 @@ public abstract class AppInstallation {
 
         private Windows(Path base) {
             super(base);
+        }
+
+        public boolean isSystemWide() {
+            return !getBaseInstallationPath().startsWith(AppSystemInfo.ofWindows().getUserHome());
         }
 
         @Override

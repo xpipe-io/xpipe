@@ -60,7 +60,7 @@ public class AppInstaller {
                 var logsDir =
                         AppLogs.get().getSessionLogsDirectory().getParent().toString();
                 var logFile = FilePath.of(logsDir, "installer.log");
-                var systemWide = isSystemWide();
+                var systemWide = AppInstallation.ofWindows().isSystemWide();
                 var cmdScript = LocalShell.getDialect() == ShellDialects.CMD && !systemWide;
                 var command = cmdScript
                         ? getCmdCommand(file.toString(), logFile.toString())
@@ -93,11 +93,6 @@ public class AppInstaller {
                 return "msi";
             }
 
-            private boolean isSystemWide() {
-                return Files.exists(
-                        AppInstallation.ofCurrent().getBaseInstallationPath().resolve("system"));
-            }
-
             private String getCmdCommand(String file, String logFile) {
                 var args = "MSIFASTINSTALL=7 DISABLEROLLBACK=1";
                 return String.format(
@@ -120,8 +115,8 @@ public class AppInstaller {
             }
 
             private String getPowershellCommand(String file, String logFile, boolean systemWide) {
-                var property = "MSIFASTINSTALL=7 DISABLEROLLBACK=1" + (systemWide ? " ALLUSERS=1" : "");
-                var startProcessProperty = ", MSIFASTINSTALL=7, DISABLEROLLBACK=1" + (systemWide ? ", ALLUSERS=1" : "");
+                var property = "MSIFASTINSTALL=7 DISABLEROLLBACK=1" + (systemWide ? " ALLUSERS=1" : " ALLUSERS=0");
+                var startProcessProperty = ", MSIFASTINSTALL=7, DISABLEROLLBACK=1" + (systemWide ? ", ALLUSERS=1" : ", ALLUSERS=0");
                 var runas = systemWide ? "-Verb runAs" : "";
                 return String.format(
                         """
