@@ -1,13 +1,16 @@
 package io.xpipe.app.vnc;
 
 import io.xpipe.app.core.AppSystemInfo;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.process.LocalShell;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -97,17 +100,33 @@ public abstract class RealVncClient implements ExternalVncClient {
     @Builder
     @Jacksonized
     @JsonTypeName("realVnc")
-    public static class MacOs extends RealVncClient implements ExternalApplicationType.MacApplication {
+    public static class MacOs extends RealVncClient implements ExternalApplicationType.InstallLocationType {
 
         @Override
         public void launch(VncLaunchConfig configuration) throws Exception {
+            var loc = findExecutable();
             var builder = createBuilder(configuration);
-            launchCommand(builder, true).execute();
+            var open = CommandBuilder.of().add("open", "-a").addFile(loc).add("--args");
+            builder.add(0, open);
+            LocalShell.getShell().command(builder).execute();
         }
 
         @Override
-        public String getApplicationName() {
-            return "VNC Viewer";
+        public String getExecutable() {
+            return "RealVNC Connect Viewer";
+        }
+
+        @Override
+        public Optional<Path> determineInstallation() {
+            try (var appsStream = Files.list(Path.of("/Applications"))) {
+                var dirs = appsStream.toList();
+                return dirs.stream()
+                        .filter(path -> path.getFileName().toString().startsWith("VNC Viewer") || path.getFileName().toString().startsWith("RealVNC Connect Viewer"))
+                        .findFirst();
+            } catch (IOException e) {
+                ErrorEventFactory.fromThrowable(e).handle();
+                return Optional.empty();
+            }
         }
     }
 }
