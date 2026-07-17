@@ -320,7 +320,7 @@ public class StoreViewState {
         });
 
         batchMode.addListener((observable, oldValue, newValue) -> {
-            batchModeSelectionSet.clear();
+            batchModeSelection.getList().clear();
         });
     }
 
