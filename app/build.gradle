@@ -83,7 +83,7 @@ dependencies {
     api 'net.synedra:validatorfx:0.4.2'
     api files("$rootDir/gradle/gradle_scripts/atlantafx-base-2.0.2.jar")
 
-    api("org.int4.fx:fx-values:0.4")
+    api("org.int4.fx:fx-values:0.5")
     api files("$rootDir/gradle/gradle_scripts/fx-builders-1.0.0-SNAPSHOT.jar")
 }
 
