@@ -63,7 +63,8 @@ jlink {
         addOptions("--add-modules", groupName + ".ext.${extProject.name}")
     }
 
-    if (!ci || (!isStage && !isFullRelease)) {
+    def excludeJdwp = ci || isFullRelease
+    if (!excludeJdwp) {
         addOptions("--add-modules", "jdk.jdwp.agent")
     }
 
