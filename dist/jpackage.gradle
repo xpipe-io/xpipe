@@ -63,7 +63,8 @@ jlink {
         addOptions("--add-modules", groupName + ".ext.${extProject.name}")
     }
 
-    def excludeJdwp = isFullRelease
+    // We can't use jdwp with AOT
+    def excludeJdwp = trainAot
     if (!excludeJdwp) {
         addOptions("--add-modules", "jdk.jdwp.agent")
     }
