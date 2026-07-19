@@ -64,7 +64,7 @@ jlink {
     }
 
     // We can't use jdwp with AOT
-    def excludeJdwp = trainAot
+    def excludeJdwp = bundleCds
     if (!excludeJdwp) {
         addOptions("--add-modules", "jdk.jdwp.agent")
     }
