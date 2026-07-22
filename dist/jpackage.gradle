@@ -63,9 +63,7 @@ jlink {
         addOptions("--add-modules", groupName + ".ext.${extProject.name}")
     }
 
-    // We can't use jdwp with AOT
-    def excludeJdwp = bundleCds
-    if (!excludeJdwp) {
+    if (!ci || (!isStage && !isFullRelease)) {
         addOptions("--add-modules", "jdk.jdwp.agent")
     }
 

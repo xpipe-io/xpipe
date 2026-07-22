@@ -28,6 +28,8 @@ import io.xpipe.app.prefs.WorkspaceManager;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.pwman.KeePassXcPasswordManager;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStorageMigration;
+import io.xpipe.app.storage.DataStorageMigrationDialog;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.terminal.TerminalDockHubManager;
 import io.xpipe.app.terminal.TerminalLauncherManager;
@@ -194,6 +196,7 @@ public class AppBaseMode extends AppOperationMode {
         StartOnInitStore.init();
 
         AppConfigurationDialog.showIfNeeded();
+        DataStorageMigration.showLegacyVaultMigrationErrorIfNeeded();
 
         TrackEvent.info("Finished base components initialization");
         initialized = true;

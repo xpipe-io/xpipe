@@ -48,25 +48,10 @@ public abstract class AbstractServiceStore
 
     @Override
     public void checkComplete() throws Throwable {
-        // We do not require the host to be complete
-        if (getHost() != null) {
-            Validators.isType(getHost(), HostAddressStore.class);
-        }
         Validators.nonNull(remotePort);
         Validators.nonNull(serviceProtocolType);
         if (getHost() == null) {
             Validators.nonNull(getAddress());
-        }
-
-        if (serviceProtocolType.hasScheme()) {
-            var addr = serviceProtocolType.formatAddress(getOpenTargetUrl());
-            if (addr != null) {
-                try {
-                    URI.create(addr);
-                } catch (IllegalArgumentException e) {
-                    throw new ValidationException(e.getMessage());
-                }
-            }
         }
     }
 
@@ -110,10 +95,6 @@ public abstract class AbstractServiceStore
             return false;
         }
 
-        if (!getHost().getStore().isComplete()) {
-            return false;
-        }
-
         if (getHost().getStore() instanceof HostAddressGatewayStore g
                 && !(getHost().getStore() instanceof NetworkTunnelStore)) {
             var gw = g.getTunnelGateway();
@@ -146,10 +127,6 @@ public abstract class AbstractServiceStore
         }
 
         if (getHost() != null) {
-            if (!getHost().getStore().isComplete()) {
-                return null;
-            }
-
             if (!(getHost().getStore() instanceof NetworkTunnelStore)
                     && getHost().getStore() instanceof HostAddressGatewayStore g) {
                 if (g.getTunnelGateway() == null

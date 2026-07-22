@@ -37,7 +37,7 @@ public class StandardStorage extends DataStorage {
     private final DataStorageUserHandler dataStorageUserHandler;
 
     private final ReentrantLock busyIo = new ReentrantLock();
-    private DataStorageVaultKey vaultKey;
+    DataStorageVaultKey vaultKey;
 
     @Getter
     private boolean disposed;
@@ -315,10 +315,27 @@ public class StandardStorage extends DataStorage {
             return;
         }
 
+        var dirExists = Files.isDirectory(dir);
+
         try {
             FileUtils.forceMkdir(dir.toFile());
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable("Unable to create vault directory", e)
+                    .terminal(true)
+                    .build()
+                    .handle();
+        }
+
+        try {
+            if (!dirExists) {
+                Files.writeString(dir.resolve("vaultversion"), AppProperties.get().getVersion());
+            }
+
+            DataStorageMigration.init();
+
+            Files.writeString(dir.resolve("vaultversion"), AppProperties.get().getVersion());
+        } catch (IOException e) {
+            ErrorEventFactory.fromThrowable("Unable to load vault version data", e)
                     .terminal(true)
                     .build()
                     .handle();

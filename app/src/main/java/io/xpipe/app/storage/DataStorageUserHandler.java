@@ -20,15 +20,13 @@ public interface DataStorageUserHandler {
 
     void init() throws IOException;
 
+    void migrate() throws IOException;
+
     void save();
 
     void login();
 
     SecretKey getEncryptionKey();
-
-    BaseRegionBuilder<?, ?> createOverview();
-
-    OptionsBuilder createGroupStrategyOptions(ObjectProperty<DataStorageGroupStrategy> groupStrategy);
 
     String getActiveUser();
 

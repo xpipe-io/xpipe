@@ -78,37 +78,7 @@ public class VaultCategory extends AppPrefsCategory {
             uh.setCurrentGroupStrategy(nv);
         });
 
-        builder.title("vault")
-                .sub(new OptionsBuilder()
-                        .name("vaultTypeName" + vaultTypeKey)
-                        .description("vaultTypeContent" + vaultTypeKey)
-                        .documentationLink(DocumentationLink.TEAM_VAULTS)
-                        .addComp(RegionBuilder.empty())
-                        .nameAndDescription("vaultAuthentication")
-                        .addComp(authChoice, prefs.vaultAuthentication)
-                        .nameAndDescription(Bindings.createStringBinding(
-                                () -> {
-                                    var empty = uh.getUserCount() == 0;
-                                    if (prefs.vaultAuthentication.get() == VaultAuthentication.GROUP) {
-                                        return empty ? "groupManagementEmpty" : "groupManagement";
-                                    }
-
-                                    return empty ? "userManagementEmpty" : "userManagement";
-                                },
-                                prefs.vaultAuthentication))
-                        .addComp(uh.createOverview().maxWidth(getCompWidth()))
-                        .addComp(uh.createGroupStrategyOptions(groupStrategy).buildComp(), groupStrategy)
-                        .hide(prefs.vaultAuthentication.isNotEqualTo(VaultAuthentication.GROUP))
-                        .nameAndDescription("syncVault")
-                        .addComp(new ButtonComp(AppI18n.observable("enableGitSync"), () -> AppPrefs.get()
-                                .selectCategory("vaultSync")))
-                        .hide(new SimpleBooleanProperty(
-                                DataStorageSyncHandler.getInstance().supportsSync()))
-                        .nameAndDescription("teamVaults")
-                        .addComp(RegionBuilder.empty())
-                        .licenseRequirement("team")
-                        .disable(!LicenseProvider.get().getFeature("team").isSupported())
-                        .hide(uh.getUserCount() > 1));
+        builder.title("vault");
         builder.sub(new OptionsBuilder()
                 .pref(prefs.encryptAllVaultData)
                 .addToggle(encryptVault)
