@@ -15,9 +15,7 @@ import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
 import io.xpipe.app.terminal.TerminalPrompt;
 import io.xpipe.app.vnc.ExternalVncClient;
-import io.xpipe.core.InPlaceSecretValue;
-import io.xpipe.core.JacksonMapper;
-import io.xpipe.core.OsType;
+import io.xpipe.core.*;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -43,8 +41,16 @@ public class AppJacksonModule extends SimpleModule {
 
     @Override
     public void setupModule(SetupContext context) {
-        context.registerSubtypes(VaultKeySecretValue.class);
-        context.registerSubtypes(PasswordLockSecretValue.class);
+        // Migration
+        addSerializer(InPlaceSecretValue.class, new InPlaceSecretValueSerializer());
+        addSerializer(VaultKeySecretValue.class, new VaultKeySecretValueSerializer());
+        addSerializer(PasswordLockSecretValue.class, new PasswordLockSecretValueSerializer());
+        addDeserializer(SecretValue.class, new SecretValueDeserializer<>());
+        addDeserializer(InPlaceSecretValue.class, new SecretValueDeserializer<>());
+        addDeserializer(EncryptedSecretValue.class, new SecretValueDeserializer<>());
+        addDeserializer(VaultKeySecretValue.class, new SecretValueDeserializer<>());
+        addSerializer(EncryptionToken.class, new EncryptionTokenSerializer());
+        addDeserializer(EncryptionToken.class, new EncryptionTokenDeserializer());
 
         addSerializer(DataStoreEntryRef.class, new DataStoreEntryRefSerializer());
         addDeserializer(DataStoreEntryRef.class, new DataStoreEntryRefDeserializer());
@@ -93,6 +99,30 @@ public class AppJacksonModule extends SimpleModule {
         context.registerSubtypes(KeeperPasswordManager.KeeperAuth.getClasses());
 
         super.setupModule(context);
+    }
+
+
+    public static class EncryptionTokenSerializer extends JsonSerializer<EncryptionToken> {
+
+        @Override
+        public void serialize(EncryptionToken value, JsonGenerator jgen, SerializerProvider context) throws IOException {
+            jgen.writeString(value.getToken());
+        }
+    }
+
+    public static class EncryptionTokenDeserializer extends JsonDeserializer<EncryptionToken> {
+
+        @Override
+        public EncryptionToken deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            JsonNode tree = p.getCodec().readTree(p);
+            if (tree.isValueNode()) {
+                var s = tree.asText();
+                return s != null ? EncryptionToken.builder().token(s).build() : null;
+            } else {
+                var token = tree.required("token").asText();
+                return token != null ? EncryptionToken.builder().token(token).build() : null;
+            }
+        }
     }
 
     public static class KeePassXcPasswordManagerSerializer extends JsonSerializer<KeePassXcPasswordManager> {
@@ -226,6 +256,94 @@ public class AppJacksonModule extends SimpleModule {
             }
 
             return ShellDialects.byIdIfPresent(tree.asText()).orElse(null);
+        }
+    }
+
+    public static class InPlaceSecretValueSerializer extends JsonSerializer<InPlaceSecretValue> {
+
+        @Override
+        public void serialize(InPlaceSecretValue value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+            var oldEnc = value.getEncryptedValue();
+            var oldRaw = SecretValue.fromBase64e(oldEnc);
+            var newEnc = Base64Helper.toBase64Url(oldRaw);
+
+            var tree = JsonNodeFactory.instance.objectNode();
+            tree.put("type", "inPlace");
+            tree.put("encryptedValue", newEnc);
+            jgen.writeTree(tree);
+        }
+    }
+
+    public static class VaultKeySecretValueSerializer extends JsonSerializer<VaultKeySecretValue> {
+
+        @Override
+        public void serialize(VaultKeySecretValue value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+            var oldEnc = value.getEncryptedValue();
+            var oldRaw = SecretValue.fromBase64e(oldEnc);
+            var newEnc = Base64Helper.toBase64Url(oldRaw);
+
+            var tree = JsonNodeFactory.instance.objectNode();
+            tree.put("type", "principal");
+            tree.put("encryptedValue", newEnc);
+            tree.put("principal", "be815152-05d2-4094-84d3-f0eea9200d5f");
+            jgen.writeTree(tree);
+        }
+    }
+
+    public static class PasswordLockSecretValueSerializer extends JsonSerializer<PasswordLockSecretValue> {
+
+        @Override
+        public void serialize(PasswordLockSecretValue value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+            var oldEnc = value.getEncryptedValue();
+            var tree = JsonNodeFactory.instance.objectNode();
+            tree.put("type", "locked");
+            tree.put("encryptedValue", oldEnc);
+            jgen.writeTree(tree);
+        }
+    }
+
+    public static class SecretValueDeserializer<T extends SecretValue> extends JsonDeserializer<T> {
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            JsonNode tree = p.getCodec().readTree(p);
+            if (!tree.isObject() || tree.get("type") == null) {
+                return null;
+            }
+
+            var type = tree.required("type").textValue();
+
+            var encryptedValueNode = tree.get("encryptedValue");
+            if (encryptedValueNode == null) {
+                return null;
+            }
+
+            if ("default".equals(type)) {
+                return (T) InPlaceSecretValue.builder().encryptedValue(encryptedValueNode.textValue()).build();
+            }
+
+            if ("vault".equals(type)) {
+                return (T) VaultKeySecretValue.builder().encryptedValue(encryptedValueNode.textValue()).build();
+            }
+
+            if ("locked".equals(type)) {
+                return (T) PasswordLockSecretValue.builder().encryptedValue(encryptedValueNode.textValue()).build();
+            }
+
+            if ("inPlace".equals(type)) {
+                var r = Base64Helper.fromBase64UrlString(encryptedValueNode.textValue());
+                var enc = SecretValue.toBase64e(r);
+                return (T) InPlaceSecretValue.builder().encryptedValue(enc).build();
+            }
+
+            if ("principal".equals(type)) {
+                var r = Base64Helper.fromBase64UrlString(encryptedValueNode.textValue());
+                var enc = SecretValue.toBase64e(r);
+                return (T) VaultKeySecretValue.builder().encryptedValue(enc).build();
+            }
+
+            return null;
         }
     }
 

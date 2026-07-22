@@ -11,9 +11,7 @@ import lombok.extern.jackson.Jacksonized;
 
 import javax.crypto.SecretKey;
 
-@JsonTypeName("vault")
 @SuperBuilder
-@Jacksonized
 @EqualsAndHashCode(callSuper = true)
 public class VaultKeySecretValue extends AesSecretValue {
 

@@ -11,9 +11,7 @@ import lombok.extern.jackson.Jacksonized;
 
 import javax.crypto.SecretKey;
 
-@JsonTypeName("locked")
 @SuperBuilder
-@Jacksonized
 @EqualsAndHashCode(callSuper = true)
 public class PasswordLockSecretValue extends AesSecretValue {
 

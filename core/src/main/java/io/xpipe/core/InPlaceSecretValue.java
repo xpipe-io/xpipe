@@ -14,9 +14,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
-@JsonTypeName("default")
 @SuperBuilder
-@Jacksonized
 @EqualsAndHashCode(callSuper = true)
 public class InPlaceSecretValue extends AesSecretValue {
 

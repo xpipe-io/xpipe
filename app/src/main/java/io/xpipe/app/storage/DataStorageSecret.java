@@ -17,6 +17,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @EqualsAndHashCode
 @ToString
@@ -41,7 +42,28 @@ public class DataStorageSecret {
             return null;
         }
 
-        var legacy = JacksonMapper.getDefault().treeToValue(tree, EncryptedSecretValue.class);
+        if (tree.get("secrets") != null) {
+            var obj = (ObjectNode) tree;
+            var secretTree = obj.get("secrets");
+            if (secretTree == null || !secretTree.isArray() || secretTree.size() != 1) {
+                return null;
+            }
+
+            var jsonNode = secretTree.get(0);
+            var secretNode = jsonNode.get("secret");
+            var uuidNode = jsonNode.get("principal");
+            var iterationNode = jsonNode.get("iteration");
+            var tokenNode = jsonNode.get("token");
+            if (secretNode == null || uuidNode == null || iterationNode == null || tokenNode == null) {
+                return null;
+            }
+
+            var secret = JacksonMapper.getDefault().treeToValue(secretNode, SecretValue.class);
+            var token = JacksonMapper.getDefault().treeToValue(tokenNode, EncryptionToken.class);
+            return new DataStorageSecret(token, secretNode, secret.inPlace());
+        }
+
+        var legacy = JacksonMapper.getDefault().treeToValue(tree, SecretValue.class);
         if (legacy != null) {
             // Don't cache legacy node
             return new DataStorageSecret(EncryptionToken.ofVaultKey(), null, legacy.inPlace());
@@ -70,7 +92,7 @@ public class DataStorageSecret {
             token = userToken ? EncryptionToken.ofUser() : EncryptionToken.ofVaultKey();
         }
 
-        return new DataStorageSecret(token, secretTree, secret.inPlace());
+        return new DataStorageSecret(token, null, secret.inPlace());
     }
 
     public static DataStorageSecret ofCurrentSecret(SecretValue internalSecret) {
@@ -137,18 +159,11 @@ public class DataStorageSecret {
 
         var mapper = JacksonMapper.getDefault();
         var tree = JsonNodeFactory.instance.objectNode();
-
-        // Preserve same output if not changed
-        if (getOriginalNode() != null && !requiresRewrite(allowUserSecretKey)) {
-            tree.set("secret", getOriginalNode());
-            tree.set("encryptedToken", mapper.valueToTree(getEncryptedToken()));
-            return tree;
-        }
-
-        // Reencrypt
-        rewrite(allowUserSecretKey);
+        tree.put("name", "vault");
+        tree.put("principal", "be815152-05d2-4094-84d3-f0eea9200d5f");
+        tree.put("iteration", 1);
         tree.set("secret", getOriginalNode());
-        tree.set("encryptedToken", mapper.valueToTree(getEncryptedToken()));
+        tree.set("token", mapper.valueToTree(getEncryptedToken()));
         return tree;
     }
 

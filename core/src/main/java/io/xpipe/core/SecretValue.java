@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.function.Consumer;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface SecretValue {
 
     static String toBase64e(byte[] b) {

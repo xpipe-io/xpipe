@@ -6,6 +6,7 @@ import io.xpipe.app.storage.DataStorageUserHandler;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 
@@ -21,6 +22,7 @@ public class EncryptionToken {
     private static EncryptionToken groupToken;
     private static EncryptionToken userToken;
 
+    @Getter
     private final String token;
 
     @JsonIgnore
@@ -34,6 +36,18 @@ public class EncryptionToken {
 
     public static void invalidateUserToken() {
         userToken = null;
+    }
+
+    public static EncryptionToken createMigrated(String s, SecretKey secretKey) {
+        var v =
+                new PasswordLockSecretValue(s.toCharArray()) {
+                    @Override
+                    protected SecretKey getSecretKey() {
+                        return secretKey;
+                    }
+                };
+        var userCrypt = v.getEncryptedValue();
+        return EncryptionToken.builder().token(userCrypt).build();
     }
 
     private static EncryptionToken createUserToken() {
