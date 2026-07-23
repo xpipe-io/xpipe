@@ -231,8 +231,8 @@ public class StoreViewState {
 
     private void initSortMode() {
         String global = AppCache.getNonNull("globalSortMode", String.class, () -> null);
-        var globalMode = global != null ? StoreSectionSortMode.fromId(global).orElse(null) : null;
-        globalSortMode.setValue(globalMode != null ? globalMode : StoreSectionSortMode.INDEX_ASC);
+        var globalMode = "index-desc".equals(global) ? StoreSectionSortMode.INDEX_DESC : StoreSectionSortMode.INDEX_ASC;
+        globalSortMode.setValue(globalMode);
 
         String tie = AppCache.getNonNull("tieSortMode", String.class, () -> null);
         var tieMode = global != null ? StoreSectionSortMode.fromId(tie).orElse(null) : null;
