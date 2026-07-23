@@ -1337,6 +1337,17 @@ public abstract class DataStorage {
         return children;
     }
 
+    public void migrate() {
+        var ordered = storeEntriesSet.stream().sorted(Comparator.<DataStoreEntry>comparingInt(
+                entry -> entry.getOrderIndex()).reversed()
+                .thenComparing(entry -> entry.getLastModified()).reversed())
+                .toList();
+        for (int i = 0; i < ordered.size(); i++) {
+            var entry = ordered.get(i);
+            entry.setOrderIndex(i + 1);
+        }
+    }
+
     public List<DataStoreCategory> getCategoryParentHierarchy(DataStoreCategory cat) {
         var es = new ArrayList<DataStoreCategory>();
         es.add(cat);

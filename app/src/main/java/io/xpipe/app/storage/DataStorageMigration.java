@@ -4,7 +4,9 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppVersion;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.secret.EncryptionToken;
+import lombok.Data;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -76,6 +78,8 @@ public class DataStorageMigration {
                     .handle();
         }
 
+        DataStorage.get().migrate();
+
         EncryptionToken.invalidateTokens();
         EncryptionToken.setMigratedVaultToken(true);
 
@@ -84,9 +88,13 @@ public class DataStorageMigration {
         getStorage().forceRewrite();
         getStorage().save(false);
 
+        AppPrefs.get().save();
+
         var versionFile = dir.resolve("vaultversion");
         Files.writeString(versionFile, AppProperties.get().getCanonicalVersion().map(appVersion -> appVersion.toString()).orElse("23.9"));
 
         AppCache.update("vaultMigrated", true);
+
+        DataStorage.get().pushManually();
     }
 }
