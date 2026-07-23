@@ -1,9 +1,10 @@
 package io.xpipe.app.storage;
 
+import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppVersion;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.secret.EncryptionToken;
-import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,7 +13,11 @@ import java.util.Optional;
 
 public class DataStorageMigration {
 
-    private static boolean show = false;
+    public static boolean isMigrated() {
+        return !requiresMigration;
+    }
+
+    private static boolean requiresMigration = false;
 
     private static Optional<String> loadVaultVersion(Path dir) throws IOException {
         var file = dir.resolve("vaultversion");
@@ -25,7 +30,7 @@ public class DataStorageMigration {
     }
 
     public static void showLegacyVaultMigrationErrorIfNeeded() {
-        if (!show) {
+        if (!requiresMigration) {
             return;
         }
 
@@ -38,16 +43,16 @@ public class DataStorageMigration {
         if (version.isPresent()) {
             var canonicalVersion = AppVersion.parse(version.get());
             if (canonicalVersion.isEmpty()) {
-                show = true;
-                return;
-            }
-
-            if (canonicalVersion.get().getMajor() < 23 || (canonicalVersion.get().getMajor() == 23 && canonicalVersion.get().getMinor() < 9)) {
-                show = true;
-                return;
+                requiresMigration = true;
+            } else if (canonicalVersion.get().getMajor() < 23 || (canonicalVersion.get().getMajor() == 23 && canonicalVersion.get().getMinor() < 9)) {
+                requiresMigration = true;
             }
         } else {
-            show = true;
+            requiresMigration = true;
+        }
+
+        if (isMigrated()) {
+            EncryptionToken.setMigratedVaultToken(true);
         }
     }
 
@@ -72,10 +77,16 @@ public class DataStorageMigration {
         }
 
         EncryptionToken.invalidateTokens();
+        EncryptionToken.setMigratedVaultToken(true);
 
         DataStorageUserHandler.getInstance().migrate();
 
         getStorage().forceRewrite();
         getStorage().save(false);
+
+        var versionFile = dir.resolve("vaultversion");
+        Files.writeString(versionFile, AppProperties.get().getCanonicalVersion().map(appVersion -> appVersion.toString()).orElse("23.9"));
+
+        AppCache.update("vaultMigrated", true);
     }
 }

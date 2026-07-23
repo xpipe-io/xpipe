@@ -4,10 +4,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageUserHandler;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.crypto.SecretKey;
 
@@ -19,6 +16,9 @@ public class EncryptionToken {
     private static EncryptionToken vaultToken;
     private static EncryptionToken groupToken;
     private static EncryptionToken userToken;
+
+    @Setter
+    private static boolean migratedVaultToken;
 
     @Getter
     private final String token;
@@ -52,9 +52,15 @@ public class EncryptionToken {
     }
 
     private static EncryptionToken createVaultToken() {
-        var secretValue = new VaultKeySecretValue(new char[] {'x', 'p', 'i', 'p', 'e'});
-        var crypt = secretValue.getEncryptedValue();
-        return EncryptionToken.builder().token(crypt).build();
+        if (migratedVaultToken) {
+            var secretValue = new VaultKeySecretValue("be815152-05d2-4094-84d3-f0eea9200d5f".toCharArray());
+            var crypt = secretValue.getEncryptedValue();
+            return EncryptionToken.builder().token(crypt).build();
+        } else {
+            var secretValue = new VaultKeySecretValue(new char[]{'x', 'p', 'i', 'p', 'e'});
+            var crypt = secretValue.getEncryptedValue();
+            return EncryptionToken.builder().token(crypt).build();
+        }
     }
 
     public static EncryptionToken ofUser() {
@@ -112,6 +118,6 @@ public class EncryptionToken {
 
         var key = DataStorage.get().getVaultKey().getKey();
         var s = decode(key);
-        return (isVault = s.equals("xpipe"));
+        return migratedVaultToken ? (isVault = s.equals("be815152-05d2-4094-84d3-f0eea9200d5f")) : (isVault = s.equals("xpipe"));
     }
 }
