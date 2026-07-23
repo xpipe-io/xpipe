@@ -39,6 +39,8 @@ public abstract class EncryptedValue<T> {
 
     public abstract EncryptedValue<T> withValue(T value);
 
+    public abstract EncryptedValue<T> migrated();
+
     @Override
     public int hashCode() {
         return Objects.hashCode(value);
@@ -94,6 +96,11 @@ public abstract class EncryptedValue<T> {
 
             return of(value);
         }
+
+        @Override
+        public EncryptedValue<T> migrated() {
+            return of(getValue());
+        }
     }
 
     @JsonTypeName("vault")
@@ -105,6 +112,10 @@ public abstract class EncryptedValue<T> {
             super(value, secret);
         }
 
+        @Override
+        public EncryptedValue<T> migrated() {
+            return of(getValue());
+        }
         @SneakyThrows
         public static <T> VaultKey<T> of(T value) {
             if (value == null) {

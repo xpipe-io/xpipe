@@ -1339,8 +1339,8 @@ public abstract class DataStorage {
 
     public void migrate() {
         var ordered = storeEntriesSet.stream().sorted(Comparator.<DataStoreEntry>comparingInt(
-                entry -> entry.getOrderIndex()).reversed()
-                .thenComparing(entry -> entry.getLastModified()).reversed())
+                entry -> entry.getOrderIndex())
+                .thenComparing(entry -> entry.getLastModified()))
                 .toList();
         for (int i = 0; i < ordered.size(); i++) {
             var entry = ordered.get(i);

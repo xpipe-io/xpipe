@@ -3,9 +3,13 @@ package io.xpipe.app.storage;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppVersion;
+import io.xpipe.app.hub.comp.StoreSectionSortMode;
+import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.secret.EncryptionToken;
+import javafx.application.Platform;
 import lombok.Data;
 
 import java.io.IOException;
@@ -96,5 +100,9 @@ public class DataStorageMigration {
         AppCache.update("vaultMigrated", true);
 
         DataStorage.get().pushManually();
+
+        Platform.runLater(() -> {
+            StoreViewState.get().getGlobalSortMode().setValue(StoreSectionSortMode.INDEX_DESC);
+        });
     }
 }

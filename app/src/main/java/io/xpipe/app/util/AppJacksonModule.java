@@ -268,7 +268,7 @@ public class AppJacksonModule extends SimpleModule {
             var newEnc = Base64Helper.toBase64Url(oldRaw);
 
             var tree = JsonNodeFactory.instance.objectNode();
-            tree.put("type", "inPlace");
+            tree.put("type", "internal");
             tree.put("encryptedValue", newEnc);
             jgen.writeTree(tree);
         }
@@ -331,7 +331,7 @@ public class AppJacksonModule extends SimpleModule {
                 return (T) PasswordLockSecretValue.builder().encryptedValue(encryptedValueNode.textValue()).build();
             }
 
-            if ("inPlace".equals(type)) {
+            if ("internal".equals(type)) {
                 var r = Base64Helper.fromBase64UrlString(encryptedValueNode.textValue());
                 var enc = SecretValue.toBase64e(r);
                 return (T) InPlaceSecretValue.builder().encryptedValue(enc).build();
@@ -403,7 +403,10 @@ public class AppJacksonModule extends SimpleModule {
                 return;
             }
 
-            jgen.writeTree(value.getSecret().serialize(value.allowUserSecretKey()));
+            var rewrite = value.getSecret().requiresRewrite(value.allowUserSecretKey());
+            var secret = rewrite ? value.migrated().getSecret() : value.getSecret();
+
+            jgen.writeTree(secret.serialize(value.allowUserSecretKey()));
         }
 
         @Override
