@@ -403,7 +403,7 @@ public class AppJacksonModule extends SimpleModule {
                 return;
             }
 
-            var rewrite = value.getSecret().requiresRewrite(value.allowUserSecretKey());
+            var rewrite = value.getSecret().getOriginalNode() == null || value.getSecret().requiresRewrite(value.allowUserSecretKey());
             var secret = rewrite ? value.migrated().getSecret() : value.getSecret();
 
             jgen.writeTree(secret.serialize(value.allowUserSecretKey()));
