@@ -8,13 +8,11 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import lombok.extern.jackson.Jacksonized;
 
 import javax.crypto.SecretKey;
 
 @EqualsAndHashCode
 @Builder
-@Jacksonized
 @ToString
 public class EncryptionToken {
 
@@ -34,20 +32,10 @@ public class EncryptionToken {
     @JsonIgnore
     private EncryptionToken usedUserToken;
 
-    public static void invalidateUserToken() {
+    public static void invalidateTokens() {
+        vaultToken = null;
         userToken = null;
-    }
-
-    public static EncryptionToken createMigrated(String s, SecretKey secretKey) {
-        var v =
-                new PasswordLockSecretValue(s.toCharArray()) {
-                    @Override
-                    protected SecretKey getSecretKey() {
-                        return secretKey;
-                    }
-                };
-        var userCrypt = v.getEncryptedValue();
-        return EncryptionToken.builder().token(userCrypt).build();
+        groupToken = null;
     }
 
     private static EncryptionToken createUserToken() {

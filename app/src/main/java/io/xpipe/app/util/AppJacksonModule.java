@@ -106,7 +106,7 @@ public class AppJacksonModule extends SimpleModule {
 
         @Override
         public void serialize(EncryptionToken value, JsonGenerator jgen, SerializerProvider context) throws IOException {
-            jgen.writeString(value.getToken());
+            jgen.writeString(Base64Helper.toBase64Url(SecretValue.fromBase64e(value.getToken())));
         }
     }
 
@@ -117,7 +117,7 @@ public class AppJacksonModule extends SimpleModule {
             JsonNode tree = p.getCodec().readTree(p);
             if (tree.isValueNode()) {
                 var s = tree.asText();
-                return s != null ? EncryptionToken.builder().token(s).build() : null;
+                return s != null ? EncryptionToken.builder().token(SecretValue.toBase64e(Base64Helper.fromBase64UrlString(s))).build() : null;
             } else {
                 var token = tree.required("token").asText();
                 return token != null ? EncryptionToken.builder().token(token).build() : null;

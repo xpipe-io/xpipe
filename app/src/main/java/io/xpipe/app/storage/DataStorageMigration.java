@@ -2,6 +2,7 @@ package io.xpipe.app.storage;
 
 import io.xpipe.app.core.AppVersion;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.secret.EncryptionToken;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
@@ -69,6 +70,8 @@ public class DataStorageMigration {
                     .build()
                     .handle();
         }
+
+        EncryptionToken.invalidateTokens();
 
         DataStorageUserHandler.getInstance().migrate();
 

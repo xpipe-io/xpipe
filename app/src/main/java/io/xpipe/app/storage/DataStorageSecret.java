@@ -1,9 +1,11 @@
 package io.xpipe.app.storage;
 
+import com.fasterxml.jackson.databind.node.TextNode;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.secret.EncryptionToken;
 import io.xpipe.app.secret.PasswordLockSecretValue;
 import io.xpipe.app.secret.VaultKeySecretValue;
+import io.xpipe.app.util.Base64Helper;
 import io.xpipe.core.EncryptedSecretValue;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
@@ -17,6 +19,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.UUID;
 
 @EqualsAndHashCode
@@ -58,7 +61,7 @@ public class DataStorageSecret {
                 return null;
             }
 
-            var secret = JacksonMapper.getDefault().treeToValue(secretNode, SecretValue.class);
+            var secret = VaultKeySecretValue.builder().encryptedValue(SecretValue.toBase64e(Base64Helper.fromBase64UrlString(secretNode.textValue()))).build().inPlace();
             var token = JacksonMapper.getDefault().treeToValue(tokenNode, EncryptionToken.class);
             return new DataStorageSecret(token, secretNode, secret.inPlace());
         }
@@ -139,22 +142,19 @@ public class DataStorageSecret {
     }
 
     private void rewrite(boolean allowUserSecretKey) {
-        var handler = DataStorageUserHandler.getInstance();
-        if (handler != null && handler.getActiveUser() != null && allowUserSecretKey) {
-            var val = new PasswordLockSecretValue(getSecret());
-            originalNode = JacksonMapper.getDefault().valueToTree(val);
-            encryptedToken = EncryptionToken.ofUser();
-            return;
-        }
-
-        var val = new VaultKeySecretValue(getSecret());
-        originalNode = JacksonMapper.getDefault().valueToTree(val);
+        var enc = new VaultKeySecretValue(secret.getSecret()).getEncryptedValue();
+        var encFixed = Base64Helper.toBase64Url(SecretValue.fromBase64e(enc));
+        originalNode = new TextNode(encFixed);
         encryptedToken = EncryptionToken.ofVaultKey();
     }
 
     public JsonNode serialize(boolean allowUserSecretKey) {
         if (secret == null) {
             return null;
+        }
+
+        if (originalNode == null || requiresRewrite(allowUserSecretKey)) {
+            rewrite(allowUserSecretKey);
         }
 
         var mapper = JacksonMapper.getDefault();
@@ -164,7 +164,14 @@ public class DataStorageSecret {
         tree.put("iteration", 1);
         tree.set("secret", getOriginalNode());
         tree.set("token", mapper.valueToTree(getEncryptedToken()));
-        return tree;
+
+        var secrets = JsonNodeFactory.instance.arrayNode();
+        secrets.add(tree);
+
+        var rootNode = JsonNodeFactory.instance.objectNode();
+        rootNode.set("secrets", secrets);
+
+        return rootNode;
     }
 
     public char[] getSecret() {
