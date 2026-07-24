@@ -24,7 +24,7 @@ public class KeePassXcAssociationComp extends SimpleRegionBuilder {
     @Override
     protected Region createSimple() {
         var key = associationKey.getKey().getSecretValue();
-        var censoredKey = key.substring(0, 6) + "*".repeat(key.length() - 6);
+        var censoredKey = !key.isEmpty() ? key.substring(0, 6) + "*".repeat(key.length() - 6) : "?";
 
         var nameLabel = new Label(associationKey.getId());
         nameLabel.getStyleClass().add(Styles.TEXT_BOLD);
