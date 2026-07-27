@@ -74,12 +74,12 @@ public class AppInstaller {
                                     + ScriptHelper.createExecScript(ShellDialects.CMD, sc, command) + "\"";
                         } else {
                             toRun = sc.getShellDialect() == ShellDialects.POWERSHELL
-                                    ? "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList  \"-ExecutionPolicy\", \"Bypass\", "
+                                    ? "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList \"-NoProfile\", \"-ExecutionPolicy\", \"Bypass\", "
                                             + "\"-File\", \"`\""
                                             + ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, command)
                                             + "`\"\""
                                     : "start \"" + AppNames.ofCurrent().getName()
-                                            + " Updater\" /min powershell -ExecutionPolicy Bypass -File \""
+                                            + " Updater\" /min powershell -ExecutionPolicy Bypass -NoProfile -File \""
                                             + ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, command)
                                             + "\"";
                         }
@@ -122,9 +122,10 @@ public class AppInstaller {
                         """
                                      echo Installing %s ...
                                      cd "$env:HOMEDRIVE\\$env:HOMEPATH"
-                                     echo '+ msiexec /i "%s" /lv "%s" /qb%s'
+                                     echo '+ msiexec /i "%s" /lv "%s" /qb %s'
                                      Start-Process %s -FilePath msiexec -Wait -ArgumentList "/i", "`"%s`"", "/lv", "`"%s`"", "/qb"%s
                                      %s
+                                     exit
                                      """,
                         file,
                         file,
