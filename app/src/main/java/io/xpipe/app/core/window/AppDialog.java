@@ -57,8 +57,10 @@ public class AppDialog {
         PlatformThread.runLaterIfNeeded(() -> {
             var firstElement = o.equals(modalOverlays.stream()
                     .filter(modalOverlay -> modalOverlay != null)
-                    .findFirst().orElse(null));
-            var lastElement = modalOverlays.size() > 0 && modalOverlays.getLast().equals(o);
+                    .findFirst()
+                    .orElse(null));
+            var lastElement =
+                    modalOverlays.size() > 0 && modalOverlays.getLast().equals(o);
             // Prevent indices from being moved when closing a modal in the back
             if (firstElement && !lastElement) {
                 modalOverlays.set(modalOverlays.indexOf(o), null);

@@ -1,5 +1,9 @@
 # Configuração do Termius
 
-Para usar o Termius como terminal, podes ligá-lo à bridge SSH XPipe. Isto pode funcionar automaticamente uma vez que a chave ssh da ponte local tenha sido adicionada ao Termius.
+Para usares o Termius como terminal, podes ligá-lo à ponte SSH do XPipe. Isto funciona automaticamente assim que a chave SSH da ponte local for adicionada ao Termius.
 
-A única coisa que tens de fazer manualmente é adicionar o ficheiro de chave privada `%s` ao Termius primeiro.
+A única coisa que tens de fazer manualmente é adicionar primeiro o ficheiro da chave privada `%s` ao Termius:
+
+```
+%s
+```

@@ -5,20 +5,17 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.hub.comp.StoreChoiceComp;
-import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.ext.ProcModuleProvider;
+import io.xpipe.app.hub.creation.StoreChoiceComp;
+import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.*;
-import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.ShellStore;
 import io.xpipe.app.terminal.*;
 import io.xpipe.app.util.*;
-import io.xpipe.app.util.OsType;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
@@ -114,7 +111,7 @@ public class TerminalCategory extends AppPrefsCategory {
                             // Don't use tabs to not use multiplexer stuff
                             TerminalLaunch.builder()
                                     .title("Test")
-                                    .localScript(new ShellScript(ProcessControlProvider.get()
+                                    .localScript(new ShellScript(ProcModuleProvider.get()
                                             .getEffectiveLocalDialect()
                                             .getEchoCommand(
                                                     "If you can read this, the terminal integration works", false)))
@@ -168,7 +165,7 @@ public class TerminalCategory extends AppPrefsCategory {
                 .title("terminalConfiguration")
                 .sub(terminalChoice(true))
                 .sub(terminalProxy())
-                .sub(terminalMultiplexerChoice())
+                .sub(terminalMultiplexer())
                 .sub(terminalPrompt())
                 // .sub(terminalInitScript())
                 .title("sessionLogging")
@@ -261,7 +258,7 @@ public class TerminalCategory extends AppPrefsCategory {
                         button.setOnAction(event -> {
                             ThreadHelper.runFailableAsync(() -> {
                                 BooleanScope.executeExclusive(disable, () -> {
-                                    ProcessControlProvider.get().refreshWsl();
+                                    ProcModuleProvider.get().refreshWsl();
                                 });
                             });
                             event.consume();
@@ -304,7 +301,7 @@ public class TerminalCategory extends AppPrefsCategory {
                         prefs.terminalInitScript);
     }
 
-    public static OptionsBuilder terminalMultiplexerChoice() {
+    public static OptionsBuilder terminalMultiplexer() {
         var prefs = AppPrefs.get();
         var choiceBuilder = OptionsChoiceBuilder.builder()
                 .property(prefs.terminalMultiplexer)
@@ -346,7 +343,7 @@ public class TerminalCategory extends AppPrefsCategory {
                             if (term != null) {
                                 TerminalLaunch.builder()
                                         .title("Tab 1 test")
-                                        .localScript(new ShellScript(ProcessControlProvider.get()
+                                        .localScript(new ShellScript(ProcModuleProvider.get()
                                                 .getEffectiveLocalDialect()
                                                 .getEchoCommand(
                                                         "If you can read this, the terminal multiplexer integration works",
@@ -356,9 +353,11 @@ public class TerminalCategory extends AppPrefsCategory {
                                         .pauseOnExit(true)
                                         .launch();
 
+                                ThreadHelper.sleep(1000);
+
                                 TerminalLaunch.builder()
                                         .title("Tab 2 test")
-                                        .localScript(new ShellScript(ProcessControlProvider.get()
+                                        .localScript(new ShellScript(ProcModuleProvider.get()
                                                 .getEffectiveLocalDialect()
                                                 .getEchoCommand(
                                                         "If you can read this, the tabbed terminal multiplexer integration works",
@@ -386,13 +385,18 @@ public class TerminalCategory extends AppPrefsCategory {
                 .documentationLink(DocumentationLink.TERMINAL_MULTIPLEXER)
                 .addComp(choice);
         if (OsType.ofLocal() == OsType.WINDOWS) {
-            options.disable(Bindings.createBooleanBinding(() -> {
-                if (prefs.terminalMultiplexer.getValue() != null) {
-                    return false;
-                }
+            options.disable(Bindings.createBooleanBinding(
+                    () -> {
+                        if (prefs.terminalMultiplexer.getValue() != null) {
+                            return false;
+                        }
 
-                return TerminalProxyManager.getProxy().isEmpty() && !TerminalMultiplexerManager.isAvailableOnWindows();
-            }, prefs.terminalProxy(), prefs.terminalMultiplexer(), testCounter));
+                        return TerminalProxyManager.getProxy().isEmpty()
+                                && !TerminalMultiplexerManager.isAvailableOnWindows();
+                    },
+                    prefs.terminalProxy(),
+                    prefs.terminalMultiplexer(),
+                    testCounter));
         }
         options.addComp(test).hide(prefs.terminalMultiplexer.isNull());
         return options;

@@ -5,14 +5,14 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.secret.InPlaceSecretValue;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.Checkable;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.LicenseProvider;
-import io.xpipe.app.util.InPlaceSecretValue;
+import io.xpipe.app.util.GuiDialog;
 import io.xpipe.app.util.JacksonMapper;
+import io.xpipe.app.util.LicenseProvider;
 
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
@@ -94,6 +94,10 @@ public class OptionsBuilder {
     public OptionsBuilder(Validator validator) {
         this.ownValidator = validator;
         this.allValidators.add(ownValidator);
+    }
+
+    public List<ObservableValue<?>> getProperties() {
+        return props;
     }
 
     public Validator buildEffectiveValidator() {
@@ -378,6 +382,18 @@ public class OptionsBuilder {
         var comp = new TextFieldComp(prop, false);
         pushComp(comp);
         props.add(prop);
+        return this;
+    }
+
+    public OptionsBuilder maxWidth(int width) {
+        finishCurrent();
+        for (OptionsComp.Entry entry : entries) {
+            if (entry.comp() instanceof ButtonComp) {
+                continue;
+            }
+
+            entry.comp().maxWidth(width);
+        }
         return this;
     }
 

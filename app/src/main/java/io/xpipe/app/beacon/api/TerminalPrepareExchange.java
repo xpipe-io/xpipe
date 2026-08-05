@@ -1,9 +1,9 @@
 package io.xpipe.app.beacon.api;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.beacon.BeaconInterface;
-
 import io.xpipe.app.prefs.AppPrefs;
+
+import com.sun.net.httpserver.HttpExchange;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;

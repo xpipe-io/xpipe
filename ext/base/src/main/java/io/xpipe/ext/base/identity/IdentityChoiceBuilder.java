@@ -7,10 +7,10 @@ import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.cred.SshIdentityStrategy;
-import io.xpipe.app.cred.SshIdentityStrategyChoiceConfig;
-import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.ext.AuthModuleProvider;
+import io.xpipe.app.ext.ProcModuleProvider;
+import io.xpipe.app.identity.SshIdentityStrategy;
+import io.xpipe.app.identity.SshIdentityStrategyChoiceConfig;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
@@ -18,8 +18,9 @@ import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStorageUserHandler;
+import io.xpipe.app.storage.DataStoreAccessScope;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.ShellStore;
 import io.xpipe.app.util.*;
 
 import javafx.application.Platform;
@@ -98,7 +99,9 @@ public class IdentityChoiceBuilder {
                                 IdentityConvert.syncLocal(r.getRef().asNeeded(), false, updated -> {
                                     Platform.runLater(() -> {
                                         identity.set(null);
-                                        identity.set(IdentityValue.Ref.builder().ref(updated.asNeeded()).build());
+                                        identity.set(IdentityValue.Ref.builder()
+                                                .ref(updated.asNeeded())
+                                                .build());
                                     });
                                 });
                             });
@@ -143,10 +146,10 @@ public class IdentityChoiceBuilder {
                 .allowNull(false)
                 .property(identity)
                 .customConfiguration(config)
-                .available(SshIdentityStrategy.getAvailable())
+                .available(AuthModuleProvider.get().getSshIdentityStrategyClasses())
                 .transformer(entryComboBox -> {
                     var button = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2k-key-plus"), () -> {
-                        ProcessControlProvider.get().showSshKeygenDialog(null, identity);
+                        ProcModuleProvider.get().showSshKeygenDialog(null, identity);
                     });
                     button.describe(d -> d.nameKey("generateKey"));
                     var comboComp = RegionBuilder.of(() -> entryComboBox);
@@ -215,7 +218,7 @@ public class IdentityChoiceBuilder {
 
         var sshIdentityChoiceConfig = SshIdentityStrategyChoiceConfig.builder()
                 .allowKeyFileSync(true)
-                .perUserKeyFileCheck(() -> false)
+                .scopeCheck(() -> DataStoreAccessScope.encryption())
                 .fileSystem(fileSystem)
                 .build();
 
@@ -233,16 +236,9 @@ public class IdentityChoiceBuilder {
                         return IdentityValue.Ref.builder().ref(ref.get()).build();
                     } else {
                         var u = user.get();
-                        // In case of team vaults, identities shouldn't really be specified inline anyway
-                        // If they are, we use the vault key to make it accessible for all users
-                        var useUserKey = DataStorageUserHandler.getInstance().getUserCount() <= 1;
-                        var p = useUserKey
-                                ? EncryptedValue.CurrentKey.of(pass.get())
-                                : EncryptedValue.VaultKey.of(pass.get());
+                        var p = EncryptedValue.of(pass.get(), DataStoreAccessScope.encryption());
                         EncryptedValue<SshIdentityStrategy> i = keyInput
-                                ? (useUserKey
-                                        ? EncryptedValue.CurrentKey.of(identityStrategy.get())
-                                        : EncryptedValue.VaultKey.of(identityStrategy.get()))
+                                ? EncryptedValue.of(identityStrategy.get(), DataStoreAccessScope.encryption())
                                 : null;
                         if (u == null && p == null && i == null) {
                             return null;

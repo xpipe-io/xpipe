@@ -3,7 +3,7 @@ package io.xpipe.app.browser.menu.impl.compress;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.ext.FileKind;
+import io.xpipe.app.fs.FileKind;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.process.ShellDialects;

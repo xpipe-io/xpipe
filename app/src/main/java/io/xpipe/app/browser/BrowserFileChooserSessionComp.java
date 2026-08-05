@@ -8,21 +8,21 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.ext.FileSystemStore;
-import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.hub.comp.StoreEntryWrapper;
-import io.xpipe.app.hub.comp.StoreFilter;
-import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.hub.entry.StoreEntryWrapper;
+import io.xpipe.app.hub.list.StoreFilter;
+import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.FileSystemStore;
+import io.xpipe.app.store.ShellStore;
+import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.FileReference;
 import io.xpipe.app.util.ObservableSubscriber;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.util.FilePath;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -83,7 +83,11 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
         });
         selectionField.style("chooser-selection");
         selectionField.hgrow();
-        var modal = ModalOverlay.of(save ? (directory ? "saveDirectoryTitle" : "saveFileTitle") : (directory ? "openDirectoryTitle" : "openFileTitle"), comp);
+        var modal = ModalOverlay.of(
+                save
+                        ? (directory ? "saveDirectoryTitle" : "saveFileTitle")
+                        : (directory ? "openDirectoryTitle" : "openFileTitle"),
+                comp);
         modal.setRequireCloseButtonForClose(true);
         modal.addButtonBarComp(selectionField);
         modal.addButton(new ModalButton("select", () -> model.finishChooser(), true, true));

@@ -101,7 +101,7 @@ public class ErrorHandlerComp extends SimpleRegionBuilder {
         while (t != null) {
             var toAppend = t.getMessage() != null
                     ? t.getMessage()
-                    : AppI18n.get("errorTypeOccured", t.getClass().getSimpleName());
+                    : AppI18n.get("errorTypeOccurred", t.getClass().getSimpleName());
             if (!Objects.equals(toAppend, lastLine)) {
                 desc = desc != null ? desc + "\n\n" + toAppend : toAppend;
                 lastLine = toAppend;

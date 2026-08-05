@@ -123,7 +123,7 @@ def getBaseJvmArgs() {
 
     // Disable JDK24 warnings
     jvmRunArgs += [
-            "--sun-misc-unsafe-memory-access=allow",
+            "--sun-misc-unsafe-memory-access=allow"
     ]
 
     // Disable JDK26 warnings
@@ -131,13 +131,20 @@ def getBaseJvmArgs() {
             "--enable-final-field-mutation=io.xpipe.app"
     ]
 
+    // JavaFX performance adjustments
+    jvmRunArgs += [
+            "-Dprism.scrollcacheopt=true",
+            "-Dprism.cacheshapes=true"
+    ]
+
+
     // Module access fixes
     def appPackage = packageName(null)
     jvmRunArgs += [
             "--add-opens", "java.base/java.lang=$appPackage",
             "--add-opens", "java.base/java.net=$appPackage",
             "--add-opens", "java.base/java.nio.file=$appPackage",
-            "--add-exports", "jdk.zipfs/jdk.nio.zipfs=io.xpipe.modulefs",
+            "--add-opens", "jdk.zipfs/jdk.nio.zipfs=io.xpipe.modulefs",
     ]
 
     // Use project liliput

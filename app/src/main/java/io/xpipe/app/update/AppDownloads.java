@@ -7,11 +7,9 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.*;
-import io.xpipe.app.util.JacksonMapper;
-import io.xpipe.app.util.OsType;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.apache.commons.io.FileUtils;
+import tools.jackson.databind.node.JsonNodeFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -63,7 +61,7 @@ public class AppDownloads {
             var response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
             HttpHelper.checkOrThrow(response);
             var json = JacksonMapper.getDefault().readTree(response.body());
-            var changelog = json.required("changelog").asText();
+            var changelog = json.required("changelog").asString();
             return changelog;
         } catch (IOException ex) {
             // All sorts of things can go wrong when downloading, this is expected
@@ -106,7 +104,7 @@ public class AppDownloads {
             }
 
             var json = JacksonMapper.getDefault().readTree(response.body());
-            var ver = json.required("version").asText();
+            var ver = json.required("version").asString();
             var ptbAvailable = json.get("ptbAvailable");
             if (ptbAvailable != null) {
                 var b = ptbAvailable.asBoolean();

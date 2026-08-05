@@ -8,10 +8,6 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ChangeListener;
 
-import net.synedra.validatorfx.Severity;
-import net.synedra.validatorfx.ValidationMessage;
-import net.synedra.validatorfx.ValidationResult;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -125,13 +121,10 @@ public class SimpleValidator implements Validator {
     private void refreshProperties() {
         ValidationResult nextResult = new ValidationResult();
         for (Check check : checks.keySet()) {
-            nextResult.addAll(check.getValidationResult().getMessages());
+            nextResult.add(check.getValidationResult().getMessages());
         }
         validationResultProperty.set(nextResult);
-        boolean hasErrors = false;
-        for (ValidationMessage msg : nextResult.getMessages()) {
-            hasErrors = hasErrors || msg.getSeverity() == Severity.ERROR;
-        }
+        boolean hasErrors = !nextResult.getMessages().isEmpty();
         containsErrorsProperty.set(hasErrors);
     }
 }

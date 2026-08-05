@@ -86,6 +86,7 @@ public class LazyTextFieldComp extends RegionStructureBuilder<StackPane, LazyTex
         r.getStyleClass().add("lazy-text-field-comp");
 
         var sizeLabel = new Label();
+        sizeLabel.setMinWidth(50);
         sizeLabel.maxWidthProperty().bind(sizeLabel.prefWidthProperty());
         sizeLabel.textProperty().bind(currentValue);
         sizeLabel.setVisible(false);

@@ -1,7 +1,13 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.comp.*;
-import io.xpipe.app.hub.comp.*;
+import io.xpipe.app.hub.category.StoreCategoryWrapper;
+import io.xpipe.app.hub.entry.StoreEntryWrapper;
+import io.xpipe.app.hub.list.StoreFilter;
+import io.xpipe.app.hub.section.StoreSection;
+import io.xpipe.app.hub.section.StoreSectionMiniComp;
+import io.xpipe.app.hub.section.StoreSectionSelector;
+import io.xpipe.app.hub.section.StoreSectionState;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.storage.DataStoreEntry;
 
@@ -15,7 +21,6 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
 
 import java.util.HashSet;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
@@ -68,7 +73,20 @@ public final class BrowserConnectionListComp extends SimpleRegionBuilder {
             });
         };
 
-        var sectionState = new StoreSectionState(filter, this::filter, category, FXCollections.emptyObservableList(), new ReadOnlyBooleanWrapper(true));
+        var selector = new StoreSectionSelector() {
+
+            @Override
+            public boolean excludeNonShown() {
+                return true;
+            }
+
+            @Override
+            public boolean matches(StoreEntryWrapper wrapper) {
+                return applicable.test(wrapper);
+            }
+        };
+        var sectionState = new StoreSectionState(
+                filter, selector, category, FXCollections.emptyObservableList(), new ReadOnlyBooleanWrapper(true));
         var section = new StoreSectionMiniComp(
                 sectionState.getRootSection(),
                 augment,

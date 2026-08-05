@@ -5,10 +5,10 @@ import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
-
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.util.OsType;
 import io.xpipe.app.webtop.WebtopApp;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -34,6 +34,7 @@ public class TmuxTerminalMultiplexer implements TerminalMultiplexer {
             return LocalShell.getShell().view().findProgram("tmux").isPresent();
         }
     }
+
     @Override
     public WebtopApp getRequiredWebtopApp() {
         return WebtopApp.TMUX;

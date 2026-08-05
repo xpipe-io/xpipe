@@ -2,13 +2,13 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.mode.AppOperationMode;
-import io.xpipe.app.ext.FileEntry;
-import io.xpipe.app.ext.FileKind;
-import io.xpipe.app.ext.FileSystem;
+import io.xpipe.app.fs.FileEntry;
+import io.xpipe.app.fs.FileKind;
+import io.xpipe.app.fs.FileSystem;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.util.FilePath;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -358,9 +358,12 @@ public class BrowserFileTransferOperation {
                     var targetId = targetFs.getIdentifier();
                     var fileSize = optimizedSourceFs.getFileSize(sourceFile.getPath());
                     var startTransferred = transferred.get();
-                    if ((!optimizedSourceFs.hasAccurateProgress() || !targetFs.hasAccurateProgress()) && sourceId.isPresent() && targetId.isPresent()) {
+                    if ((!optimizedSourceFs.hasAccurateProgress() || !targetFs.hasAccurateProgress())
+                            && sourceId.isPresent()
+                            && targetId.isPresent()) {
                         var mapKey = sourceId.get() + "-" + targetId.get();
-                        Long cachedSpeed = AppCache.getNonNullMapEntry("transferSpeedEstimate", mapKey, Long.class, () -> null);
+                        Long cachedSpeed =
+                                AppCache.getNonNullMapEntry("transferSpeedEstimate", mapKey, Long.class, () -> null);
                         var counter = new AtomicInteger();
                         if (cachedSpeed != null) {
                             GlobalTimer.scheduleUntil(Duration.ofMillis(100), false, () -> {
@@ -369,9 +372,10 @@ public class BrowserFileTransferOperation {
                                 }
 
                                 // Divide by 9 and not 10 to overreport progress a bit. Better than underreporting
-                                var addedProgress = Math.min(fileSize, (long) counter.incrementAndGet() * cachedSpeed / 9);
-                                updateProgress(
-                                        new BrowserTransferProgress(sourceFile.getName(), startTransferred + addedProgress, totalSize.get()));
+                                var addedProgress =
+                                        Math.min(fileSize, (long) counter.incrementAndGet() * cachedSpeed / 9);
+                                updateProgress(new BrowserTransferProgress(
+                                        sourceFile.getName(), startTransferred + addedProgress, totalSize.get()));
                                 return false;
                             });
                         } else {
@@ -379,16 +383,25 @@ public class BrowserFileTransferOperation {
                         }
                     }
 
-                    var startProgress = new BrowserTransferProgress(source.getName(), transferred.get(), totalSize.get());
+                    var startProgress =
+                            new BrowserTransferProgress(source.getName(), transferred.get(), totalSize.get());
                     try {
-                        transfer(sourceFile.getPath(), optimizedSourceFs, targetFile, targetFs, transferred, totalSize, fileSize);
+                        transfer(
+                                sourceFile.getPath(),
+                                optimizedSourceFs,
+                                targetFile,
+                                targetFs,
+                                transferred,
+                                totalSize,
+                                fileSize);
                     } finally {
                         transferRunning.set(false);
                     }
 
                     if (sourceId.isPresent() && targetId.isPresent()) {
                         var mapKey = sourceId.get() + "-" + targetId.get();
-                        var speed = BrowserTransferProgress.estimateTransferSpeed(List.of(startProgress),
+                        var speed = BrowserTransferProgress.estimateTransferSpeed(
+                                List.of(startProgress),
                                 new BrowserTransferProgress(sourceFile.getName(), transferred.get(), totalSize.get()));
                         AppCache.updateMapEntry("transferSpeedEstimate", mapKey, speed);
                     }
@@ -460,7 +473,8 @@ public class BrowserFileTransferOperation {
         if (transferInline(sourceFile, sourceFs, targetFile, targetFs) || cancelled()) {
             if (!cancelled()) {
                 transferred.addAndGet(fileSize);
-                updateProgress(new BrowserTransferProgress(sourceFile.getFileName(), transferred.get(), totalSize.get()));
+                updateProgress(
+                        new BrowserTransferProgress(sourceFile.getFileName(), transferred.get(), totalSize.get()));
             }
             return;
         }
@@ -483,7 +497,14 @@ public class BrowserFileTransferOperation {
             }
 
             outputStream = targetFs.openOutput(targetFile, fileSize);
-            transferFile(sourceFile, inputStream, outputStream, transferred, totalSize, fileSize, sourceFs.hasAccurateProgress() && targetFs.hasAccurateProgress());
+            transferFile(
+                    sourceFile,
+                    inputStream,
+                    outputStream,
+                    transferred,
+                    totalSize,
+                    fileSize,
+                    sourceFs.hasAccurateProgress() && targetFs.hasAccurateProgress());
         } catch (Exception ex) {
             // Mark progress as finished to reset any progress display
             updateProgress(BrowserTransferProgress.finished(sourceFile.getFileName(), transferred.get()));
@@ -586,7 +607,8 @@ public class BrowserFileTransferOperation {
                     transferred.addAndGet(read);
                     readCount.addAndGet(read);
                     if (reportProgress) {
-                        updateProgress(new BrowserTransferProgress(sourceFile.getFileName(), transferred.get(), total.get()));
+                        updateProgress(
+                                new BrowserTransferProgress(sourceFile.getFileName(), transferred.get(), total.get()));
                     }
                 }
 

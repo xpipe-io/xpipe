@@ -1,9 +1,9 @@
 package io.xpipe.app.beacon.api;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.beacon.BeaconInterface;
-
 import io.xpipe.app.core.mode.AppOperationMode;
+
+import com.sun.net.httpserver.HttpExchange;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;

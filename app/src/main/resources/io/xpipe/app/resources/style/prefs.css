@@ -1,9 +1,24 @@
 .prefs-box {
-    -fx-padding: 40 40 0 80;
+    -fx-padding: 0.5em;
+    -fx-spacing: 1em;
 }
 
-.root:compact .prefs-box {
-    -fx-padding: 20 20 20 20;
+.prefs .prefs-container {
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: -1em 1.5em 1.5em 1.5em;
+    -fx-border-width: 1;
+    -fx-border-color: -color-border-default;
+    -fx-background-color: -color-bg-default-transparent;
+}
+
+.root:nord .prefs .prefs-container {
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+
+.prefs .prefs-container.about-tab {
+    -fx-padding: 1.5em 1.5em 1.5em 1.5em;
 }
 
 .prefs-container .options-comp .name {
@@ -18,10 +33,6 @@
 
 .prefs .prefs-container.options-comp > .options-comp {
     -fx-padding: 0 0 0 1em;
-}
-
-.root:compact .prefs .prefs-container.options-comp > .options-comp {
-    -fx-padding: 0 0 0 0.2em;
 }
 
 .prefs-container .options-comp .description-box {
@@ -48,10 +59,6 @@
     -fx-font-size: 1.5em;
 }
 
-.root:compact .prefs-container > .title-header {
-    -fx-padding: 1.5em 0 -0.5em 0;
-}
-
 .prefs {
     -fx-background-color: transparent;
 }
@@ -59,9 +66,11 @@
 .prefs .sidebar {
     -fx-spacing: 0;
     -fx-padding: 0.2em 0 0 0;
-    -fx-border-width: 1;
     -fx-border-radius: 4;
     -fx-background-radius: 4;
+    -fx-border-width: 1;
+    -fx-border-color: -color-border-default;
+    -fx-background-color: -color-bg-default-transparent;
 }
 
 .root:nord .prefs .sidebar {

@@ -1,12 +1,11 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.ext.*;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.secret.SecretManager;
-import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.store.*;
 import io.xpipe.app.util.StorePath;
+import io.xpipe.app.util.ThreadHelper;
 
 import javafx.util.Pair;
 
@@ -16,7 +15,6 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 
 import java.nio.file.Path;
-import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -33,7 +31,6 @@ public abstract class DataStorage {
     public static final UUID DEFAULT_CATEGORY_UUID = UUID.fromString("97458c07-75c0-4f9d-a06e-92d8cdf67c40");
     public static final UUID LOCAL_ID = UUID.fromString("f0ec68aa-63f5-405c-b178-9a4454556d6b");
     public static final UUID ALL_IDENTITIES_CATEGORY_UUID = UUID.fromString("23a5565d-b343-4ab2-abf4-48a5d12dda22");
-    public static final UUID ALL_MACROS_CATEGORY_UUID = UUID.fromString("f65b769a-cec9-4f30-ad58-95fe68d79c2c");
     public static final UUID LOCAL_IDENTITIES_CATEGORY_UUID = UUID.fromString("e784de4e-abea-4cb8-a839-fc557cd23097");
     public static final UUID SYNCED_IDENTITIES_CATEGORY_UUID = UUID.fromString("69aa5040-28dc-451e-b4ff-1192ce5e1e3c");
     private static DataStorage INSTANCE;
@@ -43,12 +40,11 @@ public abstract class DataStorage {
     protected final List<DataStoreCategory> storeCategories;
 
     protected final Map<DataStoreEntry, DataStoreEntry> storeEntries;
-
-    @Getter
     protected final Set<DataStoreEntry> storeEntriesSet;
+    protected final Map<DataStoreEntry, DataStoreEntry> storeEntriesInaccessible;
 
     @Getter
-    private final List<StorageListener> listeners = new CopyOnWriteArrayList<>();
+    private final List<DataStorageListener> listeners = new CopyOnWriteArrayList<>();
 
     private final Map<DataStoreEntry, DataStoreEntry> storeEntriesInProgress = new ConcurrentHashMap<>();
     private final Map<DataStore, DataStoreEntry> identityStoreEntryMapCache = new IdentityHashMap<>();
@@ -63,10 +59,13 @@ public abstract class DataStorage {
     @Setter
     protected DataStoreCategory selectedCategory;
 
+    protected int orderCounter;
+
     public DataStorage() {
         this.dir = getStorageDirectory();
         this.storeEntries = new ConcurrentHashMap<>();
         this.storeEntriesSet = storeEntries.keySet();
+        this.storeEntriesInaccessible = new ConcurrentHashMap<>();
         this.storeCategories = new CopyOnWriteArrayList<>();
     }
 
@@ -112,7 +111,9 @@ public abstract class DataStorage {
 
     public abstract void reloadContent();
 
-    public abstract DataStorageVaultKey getVaultKey();
+    public double getNextOrderIndex() {
+        return orderCounter++;
+    }
 
     public DataStoreCategory getDefaultConnectionsCategory() {
         return getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).orElseThrow();
@@ -128,19 +129,6 @@ public abstract class DataStorage {
 
     public DataStoreCategory getAllIdentitiesCategory() {
         return getStoreCategoryIfPresent(ALL_IDENTITIES_CATEGORY_UUID).orElseThrow();
-    }
-
-    @SuppressWarnings("unused")
-    public DataStoreCategory getAllMacrosCategory() {
-        return getStoreCategoryIfPresent(ALL_MACROS_CATEGORY_UUID).orElseThrow();
-    }
-
-    public void forceRewrite() {
-        TrackEvent.info("Starting forced storage rewrite");
-        getStoreEntries().forEach(dataStoreEntry -> {
-            dataStoreEntry.reassignStoreNode();
-        });
-        TrackEvent.info("Finished forced storage rewrite");
     }
 
     private void dispose() {
@@ -163,6 +151,7 @@ public abstract class DataStorage {
         if (allConnections.isEmpty()) {
             var cat = DataStoreCategory.createNew(null, ALL_CONNECTIONS_CATEGORY_UUID, "All connections");
             cat.setDirectory(categoriesDir.resolve(ALL_CONNECTIONS_CATEGORY_UUID.toString()));
+            cat.setOrderIndex(DataStorage.get().getNextOrderIndex());
             storeCategories.add(cat);
         } else {
             allConnections.get().setParentCategory(null);
@@ -172,6 +161,7 @@ public abstract class DataStorage {
         if (allScripts.isEmpty()) {
             var cat = DataStoreCategory.createNew(null, ALL_SCRIPTS_CATEGORY_UUID, "All scripts");
             cat.setDirectory(categoriesDir.resolve(ALL_SCRIPTS_CATEGORY_UUID.toString()));
+            cat.setOrderIndex(DataStorage.get().getNextOrderIndex());
             storeCategories.add(cat);
         } else {
             allScripts.get().setParentCategory(null);
@@ -180,12 +170,14 @@ public abstract class DataStorage {
         if (getStoreCategoryIfPresent(CUSTOM_SCRIPTS_CATEGORY_UUID).isEmpty()) {
             var cat = DataStoreCategory.createNew(ALL_SCRIPTS_CATEGORY_UUID, CUSTOM_SCRIPTS_CATEGORY_UUID, "Custom");
             cat.setDirectory(categoriesDir.resolve(CUSTOM_SCRIPTS_CATEGORY_UUID.toString()));
+            cat.setOrderIndex(DataStorage.get().getNextOrderIndex());
             storeCategories.add(cat);
         }
 
         if (getStoreCategoryIfPresent(SCRIPT_SOURCES_CATEGORY_UUID).isEmpty()) {
             var cat = DataStoreCategory.createNew(ALL_SCRIPTS_CATEGORY_UUID, SCRIPT_SOURCES_CATEGORY_UUID, "Sources");
             cat.setDirectory(categoriesDir.resolve(SCRIPT_SOURCES_CATEGORY_UUID.toString()));
+            cat.setOrderIndex(DataStorage.get().getNextOrderIndex());
             storeCategories.add(cat);
         }
 
@@ -193,6 +185,7 @@ public abstract class DataStorage {
         if (allIdentities.isEmpty()) {
             var cat = DataStoreCategory.createNew(null, ALL_IDENTITIES_CATEGORY_UUID, "All identities");
             cat.setDirectory(categoriesDir.resolve(ALL_IDENTITIES_CATEGORY_UUID.toString()));
+            cat.setOrderIndex(DataStorage.get().getNextOrderIndex());
             storeCategories.add(cat);
         } else {
             allIdentities.get().setParentCategory(null);
@@ -203,6 +196,7 @@ public abstract class DataStorage {
             var cat =
                     DataStoreCategory.createNew(ALL_IDENTITIES_CATEGORY_UUID, LOCAL_IDENTITIES_CATEGORY_UUID, "Local");
             cat.setDirectory(categoriesDir.resolve(LOCAL_IDENTITIES_CATEGORY_UUID.toString()));
+            cat.setOrderIndex(DataStorage.get().getNextOrderIndex());
             storeCategories.add(cat);
         } else {
             localIdentities.get().setParentCategory(ALL_IDENTITIES_CATEGORY_UUID);
@@ -223,17 +217,9 @@ public abstract class DataStorage {
 
         var def = getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID);
         if (def.isEmpty()) {
-            DataStoreCategory cat = new DataStoreCategory(
-                    categoriesDir.resolve(DEFAULT_CATEGORY_UUID.toString()),
-                    DEFAULT_CATEGORY_UUID,
-                    "Default",
-                    Instant.now(),
-                    Instant.now(),
-                    true,
-                    null,
-                    ALL_CONNECTIONS_CATEGORY_UUID,
-                    true,
-                    DataStoreCategoryConfig.empty());
+            var cat = DataStoreCategory.createNew(ALL_CONNECTIONS_CATEGORY_UUID, DEFAULT_CATEGORY_UUID, "Default");
+            cat.setDirectory(categoriesDir.resolve(DEFAULT_CATEGORY_UUID.toString()));
+            cat.setOrderIndex(DataStorage.get().getNextOrderIndex());
             storeCategories.add(cat);
         } else {
             def.get().setParentCategory(ALL_CONNECTIONS_CATEGORY_UUID);
@@ -273,7 +259,7 @@ public abstract class DataStorage {
         return dir.resolve("categories");
     }
 
-    public void addListener(StorageListener l) {
+    public void addListener(DataStorageListener l) {
         this.listeners.add(l);
     }
 
@@ -332,9 +318,15 @@ public abstract class DataStorage {
         return true;
     }
 
-    public void refreshEntries() {
+    public void refreshStoreEntries() {
         storeEntries.keySet().forEach(dataStoreEntry -> {
             dataStoreEntry.refreshStore();
+        });
+    }
+
+    public void refreshStoreEntriesEncryption() {
+        storeEntries.keySet().forEach(dataStoreEntry -> {
+            dataStoreEntry.refreshStoreEncryption();
         });
     }
 
@@ -382,7 +374,6 @@ public abstract class DataStorage {
         }
 
         var categoryChanged = !entry.getCategoryUuid().equals(newEntry.getCategoryUuid());
-        var userScopeChanged = entry.isPerUserStore() != newEntry.isPerUserStore();
 
         if (entry.getStore() != null && newEntry.getStore() != null) {
             synchronized (storeMoveCache) {
@@ -412,32 +403,41 @@ public abstract class DataStorage {
         var newFlatChildren = getStoreChildren(entry);
         if (!flatChildren.equals(newFlatChildren)) {
             listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
+            if (!newFlatChildren.isEmpty()) {
+                entry.setExpanded(true);
+            }
         }
 
-        if (userScopeChanged) {
-            updateUserScope(entry);
+        var childrenToUpdate = new HashSet<>(flatChildren);
+        childrenToUpdate.addAll(newFlatChildren);
+        for (DataStoreEntry c : childrenToUpdate) {
+            c.notifyUpdate(false, false);
         }
 
         SecretManager.moveReferences(newEntry.getUuid(), entry.getUuid());
 
-        refreshEntries();
+        refreshStoreEntries();
         saveAsync();
     }
 
-    private void updateUserScope(DataStoreEntry entry) {
-        var otherToUpdate = new ArrayList<DataStoreEntry>();
-        synchronized (storeDependencyCache) {
-            for (DataStoreEntry other : getStoreEntries()) {
-                var cached = storeDependencyCache.computeIfAbsent(other, this::getDependencies);
-                if (cached.contains(entry.ref())) {
-                    otherToUpdate.add(other);
-                }
-            }
-        }
+    public boolean isInLocalIdentities(DataStoreEntry entry) {
+        var cat = DataStorage.get()
+                .getStoreCategoryIfPresent(entry.getCategoryUuid())
+                .orElseThrow();
+        var inSynced = DataStorage.get().getCategoryParentHierarchy(cat).stream()
+                .anyMatch(dataStoreCategory ->
+                        dataStoreCategory.getUuid().equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID));
+        return inSynced;
+    }
 
-        for (DataStoreEntry other : otherToUpdate) {
-            other.reassignStoreNode();
-        }
+    public boolean isInSyncedIdentities(DataStoreEntry entry) {
+        var cat = DataStorage.get()
+                .getStoreCategoryIfPresent(entry.getCategoryUuid())
+                .orElseThrow();
+        var inSynced = DataStorage.get().getCategoryParentHierarchy(cat).stream()
+                .anyMatch(dataStoreCategory ->
+                        dataStoreCategory.getUuid().equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID));
+        return inSynced;
     }
 
     public void finalizeWithDependencies(DataStoreEntry entry) {
@@ -531,17 +531,7 @@ public abstract class DataStorage {
         }
 
         var cat = getStoreCategory(entry);
-        var breakOut = new DataStoreCategory(
-                null,
-                UUID.randomUUID(),
-                entry.getName(),
-                Instant.now(),
-                Instant.now(),
-                true,
-                null,
-                cat.getUuid(),
-                true,
-                DataStoreCategoryConfig.empty());
+        var breakOut = DataStoreCategory.createNew(cat.getUuid(), entry.getName());
         addStoreCategory(breakOut);
         entry.setBreakOutCategory(breakOut);
         entry.setExpanded(true);
@@ -660,6 +650,12 @@ public abstract class DataStorage {
         saveAsync();
     }
 
+    public void setPinToTop(DataStoreEntry entry, boolean value) {
+        entry.setPinToTop(value);
+        listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
+        saveAsync();
+    }
+
     public void moveCategoryToParent(DataStoreCategory cat, DataStoreCategory newParent) {
         if (newParent.getUuid().equals(cat.getUuid()) || newParent.getUuid().equals(cat.getParentCategory())) {
             return;
@@ -677,7 +673,7 @@ public abstract class DataStorage {
         saveAsync();
     }
 
-    public void setOrderIndex(DataStoreEntry entry, int index) {
+    public void setOrderIndex(DataStoreEntry entry, double index) {
         entry.setOrderIndex(index);
         listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
         saveAsync();
@@ -692,6 +688,8 @@ public abstract class DataStorage {
         return refreshChildren(e, true);
     }
 
+    public abstract Optional<DataStoreEntry> getInaccessibleEntry(UUID uuid);
+
     public boolean refreshChildren(DataStoreEntry e, boolean throwOnFail) throws Exception {
         if (!(e.getStore() instanceof FixedHierarchyStore h)) {
             return false;
@@ -705,7 +703,6 @@ public abstract class DataStorage {
                 newChildren = l.stream()
                         .filter(dataStoreEntryRef -> dataStoreEntryRef != null && dataStoreEntryRef.get() != null)
                         .toList();
-                e.getProvider().onChildrenRefresh(e);
             } else {
                 newChildren = null;
             }
@@ -810,6 +807,7 @@ public abstract class DataStorage {
         });
 
         if (toRemove.isEmpty() && toAdd.isEmpty() && toUpdate.isEmpty()) {
+            e.getProvider().onChildrenRefresh(e);
             oldChildren.forEach(oe -> oe.getProvider().onParentRefresh(oe));
             return false;
         }
@@ -829,7 +827,8 @@ public abstract class DataStorage {
         if (e.getBreakOutCategory() != null) {
             toAdd.forEach(nc -> nc.get().setCategoryUuid(e.getBreakOutCategory()));
         }
-        addStoreEntriesIfNotPresent(toAdd.stream().map(DataStoreEntryRef::get).toArray(DataStoreEntry[]::new));
+        addStoreEntriesIfNotPresent(
+                toAdd.reversed().stream().map(DataStoreEntryRef::get).toArray(DataStoreEntry[]::new));
         toUpdate.forEach(pair -> {
             if (shouldUpdateChildrenStoreName(pair.getKey(), pair.getValue().get())) {
                 pair.getKey()
@@ -854,7 +853,8 @@ public abstract class DataStorage {
                 pair.getKey().setOrderIndex(pair.getValue().get().getOrderIndex());
             }
         });
-        refreshEntries();
+        e.getProvider().onChildrenRefresh(e);
+        refreshStoreEntries();
         saveAsync();
         toAdd.forEach(
                 dataStoreEntryRef -> dataStoreEntryRef.get().getProvider().onParentRefresh(dataStoreEntryRef.get()));
@@ -932,15 +932,19 @@ public abstract class DataStorage {
             }
             var parent = getDefaultDisplayParent(td);
             parent.ifPresent(p -> p.setChildrenCache(null));
+            deleteStoreEntryFromDisk(td);
         }
 
         this.listeners.forEach(l -> l.onStoreRemove(toDelete.toArray(DataStoreEntry[]::new)));
-        refreshEntries();
+        refreshStoreEntries();
         saveAsync();
     }
 
     public void addStoreCategory(@NonNull DataStoreCategory cat) {
         cat.setDirectory(getCategoriesDir().resolve(cat.getUuid().toString()));
+        if (cat.getOrderIndex() == 0.0) {
+            cat.setOrderIndex(DataStorage.get().getNextOrderIndex());
+        }
         this.storeCategories.add(cat);
         saveAsync();
 
@@ -986,6 +990,9 @@ public abstract class DataStorage {
         }
 
         e.setDirectory(getStoresDir().resolve(e.getUuid().toString()));
+        if (e.getOrderIndex() == 0.0) {
+            e.setOrderIndex(getNextOrderIndex());
+        }
         this.storeEntries.put(e, e);
         displayParent.ifPresent(p -> {
             p.setChildrenCache(null);
@@ -1027,6 +1034,9 @@ public abstract class DataStorage {
             }
 
             e.setDirectory(getStoresDir().resolve(e.getUuid().toString()));
+            if (e.getOrderIndex() == 0.0) {
+                e.setOrderIndex(getNextOrderIndex());
+            }
             this.storeEntries.put(e, e);
             displayParent.ifPresent(p -> {
                 p.setChildrenCache(null);
@@ -1057,7 +1067,7 @@ public abstract class DataStorage {
         }
 
         var categoryId = related != null ? related.getCategoryUuid() : selectedCategory.getUuid();
-        var provider = DataStoreProviders.byStore(store);
+        var provider = DataStoreProvider.byStore(store);
         if (provider != null) {
             categoryId = provider.getTargetCategory(store, categoryId);
         }
@@ -1082,7 +1092,7 @@ public abstract class DataStorage {
         }
         getDefaultDisplayParent(entry).ifPresent(p -> p.setChildrenCache(null));
         this.listeners.forEach(l -> l.onStoreRemove(entry));
-        refreshEntries();
+        refreshStoreEntries();
         saveAsync();
     }
 
@@ -1152,10 +1162,15 @@ public abstract class DataStorage {
 
             storeCategories.remove(delCat);
             this.listeners.forEach(l -> l.onCategoryRemove(delCat));
+            deleteStoreCategoryFromDisk(delCat);
         }
 
         saveAsync();
     }
+
+    protected abstract void deleteStoreEntryFromDisk(DataStoreEntry entry);
+
+    protected abstract void deleteStoreCategoryFromDisk(DataStoreCategory cat);
 
     private DataStoreCategory getFallbackCategory(DataStoreCategory cat) {
         var parent = getStoreCategoryIfPresent(cat.getParentCategory()).orElse(null);
@@ -1167,6 +1182,30 @@ public abstract class DataStorage {
     }
 
     // Get operations
+
+    public boolean isPotentialRootEntry(DataStoreEntry entry) {
+        if (entry.isPinToTop()) {
+            return true;
+        }
+
+        var parent = getDefaultDisplayParent(entry);
+        var noParent = parent.isEmpty();
+        if (noParent) {
+            return true;
+        }
+
+        var parentCat = getStoreCategoryIfPresent(parent.get().getCategoryUuid());
+        if (parentCat.isEmpty()) {
+            return true;
+        }
+
+        if (!parentCat.get().getUuid().equals(entry.getCategoryUuid())) {
+            return true;
+        }
+
+        var loop = isParentLoop(entry);
+        return loop;
+    }
 
     public boolean isRootEntry(DataStoreEntry entry, DataStoreCategory current) {
         if (entry.isPinToTop()) {
@@ -1275,7 +1314,8 @@ public abstract class DataStorage {
 
         try {
             var provider = entry.getProvider();
-            return Optional.ofNullable(provider.getSyntheticParent(entry));
+            var ref = provider.getSyntheticParent(entry);
+            return Optional.ofNullable(ref != null ? ref.get() : null);
         } catch (Exception ex) {
             return Optional.empty();
         }
@@ -1288,8 +1328,8 @@ public abstract class DataStorage {
 
         try {
             var provider = entry.getProvider();
-            return Optional.ofNullable(provider.getDisplayParent(entry))
-                    .filter(dataStoreEntry -> storeEntries.get(dataStoreEntry) != null);
+            var ref = provider.getDisplayParent(entry);
+            return Optional.ofNullable(ref != null && storeEntries.get(ref.get()) != null ? ref.get() : null);
         } catch (Exception ex) {
             return Optional.empty();
         }

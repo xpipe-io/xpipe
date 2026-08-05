@@ -14,8 +14,7 @@ public class ColorHelper {
 
     public static String toRgb(Color c) {
         var s = String.format(
-                "%d,%d,%d",
-                (int) (c.getRed() * 255), (int) (c.getGreen() * 255), (int) (c.getBlue() * 255));
+                "%d,%d,%d", (int) (c.getRed() * 255), (int) (c.getGreen() * 255), (int) (c.getBlue() * 255));
         return s;
     }
 

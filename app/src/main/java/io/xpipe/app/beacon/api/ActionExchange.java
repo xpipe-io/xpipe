@@ -1,16 +1,17 @@
 package io.xpipe.app.beacon.api;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.action.ActionJacksonMapper;
 import io.xpipe.app.beacon.BeaconClientException;
 import io.xpipe.app.beacon.BeaconInterface;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.window.AppDialog;
+
+import com.sun.net.httpserver.HttpExchange;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import tools.jackson.databind.JsonNode;
 
 public class ActionExchange extends BeaconInterface<ActionExchange.Request> {
 

@@ -6,9 +6,9 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.OsType;
+import io.xpipe.app.webtop.WebtopApp;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.xpipe.app.webtop.WebtopApp;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,16 +1,12 @@
 package io.xpipe.app.core;
 
-import com.dlsc.atlantafx.themes.FallDark;
-import com.dlsc.atlantafx.themes.FallLight;
-import com.dlsc.atlantafx.themes.SpringDark;
-import com.dlsc.atlantafx.themes.WinterDark;
 import io.xpipe.app.core.window.AppMainWindow;
-import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.ColorHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.PrefsChoiceValue;
 import io.xpipe.app.util.OsType;
 
 import javafx.application.Application;
@@ -25,6 +21,10 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import atlantafx.base.theme.*;
+import com.dlsc.atlantafx.themes.FallDark;
+import com.dlsc.atlantafx.themes.FallLight;
+import com.dlsc.atlantafx.themes.SpringDark;
+import com.dlsc.atlantafx.themes.WinterDark;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -526,7 +526,18 @@ public class AppTheme {
 
         // Also include your custom theme here
         public static final List<Theme> ALL = List.of(
-                PRIMER_LIGHT, PRIMER_DARK, NORD_LIGHT, NORD_DARK, CUPERTINO_LIGHT, CUPERTINO_DARK, DRACULA, MOCHA, SPRING_DARK, FALL_LIGHT, FALL_DARK, WINTER_DARK);
+                PRIMER_LIGHT,
+                PRIMER_DARK,
+                NORD_LIGHT,
+                NORD_DARK,
+                CUPERTINO_LIGHT,
+                CUPERTINO_DARK,
+                DRACULA,
+                MOCHA,
+                SPRING_DARK,
+                FALL_LIGHT,
+                FALL_DARK,
+                WINTER_DARK);
         protected final String id;
 
         @Getter
@@ -581,8 +592,7 @@ public class AppTheme {
                     * {
                         -color-context-menu: %s;
                     }
-                    """.formatted(
-                    ColorHelper.toWeb(contextMenuColor.get()));
+                    """.formatted(ColorHelper.toWeb(contextMenuColor.get()));
             var accentColor = emphasisColor.get();
             if (accentColor != null) {
                 s += """
@@ -592,10 +602,12 @@ public class AppTheme {
                                  -color-accent-muted: %s;
                                  -color-accent-subtle: %s;
                              }
-                             """.formatted(ColorHelper.toWeb(accentColor),
-                        ColorHelper.toWeb(accentColor.darker()),
-                        ColorHelper.toWeb(accentColor.desaturate()),
-                        ColorHelper.toWeb(ColorHelper.withOpacity(accentColor.darker().desaturate().desaturate(), 0.2)));
+                             """.formatted(
+                                ColorHelper.toWeb(accentColor),
+                                ColorHelper.toWeb(accentColor.darker()),
+                                ColorHelper.toWeb(accentColor.desaturate()),
+                                ColorHelper.toWeb(ColorHelper.withOpacity(
+                                        accentColor.darker().desaturate().desaturate(), 0.2)));
             }
             return s;
         }

@@ -5,10 +5,6 @@ There are no real formal contribution guidelines right now, they will maybe come
 
 ## Repository Structure
 
-- [core](core) - Shared core classes of the XPipe Java API, XPipe extensions, and the XPipe daemon implementation.
-  This mainly concerns API classes not a lot of implementation.
-- [beacon](beacon) - The XPipe beacon component is responsible for handling all communications between the XPipe
-  daemon and the client applications, for example APIs and the CLI
 - [app](app) - Contains the XPipe daemon implementation and the XPipe desktop application
 - [dist](dist) - Tools to create a distributable package of XPipe
 - [ext](ext) - Available XPipe extensions. Essentially every concrete feature implementation is implemented as an extension
@@ -20,8 +16,8 @@ If you are on Linux or macOS, you can easily accomplish that by using [SDKMAN](h
 ```bash
 curl -s "https://get.sdkman.io" | bash
 . "$HOME/.sdkman/bin/sdkman-init.sh"
-sdk install java 26.0.1-zulu
-sdk default java 26.0.1-zulu
+sdk install java 26.0.2-zulu
+sdk default java 26.0.2-zulu
 ```
 
 On Windows, you have to manually install a JDK, e.g. from [Azul](https://www.azul.com/downloads/?version=java-26-sts&package=jdk#zulu).
@@ -46,7 +42,6 @@ So for example if you currently have XPipe `21.0` installed, you should run `git
 You can use the gradle wrapper to build and run the project:
 - `gradlew app:run` will run the desktop application. You can set various useful properties in `app/build.gradle`
 - `gradlew clean dist` will create a distributable production version in `dist/build/dist/base`.
-- `gradlew <project>:test` will run the tests of the specified project.
 
 You are also able to properly debug the built production application:
 - The `dist/build/dist/base/app/scripts/xpiped_debug` script will launch the application in debug mode and with a console attached to it
@@ -59,7 +54,7 @@ In case a dependency is (sadly) not modularized yet, module information is manua
 Further, note that as this is a pretty complicated Java project that fully utilizes modularity,
 many IDEs still have problems building this project properly.
 
-For example, you can't build this project in eclipse or vscode as it will complain about missing modules.
+For example, it might be difficult to build this project in eclipse or vscode as it will complain about missing modules.
 The tested and recommended IDE is IntelliJ.
 When setting up the project in IntelliJ, make sure that the correct JDK (Java 26)
 is selected both for the project and for gradle itself.
@@ -70,7 +65,7 @@ Especially when starting out, it might be a good idea to start with easy tasks f
 
 ### Interacting via the HTTP API
 
-You can create clients that communicate with the XPipe daemon via its HTTP API.
+You can create external clients and tools that communicate with the XPipe daemon via its HTTP API.
 To get started, see the [OpenAPI spec](https://docs.xpipe.io/api).
 
 ### Implementing support for a new editor
@@ -89,10 +84,6 @@ Once you created your custom classes, you have to register them in your module i
 ### Implementing custom actions for the connection hub
 
 All actions that you can perform for certain connections in the connection overview tab are implemented using an [Action API](https://github.com/xpipe-io/xpipe/blob/master/app/src/main/java/io/xpipe/app/ext/ActionProvider.java). You can find a sample implementation [here](https://github.com/xpipe-io/xpipe/blob/master/ext/base/src/main/java/io/xpipe/ext/base/action/SampleAction.java) and many common action implementations [here](https://github.com/xpipe-io/xpipe/tree/master/ext/base/src/main/java/io/xpipe/ext/base/action).
-
-### Adding more predefined scripts
-
-You can add custom script definitions [here](https://github.com/xpipe-io/xpipe/tree/master/ext/base/src/main/java/io/xpipe/ext/base/script/PredefinedScriptStore.java) and [here](https://github.com/xpipe-io/xpipe/tree/master/ext/base/src/main/resources/io/xpipe/ext/base/resources/scripts).
 
 ### Adding more file icons for specific types
 

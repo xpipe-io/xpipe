@@ -2,12 +2,12 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.core.AppSystemInfo;
-import io.xpipe.app.ext.FileKind;
+import io.xpipe.app.fs.FileKind;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.GlobalTimer;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.OsType;
+import io.xpipe.app.util.ThreadHelper;
 
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;

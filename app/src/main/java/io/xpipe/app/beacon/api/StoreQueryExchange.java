@@ -1,10 +1,10 @@
 package io.xpipe.app.beacon.api;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.beacon.BeaconInterface;
-
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageQuery;
+
+import com.sun.net.httpserver.HttpExchange;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -27,8 +27,7 @@ public class StoreQueryExchange extends BeaconInterface<StoreQueryExchange.Reque
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) {
-        var found =
-                DataStorageQuery.queryEntry(msg.getCategoryFilter(), msg.getStoreFilter(), msg.getTypeFilter());
+        var found = DataStorageQuery.queryEntry(msg.getCategoryFilter(), msg.getStoreFilter(), msg.getTypeFilter());
         return Response.builder()
                 .found(found.stream().map(entry -> entry.getUuid()).toList())
                 .build();

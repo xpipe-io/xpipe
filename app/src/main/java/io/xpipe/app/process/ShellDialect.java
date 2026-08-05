@@ -1,7 +1,7 @@
 package io.xpipe.app.process;
 
-import io.xpipe.app.ext.FileEntry;
-import io.xpipe.app.ext.FileSystem;
+import io.xpipe.app.fs.FileEntry;
+import io.xpipe.app.fs.FileSystem;
 import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.StreamCharset;
 

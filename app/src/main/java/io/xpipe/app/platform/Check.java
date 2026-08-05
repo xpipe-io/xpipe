@@ -10,8 +10,7 @@ import javafx.scene.Node;
 import lombok.Getter;
 import net.synedra.validatorfx.Decoration;
 import net.synedra.validatorfx.DefaultDecoration;
-import net.synedra.validatorfx.ValidationMessage;
-import net.synedra.validatorfx.ValidationResult;
+import net.synedra.validatorfx.Severity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,7 +40,11 @@ public class Check {
 
     public Check() {
         validationResultProperty.set(new ValidationResult());
-        decorationFactory = DefaultDecoration.getFactory();
+        decorationFactory = validationMessage -> {
+            var factory = DefaultDecoration.getFactory();
+            return factory.apply(
+                    new net.synedra.validatorfx.ValidationMessage(Severity.ERROR, validationMessage.getText()));
+        };
         dependencyListener = (obs, oldv, newv) -> recheck();
     }
 
@@ -136,7 +139,7 @@ public class Check {
          * @param message The text to be presented to the user as error message.
          */
         public void error(String message) {
-            nextValidationResult.addError(message);
+            nextValidationResult.add(List.of(new ValidationMessage(message)));
         }
     }
 }

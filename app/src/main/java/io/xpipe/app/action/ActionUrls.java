@@ -1,12 +1,12 @@
 package io.xpipe.app.action;
 
+import io.xpipe.app.util.Base64Helper;
 import io.xpipe.app.util.JacksonMapper;
-import io.xpipe.app.util.SecretValue;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.SneakyThrows;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -21,8 +21,8 @@ public class ActionUrls {
     }
 
     private static List<String> nodeToString(JsonNode node) {
-        if (node.isTextual()) {
-            return List.of(encodeValue(node.asText()));
+        if (node.isString()) {
+            return List.of(encodeValue(node.asString()));
         }
 
         if (node.isArray()) {
@@ -36,7 +36,7 @@ public class ActionUrls {
             return list;
         }
 
-        var enc = SecretValue.toBase64e(node.toPrettyString().getBytes(StandardCharsets.UTF_8));
+        var enc = Base64Helper.toBase64Url(node.toPrettyString());
         return List.of("~" + enc);
     }
 
@@ -65,7 +65,7 @@ public class ActionUrls {
         return encodedURL;
     }
 
-    public static Optional<AbstractAction> parse(String queryString) throws Exception {
+    public static Optional<AbstractAction> parse(String queryString) {
         var query = splitQuery(queryString);
 
         var id = query.get("id");
@@ -99,7 +99,7 @@ public class ActionUrls {
             var list = new ArrayList<>();
             for (String s : entry.getValue()) {
                 if (s.startsWith("~")) {
-                    var json = SecretValue.fromBase64e(s.substring(1));
+                    var json = Base64Helper.fromBase64UrlString(s.substring(1));
                     var node = JacksonMapper.getDefault().readTree(json);
                     list.add(node);
                 } else {

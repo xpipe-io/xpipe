@@ -19,7 +19,6 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.*;
 
@@ -147,9 +146,12 @@ public class BrowserHistoryTabComp extends SimpleRegionBuilder {
                         }
                     });
                 })
-                .apply(button -> button.minWidthProperty().bind(Bindings.createDoubleBinding(() -> {
-                    return AppSizeBreakpoints.portraitMode().get() ? 170.0 : 300.0;
-                }, AppSizeBreakpoints.portraitMode())))
+                .apply(button -> button.minWidthProperty()
+                        .bind(Bindings.createDoubleBinding(
+                                () -> {
+                                    return AppSizeBreakpoints.portraitMode().get() ? 170.0 : 300.0;
+                                },
+                                AppSizeBreakpoints.portraitMode())))
                 .describe(
                         d -> d.name(new ReadOnlyStringWrapper(DataStorage.get().getStoreEntryDisplayName(entry.get()))))
                 .disable(disable)

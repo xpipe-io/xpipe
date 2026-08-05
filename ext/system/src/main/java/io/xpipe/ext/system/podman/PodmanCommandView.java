@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class PodmanCommandView extends CommandViewBase {
 
@@ -139,8 +138,7 @@ public class PodmanCommandView extends CommandViewBase {
             return sub.withExceptionConverter(PodmanCommandView::convertException);
         }
 
-        private ShellOpenFunction createOpenFunction(
-                String containerName, ShellDialect dialect, boolean terminal) {
+        private ShellOpenFunction createOpenFunction(String containerName, ShellDialect dialect, boolean terminal) {
             return new ShellOpenFunction() {
                 @Override
                 public CommandBuilder prepareWithoutInitCommand() {

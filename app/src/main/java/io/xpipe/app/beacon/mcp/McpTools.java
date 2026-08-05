@@ -1,31 +1,35 @@
 package io.xpipe.app.beacon.mcp;
 
 import io.xpipe.app.beacon.AppBeaconServer;
+import io.xpipe.app.beacon.BeaconClientException;
+import io.xpipe.app.beacon.BeaconInterface;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.ext.*;
-import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.fs.FileEntry;
+import io.xpipe.app.fs.FileInfo;
+import io.xpipe.app.fs.ShellFileSystem;
+import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageQuery;
+import io.xpipe.app.store.SingletonSessionStore;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.CommandDialog;
-import io.xpipe.app.util.HttpHelper;
-import io.xpipe.app.beacon.BeaconClientException;
-import io.xpipe.app.beacon.BeaconInterface;
 import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.HttpHelper;
 import io.xpipe.app.util.JacksonMapper;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import io.modelcontextprotocol.json.jackson2.JacksonMcpJsonMapper;
+import io.modelcontextprotocol.json.jackson3.JacksonMcpJsonMapper;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import tools.jackson.databind.node.JsonNodeFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -141,18 +145,13 @@ public final class McpTools {
                             continue;
                         }
 
-                        var section = StoreViewState.get()
-                                .getSectionForWrapper(StoreViewState.get().getEntryWrapper(e));
-                        var info = section.isPresent()
-                                ? e.getProvider()
-                                        .informationString(section.get())
-                                        .getValue()
-                                : null;
+                        var wrapper = StoreViewState.get().getEntryWrapper(e);
+                        var info = wrapper.getShownInformation().getValue();
 
                         var r = ConnectionResource.builder()
                                 .name(e.getName())
                                 .path(DataStorage.get().getStorePath(e).toString())
-                                .information(info)
+                                .information(info != null ? info.toJoinedString() : null)
                                 .notes(e.getNotes())
                                 .build();
                         list.add(r);
@@ -282,19 +281,20 @@ public final class McpTools {
                         throw new BeaconClientException("Path " + path + " does not exist");
                     }
 
+                    var e = entry.get();
                     var map = new LinkedHashMap<String, Object>();
-                    map.put("path", entry.get().getPath().toString());
-                    map.put("size", entry.get().getSize());
-                    if (entry.get().getInfo() instanceof FileInfo.Unix u) {
+                    map.put("path", e.getPath().toString());
+                    map.put("size", e.getSize());
+                    if (e.getInfo() instanceof FileInfo.Unix u) {
                         map.put("permissions", u.getPermissions());
                         map.put("user", u.getUser());
                         map.put("group", u.getGroup());
-                    } else if (entry.get().getInfo() instanceof FileInfo.Windows w) {
+                    } else if (e.getInfo() instanceof FileInfo.Windows w) {
                         map.put("attributes", w.getAttributes());
                     }
-                    map.put("type", entry.get().getKind().toString().toLowerCase());
-                    map.put("date", entry.get().getDate().toString());
-                    map.entrySet().removeIf(e -> e.getValue() == null);
+                    map.put("type", e.getKind().toString().toLowerCase());
+                    map.put("date", e.getDate() != null ? e.getDate().toString() : null);
+                    map.entrySet().removeIf(me -> me.getValue() == null);
 
                     return McpSchema.CallToolResult.builder()
                             .structuredContent(map)
@@ -393,7 +393,7 @@ public final class McpTools {
                     var shellStore = req.getShellStoreRef(system, true);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
 
-                    var r = ProcessControlProvider.get().executeMcpCommand(shellSession.getControl(), command);
+                    var r = ProcModuleProvider.get().executeMcpCommand(shellSession.getControl(), command);
                     return r;
                 }))
                 .build();

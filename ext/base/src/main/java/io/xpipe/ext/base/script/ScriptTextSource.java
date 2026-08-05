@@ -4,22 +4,22 @@ import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.DataStoreCreationCategory;
-import io.xpipe.app.ext.DataStoreDependencies;
-import io.xpipe.app.ext.ShellDialectChoiceComp;
-import io.xpipe.app.ext.ValidationException;
-import io.xpipe.app.hub.comp.StoreChoiceComp;
-import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.hub.creation.StoreChoiceComp;
+import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.ShellDialect;
+import io.xpipe.app.process.ShellDialectChoiceComp;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStoreCreationCategory;
+import io.xpipe.app.store.DataStoreDependencies;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.HttpHelper;
-import io.xpipe.app.util.Validators;
 import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.HttpHelper;
 import io.xpipe.app.util.UuidHelper;
+import io.xpipe.app.util.ValidationException;
+import io.xpipe.app.util.Validators;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -119,8 +119,8 @@ public interface ScriptTextSource {
         }
 
         @Override
-        public String toSummary() {
-            return AppI18n.get("inPlaceScript");
+        public String toLocationSummary() {
+            return null;
         }
 
         @Override
@@ -218,7 +218,7 @@ public interface ScriptTextSource {
         }
 
         @Override
-        public String toSummary() {
+        public String toLocationSummary() {
             var cleaned = url.replace("http://", "")
                     .replace("https://", "")
                     .replace("file://", "")
@@ -333,7 +333,7 @@ public interface ScriptTextSource {
         }
 
         @Override
-        public String toSummary() {
+        public String toLocationSummary() {
             return AppI18n.get("sourcedFrom", ref.get().getName() + "/" + name);
         }
 
@@ -397,7 +397,7 @@ public interface ScriptTextSource {
 
     void validate() throws Exception;
 
-    String toSummary();
+    String toLocationSummary();
 
     ShellDialect getDialect();
 

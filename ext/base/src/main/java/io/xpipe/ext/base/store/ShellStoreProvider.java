@@ -1,23 +1,22 @@
 package io.xpipe.ext.base.store;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
-import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.ext.*;
-import io.xpipe.app.hub.comp.OsLogoComp;
-import io.xpipe.app.hub.comp.StoreSection;
-import io.xpipe.app.hub.comp.SystemStateComp;
+import io.xpipe.app.hub.entry.StoreEntryInformation;
+import io.xpipe.app.hub.section.StoreSection;
 import io.xpipe.app.process.SystemState;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.store.DataStoreProvider;
+import io.xpipe.app.store.DataStoreUsageCategory;
+import io.xpipe.app.store.ShellStore;
+import io.xpipe.app.store.StatefulDataStore;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.terminal.TerminalPromptManager;
-import io.xpipe.app.util.StoreStateFormat;
 import io.xpipe.app.util.FailableRunnable;
 import io.xpipe.ext.base.script.ScriptStoreSetup;
 
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.value.ObservableValue;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface ShellStoreProvider extends DataStoreProvider {
@@ -25,7 +24,7 @@ public interface ShellStoreProvider extends DataStoreProvider {
     @Override
     default FailableRunnable<Exception> launch(DataStoreEntry entry) {
         return () -> {
-            var replacement = ProcessControlProvider.get().replace(entry.ref());
+            var replacement = ProcModuleProvider.get().replace(entry.ref());
             ShellStore store = replacement.getStore().asNeeded();
             var control = store.standaloneControl();
             // These prepend scripts, not append
@@ -48,22 +47,23 @@ public interface ShellStoreProvider extends DataStoreProvider {
         };
     }
 
-    default BaseRegionBuilder<?, ?> stateDisplay(StoreSection section) {
-        return new OsLogoComp(section.getWrapper(), SystemStateComp.State.shellState(section.getWrapper()));
-    }
-
     @Override
     default DataStoreUsageCategory getUsageCategory() {
         return DataStoreUsageCategory.SHELL;
     }
 
     @Override
-    default ObservableValue<String> informationString(StoreSection section) {
-        return StoreStateFormat.shellStore(
-                section, state -> formatAdditionalInformation(section, state).toArray(String[]::new), null);
+    default StoreEntryInformation buildInformation(StoreSection section) {
+        var st = (ShellStore) section.getEntry().getStore();
+        if (st instanceof StatefulDataStore<?> sds && sds.getState() instanceof SystemState ss) {
+            var base = StoreEntryInformation.ofSystemState(ss);
+            return base.append(buildAdditionalInformation(section, ss));
+        } else {
+            return null;
+        }
     }
 
-    default List<String> formatAdditionalInformation(StoreSection section, SystemState state) {
-        return List.of();
+    default StoreEntryInformation buildAdditionalInformation(StoreSection section, SystemState state) {
+        return StoreEntryInformation.of();
     }
 }

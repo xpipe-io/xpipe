@@ -3,8 +3,8 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.FailableSupplier;
+import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;

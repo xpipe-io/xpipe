@@ -1,12 +1,10 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.ext.ExtensionException;
-import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ModuleLayerLoader;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.LocalExec;
-import io.xpipe.app.util.ModuleAccess;
-import io.xpipe.app.util.ModuleLayerLoader;
 
 import lombok.Getter;
 
@@ -48,7 +46,6 @@ public class AppExtensionManager {
         INSTANCE.loadBaseExtension();
         INSTANCE.loadAllExtensions();
         try {
-            ProcessControlProvider.init(INSTANCE.extendedLayer);
             ModuleLayerLoader.loadAll(INSTANCE.extendedLayer, t -> {
                 ErrorEventFactory.fromThrowable(t).handle();
             });
@@ -78,7 +75,8 @@ public class AppExtensionManager {
         var exec = localInstallation.getCliExecutablePath();
         var out = LocalExec.readStdoutIfPossible(exec.toString(), "version");
         if (out.isEmpty()) {
-            throw ErrorEventFactory.expected(new ExtensionException("Unable to determine version from command \"" + exec + "\" version"));
+            throw ErrorEventFactory.expected(
+                    new ExtensionException("Unable to determine version from command \"" + exec + "\" version"));
         }
 
         var s = out.orElseThrow().strip();
@@ -104,8 +102,8 @@ public class AppExtensionManager {
                 .collect(Collectors.toSet());
     }
 
-    private void loadAllExtensions() throws Exception {
-        for (var ext : List.of("system", "proc", "uacc")) {
+    private void loadAllExtensions() {
+        for (var ext : List.of("system", "proc", "uacc", "auth")) {
             var extension = findAndParseExtension(ext, baseLayer)
                     .orElseThrow(() -> ExtensionException.corrupt("Missing module " + ext));
             loadedModules.add(extension);
@@ -116,15 +114,24 @@ public class AppExtensionManager {
         var cfs = leafModuleLayers.stream().map(ModuleLayer::configuration).toList();
         var finder = ModuleFinder.ofSystem();
         var cf = Configuration.resolve(finder, cfs, finder, List.of());
-        extendedLayer = ModuleLayer.defineModulesWithOneLoader(cf, leafModuleLayers, scl)
-                .layer();
+        var controller = ModuleLayer.defineModulesWithOneLoader(cf, leafModuleLayers, scl);
+        extendedLayer = controller.layer();
 
         if (!AppProperties.get().isFullVersion()) {
-            ModuleAccess.exportAndOpen(
+            controller.addExports(
                     ModuleLayer.boot().findModule("java.base").orElseThrow(),
                     "java.io",
                     extendedLayer.findModule(AppNames.extModuleName("proc")).orElseThrow());
-            ModuleAccess.exportAndOpen(
+            controller.addOpens(
+                    ModuleLayer.boot().findModule("java.base").orElseThrow(),
+                    "java.io",
+                    extendedLayer.findModule(AppNames.extModuleName("proc")).orElseThrow());
+
+            controller.addExports(
+                    ModuleLayer.boot().findModule("org.apache.commons.io").orElseThrow(),
+                    "org.apache.commons.io.input",
+                    extendedLayer.findModule(AppNames.extModuleName("proc")).orElseThrow());
+            controller.addOpens(
                     ModuleLayer.boot().findModule("org.apache.commons.io").orElseThrow(),
                     "org.apache.commons.io.input",
                     extendedLayer.findModule(AppNames.extModuleName("proc")).orElseThrow());
@@ -141,34 +148,39 @@ public class AppExtensionManager {
         if (!AppProperties.get().isFullVersion()) {
             try {
                 if (externalModuleFileSystem == null) {
-                    var localInstallation = !AppProperties.get().isStaging() && AppProperties.get().isLocatePtb() ?
-                            AppInstallation.ofDefault(true) :
-                            AppInstallation.ofCurrent();
+                    var localInstallation =
+                            AppInstallation.ofDefault(AppProperties.get().isLocatePtb());
                     Path p = localInstallation.getBaseInstallationPath();
                     if (!Files.exists(p)) {
-                        throw new IllegalStateException("Required local " +
-                                AppNames.ofCurrent().getName() +
-                                " installation was not found but is required for development. See https://github" +
-                                ".com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
+                        throw new IllegalStateException(
+                                "Required local " + AppNames.ofCurrent().getName()
+                                        + " installation was not found but is required for development. See https://github"
+                                        + ".com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
                     }
 
                     if (AppProperties.get().isLocatorVersionCheck()) {
                         var iv = getLocalInstallVersion(localInstallation);
-                        var installVersion = AppVersion.parse(iv).orElseThrow(
-                                () -> new IllegalArgumentException("Invalid installation version: " + iv));
-                        var sv = !AppProperties.get().isImage() ? Files.readString(Path.of("version")).strip() : AppProperties.get().getVersion();
-                        var sourceVersion = AppVersion.parse(sv).orElseThrow(() -> new IllegalArgumentException("Invalid source version: " + sv));
+                        var installVersion = AppVersion.parse(iv)
+                                .orElseThrow(() -> new IllegalArgumentException("Invalid installation version: " + iv));
+                        var sv = !AppProperties.get().isImage()
+                                ? Files.readString(Path.of("version")).strip()
+                                : AppProperties.get().getVersion();
+                        var sourceVersion = AppVersion.parse(sv)
+                                .orElseThrow(() -> new IllegalArgumentException("Invalid source version: " + sv));
                         if (!installVersion.equals(sourceVersion)) {
-                            throw new IllegalStateException("Incompatible development version. Source: " +
-                                    sv +
-                                    ", Installation: " +
-                                    iv +
-                                    "\n\nPlease try to check out the matching release version in the repository. See https://github" +
-                                    ".com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
+                            throw new IllegalStateException("Incompatible development version. Source: " + sv
+                                    + ", Installation: "
+                                    + iv
+                                    + "\n\nPlease try to check out the matching release version in the repository. See https://github"
+                                    + ".com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
                         }
                     }
 
-                    externalModuleFileSystem = FileSystems.newFileSystem(URI.create("jrt:/"), Map.of("java.home", localInstallation.getRuntimePath().toString()));
+                    externalModuleFileSystem = FileSystems.newFileSystem(
+                            URI.create("jrt:/"),
+                            Map.of(
+                                    "java.home",
+                                    localInstallation.getRuntimePath().toString()));
                 }
 
                 var moduleName = "io.xpipe.ext." + name;

@@ -34,7 +34,7 @@ public class AppConfigurationDialog {
 
             if (OsType.ofLocal() != OsType.WINDOWS
                     && AppPrefs.get().terminalMultiplexer().getValue() != null) {
-                options.sub(TerminalCategory.terminalMultiplexerChoice());
+                options.sub(TerminalCategory.terminalMultiplexer());
             }
 
             var optionsComp = options.sub(EditorCategory.editorChoice())

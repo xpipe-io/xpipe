@@ -80,12 +80,14 @@ public class FileOpener {
                     pc.command(CommandBuilder.of().add("Invoke-Item").addFile(localFile))
                             .execute();
                 } else {
-                    pc.command(CommandBuilder.of().add("start").addQuoted("").addQuoted(localFile)).execute();
+                    pc.command(CommandBuilder.of().add("start").addQuoted("").addFile(localFile))
+                            .execute();
                 }
             } else if (pc.getOsType() == OsType.LINUX) {
-                pc.command(CommandBuilder.of().add("xdg-open").addQuoted(localFile)).execute();
+                pc.command(CommandBuilder.of().add("xdg-open").addFile(localFile))
+                        .execute();
             } else {
-                pc.command(CommandBuilder.of().add("open").addQuoted(localFile)).execute();
+                pc.command(CommandBuilder.of().add("open").addFile(localFile)).execute();
             }
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable("Unable to open file " + localFile, e)

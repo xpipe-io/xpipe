@@ -1,6 +1,6 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.hub.comp.StoreSection;
+import io.xpipe.app.hub.section.StoreSection;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.process.*;
 
@@ -99,6 +99,7 @@ public class StoreStateFormat {
             state = null;
         }
         var lic = licenseReq != null && (state != null || name != null) ? "[" + licenseReq + "]" : null;
-        return DataStoreFormatter.join(lic, name, state);
+        var r = DataStoreFormatter.join(lic, name, state);
+        return !r.isEmpty() ? r : null;
     }
 }

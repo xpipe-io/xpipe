@@ -2,8 +2,7 @@ package io.xpipe.app.hub.action.impl;
 
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.hub.action.BatchHubProvider;
 import io.xpipe.app.hub.action.MultiStoreAction;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -11,6 +10,7 @@ import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.ShellStore;
 import io.xpipe.app.terminal.*;
 
 import javafx.beans.value.ObservableValue;
@@ -67,12 +67,12 @@ public class OpenSplitHubBatchProvider implements BatchHubProvider<ShellStore> {
 
             var panes = new ArrayList<TerminalLauncher.Config>();
             for (DataStoreEntryRef<ShellStore> ref : getRefs()) {
-                var replacement = ProcessControlProvider.get().replace(ref);
+                var replacement = ProcModuleProvider.get().replace(ref);
                 ShellStore store = replacement.getStore().asNeeded();
                 var control = store.standaloneControl();
                 // These prepend scripts, not append
                 TerminalPromptManager.configurePromptScript(control);
-                ProcessControlProvider.get().withDefaultScripts(control);
+                ProcModuleProvider.get().withDefaultScripts(control);
 
                 var title = DataStorage.get().getStoreEntryDisplayName(ref.get());
                 var config =

@@ -1,0 +1,97 @@
+package io.xpipe.app.hub.creation;
+
+import io.xpipe.app.comp.*;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.platform.JfxHelper;
+import io.xpipe.app.platform.MenuHelper;
+import io.xpipe.app.store.DataStoreProvider;
+
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.Property;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListCell;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Region;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@AllArgsConstructor
+public class StoreProviderChoiceComp extends RegionBuilder<ComboBox<DataStoreProvider>> {
+
+    Predicate<DataStoreProvider> filter;
+    Property<DataStoreProvider> provider;
+
+    public List<DataStoreProvider> getProviders() {
+        return DataStoreProvider.getAll().stream()
+                .filter(val -> filter == null || filter.test(val))
+                .toList();
+    }
+
+    private Region createGraphic(DataStoreProvider provider) {
+        if (provider == null) {
+            return null;
+        }
+
+        var graphic = provider.getDisplayIconFileName(null);
+        return JfxHelper.createNamedEntry(provider.displayName(), provider.displayDescription(), graphic);
+    }
+
+    @Override
+    public ComboBox<DataStoreProvider> createSimple() {
+        Supplier<ListCell<DataStoreProvider>> cellFactory = () -> new ListCell<>() {
+            @Override
+            protected void updateItem(DataStoreProvider item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(createGraphic(item));
+                if (item != null) {
+                    accessibleTextProperty().bind(item.displayName());
+                    accessibleHelpProperty().bind(item.displayDescription());
+                } else {
+                    accessibleTextProperty().unbind();
+                    accessibleHelpProperty().unbind();
+                }
+            }
+        };
+        var cb = MenuHelper.<DataStoreProvider>createComboBox();
+        cb.setCellFactory(param -> {
+            return cellFactory.get();
+        });
+        cb.setButtonCell(cellFactory.get());
+        var l = getProviders();
+        l.forEach(dataStoreProvider -> cb.getItems().add(dataStoreProvider));
+        if (provider.getValue() == null) {
+            provider.setValue(l.getFirst());
+        }
+        cb.setValue(provider.getValue());
+        provider.bind(cb.valueProperty());
+        cb.getStyleClass().add("choice-comp");
+        RegionDescriptor.builder()
+                .nameKey("chooseConnectionType")
+                .description(Bindings.createStringBinding(
+                        () -> {
+                            return provider.getValue() != null
+                                    ? provider.getValue().displayName().getValue()
+                                    : null;
+                        },
+                        provider,
+                        AppI18n.activeLanguage()))
+                .build()
+                .apply(cb);
+        cb.setOnKeyPressed(event -> {
+            if (!event.getCode().equals(KeyCode.ENTER)) {
+                return;
+            }
+
+            cb.show();
+            event.consume();
+        });
+        return cb;
+    }
+}

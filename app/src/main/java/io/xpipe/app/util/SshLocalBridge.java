@@ -4,7 +4,7 @@ import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppSystemInfo;
-import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
 
@@ -133,7 +133,7 @@ public class SshLocalBridge {
                     .addFile(INSTANCE.getConfig().toString())
                     .add("-p", "" + port);
             var control =
-                    ProcessControlProvider.get().createLocalProcessControl(true).start();
+                    ProcModuleProvider.get().createLocalProcessControl(true).start();
             control.writeLine(launchCommand.buildFull(control));
             INSTANCE.setRunningShell(control);
         }

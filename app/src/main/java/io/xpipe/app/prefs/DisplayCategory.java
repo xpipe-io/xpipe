@@ -50,7 +50,8 @@ public class DisplayCategory extends AppPrefsCategory {
                         .addToggle(prefs.censorMode)
                         .pref(prefs.limitedTouchscreenMode)
                         .addToggle(prefs.limitedTouchscreenMode)
-                        .hide(OsType.ofLocal() != OsType.LINUX || AppDistributionType.get() == AppDistributionType.WEBTOP))
+                        .hide(OsType.ofLocal() != OsType.LINUX
+                                || AppDistributionType.get() == AppDistributionType.WEBTOP))
                 .title("windowOptions")
                 .sub(new OptionsBuilder()
                         .pref(prefs.windowOpacity)

@@ -1,7 +1,8 @@
 package io.xpipe.ext.base.service;
 
+import io.xpipe.app.store.FixedChildStore;
+
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.ext.FixedChildStore;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;

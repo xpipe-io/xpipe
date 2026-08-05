@@ -1,9 +1,10 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.*;
-import io.xpipe.app.util.GithubReleaseDownloader;
 import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.GithubReleaseDownloader;
 import io.xpipe.app.util.OsType;
 
 import javafx.beans.property.Property;
@@ -133,6 +134,22 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
     }
 
     @Override
+    public void checkValidInstall(ShellControl sc) throws Exception {
+        if (sc.getOsType() != OsType.WINDOWS) {
+            var dir = getBinaryDirectory(sc);
+            var executable = sc.command(CommandBuilder.of().add("test", "-x").addFile(dir.join("oh-my-posh")))
+                    .executeAndCheck();
+            if (!executable) {
+                throw ErrorEventFactory.expected(
+                        new IllegalStateException("This system's /tmp file system is protected via a noexec flag. "
+                                + "The oh-my-posh prompt won't be able to be used from there. "
+                                + "XPipe can use run oh-my-posh by installing it into /usr/bin with root permissions. "
+                                + "See https://ohmyposh.dev/docs/installation/linux"));
+            }
+        }
+    }
+
+    @Override
     public void checkCanInstall(ShellControl sc) throws Exception {
         if (sc.getOsType() != OsType.WINDOWS) {
             CommandSupport.isInPathOrThrow(sc, "curl");
@@ -170,8 +187,9 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
             sc.view().transferLocalFile(file, dir.join("oh-my-posh.exe"));
         } else {
             var configDir = getConfigurationDirectory(sc);
-            sc.command("curl -s https://ohmyposh.dev/install.sh | bash -s -- -d \"" + dir + "\" -t \"" + configDir
-                            + "\"")
+            sc.command(
+                            "curl -s https://ohmyposh.dev/install.sh | sed -E \"s/validate_dependency unzip$//\" | sed -E \"s/install_themes$//\" | bash -s -- -d \""
+                                    + dir + "\" -t \"" + configDir + "\"")
                     .execute();
         }
     }
@@ -208,7 +226,6 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
                     List.of(ClinkHelper.getTargetDir(shellControl).toString()), false));
             lines.add("clink inject --quiet --profile \"" + configDir + "\"");
         } else {
-
             String runLine;
             var configArg = config != null ? " --config \"" + config + "\"" : "";
             if (ShellDialects.isPowershell(shellControl)) {
@@ -219,22 +236,7 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
             } else {
                 runLine = "eval \"$(oh-my-posh init " + dialect.getId() + configArg + ")\"";
             }
-            if (shellControl.getOsType() != OsType.WINDOWS && !ShellDialects.isPowershell(shellControl)) {
-                var file = getBinaryDirectory(shellControl).join("oh-my-posh");
-                lines.add("""
-                          if [ ! -x "%s" ]; then
-                            if [ $UID = 0 ]; then
-                              mv "%s" /usr/bin/
-                            else
-                              echo "This system's /tmp file system is protected via a noexec flag. The oh-my-posh prompt won't be able to be used from there. XPipe can use run oh-my-posh by installing it into /usr/bin with root permissions. See https://ohmyposh.dev/docs/installation/linux"
-                            fi
-                          else
-                            %s
-                          fi
-                          """.formatted(file, file, runLine));
-            } else {
-                lines.add(runLine);
-            }
+            lines.add(runLine);
         }
         return ShellScript.lines(lines);
     }

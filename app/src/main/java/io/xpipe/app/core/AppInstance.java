@@ -1,16 +1,16 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.core.mode.AppOperationMode;
-import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.beacon.BeaconClient;
 import io.xpipe.app.beacon.BeaconClientInformation;
 import io.xpipe.app.beacon.BeaconServer;
 import io.xpipe.app.beacon.api.DaemonFocusExchange;
 import io.xpipe.app.beacon.api.DaemonOpenExchange;
+import io.xpipe.app.core.mode.AppOperationMode;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.OsType;
+import io.xpipe.app.util.ThreadHelper;
 
 import java.awt.*;
 import java.util.List;
@@ -25,7 +25,9 @@ public class AppInstance {
     public static Optional<BeaconClient> tryEstablishConnection(int port) {
         try {
             return Optional.of(BeaconClient.establishConnection(
-                    port, BeaconClientInformation.Daemon.builder().build(), AppProperties.get().getBeaconAuthFile()));
+                    port,
+                    BeaconClientInformation.Daemon.builder().build(),
+                    AppProperties.get().getBeaconAuthFile()));
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).omit().expected().handle();
             return Optional.empty();
@@ -33,8 +35,8 @@ public class AppInstance {
     }
 
     private static void checkStart(int attemptCounter) {
-        var port = AppProperties.get().getDefaultBeaconPort();
-        var reachable = BeaconServer.isReachable(port);
+        var defaultBeaconPort = AppProperties.get().getDefaultBeaconPort();
+        var reachable = BeaconServer.isReachable(defaultBeaconPort);
 
         var effectiveBeaconPort = AppProperties.get().queryEffectiveBeaconPort(reachable);
         if (effectiveBeaconPort.isEmpty()) {
@@ -44,6 +46,11 @@ public class AppInstance {
                     .expected()
                     .handle();
             AppOperationMode.halt(1);
+            return;
+        }
+
+        if (effectiveBeaconPort.getAsInt() != defaultBeaconPort) {
+            reachable = BeaconServer.isReachable(effectiveBeaconPort.getAsInt());
         }
 
         if (!reachable) {
@@ -61,11 +68,10 @@ public class AppInstance {
             return;
         }
 
-        var client = tryEstablishConnection(port);
+        var client = tryEstablishConnection(effectiveBeaconPort.getAsInt());
         if (client.isEmpty()) {
             // We still should check whether it is somehow occupied, otherwise beacon server startup will fail
-            TrackEvent.info(
-                    "Another instance is already running on this port but is not reachable. Quitting ...");
+            TrackEvent.info("Another instance is already running on this port but is not reachable. Quitting ...");
             AppOperationMode.halt(1);
             return;
         }

@@ -7,8 +7,8 @@ import io.xpipe.app.core.check.AppSystemFontCheck;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.OsType;
+import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
 import javafx.scene.text.Font;

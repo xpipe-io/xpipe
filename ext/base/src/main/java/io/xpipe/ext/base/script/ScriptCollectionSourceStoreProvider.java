@@ -1,20 +1,23 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.*;
-import io.xpipe.app.hub.comp.*;
+import io.xpipe.app.hub.creation.StoreCreationModel;
+import io.xpipe.app.hub.entry.StoreEntryBadge;
+import io.xpipe.app.hub.entry.StoreEntryInformation;
+import io.xpipe.app.hub.entry.StoreEntryWrapper;
+import io.xpipe.app.hub.section.StoreSection;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
+import io.xpipe.app.store.DataStore;
+import io.xpipe.app.store.DataStoreCreationCategory;
+import io.xpipe.app.store.DataStoreProvider;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.StoreStateFormat;
+import io.xpipe.app.util.GuiDialog;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
 
 import lombok.SneakyThrows;
 
@@ -41,11 +44,6 @@ public class ScriptCollectionSourceStoreProvider implements DataStoreProvider {
     @Override
     public boolean shouldShowScan() {
         return false;
-    }
-
-    @Override
-    public BaseRegionBuilder<?, ?> stateDisplay(StoreSection section) {
-        return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
     }
 
     @Override
@@ -86,26 +84,19 @@ public class ScriptCollectionSourceStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public ObservableValue<String> informationString(StoreSection section) {
-        ScriptCollectionSourceStore st =
-                section.getEntry().getStore().asNeeded();
-        return Bindings.createStringBinding(
-                () -> {
-                    var s = st.getState();
-                    var summary = st.getSource().toSummary();
-                    var init = s.getEntries() != null;
-                    var format = new StoreStateFormat(
-                            List.of(),
-                            summary,
-                            init
-                                    ? AppI18n.get(
-                                            "scriptsContained", s.getEntries().size())
-                                    : null,
-                            !init ? AppI18n.get("notInitialized") : null);
-                    return format.format();
-                },
-                section.getWrapper().getPersistentState(),
-                AppI18n.activeLanguage());
+    public StoreEntryInformation buildInformation(StoreSection section) {
+        ScriptCollectionSourceStore st = section.getEntry().getStore().asNeeded();
+        var s = st.getState();
+        var init = s.getEntries() != null;
+        var count = init ? AppI18n.get("scriptsContained", s.getEntries().size()) : null;
+        return StoreEntryInformation.of(
+                StoreEntryBadge.ofFile(st.getSource().toSummary()),
+                count != null
+                        ? (s.getEntries().size() > 0
+                                ? StoreEntryBadge.ofSuccess(count)
+                                : StoreEntryBadge.ofFailure(count))
+                        : null,
+                StoreEntryBadge.ofFailure(!init ? AppI18n.get("notInitialized") : null));
     }
 
     @Override

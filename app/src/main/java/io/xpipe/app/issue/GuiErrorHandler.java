@@ -35,6 +35,13 @@ public class GuiErrorHandler extends GuiErrorHandlerBase implements ErrorHandler
         if (event.isOmitted()) {
             ErrorAction.ignore().handle(event);
             if (AppLayoutModel.get() != null) {
+
+                // If we somehow spam errors, don't create thousands of queue entries
+                var full = AppLayoutModel.get().getQueueEntries().size() > 5;
+                if (full) {
+                    return;
+                }
+
                 AppLayoutModel.get()
                         .showQueueEntry(
                                 new AppLayoutModel.QueueEntry(

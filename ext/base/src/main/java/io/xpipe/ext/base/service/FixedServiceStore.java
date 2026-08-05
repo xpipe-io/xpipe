@@ -1,10 +1,10 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.DataStoreDependencies;
-import io.xpipe.app.ext.FixedChildStore;
-import io.xpipe.app.ext.NetworkTunnelStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStore;
+import io.xpipe.app.store.DataStoreDependencies;
+import io.xpipe.app.store.FixedChildStore;
+import io.xpipe.app.store.NetworkTunnelStore;
 import io.xpipe.app.util.Validators;
 import io.xpipe.ext.base.host.HostAddressStore;
 

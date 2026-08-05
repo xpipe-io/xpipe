@@ -6,7 +6,7 @@ import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.UserReportComp;
 import io.xpipe.app.platform.LabelGraphic;
@@ -15,7 +15,6 @@ import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
-import io.xpipe.app.util.OsType;
 
 import com.sun.management.HotSpotDiagnosticMXBean;
 import lombok.SneakyThrows;
@@ -184,7 +183,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                                     .localScript(sc -> ShellScript.lines(
                                                             "echo \"+ sudo " + file + "\"",
                                                             "sudo \"" + file + "\"",
-                                                            ProcessControlProvider.get()
+                                                            ProcModuleProvider.get()
                                                                     .getEffectiveLocalDialect()
                                                                     .getPauseCommand()))
                                                     .launch();

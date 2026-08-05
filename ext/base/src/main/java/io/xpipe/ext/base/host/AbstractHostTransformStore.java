@@ -1,7 +1,7 @@
 package io.xpipe.ext.base.host;
 
-import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStore;
 
 public interface AbstractHostTransformStore extends DataStore {
 

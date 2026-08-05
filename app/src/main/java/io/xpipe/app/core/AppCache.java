@@ -1,16 +1,14 @@
 package io.xpipe.app.core;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.JacksonMapper;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.val;
 import org.apache.commons.io.FileUtils;
+import tools.jackson.databind.JavaType;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.type.TypeFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,7 +16,6 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Supplier;
 
 public class AppCache {
@@ -52,15 +49,18 @@ public class AppCache {
     }
 
     public static <T> T getNonNull(String key, Class<?> type, Supplier<T> notPresent) {
-        return getNonNull(key, TypeFactory.defaultInstance().constructType(type), notPresent);
+        return getNonNull(key, TypeFactory.createDefaultInstance().constructType(type), notPresent);
     }
 
     public static <T> T getNonNullMapEntry(String key, String mapKey, Class<?> type, Supplier<T> notPresent) {
-        return getNonNullMapEntry(key, mapKey, TypeFactory.defaultInstance().constructType(type), notPresent);
+        return getNonNullMapEntry(
+                key, mapKey, TypeFactory.createDefaultInstance().constructType(type), notPresent);
     }
 
     public static <T> T getNonNullMapEntry(String key, String mapKey, JavaType type, Supplier<T> notPresent) {
-        var mapType = TypeFactory.defaultInstance().constructMapLikeType(Map.class, TypeFactory.defaultInstance().constructType(String.class), type);
+        var mapType = TypeFactory.createDefaultInstance()
+                .constructMapLikeType(
+                        Map.class, TypeFactory.createDefaultInstance().constructType(String.class), type);
         Map<String, T> map = getNonNull(key, mapType, () -> null);
         if (map != null && map.containsKey(mapKey)) {
             return map.get(mapKey);
@@ -127,7 +127,7 @@ public class AppCache {
             return;
         }
 
-        var mapType = TypeFactory.defaultInstance().constructMapLikeType(Map.class, String.class, val.getClass());
+        var mapType = TypeFactory.createDefaultInstance().constructMapLikeType(Map.class, String.class, val.getClass());
         Map<String, T> map = getNonNull(key, mapType, () -> null);
         if (map != null) {
             map.put(mapKey, val);

@@ -1,6 +1,6 @@
 package io.xpipe.app.pwman;
 
-import io.xpipe.app.cred.SshIdentityKeyListStrategy;
+import io.xpipe.app.identity.SshIdentityKeyListStrategy;
 
 import java.nio.file.Path;
 

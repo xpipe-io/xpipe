@@ -1,1 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><title>file_type_fbx</title><polyline points="16.597 2 8.252 6.378 7.881 9.082 7.895 27.447 16.419 30" style="fill:#008f90;opacity:0.75;isolation:isolate"/><polygon points="7.895 11.896 7.895 14.929 13.33 17.675 16.487 19.706 16.53 11.889 7.895 11.896" style="fill:#00393a"/><polygon points="16.53 11.889 16.487 19.706 23.391 17.043 24.146 11.882 16.53 11.889" style="fill:#008f90"/><polygon points="8.225 6.378 7.854 9.069 16.556 8.464 16.597 2 8.225 6.378" style="fill:#004748"/><polygon points="22.375 3.222 16.597 2 16.556 8.464 24.105 7.188 22.375 3.222" style="fill:#009b9d"/><polygon points="8.252 6.378 7.881 9.082 7.895 27.447 16.542 11.896 8.252 6.378" style="fill:#002526;opacity:0.7000000000000001;isolation:isolate"/><polygon points="7.895 27.447 12.63 28.861 16.419 30 16.542 11.896 7.895 27.447" style="fill:#006c6e;opacity:0.5;isolation:isolate"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    <title>file_type_fbx</title>
+    <path d="M16.597 2 8.252 6.378l-.371 2.704.014 18.365L16.419 30" style="fill:#008f90;opacity:.75;isolation:isolate"/>
+    <path d="M7.895 11.896v3.033l5.435 2.746 3.157 2.031.043-7.817z" style="fill:#00393a"/>
+    <path d="m16.53 11.889-.043 7.817 6.904-2.663.755-5.161z" style="fill:#008f90"/>
+    <path d="m8.225 6.378-.371 2.691 8.702-.605L16.597 2z" style="fill:#004748"/>
+    <path d="M22.375 3.222 16.597 2l-.041 6.464 7.549-1.276z" style="fill:#009b9d"/>
+    <path d="m8.252 6.378-.371 2.704.014 18.365 8.647-15.551z" style="fill:#002526;opacity:.7000000000000001;isolation:isolate"/>
+    <path d="m7.895 27.447 4.735 1.414L16.419 30l.123-18.104z" style="fill:#006c6e;opacity:.5;isolation:isolate"/>
+</svg>

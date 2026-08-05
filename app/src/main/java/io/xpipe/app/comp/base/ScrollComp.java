@@ -3,7 +3,6 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 
-import javafx.beans.binding.Bindings;
 import javafx.css.PseudoClass;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;

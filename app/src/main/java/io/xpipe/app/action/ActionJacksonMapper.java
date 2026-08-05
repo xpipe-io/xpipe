@@ -1,35 +1,34 @@
 package io.xpipe.app.action;
 
-import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.action.*;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.store.DataStore;
 import io.xpipe.app.util.JacksonMapper;
 import io.xpipe.app.util.UuidHelper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.util.ArrayList;
 
 public class ActionJacksonMapper {
 
     @SuppressWarnings("unchecked")
-    public static <T extends AbstractAction> T parse(JsonNode tree) throws JsonProcessingException {
+    public static <T extends AbstractAction> T parse(JsonNode tree) {
         if (!tree.isObject()) {
             return null;
         }
 
         var id = tree.get("id");
-        if (id == null || !id.isTextual()) {
+        if (id == null || !id.isString()) {
             return null;
         }
 
         var provider = ActionProvider.ALL.stream()
-                .filter(actionProvider -> id.textValue().equals(actionProvider.getId()))
+                .filter(actionProvider -> id.stringValue().equals(actionProvider.getId()))
                 .findFirst();
         if (provider.isEmpty()) {
             return null;
@@ -43,10 +42,13 @@ public class ActionJacksonMapper {
         var object = (ObjectNode) tree;
         var ref = tree.get("ref");
 
-        var mapper = JacksonMapper.newMapper().enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+        var mapper = JacksonMapper.getDefault()
+                .rebuild()
+                .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+                .build();
 
         if (ref != null && !ref.isArray() && StoreAction.class.isAssignableFrom(clazz.get())) {
-            validateRef(provider.get(), ref.asText());
+            validateRef(provider.get(), ref.asString());
             var action = mapper.treeToValue(tree, clazz.get());
             return (T) action;
         }
@@ -60,7 +62,7 @@ public class ActionJacksonMapper {
             var batchActions = new ArrayList<StoreAction<DataStore>>();
             object.remove("ref");
             for (JsonNode batchRef : ref) {
-                validateRef(provider.get(), batchRef.asText());
+                validateRef(provider.get(), batchRef.asString());
                 object.set("ref", batchRef);
                 var action = mapper.treeToValue(object, clazz.get());
                 batchActions.add((StoreAction<DataStore>) action);
@@ -70,7 +72,7 @@ public class ActionJacksonMapper {
 
         var makeMulti = ref != null && ref.isArray() && MultiStoreAction.class.isAssignableFrom(clazz.get());
         if (makeMulti) {
-            validateRef(provider.get(), ref.asText());
+            validateRef(provider.get(), ref.asString());
             object.remove("ref");
             object.set("refs", ref);
             var action = mapper.treeToValue(object, clazz.get());

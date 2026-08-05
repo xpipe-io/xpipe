@@ -3,8 +3,16 @@
     -fx-background-radius: 4px;
     -fx-border-radius: 4px;
     -fx-border-width: 0;
-    -fx-padding: 1 0 1 2;
+    -fx-padding: 1 10 1 2;
     -fx-background-insets: 0;
+}
+
+.category-button .drag-into-indicator {
+    -fx-padding: 0 6 0 0;
+}
+
+.category-button .drag-into-indicator:hover .ikonli-font-icon {
+    -fx-icon-color: -color-accent-emphasis;
 }
 
 .root:nord .category-button {
@@ -17,7 +25,7 @@
     -fx-background-color: transparent;
 }
 
-.category-button:hover, .root:key-navigation .category-button:focused {
+.category .category-button:hover, .root:key-navigation .category-button:focused {
     -fx-background-color: -color-bg-default-transparent;
 }
 

@@ -5,9 +5,9 @@ import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.JacksonMapper;
 import io.xpipe.app.util.UuidHelper;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.experimental.SuperBuilder;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -58,8 +58,8 @@ public abstract class SerializableAction extends AbstractAction {
                     .filter(s -> !s.equals("Store"))
                     .collect(Collectors.joining(" "));
 
-            if (property.getValue().isTextual()) {
-                var value = property.getValue().textValue();
+            if (property.getValue().isString()) {
+                var value = property.getValue().stringValue();
                 var uuid = UuidHelper.parse(value);
                 if (uuid.isPresent()) {
                     var refName = DataStorage.get()
@@ -77,7 +77,7 @@ public abstract class SerializableAction extends AbstractAction {
             } else if (property.getValue().isArray()) {
                 var list = new ArrayList<String>();
                 for (JsonNode jsonNode : property.getValue()) {
-                    var s = jsonNode.asText();
+                    var s = jsonNode.asString();
                     if (!s.isEmpty()) {
                         list.add(s);
                     }
@@ -89,7 +89,7 @@ public abstract class SerializableAction extends AbstractAction {
             } else if (property.getValue().isBoolean()) {
                 map.put(name, property.getValue().booleanValue() ? "Yes" : "No");
             } else {
-                var value = property.getValue().asText();
+                var value = property.getValue().asString();
                 map.put(name, value);
             }
         }

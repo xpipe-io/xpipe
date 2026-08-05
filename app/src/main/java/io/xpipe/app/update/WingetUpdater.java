@@ -13,7 +13,6 @@ import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.Hyperlinks;
 
-import java.nio.file.Files;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,9 +62,7 @@ public class WingetUpdater extends UpdateHandler {
             AppCache.update("performedUpdate", performedUpdate);
             AppOperationMode.executeAfterShutdown(() -> {
                 TerminalLaunch.builder().title("XPipe Updater").localScript(sc -> {
-                    var systemWide = Files.exists(AppInstallation.ofCurrent()
-                            .getBaseInstallationPath()
-                            .resolve("system"));
+                    var systemWide = AppInstallation.ofWindows().isSystemWide();
                     var pkgId = "xpipe-io.xpipe";
                     if (systemWide) {
                         return ShellScript.lines(

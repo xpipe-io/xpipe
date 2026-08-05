@@ -1,17 +1,14 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.process.*;
-
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.util.OsType;
 import io.xpipe.app.webtop.WebtopApp;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 @Builder
 @Jacksonized

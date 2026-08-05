@@ -1,47 +1,97 @@
 package io.xpipe.app.secret;
 
 import io.xpipe.app.storage.DataStorageSecret;
-import io.xpipe.app.storage.DataStorageUserHandler;
+import io.xpipe.app.storage.DataStoreAccessScope;
 import io.xpipe.app.util.JacksonMapper;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.*;
+import tools.jackson.databind.JsonNode;
 
 import java.util.Objects;
 
 @AllArgsConstructor
 @Getter
-@JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
-@JsonSubTypes({
-    @JsonSubTypes.Type(value = EncryptedValue.VaultKey.class),
-    @JsonSubTypes.Type(value = EncryptedValue.CurrentKey.class),
-})
-public abstract class EncryptedValue<T> {
+public class EncryptedValue<T> {
 
-    @NonNull
+    private final JsonNode valueJson;
+
     private final T value;
 
-    @NonNull
     private final DataStorageSecret secret;
 
+    private final boolean encrypted;
+
     @SneakyThrows
-    public static <T> EncryptedValue<T> of(T value) {
+    public static <T> EncryptedValue<T> ofRaw(T value) {
         if (value == null) {
             return null;
         }
 
-        return CurrentKey.of(value);
+        return new EncryptedValue<>(JacksonMapper.getDefault().valueToTree(value), value, null, false);
     }
 
-    public abstract boolean allowUserSecretKey();
+    @SneakyThrows
+    public static <T> EncryptedValue<T> of(T value, DataStoreAccessScope scope) {
+        if (value == null) {
+            return null;
+        }
 
-    public abstract EncryptedValue<T> withValue(T value);
+        var valueNode = JacksonMapper.getDefault().valueToTree(value);
+        var s = valueNode.toPrettyString();
+        var secret = new InPlaceSecretValue(s.toCharArray());
+        var storageSecret = DataStorageSecret.of(secret, scope.getPrincipals());
+        return new EncryptedValue<>(valueNode, value, storageSecret, true);
+    }
+
+    public EncryptedValue<T> with(T value) {
+        return with(value, secret.getScope());
+    }
+
+    public EncryptedValue<T> withUpdatedPrincipals() {
+        var valueJson = value != null ? JacksonMapper.getDefault().valueToTree(value) : null;
+        if (secret == null) {
+            return new EncryptedValue<>(valueJson, value, null, false);
+        }
+
+        return new EncryptedValue<>(valueJson, value, secret.withUpdatedPrincipals(), encrypted);
+    }
+
+    public EncryptedValue<T> with(DataStoreAccessScope scope) {
+        return with(value, scope);
+    }
+
+    public EncryptedValue<T> with(T value, DataStoreAccessScope scope) {
+        if (value == null) {
+            return null;
+        }
+
+        if (value.equals(this.value) && secret != null && secret.matchesScope(scope)) {
+            return this;
+        }
+
+        var valueJson = JacksonMapper.getDefault().valueToTree(value);
+        var s = valueJson.toPrettyString();
+        var newSecret = secret != null ? secret.with(new InPlaceSecretValue(s.toCharArray()), scope) : null;
+        return new EncryptedValue<>(valueJson, value, newSecret, encrypted);
+    }
+
+    @SuppressWarnings("unchecked")
+    public T reparseValue() {
+        if (getValue() == null) {
+            return null;
+        }
+
+        var c = getValue().getClass();
+        return (T) JacksonMapper.getDefault().treeToValue(valueJson, c);
+    }
+
+    public boolean isAccessible() {
+        return !encrypted || secret == null || secret.isAccessible();
+    }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(value);
+        return encrypted ? Objects.hash(value, secret.getScope()) : Objects.hash(value);
     }
 
     @Override
@@ -49,89 +99,8 @@ public abstract class EncryptedValue<T> {
         if (!(o instanceof EncryptedValue<?> that)) {
             return false;
         }
-        return Objects.equals(value, that.value);
-    }
-
-    @JsonTypeName("current")
-    @EqualsAndHashCode(callSuper = true)
-    @ToString(callSuper = true)
-    public static class CurrentKey<T> extends EncryptedValue<T> {
-
-        public CurrentKey(T value, DataStorageSecret secret) {
-            super(value, secret);
-        }
-
-        @SneakyThrows
-        public static <T> CurrentKey<T> of(T value) {
-            if (value == null) {
-                return null;
-            }
-
-            var handler = DataStorageUserHandler.getInstance();
-            var s = JacksonMapper.getDefault().writeValueAsString(value);
-            var secret = new VaultKeySecretValue(s.toCharArray());
-            return new CurrentKey<>(
-                    value,
-                    DataStorageSecret.ofSecret(
-                            secret,
-                            handler.getActiveUser() != null ? EncryptionToken.ofUser() : EncryptionToken.ofVaultKey()));
-        }
-
-        @Override
-        public boolean allowUserSecretKey() {
-            return true;
-        }
-
-        @Override
-        public EncryptedValue.CurrentKey<T> withValue(T value) {
-            if (value == null) {
-                return null;
-            }
-
-            if (value == this.getValue()) {
-                return this;
-            }
-
-            return of(value);
-        }
-    }
-
-    @JsonTypeName("vault")
-    @EqualsAndHashCode(callSuper = true)
-    @ToString(callSuper = true)
-    public static class VaultKey<T> extends EncryptedValue<T> {
-
-        public VaultKey(T value, DataStorageSecret secret) {
-            super(value, secret);
-        }
-
-        @SneakyThrows
-        public static <T> VaultKey<T> of(T value) {
-            if (value == null) {
-                return null;
-            }
-
-            var s = JacksonMapper.getDefault().writeValueAsString(value);
-            var secret = new VaultKeySecretValue(s.toCharArray());
-            return new VaultKey<>(value, DataStorageSecret.ofSecret(secret, EncryptionToken.ofVaultKey()));
-        }
-
-        @Override
-        public boolean allowUserSecretKey() {
-            return false;
-        }
-
-        @Override
-        public EncryptedValue.VaultKey<T> withValue(T value) {
-            if (value == null) {
-                return null;
-            }
-
-            if (value == this.getValue()) {
-                return this;
-            }
-
-            return of(value);
-        }
+        return Objects.equals(value, that.value)
+                && (encrypted == that.encrypted)
+                && (!encrypted || Objects.equals(secret.getScope(), that.secret.getScope()));
     }
 }

@@ -162,7 +162,10 @@ public class WindowDockComp<T extends WindowDockListener> extends SimpleRegionBu
 
         ThreadHelper.runAsync(() -> {
             var windowRect = new NativeWinWindowControl(handle.get()).getBounds();
-            if (windowRect.getX() == 0.0 && windowRect.getY() == 0.0 && windowRect.getW() == 0 && windowRect.getH() == 0) {
+            if (windowRect.getX() == 0.0
+                    && windowRect.getY() == 0.0
+                    && windowRect.getW() == 0
+                    && windowRect.getH() == 0) {
                 return;
             }
 

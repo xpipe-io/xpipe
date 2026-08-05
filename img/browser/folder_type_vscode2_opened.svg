@@ -1,1 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><title>folder_type_vscode2_opened</title><path d="M27.4,5.5H18.2L16.1,9.7H4.3V26.5H29.5V5.5Zm0,18.7H6.6V11.8H27.4Zm0-14.5H19.2l1-2.1h7.1V9.7Z" style="fill:#7bb4db"/><polygon points="25.7 13.7 0.5 13.7 4.3 26.5 29.5 26.5 25.7 13.7" style="fill:#7bb4db"/><path d="M17.187,22.516l-5.167,3.892L9.889,25.7l5.255-5.2L9.889,15.3l2.13-.711,5.167,3.892L25.77,10l5.14,2.183V28.816L25.77,31ZM19.865,20.5l5.9,4.447V16.053Z" style="fill:#007acc"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    <title>folder_type_vscode2_opened</title>
+    <path d="M27.4 5.5h-9.2l-2.1 4.2H4.3v16.8h25.2v-21Zm0 18.7H6.6V11.8h20.8Zm0-14.5h-8.2l1-2.1h7.1v2.1Z" style="fill:#7bb4db"/>
+    <path d="M25.7 13.7H.5l3.8 12.8h25.2z" style="fill:#7bb4db"/>
+    <path d="m17.187 22.516-5.167 3.892-2.131-.708 5.255-5.2-5.255-5.2 2.13-.711 5.167 3.892L25.77 10l5.14 2.183v16.633L25.77 31Zm2.678-2.016 5.9 4.447v-8.894Z" style="fill:#007acc"/>
+</svg>

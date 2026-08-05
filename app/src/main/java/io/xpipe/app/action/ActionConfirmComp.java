@@ -4,14 +4,14 @@ import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ScrollComp;
-import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.action.BatchStoreAction;
 import io.xpipe.app.hub.action.MultiStoreAction;
 import io.xpipe.app.hub.action.StoreAction;
-import io.xpipe.app.hub.comp.StoreListChoiceComp;
-import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.hub.list.StoreListChoiceComp;
+import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStore;
 
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;

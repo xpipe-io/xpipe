@@ -1,6 +1,5 @@
 package io.xpipe.app.beacon;
 
-import com.sun.net.httpserver.HttpHandler;
 import io.xpipe.app.beacon.mcp.AppMcpServer;
 import io.xpipe.app.core.AppLocalTemp;
 import io.xpipe.app.core.AppProperties;
@@ -11,6 +10,7 @@ import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.OsType;
 
 import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import lombok.Getter;
 
@@ -47,6 +47,7 @@ public class AppBeaconServer {
 
     @Getter
     private String localAuthSecret;
+
     private FileChannel localLockFileChannel;
     private FileLock localLockFileLock;
 
@@ -57,7 +58,8 @@ public class AppBeaconServer {
     public static void init() {
         try {
             // We already queried the beacon port at this point, so this will always work
-            INSTANCE = new AppBeaconServer(AppProperties.get().queryEffectiveBeaconPort(false).orElseThrow());
+            INSTANCE = new AppBeaconServer(
+                    AppProperties.get().queryEffectiveBeaconPort(false).orElseThrow());
             INSTANCE.initAuthSecret();
             INSTANCE.start();
             TrackEvent.withInfo("Started http server")
@@ -138,11 +140,12 @@ public class AppBeaconServer {
             if (localLockFileChannel != null) {
                 localLockFileChannel.close();
             }
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
     }
 
     private void start() throws IOException {
-        executor = Executors.newFixedThreadPool(5, r -> {
+        executor = Executors.newFixedThreadPool(3, r -> {
             Thread t = Executors.defaultThreadFactory().newThread(r);
             t.setDaemon(true);
             t.setName("http handler");
@@ -191,8 +194,7 @@ public class AppBeaconServer {
 
     private boolean handleCorsHeaders(HttpExchange exchange) throws IOException {
         if (AppPrefs.get().enableHttpApi().get()) {
-            exchange.getResponseHeaders()
-                    .add("Origin", "http://localhost:" + getPort());
+            exchange.getResponseHeaders().add("Origin", "http://localhost:" + getPort());
             exchange.getResponseHeaders().add("Vary", "Origin");
             exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
             exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");

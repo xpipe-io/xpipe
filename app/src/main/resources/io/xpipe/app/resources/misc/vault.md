@@ -10,14 +10,17 @@ You can sync with this repository in all XPipe application instances the same wa
 
 You have the option to fetch any sensitive information like passwords from outside sources like password managers or enter them at connection time through a prompt window. In that case, XPipe doesn't have to store any secrets itself.
 
-In case you choose to store passwords and other secrets within XPipe, all sensitive information is encrypted when it is saved using AES with either:
+In case you choose to store passwords and other secrets within XPipe, all sensitive information is encrypted when it is saved with either:
 
 - A dynamically generated key file `vaultkey` (The data can then only be decrypted with that file present)
 - A custom passphrase that can be set for your user in the vault settings menu (This option can only as secure as the password you choose)
+- Role-based secret encryption keys for team vaults (Data can only be decrypted by having access to a certain role and its secret key)
+
+See the vault access settings menu for configuring the vault access.
 
 By default, general connection data is not encrypted, only secrets are.
 So things like hostnames and usernames are stored without encryption, which is in line with many other tools.
-There is an available setting in the vault settings menu to encrypt all connection data if you want to do that.
+There is an available setting in the vault access settings menu to encrypt all connection data if you want to do that.
 
 ## Cloning the repository on other systems
 
@@ -53,4 +56,6 @@ The sync settings for a category are inherited by default from its parent if not
 
 ### Local connections are not synced
 
-Any connection located under the local machine can not be shared as it refers to connections and data that are only available on the local system.
+Any connections located under the local machine are not synced as they are only available on the local system. You can sync any other types of remote connections like SSH connections.
+
+Some types of connection entries that are local by default, e.g. an SSH config file, can be configured to sync by syncing the underlying data, e.g. files, with this repository as well. You can find details for each type of connection entry at https://docs.xpipe.io/.

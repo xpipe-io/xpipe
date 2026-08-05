@@ -1,13 +1,13 @@
 package io.xpipe.app.process;
 
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.StatefulDataStore;
-import io.xpipe.app.util.LicensedFeature;
-import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.store.DataStore;
+import io.xpipe.app.store.StatefulDataStore;
 import io.xpipe.app.util.FailableConsumer;
 import io.xpipe.app.util.FailableFunction;
 import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.LicensedFeature;
 import io.xpipe.app.util.OsType;
+import io.xpipe.app.util.ThreadHelper;
 
 import lombok.NonNull;
 
@@ -251,8 +251,7 @@ public interface ShellControl extends ProcessControl {
         }
     }
 
-    default void enforcePowershell(FailableConsumer<ShellControl, Exception> sc)
-            throws Exception {
+    default void enforcePowershell(FailableConsumer<ShellControl, Exception> sc) throws Exception {
         if (ShellDialects.isPowershell(this)) {
             sc.accept(this);
         } else {

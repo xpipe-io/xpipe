@@ -1,99 +1,93 @@
 package io.xpipe.app.util;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.util.DefaultIndenter;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import lombok.Getter;
+import io.xpipe.app.ext.ModuleLayerLoader;
+import io.xpipe.app.store.DataStoreProvider;
 
-import java.io.IOException;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.core.json.JsonReadFeature;
+import tools.jackson.core.util.DefaultIndenter;
+import tools.jackson.core.util.DefaultPrettyPrinter;
+import tools.jackson.databind.*;
+import tools.jackson.databind.cfg.DateTimeFeature;
+import tools.jackson.databind.cfg.EnumFeature;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.jsontype.TypeSerializer;
+import tools.jackson.databind.module.SimpleModule;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ServiceLoader;
-import java.util.function.Consumer;
 
 public class JacksonMapper {
 
-    private static final ObjectMapper BASE = new ObjectMapper();
-    private static final ObjectMapper INSTANCE;
+    private static final JsonMapper BASE = create();
+    private static final List<JacksonModule> MODULES = new ArrayList<>();
+    private static JsonMapper INSTANCE = BASE;
 
-    @Getter
-    private static boolean init = false;
+    private static JsonMapper create() {
+        JsonMapper.Builder builder = JsonMapper.builder();
 
-    static {
-        configureBase(BASE);
-        INSTANCE = BASE.copy();
+        // Reflection config
+        builder.changeDefaultVisibility(visibilityChecker -> {
+            return visibilityChecker
+                    .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
+                    .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+                    .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
+                    .withCreatorVisibility(JsonAutoDetect.Visibility.NONE)
+                    .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE);
+        });
+
+        // Write format config
+        builder.enable(SerializationFeature.INDENT_OUTPUT)
+                .enable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .defaultPrettyPrinter(
+                        new DefaultPrettyPrinter().withObjectIndenter(new DefaultIndenter().withLinefeed("\n")));
+
+        // Read config
+        builder.enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
+                .disable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
+                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                .disable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE)
+                .enable(JsonReadFeature.ALLOW_JAVA_COMMENTS)
+                .enable(JsonReadFeature.ALLOW_YAML_COMMENTS)
+                .enable(JsonReadFeature.ALLOW_TRAILING_COMMA)
+                .enable(EnumFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL);
+
+        return builder.build();
     }
 
-    @SuppressWarnings("deprecation")
-    private static void configureBase(ObjectMapper objectMapper) {
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-        objectMapper.enable(JsonParser.Feature.ALLOW_COMMENTS);
-        objectMapper.enable(JsonParser.Feature.ALLOW_TRAILING_COMMA);
-        objectMapper.enable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL);
-        objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        objectMapper.disable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE);
-        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        objectMapper.setVisibility(objectMapper
-                .getSerializationConfig()
-                .getDefaultVisibilityChecker()
-                .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
-                .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
-                .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
-                .withCreatorVisibility(JsonAutoDetect.Visibility.NONE)
-                .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE));
-        objectMapper.setDefaultPrettyPrinter(new DefaultPrettyPrinter()
-                .withObjectIndenter(new DefaultIndenter().withLinefeed("\n")));
-    }
-
-    public static synchronized void configure(Consumer<ObjectMapper> mapper) {
-        mapper.accept(INSTANCE);
-    }
-
-    private static List<Module> findModules(ModuleLayer layer) {
-        ArrayList<Module> modules = new ArrayList<>();
-        ServiceLoader<Module> loader = ServiceLoader.load(layer, Module.class);
-        for (Module module : loader) {
+    private static List<JacksonModule> findModules(ModuleLayer layer) {
+        ArrayList<JacksonModule> modules = new ArrayList<>();
+        ServiceLoader<JacksonModule> loader = ServiceLoader.load(layer, JacksonModule.class);
+        for (JacksonModule module : loader) {
             modules.add(module);
         }
         return modules;
     }
 
-    public static ObjectMapper newMapper() {
-        if (!JacksonMapper.isInit()) {
-            return BASE;
-        }
-
-        return INSTANCE.copy();
+    public static JsonMapper getWithoutModules(Class<?>... classes) {
+        var mods = new ArrayList<>(MODULES);
+        mods.removeIf(
+                jacksonModule -> Arrays.stream(classes).anyMatch(aClass -> aClass.equals(jacksonModule.getClass())));
+        return BASE.rebuild().addModules(mods).build();
     }
 
-    public static ObjectMapper getDefault() {
-        if (!JacksonMapper.isInit()) {
-            return BASE;
-        }
-
+    public static JsonMapper getDefault() {
         return INSTANCE;
     }
 
-    public static ObjectMapper getRedactedSecretMapper() {
-        if (!JacksonMapper.isInit()) {
-            return BASE;
-        }
-
-        var c = INSTANCE.copy();
-        c.registerModule(new SimpleModule() {
+    public static JsonMapper getRedactedSecretMapper() {
+        var b = INSTANCE.rebuild();
+        b.disable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION);
+        b.addModule(new SimpleModule() {
             @Override
             public void setupModule(SetupContext context) {
-                addSerializer(SecretValue.class, new JsonSerializer<>() {
+                addSerializer(SecretValue.class, new ValueSerializer<>() {
                     @Override
-                    public void serialize(SecretValue value, JsonGenerator gen, SerializerProvider serializers)
-                            throws IOException {
+                    public void serialize(SecretValue value, JsonGenerator gen, SerializationContext context) {
                         gen.writeString("<secret>");
                     }
 
@@ -101,31 +95,25 @@ public class JacksonMapper {
                     public void serializeWithType(
                             SecretValue value,
                             JsonGenerator gen,
-                            SerializerProvider serializers,
-                            TypeSerializer typeSer)
-                            throws IOException {
+                            SerializationContext context,
+                            TypeSerializer typeSer) {
                         gen.writeString("<secret>");
                     }
                 });
                 super.setupModule(context);
             }
         });
-        return c;
+        return b.build();
     }
 
-    public static ObjectMapper getUnredactSecretMapper() {
-        if (!JacksonMapper.isInit()) {
-            return BASE;
-        }
-
-        var c = INSTANCE.copy();
-        c.registerModule(new SimpleModule() {
+    public static JsonMapper getUnredactSecretMapper() {
+        var b = INSTANCE.rebuild();
+        b.addModule(new SimpleModule() {
             @Override
             public void setupModule(SetupContext context) {
-                addSerializer(SecretValue.class, new JsonSerializer<>() {
+                addSerializer(SecretValue.class, new ValueSerializer<>() {
                     @Override
-                    public void serialize(SecretValue value, JsonGenerator gen, SerializerProvider serializers)
-                            throws IOException {
+                    public void serialize(SecretValue value, JsonGenerator gen, SerializationContext context) {
                         gen.writeString(value.getSecretValue());
                     }
 
@@ -133,25 +121,40 @@ public class JacksonMapper {
                     public void serializeWithType(
                             SecretValue value,
                             JsonGenerator gen,
-                            SerializerProvider serializers,
-                            TypeSerializer typeSer)
-                            throws IOException {
+                            SerializationContext context,
+                            TypeSerializer typeSer) {
                         gen.writeString(value.getSecretValue());
                     }
                 });
                 super.setupModule(context);
             }
         });
-        return c;
+        return b.build();
     }
 
     public static class Loader implements ModuleLayerLoader {
 
         @Override
         public void init(ModuleLayer layer) {
-            List<Module> modules = findModules(layer);
-            INSTANCE.registerModules(modules);
-            init = true;
+            MODULES.addAll(findModules(layer));
+
+            var b = INSTANCE.rebuild().addModules(MODULES);
+            if (DataStoreProvider.getAll() != null) {
+                var providerModule = new SimpleModule() {
+
+                    @Override
+                    public void setupModule(SetupContext context) {
+                        for (DataStoreProvider p : DataStoreProvider.getAll()) {
+                            registerSubtypes(p.getStoreClasses());
+                        }
+
+                        super.setupModule(context);
+                    }
+                };
+                b.addModules(providerModule);
+            }
+
+            INSTANCE = b.build();
         }
 
         @Override

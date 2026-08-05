@@ -14,7 +14,6 @@ import io.xpipe.app.update.AppDistributionType;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.geometry.Insets;
 
 import atlantafx.base.theme.Styles;
 
@@ -36,12 +35,7 @@ public class AboutCategory extends AppPrefsCategory {
     protected BaseRegionBuilder<?, ?> create() {
         var props = createProperties();
         var update = new UpdateCheckComp().prefWidth(600);
-        return new VerticalComp(List.of(
-                        props,
-                        RegionBuilder.vspacer(1),
-                        update,
-                        RegionBuilder.vspacer(5),
-                        RegionBuilder.hseparator().padding(Insets.EMPTY).maxWidth(600)))
+        return new VerticalComp(List.of(props, RegionBuilder.vspacer(1), update, RegionBuilder.vspacer(5)))
                 .apply(s -> s.setFillWidth(true))
                 .apply(struc -> struc.setSpacing(12))
                 .style("information")

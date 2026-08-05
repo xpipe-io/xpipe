@@ -1,14 +1,13 @@
 package io.xpipe.app.secret;
 
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
-import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.ext.ValidationException;
+import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.util.ValidationException;
 import io.xpipe.app.util.Validators;
-import io.xpipe.app.util.InPlaceSecretValue;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -63,9 +62,8 @@ public class SecretCustomCommandStrategy implements SecretRetrievalStrategy {
                     throw ErrorEventFactory.expected(new IllegalStateException("No custom command specified"));
                 }
 
-                try (var sc = ProcessControlProvider.get()
-                        .createLocalProcessControl(true)
-                        .start()) {
+                try (var sc =
+                        ProcModuleProvider.get().createLocalProcessControl(true).start()) {
                     var cc = sc.command(command);
                     return new SecretQueryResult(
                             InPlaceSecretValue.of(cc.readStdoutOrThrow()), SecretQueryState.NORMAL);

@@ -2,16 +2,19 @@ package io.xpipe.ext.base.script;
 
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.ShellDialectIcons;
-import io.xpipe.app.hub.comp.*;
+import io.xpipe.app.hub.category.StoreCategoryChoiceComp;
+import io.xpipe.app.hub.category.StoreCategoryWrapper;
+import io.xpipe.app.hub.creation.StoreCreationDialog;
+import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.process.ShellDialectIcons;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

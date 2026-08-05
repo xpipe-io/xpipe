@@ -3,27 +3,26 @@ package io.xpipe.app.storage;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.util.JacksonMapper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.apache.commons.io.FileUtils;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
+import java.time.*;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Getter
-public class DataStoreCategory extends StorageElement {
+public class DataStoreCategory extends DataStorageElement {
 
     @NonFinal
     UUID parentCategory;
@@ -35,14 +34,16 @@ public class DataStoreCategory extends StorageElement {
             Path directory,
             UUID uuid,
             String name,
+            Instant created,
             Instant lastUsed,
             Instant lastModified,
             boolean dirty,
             String icon,
+            double orderIndex,
             UUID parentCategory,
             boolean expanded,
             DataStoreCategoryConfig config) {
-        super(directory, uuid, name, lastUsed, lastModified, expanded, dirty, icon);
+        super(directory, uuid, name, created, lastUsed, lastModified, expanded, dirty, icon, orderIndex);
         this.parentCategory = parentCategory;
         this.config = config;
     }
@@ -63,28 +64,21 @@ public class DataStoreCategory extends StorageElement {
     }
 
     public static DataStoreCategory createNew(UUID parentCategory, @NonNull String name) {
-        return new DataStoreCategory(
-                null,
-                UUID.randomUUID(),
-                name,
-                Instant.now(),
-                Instant.now(),
-                true,
-                null,
-                parentCategory,
-                true,
-                DataStoreCategoryConfig.empty());
+        return createNew(parentCategory, UUID.randomUUID(), name);
     }
 
     public static DataStoreCategory createNew(UUID parentCategory, @NonNull UUID uuid, @NonNull String name) {
+        var now = Instant.now();
         return new DataStoreCategory(
                 null,
                 uuid,
                 name,
-                Instant.now(),
-                Instant.now(),
+                now,
+                now,
+                now,
                 true,
                 null,
+                0.0,
                 parentCategory,
                 true,
                 DataStoreCategoryConfig.empty());
@@ -93,67 +87,80 @@ public class DataStoreCategory extends StorageElement {
     public static Optional<DataStoreCategory> fromDirectory(Path dir) throws IOException {
         ObjectMapper mapper = JacksonMapper.getDefault();
 
-        var entryFile = dir.resolve("category.json");
+        var categoryFile = dir.resolve("category.json");
         var stateFile = dir.resolve("state.json");
-        if (!Files.exists(entryFile)) {
+        if (!Files.exists(categoryFile)) {
             return Optional.empty();
         }
 
-        var stateJson =
-                Files.exists(stateFile) ? mapper.readTree(stateFile.toFile()) : JsonNodeFactory.instance.objectNode();
-        var json = mapper.readTree(entryFile.toFile());
+        var categoryString = Files.readString(categoryFile);
+        var stateString = Files.exists(stateFile) ? Files.readString(stateFile) : null;
 
-        var uuid = UUID.fromString(json.required("uuid").textValue());
-        var parentUuid = Optional.ofNullable(json.get("parentUuid"))
+        var categoryJson = mapper.readTree(categoryString);
+        var stateJson = stateString != null ? mapper.readTree(stateString) : JsonNodeFactory.instance.nullNode();
+
+        var uuid = UUID.fromString(categoryJson.required("uuid").stringValue());
+        var parentUuid = Optional.ofNullable(categoryJson.get("parentUuid"))
                 .filter(jsonNode -> !jsonNode.isNull())
-                .map(jsonNode -> UUID.fromString(jsonNode.textValue()))
+                .map(jsonNode -> UUID.fromString(jsonNode.stringValue()))
                 .orElse(null);
-        var name = json.required("name").textValue();
+        var name = categoryJson.required("name").stringValue();
+        var orderIndex = Optional.ofNullable(categoryJson.get("orderIndex"))
+                .map(jsonNode -> jsonNode.doubleValue())
+                .orElse(0.0);
+        var created = Optional.ofNullable(categoryJson.get("created"))
+                .map(jsonNode -> jsonNode.stringValue())
+                .map(Instant::parse)
+                .orElse(Instant.EPOCH);
 
         var lastUsed = Optional.ofNullable(stateJson.get("lastUsed"))
-                .map(jsonNode -> jsonNode.textValue())
+                .map(jsonNode -> jsonNode.stringValue())
                 .map(Instant::parse)
                 .orElse(Instant.now());
         var lastModified = Optional.ofNullable(stateJson.get("lastModified"))
-                .map(jsonNode -> jsonNode.textValue())
+                .map(jsonNode -> jsonNode.stringValue())
                 .map(Instant::parse)
                 .orElse(Instant.now());
         var expanded = Optional.ofNullable(stateJson.get("expanded"))
                 .map(jsonNode -> jsonNode.booleanValue())
                 .orElse(true);
-        var config = Optional.ofNullable(json.get("config"))
+        var config = Optional.ofNullable(categoryJson.get("config"))
                 .map(jsonNode -> {
-                    try {
-                        return JacksonMapper.getDefault().treeToValue(jsonNode, DataStoreCategoryConfig.class);
-                    } catch (JsonProcessingException e) {
-                        return DataStoreCategoryConfig.empty();
-                    }
+                    return JacksonMapper.getDefault().treeToValue(jsonNode, DataStoreCategoryConfig.class);
                 })
                 .orElse(DataStoreCategoryConfig.empty());
 
-        var share =
-                Optional.ofNullable(json.get("share")).map(JsonNode::asBoolean).orElse(null);
+        var share = Optional.ofNullable(categoryJson.get("share"))
+                .map(JsonNode::asBoolean)
+                .orElse(null);
         if (share != null) {
             config = config.withSync(share);
         }
-        var color = Optional.ofNullable(json.get("color"))
+        var color = Optional.ofNullable(categoryJson.get("color"))
                 .map(node -> {
-                    try {
-                        return mapper.treeToValue(node, DataStoreColor.class);
-                    } catch (JsonProcessingException e) {
-                        return null;
-                    }
+                    return mapper.treeToValue(node, DataStoreColor.class);
                 })
                 .orElse(null);
         if (color != null) {
             config = config.withColor(color);
         }
 
-        var iconNode = json.get("icon");
-        String icon = iconNode != null && !iconNode.isNull() ? iconNode.asText() : null;
+        var iconNode = categoryJson.get("icon");
+        String icon = iconNode != null && !iconNode.isNull() ? iconNode.asString() : null;
 
         return Optional.of(new DataStoreCategory(
-                dir, uuid, name, lastUsed, lastModified, false, icon, parentUuid, expanded, config));
+                dir,
+                uuid,
+                name,
+                created,
+                lastUsed,
+                lastModified,
+                false,
+                icon,
+                orderIndex,
+                parentUuid,
+                expanded,
+                config));
     }
 
     public boolean setConfig(DataStoreCategoryConfig config) {
@@ -271,15 +278,18 @@ public class DataStoreCategory extends StorageElement {
 
         ObjectMapper mapper = JacksonMapper.getDefault();
         ObjectNode obj = JsonNodeFactory.instance.objectNode();
-        ObjectNode stateObj = JsonNodeFactory.instance.objectNode();
         obj.put("uuid", uuid.toString());
         obj.put("name", name);
-        stateObj.put("lastUsed", lastUsed.toString());
-        stateObj.put("lastModified", lastModified.toString());
-        stateObj.put("expanded", expanded);
         obj.put("parentUuid", parentCategory != null ? parentCategory.toString() : null);
         obj.set("config", JacksonMapper.getDefault().valueToTree(config));
         obj.set("icon", mapper.valueToTree(icon));
+        obj.put("orderIndex", orderIndex);
+        obj.put("created", created.toString());
+
+        ObjectNode stateObj = JsonNodeFactory.instance.objectNode();
+        stateObj.put("lastUsed", lastUsed.toString());
+        stateObj.put("lastModified", lastModified.toString());
+        stateObj.put("expanded", expanded);
 
         var entryString = mapper.writeValueAsString(obj);
         var stateString = mapper.writeValueAsString(stateObj);

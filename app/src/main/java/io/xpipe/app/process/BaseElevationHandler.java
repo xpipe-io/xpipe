@@ -1,10 +1,10 @@
 package io.xpipe.app.process;
 
-import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.secret.SecretManager;
 import io.xpipe.app.secret.SecretQuery;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.store.DataStore;
 
 import java.util.List;
 import java.util.UUID;

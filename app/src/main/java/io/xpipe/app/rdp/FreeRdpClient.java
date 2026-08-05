@@ -1,7 +1,6 @@
 package io.xpipe.app.rdp;
 
 import io.xpipe.app.comp.base.TextAreaComp;
-import io.xpipe.app.core.AppDisplayScale;
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -11,13 +10,10 @@ import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.FlatpakCache;
 import io.xpipe.app.util.OsType;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.util.ThreadHelper;
-import javafx.application.Platform;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -37,17 +33,18 @@ public class FreeRdpClient implements ExternalRdpClient {
         return new OptionsBuilder()
                 .nameAndDescription("freeRdpArguments")
                 .documentationLink("https://man.archlinux.org/man/extra/freerdp/xfreerdp3.1.en")
-                .addComp(new TextAreaComp(arguments).applyStructure(structure -> {
-                    structure.getTextArea().setPromptText(
-                          """
+                .addComp(
+                        new TextAreaComp(arguments)
+                                .applyStructure(structure -> {
+                                    structure.getTextArea().setPromptText("""
                           /floatbar:sticky:off,default:visible,show:always
                           /multimon
                           /monitors:0,2
                           """);
-                }).maxWidth(600), arguments)
-                .bind(
-                        () -> FreeRdpClient.builder().arguments(arguments.get()).build(),
-                        property);
+                                })
+                                .maxWidth(600),
+                        arguments)
+                .bind(() -> FreeRdpClient.builder().arguments(arguments.get()).build(), property);
     }
 
     @Value
@@ -55,6 +52,20 @@ public class FreeRdpClient implements ExternalRdpClient {
 
         CommandBuilder commandBase;
         boolean v3;
+    }
+
+    private Executable getMacOsCommandBase() throws Exception {
+        var sdl = CommandSupport.isInLocalPath("sdl-freerdp");
+        if (sdl) {
+            return new Executable(CommandBuilder.of().add("sdl-freerdp"), true);
+        }
+
+        var regular = CommandSupport.isInLocalPath("xfreerdp");
+        if (regular) {
+            return new Executable(CommandBuilder.of().add("xfreerdp"), true);
+        }
+
+        return null;
     }
 
     private Executable getX11CommandBase() throws Exception {
@@ -108,21 +119,26 @@ public class FreeRdpClient implements ExternalRdpClient {
                 return null;
             }
         } else {
-            exec = CommandSupport.isInLocalPath("sdl-freerdp3") ? CommandBuilder.of().add("sdl-freerdp3") : CommandBuilder.of().add("wlfreerdp3");
+            exec = CommandSupport.isInLocalPath("sdl-freerdp3")
+                    ? CommandBuilder.of().add("sdl-freerdp3")
+                    : CommandBuilder.of().add("wlfreerdp3");
         }
         return new Executable(exec, v3);
     }
 
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
-        var preferWayland = OsType.ofLocal() == OsType.LINUX && "wayland".equalsIgnoreCase(System.getenv("XDG_SESSION_TYPE"));
-        var exec = preferWayland ? getWaylandCommandBase() : getX11CommandBase();
+        var macos = OsType.ofLocal() == OsType.MACOS;
+        var preferWayland =
+                OsType.ofLocal() == OsType.LINUX && "wayland".equalsIgnoreCase(System.getenv("XDG_SESSION_TYPE"));
+        var exec = macos ? getMacOsCommandBase() : preferWayland ? getWaylandCommandBase() : getX11CommandBase();
         if (exec == null && preferWayland) {
             exec = getX11CommandBase();
         }
 
         if (exec == null) {
-            throw ErrorEventFactory.expected(new IllegalStateException("Unable to find a FreeRDP executable for v2 or v3 in the PATH or as a flatpak"));
+            throw ErrorEventFactory.expected(new IllegalStateException(
+                    "Unable to find a FreeRDP executable for v2 or v3 in the PATH or as a flatpak"));
         }
 
         var file = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
@@ -183,7 +199,9 @@ public class FreeRdpClient implements ExternalRdpClient {
             }
         }
 
-        b.fixedEnvironment("FREERDP_ASKPASS", AppInstallation.ofCurrent().getCliExecutablePath().toString());
+        b.fixedEnvironment(
+                "FREERDP_ASKPASS",
+                AppInstallation.ofCurrent().getCliExecutablePath().toString());
 
         try (var sc = LocalShell.getShell().start()) {
             var cmd = sc.getShellDialect().launchAsync(b, true);

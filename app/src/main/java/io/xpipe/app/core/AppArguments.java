@@ -26,8 +26,9 @@ public class AppArguments {
         var rawArgs = Arrays.asList(args);
         var resolvedArgs = Arrays.asList(parseProperties(args));
         var isDaemon = Boolean.getBoolean("io.xpipe.app.isDaemon");
-        var openArgs = !isDaemon ? List.<String>of() :
-                LauncherCommand.resolveLauncher(resolvedArgs.toArray(String[]::new)).inputs;
+        var openArgs = !isDaemon
+                ? List.<String>of()
+                : LauncherCommand.resolveLauncher(resolvedArgs.toArray(String[]::new)).inputs;
         return new AppArguments(rawArgs, resolvedArgs, openArgs);
     }
 

@@ -1,10 +1,11 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.secret.InPlaceSecretValue;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStore;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,7 +27,7 @@ public class HttpProxy {
     public static Optional<HttpProxy> detectFromEnvironment() {
         var envOrder = List.of("HTTP_PROXY", "http_proxy", "HTTPS_PROXY", "https_proxy", "ALL_PROXY", "all_proxy");
         for (String s : envOrder) {
-            var env =  System.getenv(s);
+            var env = System.getenv(s);
             if (env != null) {
                 try {
                     var parsed = URI.create(env);
@@ -36,8 +37,10 @@ public class HttpProxy {
                     var userInfo = parsed.getUserInfo();
                     var user = userInfo != null ? userInfo.split(":")[0] : null;
                     var pass = userInfo != null && userInfo.contains(":") ? userInfo.split(":")[1] : null;
-                    return Optional.of(new HttpProxy(host, port, user, pass != null ? InPlaceSecretValue.of(pass) : null, isSocks));
-                } catch (IllegalArgumentException ignored) {}
+                    return Optional.of(new HttpProxy(
+                            host, port, user, pass != null ? InPlaceSecretValue.of(pass) : null, isSocks));
+                } catch (IllegalArgumentException ignored) {
+                }
             }
         }
 
@@ -84,7 +87,7 @@ public class HttpProxy {
         }
 
         try {
-            return ProcessControlProvider.get().getHttpProxy(ref).isPresent();
+            return ProcModuleProvider.get().getHttpProxy(ref).isPresent();
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
             return false;

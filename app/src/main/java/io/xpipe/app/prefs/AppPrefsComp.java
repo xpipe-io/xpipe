@@ -34,7 +34,7 @@ public class AppPrefsComp extends SimpleRegionBuilder {
         boxComp.apply(struc -> {
             struc.getStyleClass().add("prefs-box");
         });
-        boxComp.maxWidth(950);
+        boxComp.maxWidth(1050);
         var box = boxComp.build();
 
         var pane = new GraphicDecorationStackPane();
@@ -107,12 +107,7 @@ public class AppPrefsComp extends SimpleRegionBuilder {
             if (minY <= 40.0) {
                 minY = 0.0;
             }
-            var s = Math.min(
-                            box.getHeight(),
-                            minY > 0.0
-                                    ? minY + 20
-                                    : 0.0)
-                    / box.getHeight();
+            var s = Math.min(box.getHeight(), minY > 0.0 ? minY + 20 : 0.0) / box.getHeight();
             var off = (scrollPane.getHeight() * s * 1.02) / box.getHeight();
             return s + off;
         } else {

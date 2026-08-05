@@ -1,17 +1,17 @@
 package io.xpipe.app.beacon.api;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.beacon.BeaconClientException;
 import io.xpipe.app.beacon.BeaconInterface;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.JacksonMapper;
 import io.xpipe.app.util.StorePath;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.sun.net.httpserver.HttpExchange;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import tools.jackson.databind.JsonNode;
 
 import java.time.Instant;
 import java.util.ArrayList;

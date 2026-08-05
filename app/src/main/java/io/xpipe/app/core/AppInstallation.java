@@ -50,6 +50,30 @@ public abstract class AppInstallation {
         };
     }
 
+    public static AppInstallation.Windows ofWindows() {
+        if (OsType.ofLocal() != OsType.WINDOWS) {
+            throw new IllegalStateException();
+        }
+
+        return WINDOWS;
+    }
+
+    public static AppInstallation.Linux ofLinux() {
+        if (OsType.ofLocal() != OsType.LINUX) {
+            throw new IllegalStateException();
+        }
+
+        return LINUX;
+    }
+
+    public static AppInstallation.MacOs ofMacOs() {
+        if (OsType.ofLocal() != OsType.MACOS) {
+            throw new IllegalStateException();
+        }
+
+        return MACOS;
+    }
+
     private static Path determineDefaultInstallationBasePath(boolean stage) {
         return switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> {
@@ -95,18 +119,19 @@ public abstract class AppInstallation {
             // working directory
             var isImage = AppProperties.get().isImage();
             if (!isImage) {
-                var cd = Path.of(System.getProperty("user.dir"));
-                var valid = Files.exists(cd.resolve("app")) && Files.exists(cd.resolve("lang"));
+                var cwd = toRealPathIfPossible(Path.of(System.getProperty("user.dir")));
+                var valid = Files.exists(cwd.resolve("app")) && Files.exists(cwd.resolve("lang"));
                 if (!valid) {
                     throw new IllegalArgumentException(
                             "Development build launched in wrong working directory, expected project root but got "
-                                    + cd);
+                                    + cwd);
                 }
-                return cd;
+                return cwd;
             }
             return getInstallationBasePathForJavaExecutable(path);
         } else {
-            return getInstallationBasePathForLauncherExecutable(path);
+            var dir = getInstallationBasePathForLauncherExecutable(path);
+            return toRealPathIfPossible(dir);
         }
     }
 
@@ -184,6 +209,11 @@ public abstract class AppInstallation {
 
         private Windows(Path base) {
             super(base);
+        }
+
+        public boolean isSystemWide() {
+            return !getBaseInstallationPath()
+                    .startsWith(AppSystemInfo.ofWindows().getUserHome());
         }
 
         @Override

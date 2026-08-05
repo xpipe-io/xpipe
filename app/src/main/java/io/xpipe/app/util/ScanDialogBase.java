@@ -7,11 +7,11 @@ import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ScanProvider;
-import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.ShellStore;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -75,7 +75,7 @@ public class ScanDialogBase {
                 for (var a : copy) {
                     // If the user decided to remove the selected entry
                     // while the scan is running, just return instantly
-                    if (!DataStorage.get().getStoreEntriesSet().contains(entry.get())) {
+                    if (!DataStorage.get().getStoreEntries().contains(entry.get())) {
                         return;
                     }
 

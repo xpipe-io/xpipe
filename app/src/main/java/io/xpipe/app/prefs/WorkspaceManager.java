@@ -10,18 +10,18 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.DesktopShortcuts;
+import io.xpipe.app.util.JacksonMapper;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.util.JacksonMapper;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.type.TypeFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,7 +39,8 @@ public class WorkspaceManager {
         var file = AppProperties.get().getDefaultReleaseDataDir().resolve("workspaces.json");
         if (Files.exists(file)) {
             try {
-                var type = TypeFactory.defaultInstance().constructType(new TypeReference<List<WorkspaceEntry>>() {});
+                var type =
+                        TypeFactory.createDefaultInstance().constructType(new TypeReference<List<WorkspaceEntry>>() {});
                 List<WorkspaceEntry> parsed = JacksonMapper.getDefault().readValue(file.toFile(), type);
                 for (WorkspaceEntry workspace : parsed) {
                     if (workspace.getName() == null

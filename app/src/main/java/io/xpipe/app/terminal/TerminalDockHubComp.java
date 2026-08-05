@@ -3,7 +3,6 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.WindowDockComp;
 
-import javafx.application.Platform;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 

@@ -9,7 +9,6 @@ import io.xpipe.app.comp.base.StackComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
@@ -270,7 +269,9 @@ public class BrowserSessionTabsComp extends SimpleRegionBuilder {
                             .paddingProperty()
                             .bind(Bindings.createObjectBinding(
                                     () -> {
-                                        if (!AppLayoutModel.get().getPortraitLayoutCollapsed().get()) {
+                                        if (!AppLayoutModel.get()
+                                                .getPortraitLayoutCollapsed()
+                                                .get()) {
                                             return new Insets(2, 0, 4, -leftPadding.get() + 3);
                                         } else {
                                             return new Insets(2, 0, 4, -leftPadding.get() - 4);
@@ -281,7 +282,9 @@ public class BrowserSessionTabsComp extends SimpleRegionBuilder {
                     tabs.paddingProperty()
                             .bind(Bindings.createObjectBinding(
                                     () -> {
-                                        if (!AppLayoutModel.get().getPortraitLayoutCollapsed().get()) {
+                                        if (!AppLayoutModel.get()
+                                                .getPortraitLayoutCollapsed()
+                                                .get()) {
                                             return new Insets(0, 0, 0, -5);
                                         } else {
                                             return new Insets(0, 0, 0, 5);
@@ -510,8 +513,6 @@ public class BrowserSessionTabsComp extends SimpleRegionBuilder {
                     var color = tabModel.getColor();
                     if (color != null) {
                         c.getStyleClass().add(color.getId());
-                    } else {
-                        c.getStyleClass().add("gray");
                     }
                     c.addEventHandler(DragEvent.DRAG_ENTERED, de -> {
                         // Prevent switch when dragging local files into app

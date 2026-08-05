@@ -7,7 +7,6 @@ import java.util.Optional;
 
 @Getter
 public enum WebtopApp {
-
     ONE_PASSWORD("1password"),
     AWS("aws"),
     BITWARDEN("bitwarden"),
@@ -25,7 +24,7 @@ public enum WebtopApp {
     TELEPORT("teleport"),
     TMUX("tmux"),
     VSCODE("vscode"),
-    VSCODIUM("vsCodium", "vscodiun"),
+    VSCODIUM("vsCodium", "vscodium"),
     WARP("warp"),
     WEZTERM("wezterm"),
     ZED("zed"),

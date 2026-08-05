@@ -55,20 +55,20 @@ public class DerivedObservableList<T> {
         return derived;
     }
 
-    public void setContent(List<? extends T> newList) {
+    public boolean setContent(List<? extends T> newList) {
         synchronized (list) {
             if (list.equals(newList)) {
-                return;
+                return false;
             }
 
             if (list.size() == 0) {
                 list.addAll(newList);
-                return;
+                return true;
             }
 
             if (newList.size() == 0) {
                 list.clear();
-                return;
+                return true;
             }
         }
 
@@ -77,6 +77,7 @@ public class DerivedObservableList<T> {
         } else {
             setContentNonUnique(newList);
         }
+        return true;
     }
 
     private void setContentNonUnique(List<? extends T> newList) {

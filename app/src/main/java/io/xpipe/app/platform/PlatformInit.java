@@ -5,8 +5,8 @@ import io.xpipe.app.core.check.AppAndroidLinuxTerminalCheck;
 import io.xpipe.app.core.check.AppGpuCheck;
 import io.xpipe.app.core.window.AppModifiedStage;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.OsType;
+import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Application;
 import javafx.application.Platform;

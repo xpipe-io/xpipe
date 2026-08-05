@@ -13,7 +13,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 
 import atlantafx.base.theme.Styles;
-import javafx.scene.paint.Color;
 import lombok.Setter;
 import org.kordamp.ikonli.javafx.FontIcon;
 

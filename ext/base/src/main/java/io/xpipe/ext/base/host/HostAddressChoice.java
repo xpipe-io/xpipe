@@ -4,9 +4,9 @@ import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.IntFieldComp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.app.ext.HostAddress;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.util.HostAddress;
 
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -51,6 +51,13 @@ public class HostAddressChoice {
             portField.disable(true);
         }
         var box = new HorizontalComp(List.of(addressField, sepLabel, portField)).spacing(5);
+        box.apply(hBox -> {
+            hBox.focusedProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal) {
+                    hBox.getChildren().getFirst().requestFocus();
+                }
+            });
+        });
         options.nameAndDescription(nameKey != null ? nameKey : "connectionInformation");
         options.addComp(box);
         options.addProperty(portProperty);

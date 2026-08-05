@@ -30,7 +30,10 @@ public class BrowserTransferProgress {
         }
 
         if (list.size() == 1) {
-            var ms = Math.max(1, now.getTimestamp().toEpochMilli() - list.getFirst().getTimestamp().toEpochMilli());
+            var ms = Math.max(
+                    1,
+                    now.getTimestamp().toEpochMilli()
+                            - list.getFirst().getTimestamp().toEpochMilli());
             return Math.round((now.getTransferred() - list.getFirst().getTransferred()) / (ms / 1000.0));
         }
 

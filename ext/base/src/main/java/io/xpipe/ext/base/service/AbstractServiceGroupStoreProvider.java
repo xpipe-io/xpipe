@@ -1,9 +1,10 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.ext.CountGroupStoreProvider;
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.CountGroupStoreProvider;
+import io.xpipe.app.store.DataStore;
+import io.xpipe.app.store.DataStoreUsageCategory;
 import io.xpipe.app.util.DocumentationLink;
 
 public abstract class AbstractServiceGroupStoreProvider implements CountGroupStoreProvider {
@@ -24,9 +25,9 @@ public abstract class AbstractServiceGroupStoreProvider implements CountGroupSto
     }
 
     @Override
-    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
+    public DataStoreEntryRef<?> getDisplayParent(DataStoreEntry store) {
         AbstractServiceGroupStore<?> s = store.getStore().asNeeded();
-        return s.getParent().get();
+        return s.getParent();
     }
 
     public String getDisplayIconFileName(DataStore store) {

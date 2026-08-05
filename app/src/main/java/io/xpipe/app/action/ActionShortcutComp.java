@@ -30,11 +30,9 @@ import java.util.List;
 public class ActionShortcutComp extends SimpleRegionBuilder {
 
     private final Property<AbstractAction> action;
-    private final Runnable onCreateMacro;
 
-    public ActionShortcutComp(Property<AbstractAction> action, Runnable onCreateMacro) {
+    public ActionShortcutComp(Property<AbstractAction> action) {
         this.action = action;
-        this.onCreateMacro = onCreateMacro;
     }
 
     @Override
@@ -64,8 +62,8 @@ public class ActionShortcutComp extends SimpleRegionBuilder {
         });
 
         var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
-            ClipboardHelper.copyUrl(url.getValue());
-        })
+                    ClipboardHelper.copyUrl(url.getValue());
+                })
                 .describe(d -> d.nameKey("copyUrl"));
         var field = new TextFieldComp(url);
         field.apply(struc -> struc.setEditable(false));
@@ -75,17 +73,19 @@ public class ActionShortcutComp extends SimpleRegionBuilder {
         return group;
     }
 
-
     private BaseRegionBuilder<?, ?> createCommandComp() {
         var command = new SimpleStringProperty();
         action.subscribe((v) -> {
             var s = ActionUrls.toUrl(v);
             ThreadHelper.runFailableAsync(() -> {
-                var exec =  AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
+                var exec = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
                 var inPath = LocalShell.getShell().view().findProgram(exec).isPresent();
-                var defaultDataDir = AppProperties.get().getDefaultDataDir().equals(AppProperties.get().getDataDir());
+                var defaultDataDir = AppProperties.get()
+                        .getDefaultDataDir()
+                        .equals(AppProperties.get().getDataDir());
                 var c = (inPath ? exec : "\"" + AppInstallation.ofCurrent().getCliExecutablePath() + "\"") + " open \""
-                        + s + "\"" + (!defaultDataDir ? " -d \"" + AppProperties.get().getDataDir() + "\"" : "");
+                        + s + "\""
+                        + (!defaultDataDir ? " -d \"" + AppProperties.get().getDataDir() + "\"" : "");
                 Platform.runLater(() -> {
                     command.set(c);
                 });

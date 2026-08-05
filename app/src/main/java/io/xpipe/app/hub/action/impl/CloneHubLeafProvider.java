@@ -1,15 +1,15 @@
 package io.xpipe.app.hub.action.impl;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
-import io.xpipe.app.hub.comp.StoreCreationDialog;
+import io.xpipe.app.hub.creation.StoreCreationDialog;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStore;
 
 import javafx.beans.value.ObservableValue;
 
@@ -65,7 +65,7 @@ public class CloneHubLeafProvider implements HubLeafProvider<DataStore> {
             entry.setTemplate(ref.get().isTemplate());
             entry.setCategoryUuid(ref.get().getCategoryUuid());
             entry.setPinToTop(ref.get().isPinToTop());
-            entry.setOrderIndex(ref.get().getOrderIndex());
+            entry.setOrderIndex(DataStorage.get().getNextOrderIndex());
             entry.setNotes(ref.get().getNotes());
 
             var instant = ref.get().getLastAccess().plus(Duration.ofSeconds(1));

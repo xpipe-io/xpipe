@@ -1,15 +1,14 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.core.AppSystemInfo;
-import io.xpipe.app.ext.PrefsValue;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandControl;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.FlatpakCache;
-import io.xpipe.app.util.Translatable;
 import io.xpipe.app.util.OsType;
+import io.xpipe.app.util.Translatable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -73,7 +72,8 @@ public interface ExternalApplicationType extends PrefsValue {
 
         default void focus() {
             try (ShellControl pc = LocalShell.getShell().start()) {
-                pc.osascriptCommand("tell application \"%s\" to activate".formatted(getApplicationName())).execute();
+                pc.osascriptCommand("tell application \"%s\" to activate".formatted(getApplicationName()))
+                        .execute();
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).handle();
             }
@@ -191,16 +191,18 @@ public interface ExternalApplicationType extends PrefsValue {
             // Try to locate if it is in the Path
             try (var sc = LocalShell.getShell().start()) {
                 String name = getExecutable();
-                var out = sc.view().findProgram(name);
-                if (out.isPresent()) {
-                    return out.flatMap(filePath -> {
-                        try {
-                            return Optional.of(Path.of(filePath.toString()));
-                        } catch (InvalidPathException ex) {
-                            ErrorEventFactory.fromThrowable(ex).omit().handle();
-                            return Optional.empty();
-                        }
-                    });
+                if (name != null) {
+                    var out = sc.view().findProgram(name);
+                    if (out.isPresent()) {
+                        return out.flatMap(filePath -> {
+                            try {
+                                return Optional.of(Path.of(filePath.toString()));
+                            } catch (InvalidPathException ex) {
+                                ErrorEventFactory.fromThrowable(ex).omit().handle();
+                                return Optional.empty();
+                            }
+                        });
+                    }
                 }
             } catch (Exception ex) {
                 ErrorEventFactory.fromThrowable(ex).omit().handle();

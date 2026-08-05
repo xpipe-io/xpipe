@@ -29,6 +29,11 @@ public class CmdTerminalType
     }
 
     @Override
+    public boolean supportsUnicode() {
+        return false;
+    }
+
+    @Override
     public boolean supportsEscapes() {
         return false;
     }

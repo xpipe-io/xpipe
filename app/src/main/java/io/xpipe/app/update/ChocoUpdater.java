@@ -11,7 +11,6 @@ import io.xpipe.app.process.*;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.Hyperlinks;
 
-import java.nio.file.Files;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,8 +59,7 @@ public class ChocoUpdater extends UpdateHandler {
             var performedUpdate = new PerformedUpdate(p.getVersion(), p.getBody(), p.getVersion());
             AppCache.update("performedUpdate", performedUpdate);
             AppOperationMode.executeAfterShutdown(() -> {
-                var systemWide = Files.exists(
-                        AppInstallation.ofCurrent().getBaseInstallationPath().resolve("system"));
+                var systemWide = AppInstallation.ofWindows().isSystemWide();
                 var propertiesArguments = systemWide ? ", --install-arguments=\"'ALLUSERS=1'\"" : "";
                 TerminalLaunch.builder()
                         .title("XPipe Updater")

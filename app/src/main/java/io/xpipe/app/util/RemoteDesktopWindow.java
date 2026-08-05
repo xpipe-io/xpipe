@@ -17,13 +17,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import javafx.stage.WindowEvent;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -123,8 +121,6 @@ public class RemoteDesktopWindow {
         AppWindowStyle.addIcons(stage);
         AppWindowStyle.addStylesheets(stage.getScene());
         AppWindowStyle.addClickShield(stage);
-        AppWindowStyle.addMaximizedPseudoClass(stage);
-        AppWindowStyle.addSizePseudoClasses(stage);
         AppWindowStyle.addFontSize(scene);
         AppWindowStyle.addNavigationPseudoClasses(scene);
         AppTheme.initThemeHandlers(stage);

@@ -1,8 +1,8 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.ext.DataStoreDependencies;
-import io.xpipe.app.ext.NetworkTunnelStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStoreDependencies;
+import io.xpipe.app.store.NetworkTunnelStore;
 import io.xpipe.ext.base.host.AbstractHostStore;
 import io.xpipe.ext.base.host.AbstractHostTransformStore;
 import io.xpipe.ext.base.host.HostAddressStore;

@@ -1,8 +1,9 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStore;
 
 import java.util.List;
 
@@ -24,8 +25,8 @@ public class CustomServiceGroupStoreProvider extends AbstractServiceGroupStorePr
     }
 
     @Override
-    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
+    public DataStoreEntryRef<?> getDisplayParent(DataStoreEntry store) {
         CustomServiceGroupStore s = store.getStore().asNeeded();
-        return s.getParent().get();
+        return s.getParent();
     }
 }

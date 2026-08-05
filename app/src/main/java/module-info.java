@@ -1,5 +1,6 @@
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.action.XPipeUrlProvider;
+import io.xpipe.app.beacon.BeaconInterface;
 import io.xpipe.app.beacon.api.*;
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.action.impl.*;
@@ -8,19 +9,15 @@ import io.xpipe.app.browser.menu.impl.compress.*;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.action.impl.*;
-import io.xpipe.app.issue.EventHandler;
-import io.xpipe.app.issue.EventHandlerImpl;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
-import io.xpipe.app.terminal.TerminalLauncher;
+import io.xpipe.app.store.DataStoreProvider;
 import io.xpipe.app.util.AppJacksonModule;
 import io.xpipe.app.util.JacksonMapper;
 import io.xpipe.app.util.LicenseProvider;
-import io.xpipe.app.beacon.BeaconInterface;
-import io.xpipe.app.util.ModuleLayerLoader;
 
-import com.fasterxml.jackson.databind.Module;
 import org.slf4j.spi.SLF4JServiceProvider;
+import tools.jackson.databind.JacksonModule;
 
 open module io.xpipe.app {
     exports io.xpipe.app.beacon;
@@ -31,11 +28,9 @@ open module io.xpipe.app {
     exports io.xpipe.app.comp.base;
     exports io.xpipe.app.core.mode;
     exports io.xpipe.app.prefs;
-    exports io.xpipe.app.hub.comp;
     exports io.xpipe.app.storage;
     exports io.xpipe.app.update;
     exports io.xpipe.app.ext;
-    exports io.xpipe.app.comp.augment;
     exports io.xpipe.app.test;
     exports io.xpipe.app.browser.action;
     exports io.xpipe.app.browser;
@@ -60,9 +55,16 @@ open module io.xpipe.app {
     exports io.xpipe.app.secret;
     exports io.xpipe.app.platform;
     exports io.xpipe.app.spice;
-    exports io.xpipe.app.cred;
+    exports io.xpipe.app.identity;
     exports io.xpipe.app.beacon.api;
     exports io.xpipe.app.webtop;
+    exports io.xpipe.app.hub.section;
+    exports io.xpipe.app.hub.entry;
+    exports io.xpipe.app.hub.list;
+    exports io.xpipe.app.hub.category;
+    exports io.xpipe.app.hub.creation;
+    exports io.xpipe.app.store;
+    exports io.xpipe.app.fs;
 
     requires com.sun.jna;
     requires com.sun.jna.platform;
@@ -71,10 +73,9 @@ open module io.xpipe.app {
     requires atlantafx.base;
     requires com.dlsc.atlantafx.themes;
     requires com.vladsch.flexmark;
-    requires com.fasterxml.jackson.core;
-    requires com.fasterxml.jackson.databind;
+    requires tools.jackson.core;
+    requires tools.jackson.databind;
     requires com.fasterxml.jackson.annotation;
-    requires com.fasterxml.jackson.datatype.jsr310;
     requires net.synedra.validatorfx;
     requires io.xpipe.modulefs;
     requires static lombok;
@@ -116,9 +117,7 @@ open module io.xpipe.app {
     requires org.int4.fx.builders;
     requires java.desktop;
 
-    uses TerminalLauncher;
     uses ActionProvider;
-    uses EventHandler;
     uses PrefsProvider;
     uses DataStoreProvider;
     uses ModuleLayerLoader;
@@ -128,11 +127,12 @@ open module io.xpipe.app {
     uses io.xpipe.app.util.LicensedFeature;
     uses BeaconInterface;
     uses DataStorageExtensionProvider;
-    uses ProcessControlProvider;
+    uses ProcModuleProvider;
     uses ShellDialect;
     uses CloudSetupProvider;
     uses CliProvider;
-    uses Module;
+    uses AuthModuleProvider;
+    uses JacksonModule;
 
     provides ActionProvider with
             GradleRunMenuProvider,
@@ -211,13 +211,15 @@ open module io.xpipe.app {
             OpenFileDefaultActionProvider,
             OpenFileNativeDetailsActionProvider,
             OpenFileWithActionProvider;
-    provides Module with
+    provides JacksonModule with
             AppJacksonModule;
     provides ModuleLayerLoader with
-            JacksonMapper.Loader,
+            AuthModuleProvider.Loader,
+            ProcModuleProvider.Loader,
             BeaconInterface.Loader,
             DataStorageExtensionProvider.Loader,
-            DataStoreProviders.Loader,
+            DataStoreProvider.Loader,
+            JacksonMapper.Loader,
             ActionProvider.Loader,
             PrefsProvider.Loader,
             LicenseProvider.Loader,
@@ -227,18 +229,26 @@ open module io.xpipe.app {
             CliProvider.Loader;
     provides SLF4JServiceProvider with
             AppLogs.Slf4jProvider;
-    provides EventHandler with
-            EventHandlerImpl;
-    provides BeaconInterface with ShellStartExchange, ShellStopExchange, ShellExecExchange, DaemonModeExchange, DaemonStatusExchange,
+    provides BeaconInterface with
+            ShellStartExchange,
+            ShellStopExchange,
+            ShellExecExchange,
+            DaemonModeExchange,
+            DaemonStatusExchange,
             DaemonFocusExchange,
             DaemonOpenExchange,
             DaemonStopExchange,
-            HandshakeExchange, StoreQueryExchange, StoreInfoExchange, StoreRemoveExchange, StoreAddExchange,
+            HandshakeExchange,
+            StoreQueryExchange,
+            StoreInfoExchange,
+            StoreRemoveExchange,
+            StoreAddExchange,
             CategoryAddExchange,
             CategoryQueryExchange,
             CategoryInfoExchange,
             CategoryRemoveExchange,
-            ActionExchange, StoreRefreshExchange,
+            ActionExchange,
+            StoreRefreshExchange,
             AskpassExchange,
             TerminalPrepareExchange,
             TerminalRegisterExchange,

@@ -1,12 +1,3 @@
-//task copyRuntimeLibs(type: Copy) {
-//    into project.jar.destinationDirectory
-//    from configurations.runtimeClasspath
-//    exclude "${project.name}.jar"
-//    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
-//}
-// Do we need this?
-// jar.dependsOn(copyRuntimeLibs)
-
 tasks.register('createExtOutput', Copy) {
     mustRunAfter jar
 
@@ -50,10 +41,9 @@ configurations {
 }
 
 dependencies {
-    compileOnly "com.fasterxml.jackson.core:jackson-databind:2.22.0"
+    compileOnly "tools.jackson.core:jackson-databind:3.2.0"
     compileOnly project(':app')
-    compileOnly 'net.synedra:validatorfx:0.4.2'
-    compileOnly files("$rootDir/gradle/gradle_scripts/atlantafx-base-2.0.2.jar")
+    compileOnly 'io.xpipe:atlantafx-base:2.1.0'
     compileOnly 'commons-io:commons-io:2.22.0'
     compileOnly "org.kordamp.ikonli:ikonli-javafx:12.4.0"
 

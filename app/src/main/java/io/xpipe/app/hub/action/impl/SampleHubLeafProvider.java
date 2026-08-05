@@ -1,7 +1,6 @@
 package io.xpipe.app.hub.action.impl;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
@@ -11,6 +10,7 @@ import io.xpipe.app.process.ElevationFunction;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.ShellStore;
 import io.xpipe.app.util.FilePath;
 
 import javafx.beans.value.ObservableValue;

@@ -6,17 +6,17 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import io.modelcontextprotocol.common.McpTransportContext;
-import io.modelcontextprotocol.json.jackson2.JacksonMcpJsonMapper;
+import io.modelcontextprotocol.json.jackson3.JacksonMcpJsonMapper;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.server.McpSyncServer;
 import io.modelcontextprotocol.spec.HttpHeaders;
 import io.modelcontextprotocol.spec.McpSchema;
 import lombok.SneakyThrows;
 import lombok.Value;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class AppMcpServer {
     @SneakyThrows
     public static void init() {
         var transportProvider = new HttpStreamableServerTransportProvider(
-                new JacksonMcpJsonMapper(new ObjectMapper()),
+                new JacksonMcpJsonMapper(JsonMapper.builder().build()),
                 "/mcp",
                 false,
                 (serverRequest) -> McpTransportContext.EMPTY,

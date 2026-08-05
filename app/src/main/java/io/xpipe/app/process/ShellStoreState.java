@@ -1,6 +1,6 @@
 package io.xpipe.app.process;
 
-import io.xpipe.app.ext.DataStoreState;
+import io.xpipe.app.store.DataStoreState;
 import io.xpipe.app.util.OsType;
 
 import lombok.AccessLevel;

@@ -5,7 +5,6 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.util.OsType;
 
 import java.util.*;
 
@@ -14,6 +13,7 @@ public class TerminalMultiplexerManager {
     private static final Map<UUID, TerminalMultiplexer> connectionHubRequests = new HashMap<>();
     private static UUID pendingMultiplexerLaunch;
     private static UUID runningMultiplexerContainer;
+    private static TerminalMultiplexer runningMultiplexerContainerType;
     private static Boolean availableOnWindows;
 
     public static void registerMultiplexerContainerLaunch(UUID uuid) {
@@ -24,6 +24,7 @@ public class TerminalMultiplexerManager {
                 if (session.getRequest().equals(pendingMultiplexerLaunch)) {
                     pendingMultiplexerLaunch = null;
                     runningMultiplexerContainer = uuid;
+                    runningMultiplexerContainerType = getEffectiveMultiplexer().orElse(null);
                 }
             }
 
@@ -39,6 +40,7 @@ public class TerminalMultiplexerManager {
                         .count();
                 if (left == 0) {
                     runningMultiplexerContainer = null;
+                    runningMultiplexerContainerType = null;
                     TerminalView.get().removeListener(this);
                 }
             }
@@ -58,7 +60,8 @@ public class TerminalMultiplexerManager {
         }
 
         try {
-            return (availableOnWindows = LocalShell.getShell().view().findProgram("zellij").isPresent());
+            return (availableOnWindows =
+                    LocalShell.getShell().view().findProgram("zellij").isPresent());
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
             return (availableOnWindows = false);
@@ -86,7 +89,6 @@ public class TerminalMultiplexerManager {
                 ErrorEventFactory.fromThrowable(e).handle();
             }
         }
-
 
         return Optional.of(multiplexer);
     }
@@ -153,9 +155,21 @@ public class TerminalMultiplexerManager {
             return Optional.empty();
         }
 
+        var noSessions = TerminalView.get().getSessions().stream()
+                .noneMatch(shellSession -> shellSession.getTerminal().isRunning()
+                        && (mult.get() == connectionHubRequests.get(shellSession.getRequest())));
+        if (noSessions) {
+            var starting = TerminalView.get().getSessions().stream()
+                    .filter(shellSession -> shellSession.getTerminal().isRunning()
+                            && runningMultiplexerContainerType == mult.get()
+                            && shellSession.getRequest().equals(runningMultiplexerContainer))
+                    .findFirst();
+            return starting.map(shellSession -> shellSession.getTerminal());
+        }
+
         var session = TerminalView.get().getSessions().stream()
                 .filter(shellSession -> shellSession.getTerminal().isRunning()
-                        && mult.get() == connectionHubRequests.get(shellSession.getRequest()))
+                        && (mult.get() == connectionHubRequests.get(shellSession.getRequest())))
                 .findFirst();
         return session.map(shellSession -> shellSession.getTerminal());
     }

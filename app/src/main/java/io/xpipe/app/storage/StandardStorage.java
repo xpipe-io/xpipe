@@ -5,20 +5,19 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.DataStorageExtensionProvider;
-import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.secret.DataStorageAccessHandler;
+import io.xpipe.app.store.LocalStore;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.GlobalTimer;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.OsType;
+import io.xpipe.app.util.ThreadHelper;
 
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -28,28 +27,24 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class StandardStorage extends DataStorage {
 
-    private final Set<Path> directoriesToKeep = new HashSet<>();
-
     @Getter
     private final DataStorageSyncHandler dataStorageSyncHandler;
 
     @Getter
-    private final DataStorageUserHandler dataStorageUserHandler;
+    private DataStorageAccessHandler dataStorageAccessHandler;
 
     private final ReentrantLock busyIo = new ReentrantLock();
-    private DataStorageVaultKey vaultKey;
 
     @Getter
     private boolean disposed;
 
     private boolean saveQueued;
 
-    private final AppLayoutModel.QueueEntry queueEntry = AppLayoutModel.QueueEntry.ofNotification(
-            "syncInProgressTitle", "syncInProgress", "mdi2g-git", false);
+    private final AppLayoutModel.QueueEntry queueEntry =
+            AppLayoutModel.QueueEntry.ofNotification("syncInProgressTitle", "syncInProgress", "mdi2g-git", false);
 
     StandardStorage() {
         this.dataStorageSyncHandler = DataStorageSyncHandler.getInstance();
-        this.dataStorageUserHandler = DataStorageUserHandler.getInstance();
     }
 
     public void pullManually() {
@@ -196,12 +191,6 @@ public class StandardStorage extends DataStorage {
                     catch (Exception ex) {
                         // Data corruption and schema changes are expected
 
-                        // We only keep invalid entries in developer mode as there's no point in keeping them in
-                        // production.
-                        if (AppProperties.get().isDevelopmentEnvironment()) {
-                            directoriesToKeep.add(path);
-                        }
-
                         ErrorEventFactory.fromThrowable(ex)
                                 .expected()
                                 .omit()
@@ -253,6 +242,7 @@ public class StandardStorage extends DataStorage {
             var e = DataStoreEntry.createNew(
                     LOCAL_ID, DataStorage.DEFAULT_CATEGORY_UUID, "Local Machine", new LocalStore());
             e.setDirectory(getStoresDir().resolve(LOCAL_ID.toString()));
+            e.setOrderIndex(getNextOrderIndex());
             storeEntries.put(e, e);
             e.validate();
         }
@@ -264,16 +254,16 @@ public class StandardStorage extends DataStorage {
 
         // Reload stores, this time with all entry refs present
         // These do however not have a completed validity yet
-        refreshEntries();
+        refreshStoreEntries();
         // Bring entries into completed validity if possible
         // Needed for chained stores
-        refreshEntries();
+        refreshStoreEntries();
         if (initialLoad) {
             // Let providers work on complete stores
             callProviders();
         }
         // Update validities after any possible changes
-        refreshEntries();
+        refreshStoreEntries();
         // Add any possible missing synthetic parents
         storeEntriesSet.forEach(entry -> {
             var syntheticParent = getSyntheticParent(entry);
@@ -283,9 +273,26 @@ public class StandardStorage extends DataStorage {
         });
         entriesAvailable = true;
         // Update validities from synthetic parent changes and entries available flag changes
-        refreshEntries();
-        // Remove user inaccessible entries only when everything is valid, so we can check the parent hierarchies
-        filterPerUserEntries(storeEntries.keySet());
+        refreshStoreEntries();
+
+        // The principals might have changed externally
+        refreshStoreEntriesEncryption();
+
+        double maxOrderIndex = 0;
+        for (DataStoreEntry e : storeEntriesSet) {
+            if (e.getOrderIndex() > maxOrderIndex) {
+                maxOrderIndex = e.orderIndex;
+            }
+        }
+        for (DataStoreCategory c : storeCategories) {
+            if (c.getOrderIndex() > maxOrderIndex) {
+                maxOrderIndex = c.getOrderIndex();
+            }
+        }
+        orderCounter = (int) Math.ceil(maxOrderIndex + 1.0);
+
+        // Remove inaccessible entries only when everything is valid, so we can check the parent hierarchies
+        filterInaccessibleEntries(storeEntries.keySet());
 
         // Only add new stores if really necessary
         laterAddedEntries.stream()
@@ -295,22 +302,20 @@ public class StandardStorage extends DataStorage {
                     addStoreEntryIfNotPresent(e);
                 });
 
-        deleteLeftovers();
+        // Refresh validities after entries have potentially been removed
+        refreshStoreEntries();
 
         this.dataStorageSyncHandler.afterStorageLoad();
 
         busyIo.unlock();
     }
 
-    @Override
-    public DataStorageVaultKey getVaultKey() {
-        return vaultKey;
-    }
-
     public void load() {
         if (!busyIo.tryLock()) {
             return;
         }
+
+        var dirExists = Files.isDirectory(dir);
 
         try {
             FileUtils.forceMkdir(dir.toFile());
@@ -329,22 +334,37 @@ public class StandardStorage extends DataStorage {
                     .handle();
         }
 
-        initVaultKey();
-
         try {
-            dataStorageUserHandler.init();
+            if (!dirExists) {
+                Files.writeString(
+                        dir.resolve("vaultversion"), AppProperties.get().getVersion());
+            }
+
+            DataStorageCompatibilityCheck.showLegacyVaultMigrationErrorIfNeeded();
+
+            Files.writeString(dir.resolve("vaultversion"), AppProperties.get().getVersion());
         } catch (IOException e) {
-            ErrorEventFactory.fromThrowable("Unable to load vault users", e)
+            ErrorEventFactory.fromThrowable("Unable to load vault version data", e)
                     .terminal(true)
                     .build()
                     .handle();
         }
 
-        if (dataStorageUserHandler.getUserCount() > 0) {
+        try {
+            dataStorageAccessHandler = DataStorageAccessHandler.getInstance();
+            dataStorageAccessHandler.init();
+        } catch (IOException e) {
+            ErrorEventFactory.fromThrowable("Unable to load vault access data", e)
+                    .terminal(true)
+                    .build()
+                    .handle();
+        }
+
+        if (dataStorageAccessHandler.isAccessRestricted()) {
             AppMainWindow.loadingText("unlockingVault");
         }
 
-        dataStorageUserHandler.login();
+        dataStorageAccessHandler.login();
 
         reloadContent();
 
@@ -404,11 +424,13 @@ public class StandardStorage extends DataStorage {
         var saveActive = new AtomicBoolean(true);
         var syncEnabled = dataStorageSyncHandler.supportsSync();
         if (syncEnabled) {
-            GlobalTimer.delay(() -> {
-                if (saveActive.get()) {
-                    AppLayoutModel.get().showQueueEntry(queueEntry, null, false);
-                }
-            }, Duration.ofSeconds(5));
+            GlobalTimer.delay(
+                    () -> {
+                        if (saveActive.get()) {
+                            AppLayoutModel.get().showQueueEntry(queueEntry, null, false);
+                        }
+                    },
+                    Duration.ofSeconds(5));
         }
 
         this.dataStorageSyncHandler.beforeStorageSave();
@@ -467,8 +489,7 @@ public class StandardStorage extends DataStorage {
             ErrorEventFactory.fromThrowable(exception.get()).expected().handle();
         }
 
-        deleteLeftovers();
-        dataStorageUserHandler.save();
+        dataStorageAccessHandler.save();
         dataStorageSyncHandler.afterStorageSave(true, dispose);
         if (dispose) {
             disposed = true;
@@ -485,24 +506,62 @@ public class StandardStorage extends DataStorage {
     }
 
     @Override
+    protected void deleteStoreEntryFromDisk(DataStoreEntry entry) {
+        var dir = entry.getDirectory();
+        if (dir != null) {
+            try {
+                FileUtils.deleteDirectory(dir.toFile());
+                dataStorageSyncHandler.handleDeletion(dir, entry.getName());
+            } catch (IOException e) {
+                ErrorEventFactory.fromThrowable(e).expected().handle();
+            }
+        }
+    }
+
+    @Override
+    protected void deleteStoreCategoryFromDisk(DataStoreCategory cat) {
+        var dir = cat.getDirectory();
+        if (dir != null) {
+            try {
+                FileUtils.deleteDirectory(dir.toFile());
+                dataStorageSyncHandler.handleDeletion(dir, cat.getName());
+            } catch (IOException e) {
+                ErrorEventFactory.fromThrowable(e).expected().handle();
+            }
+        }
+    }
+
+    @Override
+    public Optional<DataStoreEntry> getInaccessibleEntry(UUID uuid) {
+        return storeEntriesInaccessible.keySet().stream()
+                .filter(entry -> entry.getUuid().equals(uuid))
+                .findFirst();
+    }
+
+    @Override
     public boolean supportsSync() {
         return dataStorageSyncHandler.supportsSync();
     }
 
-    private void filterPerUserEntries(Collection<DataStoreEntry> entries) {
+    private void filterInaccessibleEntries(Collection<DataStoreEntry> entries) {
         var toRemove = getStoreEntries().stream()
-                .filter(dataStoreEntry -> shouldRemoveOtherUserEntry(dataStoreEntry))
+                .filter(dataStoreEntry -> shouldRemoveInaccessibleEntry(dataStoreEntry))
                 .toList();
-        directoriesToKeep.addAll(toRemove.stream()
-                .map(dataStoreEntry -> dataStoreEntry.getDirectory())
-                .toList());
         toRemove.forEach(entries::remove);
+        toRemove.forEach(entry -> storeEntriesInaccessible.put(entry, entry));
     }
 
-    private boolean shouldRemoveOtherUserEntry(DataStoreEntry entry) {
+    private boolean shouldRemoveInaccessibleEntry(DataStoreEntry entry) {
         var current = entry;
         while (true) {
-            if (!current.getStoreNode().hasAccess()) {
+            // Encrypted for someone else
+            if (!current.isAccessible()) {
+                return true;
+            }
+
+            // We can read the data as it is not encrypted
+            // but the scope is still not available to us
+            if (!current.getAccessScope().isAccessible()) {
                 return true;
             }
 
@@ -523,104 +582,6 @@ public class StandardStorage extends DataStorage {
                 ErrorEventFactory.fromThrowable(e).omit().handle();
             }
         });
-    }
-
-    private void deleteLeftovers() {
-        var storesDir = getStoresDir();
-        var categoriesDir = getCategoriesDir();
-
-        // Delete leftover directories in entries dir
-        try (var s = Files.list(storesDir)) {
-            s.forEach(file -> {
-                if (directoriesToKeep.contains(file)) {
-                    return;
-                }
-
-                var name = file.getFileName().toString();
-                try {
-                    UUID uuid;
-                    try {
-                        uuid = UUID.fromString(name);
-                    } catch (Exception ex) {
-                        FileUtils.forceDelete(file.toFile());
-                        return;
-                    }
-
-                    var entry = getStoreEntryIfPresent(uuid);
-                    if (entry.isEmpty()) {
-                        TrackEvent.withTrace("Deleting leftover store directory")
-                                .tag("uuid", uuid)
-                                .handle();
-                        FileUtils.forceDelete(file.toFile());
-                        dataStorageSyncHandler.handleDeletion(file, uuid.toString());
-                    }
-                } catch (Exception ex) {
-                    ErrorEventFactory.fromThrowable(ex)
-                            .expected()
-                            .omit()
-                            .build()
-                            .handle();
-                }
-            });
-        } catch (Exception ex) {
-            ErrorEventFactory.fromThrowable(ex).terminal(true).build().handle();
-        }
-
-        // Delete leftover directories in categories dir
-        try (var s = Files.list(categoriesDir)) {
-            s.forEach(file -> {
-                if (directoriesToKeep.contains(file)) {
-                    return;
-                }
-
-                var name = file.getFileName().toString();
-                try {
-                    UUID uuid;
-                    try {
-                        uuid = UUID.fromString(name);
-                    } catch (Exception ex) {
-                        FileUtils.forceDelete(file.toFile());
-                        return;
-                    }
-
-                    var entry = getStoreCategoryIfPresent(uuid);
-                    if (entry.isEmpty()) {
-                        TrackEvent.withTrace("Deleting leftover category directory")
-                                .tag("uuid", uuid)
-                                .handle();
-                        FileUtils.forceDelete(file.toFile());
-                        dataStorageSyncHandler.handleDeletion(file, uuid.toString());
-                    }
-                } catch (Exception ex) {
-                    ErrorEventFactory.fromThrowable(ex)
-                            .expected()
-                            .omit()
-                            .build()
-                            .handle();
-                }
-            });
-        } catch (Exception ex) {
-            ErrorEventFactory.fromThrowable(ex).terminal(true).build().handle();
-        }
-    }
-
-    private void initVaultKey() {
-        var file = dir.resolve("vaultkey");
-        try {
-            if (Files.exists(file)) {
-                vaultKey = DataStorageVaultKey.load(file);
-            } else {
-                FileUtils.forceMkdir(dir.toFile());
-                vaultKey = DataStorageVaultKey.generate();
-                DataStorageVaultKey.write(vaultKey, file);
-            }
-        } catch (Exception e) {
-            ErrorEventFactory.fromThrowable(
-                            "Unable to load vault key file " + file + " to decrypt vault contents. Is it corrupted?", e)
-                    .terminal(true)
-                    .build()
-                    .handle();
-        }
     }
 
     private void initSystemInfo() throws IOException {

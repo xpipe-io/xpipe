@@ -1,8 +1,8 @@
 package io.xpipe.app.action;
 
-import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.action.impl.OpenHubMenuLeafProvider;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.store.DataStore;
 
 import java.util.List;
 import java.util.Objects;

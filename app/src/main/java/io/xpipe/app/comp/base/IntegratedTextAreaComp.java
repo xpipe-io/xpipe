@@ -2,11 +2,11 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.RegionStructure;
 import io.xpipe.app.comp.RegionStructureBuilder;
-import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.ext.StatefulDataStore;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.process.SystemState;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.ShellStore;
+import io.xpipe.app.store.StatefulDataStore;
 import io.xpipe.app.util.FileOpener;
 
 import javafx.application.Platform;

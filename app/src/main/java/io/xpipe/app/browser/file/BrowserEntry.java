@@ -2,8 +2,8 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.icon.BrowserIconDirectoryType;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
-import io.xpipe.app.ext.FileEntry;
-import io.xpipe.app.ext.FileKind;
+import io.xpipe.app.fs.FileEntry;
+import io.xpipe.app.fs.FileKind;
 
 import lombok.Getter;
 

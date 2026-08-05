@@ -2,11 +2,7 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
-import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppLogs;
-import io.xpipe.app.core.AppSizeBreakpoints;
-import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.core.*;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.OsType;
@@ -89,6 +85,7 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
             }
         });
         modal.getStyleClass().add("modal-overlay-comp");
+        AppStyle.addSizePseudoClasses(modal);
         var pane = new StackPane(bgRegion, modal);
         pane.setAlignment(Pos.TOP_LEFT);
         pane.setPickOnBounds(false);
@@ -219,10 +216,7 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
         if (newValue.getTitle() != null) {
             var l = new LabelComp(
                     newValue.getTitle(),
-                    new SimpleObjectProperty<>(
-                            newValue.getGraphic() != null
-                                    ? newValue.getGraphic()
-                                    : null));
+                    new SimpleObjectProperty<>(newValue.getGraphic() != null ? newValue.getGraphic() : null));
             l.style("title");
             l.apply(struc -> {
                 struc.setGraphicTextGap(8);
@@ -310,7 +304,8 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
     private ObservableDoubleValue modalBoxWidth(ModalPane pane, Region r) {
         return Bindings.createDoubleBinding(
                 () -> {
-                    var max = pane.getWidth() - (AppSizeBreakpoints.portraitMode().get() ? 30 : 120);
+                    var max =
+                            pane.getWidth() - (AppSizeBreakpoints.portraitMode().get() ? 30 : 120);
                     if (r.getPrefWidth() != Region.USE_COMPUTED_SIZE) {
                         return Math.min(max, r.getPrefWidth() + 50);
                     }

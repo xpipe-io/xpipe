@@ -5,23 +5,25 @@ import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.hub.comp.StoreLayoutComp;
-import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.ext.ProcModuleProvider;
+import io.xpipe.app.hub.list.StoreLayoutComp;
+import io.xpipe.app.hub.list.StoreViewState;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.issue.UserReportComp;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.AppPrefsComp;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.terminal.TerminalDockHubManager;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
-
 import io.xpipe.app.webtop.WebtopAppListDialog;
 import io.xpipe.app.webtop.WebtopAppListManager;
 import io.xpipe.app.webtop.WebtopModeComp;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
@@ -85,20 +87,21 @@ public class AppLayoutModel {
                 var storage = DataStorage.get();
                 if (storage != null) {
                     ThreadHelper.runAsync(() -> {
-                        storage.refreshEntries();
+                        storage.refreshStoreEntries();
                         storage.saveAsync();
                     });
                 }
 
-                if (prefs != null
-                        && prefs.getRequiresRestart().get()) {
+                if (prefs != null && prefs.getRequiresRestart().get()) {
                     GlobalTimer.delay(
                             () -> {
-                                var modal = ModalOverlay.of(
-                                        "prefsRestartTitle", AppDialog.dialogTextKey("prefsRestartContent"));
-                                modal.addButton(ModalButton.cancel());
-                                modal.addButton(new ModalButton("restart", () -> AppRestart.restart(), true, true));
-                                modal.show();
+                                if (!AppOperationMode.isInShutdown()) {
+                                    var modal = ModalOverlay.of(
+                                            "prefsRestartTitle", AppDialog.dialogTextKey("prefsRestartContent"));
+                                    modal.addButton(ModalButton.cancel());
+                                    modal.addButton(new ModalButton("restart", () -> AppRestart.restart(), true, true));
+                                    modal.show();
+                                }
                             },
                             Duration.ofSeconds(1));
                     AppPrefs.get().getRequiresRestart().set(false);
@@ -118,15 +121,19 @@ public class AppLayoutModel {
         });
 
         var portraitExpanded = new SimpleBooleanProperty(true);
-        var toggleExpand = new AppLayoutModel.QueueEntry(AppI18n.observable("expand"), new ReadOnlyObjectWrapper<>(new LabelGraphic.NodeGraphic(() -> {
-                var inner = new FontIcon("mdi2a-arrow-expand-horizontal");
-                inner.getStyleClass().add("graphic");
-                inner.getStyleClass().add("accent-icon");
-                return inner;
-            })), () -> {
-            portraitExpanded.set(!portraitExpanded.get());
-            return false;
-        }, true);
+        var toggleExpand = new AppLayoutModel.QueueEntry(
+                AppI18n.observable("expand"),
+                new ReadOnlyObjectWrapper<>(new LabelGraphic.NodeGraphic(() -> {
+                    var inner = new FontIcon("mdi2a-arrow-expand-horizontal");
+                    inner.getStyleClass().add("graphic");
+                    inner.getStyleClass().add("accent-icon");
+                    return inner;
+                })),
+                () -> {
+                    portraitExpanded.set(!portraitExpanded.get());
+                    return false;
+                },
+                true);
         AppSizeBreakpoints.compactMode().subscribe(v -> {
             if (v) {
                 getQueueEntries().add(toggleExpand);
@@ -136,10 +143,12 @@ public class AppLayoutModel {
                 portraitExpanded.set(true);
             }
         });
-        portraitLayoutCollapsed.bind(Bindings.createBooleanBinding(() -> {
-            return AppSizeBreakpoints.compactMode().get() && !portraitExpanded.get();
-        }, portraitExpanded, AppSizeBreakpoints.compactMode()));
-
+        portraitLayoutCollapsed.bind(Bindings.createBooleanBinding(
+                () -> {
+                    return AppSizeBreakpoints.compactMode().get() && !portraitExpanded.get();
+                },
+                portraitExpanded,
+                AppSizeBreakpoints.compactMode()));
     }
 
     public static void reset() {
@@ -166,6 +175,10 @@ public class AppLayoutModel {
                     },
                     duration);
         }
+    }
+
+    public boolean isSettingsActive() {
+        return entries.indexOf(selected.getValue()) == 2;
     }
 
     public void selectBrowser() {
@@ -199,7 +212,9 @@ public class AppLayoutModel {
                         new LabelGraphic.IconGraphic("mdi2c-connection"),
                         new StoreLayoutComp(),
                         () -> {
-                            TerminalDockHubManager.get().hideDock();
+                            ThreadHelper.runAsync(() -> {
+                                TerminalDockHubManager.get().hideDock();
+                            });
                         },
                         new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN)),
                 new Entry(
@@ -226,56 +241,69 @@ public class AppLayoutModel {
                     AppI18n.observable("webtop"),
                     new LabelGraphic.IconGraphic("mdal-desktop_mac"),
                     null,
-                    () -> ProcessControlProvider.get().showWebtopDeploymentDialog(),
+                    () -> ProcModuleProvider.get().showWebtopDeploymentDialog(),
                     null));
         } else {
-            l.add(
-                    new Entry(
-                            AppI18n.observable("webtopMode"),
-                            new LabelGraphic.IconGraphic("mdi2t-tablet-cellphone"),
-                            null,
-                            () -> WebtopModeComp.showDialog(),
-                            null));
-            l.add(
-                    new Entry(
-                            AppI18n.observable("webtopAppList"),
-                            new LabelGraphic.IconGraphic("mdi2a-archive-sync-outline"),
-                            null,
-                            () -> WebtopAppListDialog.show(List.of()),
-                            null));
-            l.add(
-                    new Entry(
-                            AppI18n.observable("webtopMobileConnect"),
-                            new LabelGraphic.IconGraphic("mdi2a-archive-sync-outline"),
-                            null,
-                            () -> {
-                                ProcessControlProvider.get().showLocalWebtopMobileConnectDialog();
-                            },
-                            null));
+            l.add(new Entry(
+                    AppI18n.observable("webtopMode"),
+                    new LabelGraphic.IconGraphic("mdi2t-tablet-cellphone"),
+                    null,
+                    () -> WebtopModeComp.showDialog(),
+                    null));
+            l.add(new Entry(
+                    AppI18n.observable("webtopAppList"),
+                    new LabelGraphic.IconGraphic("mdi2a-archive-sync-outline"),
+                    null,
+                    () -> WebtopAppListDialog.show(List.of()),
+                    null));
+            l.add(new Entry(
+                    AppI18n.observable("webtopMobileConnect"),
+                    new LabelGraphic.IconGraphic("mdi2c-cast-connected"),
+                    null,
+                    () -> {
+                        selectConnections();
+                        ProcModuleProvider.get().showLocalWebtopMobileConnectDialog();
+                    },
+                    null));
         }
 
         l.add(new Entry(
-                        AppI18n.observable("docs"),
-                        new LabelGraphic.IconGraphic("mdi2b-book-open-variant"),
-                        null,
-                        () -> Hyperlinks.open(DocumentationLink.getRoot()),
-                        null));
+                AppI18n.observable("docs"),
+                new LabelGraphic.IconGraphic("mdi2b-book-open-variant"),
+                null,
+                () -> Hyperlinks.open(DocumentationLink.getRoot()),
+                null));
 
         if (AppDistributionType.get() != AppDistributionType.WEBTOP) {
-            l.add(
-                    new Entry(
-                            AppI18n.observable("visitGithubRepository"),
-                            new LabelGraphic.IconGraphic("mdi2g-github"),
-                            null,
-                            () -> Hyperlinks.open(Hyperlinks.GITHUB),
-                            null));
             l.add(new Entry(
-                            AppI18n.observable("discord"),
-                            new LabelGraphic.IconGraphic("bi-discord"),
-                            null,
-                            () -> Hyperlinks.open(Hyperlinks.DISCORD),
+                    AppI18n.observable("visitGithubRepository"),
+                    new LabelGraphic.IconGraphic("mdi2g-github"),
+                    null,
+                    () -> Hyperlinks.open(Hyperlinks.GITHUB),
+                    null));
+            l.add(new Entry(
+                    AppI18n.observable("discord"),
+                    new LabelGraphic.IconGraphic("bi-discord"),
+                    null,
+                    () -> Hyperlinks.open(Hyperlinks.DISCORD),
                     null));
         }
+
+        if (AppProperties.get().isStaging()) {
+            l.add(new Entry(
+                    AppI18n.observable("feedback"),
+                    new LabelGraphic.IconGraphic("mdoal-bug_report"),
+                    null,
+                    () -> {
+                        var event = ErrorEventFactory.fromMessage("User Report");
+                        if (AppLogs.get().isWriteToFile()) {
+                            event.attachment(AppLogs.get().getSessionLogsDirectory());
+                        }
+                        UserReportComp.show(event.build());
+                    },
+                    null));
+        }
+
         return l;
     }
 

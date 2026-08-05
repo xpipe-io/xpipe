@@ -1,9 +1,9 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.ext.ShellFileSystem;
-import io.xpipe.app.ext.FileEntry;
-import io.xpipe.app.ext.FileInfo;
+import io.xpipe.app.fs.FileEntry;
+import io.xpipe.app.fs.FileInfo;
+import io.xpipe.app.fs.ShellFileSystem;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ElevationFunction;

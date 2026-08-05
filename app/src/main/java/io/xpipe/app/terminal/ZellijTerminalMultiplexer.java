@@ -2,12 +2,12 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.*;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.OsType;
+import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.webtop.WebtopApp;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.webtop.WebtopApp;
 import lombok.Builder;
 import lombok.SneakyThrows;
 import lombok.extern.jackson.Jacksonized;
@@ -70,8 +70,10 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                 config.getPanes().getFirst().getDialectLaunchCommand().buildSimple();
         l.addAll(List.of(
                 "zellij attach --create-background xpipe",
-                "zellij -s xpipe action new-tab --name \"" + escape(control, config.getColoredTitle(), false, true) + "\"",
-                "zellij -s xpipe action write-chars -- " + escape(control, " " + firstCommand, true, true) + getCommandExitLiteral(control),
+                "zellij -s xpipe action new-tab --name \"" + escape(control, config.getColoredTitle(), false, true)
+                        + "\"",
+                "zellij -s xpipe action write-chars -- " + escape(control, " " + firstCommand, true, true)
+                        + getCommandExitLiteral(control),
                 "zellij -s xpipe action clear",
                 "zellij -s xpipe action write 10"));
 
@@ -92,7 +94,8 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                                 + " --name \""
                                 + escape(control, config.getPanes().get(i).getTitle(), false, true)
                                 + "\"",
-                        "zellij -s xpipe action write-chars -- " + escape(control, " " + iCommand, true, true) + getCommandExitLiteral(control),
+                        "zellij -s xpipe action write-chars -- " + escape(control, " " + iCommand, true, true)
+                                + getCommandExitLiteral(control),
                         "zellij -s xpipe action clear",
                         "zellij -s xpipe action write 10",
                         "zellij -s xpipe action focus-next-pane"));
@@ -129,18 +132,34 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
         // Set proper env variables for a terminal
         try (var sub = control.identicalDialectSubShell().start()) {
             sub.writeLine(sub.getShellDialect().prepareTerminalEnvironmentCommands(true));
-            sub.command("zellij delete-session -f xpipe").executeAndCheck();
+
+            var countDown = CountDown.of().start(5000);
+            var deleteCommand = sub.command("zellij delete-session -f xpipe");
+            deleteCommand.killOnTimeout(countDown);
+            // This way it doesn't throw an exception on timeout
+            deleteCommand.readStdoutAndStderr();
+            if (deleteCommand.getExitCode() == CommandControl.EXIT_TIMEOUT_EXIT_CODE) {
+                sub.kill();
+                control.start();
+                sub.start();
+                sub.writeLine(sub.getShellDialect().prepareTerminalEnvironmentCommands(true));
+                sub.command(CommandBuilder.of().add("killall", "zellij")).executeAndCheck();
+                sub.command("zellij delete-session -f xpipe").execute();
+            }
+
             sub.command("zellij attach --create-background xpipe").executeAndCheck();
         }
 
         var asyncLines = new ArrayList<String>();
         asyncLines.addAll(List.of(
                 "sleep 0.5",
-                "zellij -s xpipe action new-tab --name \"" + escape(control, config.getColoredTitle(), false, true) + "\"",
+                "zellij -s xpipe action new-tab --name \"" + escape(control, config.getColoredTitle(), false, true)
+                        + "\"",
                 "sleep 0.5",
                 "zellij -s xpipe action go-to-tab 2",
                 "sleep 0.5",
-                "zellij -s xpipe action write-chars -- " + escape(control, " " + firstCommand, true, true) + getCommandExitLiteral(control),
+                "zellij -s xpipe action write-chars -- " + escape(control, " " + firstCommand, true, true)
+                        + getCommandExitLiteral(control),
                 "zellij -s xpipe action clear",
                 "zellij -s xpipe action write 10",
                 "zellij -s xpipe action go-to-tab 1",
@@ -160,7 +179,8 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                 asyncLines.addAll(List.of(
                         "zellij -s xpipe action new-pane " + directionString + " --name \""
                                 + escape(control, config.getPanes().get(i).getTitle(), false, true) + "\"",
-                        "zellij -s xpipe action write-chars -- " + escape(control, " " + iCommand, true, true) + getCommandExitLiteral(control),
+                        "zellij -s xpipe action write-chars -- " + escape(control, " " + iCommand, true, true)
+                                + getCommandExitLiteral(control),
                         "zellij -s xpipe action clear",
                         "zellij -s xpipe action write 10",
                         "zellij -s xpipe action focus-next-pane"));
@@ -176,7 +196,8 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
 
                 // We might have changed the prefs meanwhile
                 var isActive = TerminalMultiplexerManager.getEffectiveMultiplexer()
-                        .map(terminalMultiplexer -> terminalMultiplexer == ZellijTerminalMultiplexer.this).orElse(false);
+                        .map(terminalMultiplexer -> terminalMultiplexer == ZellijTerminalMultiplexer.this)
+                        .orElse(false);
                 if (!isActive) {
                     return;
                 }
@@ -207,9 +228,7 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                     .userHome()
                     .join("Library", "Application Support", "org.Zellij-Contributors.Zellij", "config.kdl");
         } else if (sc.getOsType() == OsType.WINDOWS) {
-            return sc.view()
-                    .userHome()
-                    .join(".config", "zellij", "config.kdl");
+            return sc.view().userHome().join(".config", "zellij", "config.kdl");
         } else {
             return sc.view()
                     .getEnvironmentVariable("XDG_HOME")

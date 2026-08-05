@@ -6,12 +6,12 @@ import io.xpipe.app.action.StoreContextAction;
 import io.xpipe.app.browser.file.BrowserFileTransferOperation;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.app.process.ParentSystemAccess;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.FileSystemStore;
 
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;

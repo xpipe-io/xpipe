@@ -114,10 +114,6 @@
     -fx-cursor: hand;
 }
 
-.intro .button {
-    -fx-padding: 6 10;
-}
-
 .error-overlay-comp {
     -fx-font-size: 0.9em;
 }
@@ -296,4 +292,12 @@
 
 .webtop-mode .ikonli-font-icon {
     -fx-icon-size: 35;
+}
+
+.drag-comp {
+    -fx-background-color: -color-bg-default;
+    -fx-text-fill: -color-fg-default;
+    -fx-border-color: -color-border-default;
+    -fx-padding: 0.6em;
+    -fx-border-radius: 4;
 }

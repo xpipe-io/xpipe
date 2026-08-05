@@ -1,7 +1,5 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.ext.ValidationException;
-
 public interface Checkable {
 
     void checkComplete() throws ValidationException;

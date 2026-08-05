@@ -1,6 +1,5 @@
 package io.xpipe.app.beacon.api;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.beacon.BeaconClientException;
 import io.xpipe.app.beacon.BeaconInterface;
 import io.xpipe.app.core.AppCache;
@@ -8,15 +7,17 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.secret.InPlaceSecretValue;
 import io.xpipe.app.secret.SecretManager;
 import io.xpipe.app.secret.SecretQueryState;
 import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.util.AskpassAlert;
 import io.xpipe.app.util.GlobalTimer;
-import io.xpipe.app.util.InPlaceSecretValue;
 import io.xpipe.app.util.SecretValue;
 
 import javafx.beans.property.SimpleStringProperty;
+
+import com.sun.net.httpserver.HttpExchange;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;

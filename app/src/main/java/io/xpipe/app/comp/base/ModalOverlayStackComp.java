@@ -8,8 +8,6 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.Region;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class ModalOverlayStackComp extends SimpleRegionBuilder {
 
     private final BaseRegionBuilder<?, ?> background;

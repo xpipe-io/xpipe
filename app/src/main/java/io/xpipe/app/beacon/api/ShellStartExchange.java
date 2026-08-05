@@ -1,16 +1,16 @@
 package io.xpipe.app.beacon.api;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BeaconClientException;
 import io.xpipe.app.beacon.BeaconInterface;
 import io.xpipe.app.beacon.BeaconShellSession;
-import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.store.ShellStore;
 import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.JacksonMapper;
 import io.xpipe.app.util.OsType;
 
+import com.sun.net.httpserver.HttpExchange;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -55,7 +55,7 @@ public class ShellStartExchange extends BeaconInterface<ShellStartExchange.Reque
             AppBeaconServer.get().getCache().getShellSessions().add(new BeaconShellSession(e, control));
         }
         var ttyState =
-                JacksonMapper.getDefault().valueToTree(control.getTtyState()).asText();
+                JacksonMapper.getDefault().valueToTree(control.getTtyState()).asString();
         return Response.builder()
                 .shellDialect(control.getShellDialect().getId())
                 .osType(control.getOsType())

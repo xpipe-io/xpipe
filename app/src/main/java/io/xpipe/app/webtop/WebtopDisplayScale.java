@@ -12,7 +12,6 @@ import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.GlobalTimer;
 
 import java.time.Duration;
-import java.util.Optional;
 import java.util.OptionalInt;
 
 public class WebtopDisplayScale {
@@ -61,7 +60,8 @@ public class WebtopDisplayScale {
             return OptionalInt.empty();
         }
 
-        var out = LocalShell.getShell().command(CommandBuilder.of().add("xrdb", "-query"))
+        var out = LocalShell.getShell()
+                .command(CommandBuilder.of().add("xrdb", "-query"))
                 .sensitive()
                 .readStdoutIfPossible();
         if (out.isEmpty()) {

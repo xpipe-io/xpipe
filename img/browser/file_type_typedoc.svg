@@ -1,1 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><title>file_type_typedoc</title><polygon points="3 23 3 9 16 2 16 30 3 23" style="fill:#b44cfe"/><polygon points="3 9 16 16 29 9 16 2 3 9" style="fill:#9601fe"/><polygon points="3 23 16 16 16 30 3 23" style="fill:#99cbfe"/><polygon points="29 9 16 16 16 30 29 23 29 9" style="fill:#0c364f"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    <title>file_type_typedoc</title>
+    <path d="M3 23V9l13-7v28z" style="fill:#b44cfe"/>
+    <path d="m3 9 13 7 13-7-13-7z" style="fill:#9601fe"/>
+    <path d="m3 23 13-7v14z" style="fill:#99cbfe"/>
+    <path d="m29 9-13 7v14l13-7z" style="fill:#0c364f"/>
+</svg>

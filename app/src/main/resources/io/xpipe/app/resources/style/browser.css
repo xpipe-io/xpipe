@@ -53,11 +53,6 @@
     -fx-padding: 40;
 }
 
-.root:portrait .browser .welcome {
-    -fx-padding: 20;
-}
-
-
 .browser .welcome .button:hover {
     -fx-background-color: -color-neutral-muted;
 }

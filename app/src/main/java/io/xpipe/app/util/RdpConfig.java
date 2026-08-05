@@ -70,7 +70,10 @@ public class RdpConfig {
     }
 
     public Optional<TypedValue> get(String key) {
-        return Optional.ofNullable(content.get(key));
+        var found = content.entrySet().stream()
+                .filter(e -> e.getKey().equalsIgnoreCase(key))
+                .findFirst();
+        return found.map(Map.Entry::getValue);
     }
 
     @Value

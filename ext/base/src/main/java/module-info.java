@@ -1,6 +1,6 @@
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.ext.DataStorageExtensionProvider;
-import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.store.DataStoreProvider;
 import io.xpipe.ext.base.desktop.DesktopApplicationStoreProvider;
 import io.xpipe.ext.base.host.AbstractHostCreationActionProvider;
 import io.xpipe.ext.base.host.AbstractHostStoreProvider;
@@ -20,12 +20,11 @@ open module io.xpipe.ext.base {
     exports io.xpipe.ext.base.host;
 
     requires java.desktop;
-    requires com.fasterxml.jackson.databind;
+    requires tools.jackson.databind;
     requires com.fasterxml.jackson.annotation;
     requires java.net.http;
     requires static lombok;
     requires static javafx.controls;
-    requires static net.synedra.validatorfx;
     requires static io.xpipe.app;
     requires org.kordamp.ikonli.javafx;
     requires atlantafx.base;
@@ -33,6 +32,7 @@ open module io.xpipe.ext.base {
     requires com.sun.jna;
     requires javafx.base;
     requires javafx.graphics;
+    requires org.bouncycastle.provider;
 
     provides ActionProvider with
             CopyIpActionProvider,
@@ -40,6 +40,7 @@ open module io.xpipe.ext.base {
             AbstractHostCreationActionProvider,
             HostAddressSwitchBranchProvider,
             LocalIdentityConvertHubLeafProvider,
+            MultiIdentityConvertHubLeafProvider,
             MultiIdentitySwitchBranchProvider,
             RunBackgroundScriptActionProvider,
             RunHubBatchScriptActionProvider,
@@ -70,7 +71,6 @@ open module io.xpipe.ext.base {
             DesktopApplicationStoreProvider,
             LocalIdentityStoreProvider,
             SyncedIdentityStoreProvider,
-            PasswordManagerIdentityStoreProvider,
             MultiIdentityStoreProvider,
             AbstractHostStoreProvider;
     provides DataStorageExtensionProvider with

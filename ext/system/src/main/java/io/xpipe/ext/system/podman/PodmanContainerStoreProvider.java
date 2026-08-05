@@ -1,19 +1,23 @@
 package io.xpipe.ext.system.podman;
 
-import io.xpipe.app.comp.BaseRegionBuilder;
-import io.xpipe.app.ext.*;
-import io.xpipe.app.hub.comp.*;
-import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.hub.creation.StoreChoiceComp;
+import io.xpipe.app.hub.creation.StoreCreationModel;
+import io.xpipe.app.hub.entry.*;
+import io.xpipe.app.hub.list.StoreViewState;
+import io.xpipe.app.hub.section.StoreSection;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStore;
+import io.xpipe.app.store.DataStoreCreationCategory;
+import io.xpipe.app.store.ShellStore;
 import io.xpipe.app.util.*;
 import io.xpipe.ext.base.service.FixedServiceGroupStore;
 import io.xpipe.ext.base.store.ShellStoreProvider;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.value.ObservableValue;
 
 import java.util.List;
 
@@ -29,7 +33,8 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
         PodmanContainerStore s = w.getEntry().getStore().asNeeded();
         var state = s.getState();
         return Boolean.TRUE.equals(state.getRunning())
-                || s.getCmd() == null || s.getCmd().getStore().getState().isShowNonRunning();
+                || s.getCmd() == null
+                || s.getCmd().getStore().getState().isShowNonRunning();
     }
 
     public void onParentRefresh(DataStoreEntry entry) {
@@ -46,9 +51,9 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
     }
 
     @Override
-    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
+    public DataStoreEntryRef<?> getDisplayParent(DataStoreEntry store) {
         PodmanContainerStore s = store.getStore().asNeeded();
-        return s.getCmd() != null ? s.getCmd().get() : null;
+        return s.getCmd();
     }
 
     @Override
@@ -88,29 +93,18 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
         return List.of(PodmanContainerStore.class);
     }
 
-    public BaseRegionBuilder<?, ?> stateDisplay(StoreSection section) {
-        return new OsLogoComp(
-                section.getWrapper(), BindingsHelper.map(section.getWrapper().getPersistentState(), o -> {
-                    var state = (ContainerStoreState) o;
-                    var cs = state.getContainerState();
-                    if (cs != null && cs.toLowerCase().contains("exited")) {
-                        return SystemStateComp.State.FAILURE;
-                    } else if (cs != null && cs.toLowerCase().contains("up")) {
-                        return SystemStateComp.State.SUCCESS;
-                    } else {
-                        return SystemStateComp.State.OTHER;
-                    }
-                }));
-    }
-
     @Override
-    public ObservableValue<String> informationString(StoreSection section) {
-        var c = (PodmanContainerStoreState)
-                section.getWrapper().getPersistentState().getValue();
-        var missing = c.getShellMissing() != null && c.getShellMissing() ? "No shell available" : null;
-        return StoreStateFormat.shellStore(
-                section,
-                (ContainerStoreState s) -> new String[] {missing, s.getContainerState(), c.getSystemdUnit()},
-                null);
+    public StoreEntryInformation buildInformation(StoreSection section) {
+        var st = (PodmanContainerStore) section.getEntry().getStore().asNeeded();
+        var state = st.getState();
+        var parentInfo = ShellStoreProvider.super.buildInformation(section);
+        var cs = state.getContainerState();
+        return parentInfo.append(StoreEntryInformation.of(
+                StoreEntryBadge.ofRunningState(
+                        cs,
+                        cs != null && cs.toLowerCase().contains("up"),
+                        cs != null && cs.toLowerCase().contains("exited")),
+                StoreEntryBadge.ofFailure(
+                        state.getShellMissing() != null && state.getShellMissing() ? "No shell available" : null)));
     }
 }

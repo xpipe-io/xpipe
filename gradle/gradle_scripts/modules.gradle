@@ -25,21 +25,6 @@ extraJavaModuleInfo {
 }
 
 extraJavaModuleInfo {
-    module("org.kohsuke:github-api", "org.kohsuke.github") {
-        exports('org.kohsuke.github')
-        exports('org.kohsuke.github.function')
-        exports('org.kohsuke.github.authorization')
-        exports('org.kohsuke.github.extras')
-        exports('org.kohsuke.github.connector')
-        requires('java.logging')
-        requires('org.apache.commons.io')
-        requires('org.apache.commons.lang3')
-        requires('com.fasterxml.jackson.databind')
-        overrideModuleName()
-    }
-}
-
-extraJavaModuleInfo {
     module("io.sentry:sentry", "io.sentry") {
         exportAllPackages()
     }
@@ -47,11 +32,11 @@ extraJavaModuleInfo {
 
 extraJavaModuleInfo {
     module("io.modelcontextprotocol.sdk:mcp-core", "io.modelcontextprotocol.sdk.mcp") {
-        mergeJar("io.modelcontextprotocol.sdk:mcp-json-jackson2")
+        mergeJar("io.modelcontextprotocol.sdk:mcp-json-jackson3")
         overrideModuleName()
         exportAllPackages()
-        requires("com.fasterxml.jackson.core")
-        requires("com.fasterxml.jackson.databind")
+        requires("tools.jackson.core")
+        requires("tools.jackson.databind")
         requires("com.fasterxml.jackson.annotation")
         requires("org.slf4j")
         requires("reactor.core")

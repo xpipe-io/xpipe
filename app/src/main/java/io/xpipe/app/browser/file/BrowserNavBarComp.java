@@ -4,8 +4,8 @@ import io.xpipe.app.browser.icon.BrowserIconManager;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.RegionStructure;
 import io.xpipe.app.comp.RegionStructureBuilder;
-import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.comp.base.ContextMenuAugment;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppFontSizes;
@@ -170,7 +170,10 @@ public class BrowserNavBarComp extends RegionStructureBuilder<HBox, BrowserNavBa
         pathBar.apply(struc -> {
             struc.focusedProperty().subscribe(val -> {
                 struc.pseudoClassStateChanged(
-                        INVISIBLE, !val && !model.getInOverview().get() && !AppSizeBreakpoints.portraitMode().get());
+                        INVISIBLE,
+                        !val
+                                && !model.getInOverview().get()
+                                && !AppSizeBreakpoints.portraitMode().get());
 
                 if (val) {
                     Platform.runLater(() -> {
@@ -181,7 +184,10 @@ public class BrowserNavBarComp extends RegionStructureBuilder<HBox, BrowserNavBa
 
             struc.widthProperty().subscribe(val -> {
                 struc.pseudoClassStateChanged(
-                        INVISIBLE, !struc.isFocused() && !model.getInOverview().get() && !AppSizeBreakpoints.portraitMode().get());
+                        INVISIBLE,
+                        !struc.isFocused()
+                                && !model.getInOverview().get()
+                                && !AppSizeBreakpoints.portraitMode().get());
             });
 
             struc.addEventHandler(KeyEvent.KEY_PRESSED, ke -> {
@@ -194,7 +200,11 @@ public class BrowserNavBarComp extends RegionStructureBuilder<HBox, BrowserNavBa
                 // Pseudo classes do not apply if set instantly before shown
                 // If we start a new tab with a directory set, we have to set the pseudo class one pulse later
                 Platform.runLater(() -> {
-                    struc.pseudoClassStateChanged(INVISIBLE, !val && !struc.isFocused() && !AppSizeBreakpoints.portraitMode().get());
+                    struc.pseudoClassStateChanged(
+                            INVISIBLE,
+                            !val
+                                    && !struc.isFocused()
+                                    && !AppSizeBreakpoints.portraitMode().get());
                 });
             });
         });

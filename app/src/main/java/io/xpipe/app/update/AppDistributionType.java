@@ -5,8 +5,8 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.util.LocalExec;
-import io.xpipe.app.util.Translatable;
 import io.xpipe.app.util.OsType;
+import io.xpipe.app.util.Translatable;
 
 import javafx.beans.value.ObservableValue;
 
@@ -95,8 +95,9 @@ public enum AppDistributionType implements Translatable {
 
         if (!AppProperties.get().isImage()) {
             // Simulate webtop dist even in dev mode when possible
-            var webtop = OsType.ofLocal() == OsType.LINUX && (Files.isDirectory(Path.of("/kclient")) ||
-                    Files.isRegularFile(Path.of("/defaults/startwm_wayland.sh")));
+            var webtop = OsType.ofLocal() == OsType.LINUX
+                    && (Files.isDirectory(Path.of("/kclient"))
+                            || Files.isRegularFile(Path.of("/defaults/startwm_wayland.sh")));
             type = webtop ? WEBTOP : DEVELOPMENT;
             return;
         }
@@ -208,7 +209,9 @@ public enum AppDistributionType implements Translatable {
             }
         }
 
-        if (OsType.ofLocal() == OsType.LINUX && (Files.isDirectory(Path.of("/kclient")) || Files.isRegularFile(Path.of("/defaults/startwm_wayland.sh")))) {
+        if (OsType.ofLocal() == OsType.LINUX
+                && (Files.isDirectory(Path.of("/kclient"))
+                        || Files.isRegularFile(Path.of("/defaults/startwm_wayland.sh")))) {
             return WEBTOP;
         }
 

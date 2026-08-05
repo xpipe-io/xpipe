@@ -1,17 +1,15 @@
 package io.xpipe.ext.system.lxd;
 
-import io.xpipe.app.comp.BaseRegionBuilder;
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.DataStoreProvider;
-import io.xpipe.app.ext.DataStoreUsageCategory;
-import io.xpipe.app.hub.comp.*;
-import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.hub.entry.*;
+import io.xpipe.app.hub.section.StoreSection;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStore;
+import io.xpipe.app.store.DataStoreProvider;
+import io.xpipe.app.store.DataStoreUsageCategory;
 import io.xpipe.app.util.DocumentationLink;
-
-import javafx.beans.value.ObservableValue;
 
 import java.util.List;
 
@@ -33,34 +31,23 @@ public class LxdCmdStoreProvider implements DataStoreProvider {
         return StoreEntryComp.create(sec, nonRunning, preferLarge);
     }
 
-    public BaseRegionBuilder<?, ?> stateDisplay(StoreSection section) {
-        return new SystemStateComp(BindingsHelper.map(section.getWrapper().getPersistentState(), o -> {
-            var state = (LxdCmdStore.State) o;
-            if (state.isReachable()) {
-                return SystemStateComp.State.SUCCESS;
-            }
-
-            return SystemStateComp.State.FAILURE;
-        }));
-    }
-
     @Override
     public DataStoreUsageCategory getUsageCategory() {
         return DataStoreUsageCategory.GROUP;
     }
 
     @Override
-    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
+    public DataStoreEntryRef<?> getDisplayParent(DataStoreEntry store) {
         LxdCmdStore s = store.getStore().asNeeded();
-        return s.getHost() != null ? s.getHost().get() : null;
+        return s.getHost();
     }
 
     @Override
-    public ObservableValue<String> informationString(StoreSection section) {
-        return BindingsHelper.map(section.getWrapper().getPersistentState(), o -> {
-            var state = (LxdCmdStore.State) o;
-            return state.isReachable() ? "LXD v" + state.getServerVersion() : "Connection failed";
-        });
+    public StoreEntryInformation buildInformation(StoreSection section) {
+        var st = (LxdCmdStore) section.getEntry().getStore().asNeeded();
+        var state = st.getState();
+        return StoreEntryInformation.of(
+                StoreEntryBadge.ofSuccess(state.isReachable() ? "LXD v" + state.getServerVersion() : null));
     }
 
     @Override

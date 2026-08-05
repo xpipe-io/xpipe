@@ -5,6 +5,7 @@ import io.xpipe.app.core.check.AppDebugModeCheck;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.CliProvider;
 import io.xpipe.app.ext.ExtensionException;
+import io.xpipe.app.ext.ModuleLayerLoader;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.app.platform.PlatformState;
@@ -16,9 +17,6 @@ import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
-import io.xpipe.app.util.FailableRunnable;
-import io.xpipe.app.util.ModuleLayerLoader;
-import io.xpipe.app.util.XPipeDaemonMode;
 
 import javafx.application.Platform;
 
@@ -80,14 +78,17 @@ public abstract class AppOperationMode {
                 Thread.setDefaultUncaughtExceptionHandler((thread, ex) -> {
                     // It seems like a few exceptions are thrown in the quantum renderer
                     // when in shutdown. We can ignore these
-                    if (AppOperationMode.isInShutdown() && Platform.isFxApplicationThread() && ex instanceof NullPointerException) {
+                    if (AppOperationMode.isInShutdown()
+                            && Platform.isFxApplicationThread()
+                            && ex instanceof NullPointerException) {
                         return;
                     }
 
                     // It seems like a few exceptions are thrown in the quantum renderer
                     // when the screen configuration changes
-                    if (Platform.isFxApplicationThread() && ex instanceof IllegalArgumentException && ex.getStackTrace()[0].toString().contains(
-                            "Rectangle2D")) {
+                    if (Platform.isFxApplicationThread()
+                            && ex instanceof IllegalArgumentException
+                            && ex.getStackTrace()[0].toString().contains("Rectangle2D")) {
                         return;
                     }
 
@@ -119,7 +120,8 @@ public abstract class AppOperationMode {
                 if (cli == null) {
                     throw ExtensionException.corrupt("Missing cli module");
                 }
-                var r = cli.execute(AppProperties.get().getArguments().getResolvedArgs().toArray(String[]::new));
+                var r = cli.execute(
+                        AppProperties.get().getArguments().getResolvedArgs().toArray(String[]::new));
                 if (AppProperties.get().isAotTrainMode()) {
                     r = 0;
                 }

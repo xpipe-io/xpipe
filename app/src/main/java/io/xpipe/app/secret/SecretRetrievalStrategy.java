@@ -1,6 +1,6 @@
 package io.xpipe.app.secret;
 
-import io.xpipe.app.ext.ValidationException;
+import io.xpipe.app.util.ValidationException;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 

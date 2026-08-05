@@ -4,6 +4,7 @@ import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppSideWindow;
+import io.xpipe.app.secret.InPlaceSecretValue;
 import io.xpipe.app.secret.SecretManager;
 import io.xpipe.app.secret.SecretQueryResult;
 import io.xpipe.app.secret.SecretQueryState;

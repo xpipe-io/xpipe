@@ -4,13 +4,13 @@ import io.xpipe.app.comp.base.TextAreaComp;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.rdp.RemminaRdpClient;
 import io.xpipe.app.util.LocalFileTracker;
 import io.xpipe.app.util.RemminaHelper;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -32,17 +32,18 @@ public class RemminaVncClient implements ExternalApplicationType.LinuxApplicatio
         return new OptionsBuilder()
                 .nameAndDescription("remminaVncArguments")
                 .documentationLink("https://gitlab.com/Remmina/Remmina/-/wikis/Remmina-Config-File-Options")
-                .addComp(new TextAreaComp(options).applyStructure(structure -> {
-                    structure.getTextArea().setPromptText(
-                            """
+                .addComp(
+                        new TextAreaComp(options)
+                                .applyStructure(structure -> {
+                                    structure.getTextArea().setPromptText("""
                             showcursor=1
                             disableserverinput=1
                             tightencoding=1
                             """);
-                }).maxWidth(600), options)
-                .bind(
-                        () -> RemminaVncClient.builder().options(options.get()).build(),
-                        property);
+                                })
+                                .maxWidth(600),
+                        options)
+                .bind(() -> RemminaVncClient.builder().options(options.get()).build(), property);
     }
 
     @Override

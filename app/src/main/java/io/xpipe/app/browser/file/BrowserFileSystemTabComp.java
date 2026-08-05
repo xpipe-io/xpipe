@@ -3,15 +3,14 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.menu.BrowserMenuProviders;
 import io.xpipe.app.comp.*;
-import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
-import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.GlobalTimer;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
@@ -122,9 +121,13 @@ public class BrowserFileSystemTabComp extends SimpleRegionBuilder {
         topBar.getChildren().setAll(leftBox, new Spacer(6), navBar.get(), new Spacer(6), rightBox);
         topBar.setMinWidth(0);
 
-        var showAll = Bindings.createBooleanBinding(() -> {
-            return !AppSizeBreakpoints.portraitMode().get() || !navBar.textField().isFocused();
-        }, AppSizeBreakpoints.portraitMode(), navBar.textField().focusedProperty());
+        var showAll = Bindings.createBooleanBinding(
+                () -> {
+                    return !AppSizeBreakpoints.portraitMode().get()
+                            || !navBar.textField().isFocused();
+                },
+                AppSizeBreakpoints.portraitMode(),
+                navBar.textField().focusedProperty());
         leftBox.visibleProperty().bind(showAll);
         leftBox.managedProperty().bind(leftBox.visibleProperty());
         rightBox.visibleProperty().bind(showAll);

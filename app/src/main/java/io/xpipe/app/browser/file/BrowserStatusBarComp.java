@@ -3,7 +3,7 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
-import io.xpipe.app.comp.augment.ContextMenuAugment;
+import io.xpipe.app.comp.base.ContextMenuAugment;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.LabelComp;
@@ -41,7 +41,7 @@ public class BrowserStatusBarComp extends SimpleRegionBuilder {
                 createKillButton()));
         bar.minWidth(0);
         bar.spacing(15);
-        bar.style("status-bar");
+        bar.style("status-bar").style("color-box");
 
         bar.apply(struc -> {
             struc.widthProperty().subscribe(value -> {

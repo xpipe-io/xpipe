@@ -1,25 +1,20 @@
 package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.cred.KeyFileStrategy;
-import io.xpipe.app.cred.NoIdentityStrategy;
-import io.xpipe.app.cred.SshIdentityStrategy;
-import io.xpipe.app.cred.SshIdentityStrategyChoiceConfig;
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.GuiDialog;
-import io.xpipe.app.hub.comp.StoreCreationModel;
-import io.xpipe.app.hub.comp.StoreEntryWrapper;
+import io.xpipe.app.hub.creation.StoreCreationModel;
+import io.xpipe.app.hub.entry.StoreEntryWrapper;
+import io.xpipe.app.identity.KeyFileStrategy;
+import io.xpipe.app.identity.NoIdentityStrategy;
+import io.xpipe.app.identity.SshIdentityStrategy;
+import io.xpipe.app.identity.SshIdentityStrategyChoiceConfig;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.platform.Validator;
-import io.xpipe.app.prefs.VaultAuthentication;
-import io.xpipe.app.secret.EncryptedValue;
-import io.xpipe.app.secret.SecretNoneStrategy;
-import io.xpipe.app.secret.SecretRetrievalStrategy;
-import io.xpipe.app.secret.SecretStrategyChoiceConfig;
+import io.xpipe.app.prefs.DataStorageAccessType;
+import io.xpipe.app.secret.*;
 import io.xpipe.app.storage.*;
+import io.xpipe.app.store.DataStore;
 import io.xpipe.app.util.*;
-import io.xpipe.app.util.FilePath;
 
 import javafx.beans.property.*;
 
@@ -51,8 +46,8 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
         var user = new SimpleStringProperty(st.getUsername().get());
         var pass = new SimpleObjectProperty<>(st.getPassword());
         var identity = new SimpleObjectProperty<>(st.getSshIdentity());
-        var perUser = new SimpleBooleanProperty(st.isPerUser());
-        perUser.addListener((observable, oldValue, newValue) -> {
+        var scope = new SimpleObjectProperty<>(st.getAccessScope());
+        scope.addListener((observable, oldValue, newValue) -> {
             if (!(identity.getValue() instanceof KeyFileStrategy f)
                     || f.getFile() == null
                     || !f.getFile().isInDataDirectory()) {
@@ -76,7 +71,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
 
         var sshIdentityChoiceConfig = SshIdentityStrategyChoiceConfig.builder()
                 .allowKeyFileSync(true)
-                .perUserKeyFileCheck(() -> perUser.get())
+                .scopeCheck(() -> scope.get())
                 .build();
 
         var passwordChoice = OptionsChoiceBuilder.builder()
@@ -88,7 +83,8 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 .build()
                 .build();
 
-        var handler = DataStorageUserHandler.getInstance();
+        var roleBased = DataStorageAccessHandler.getInstance().isAccessRestricted()
+                && DataStorageAccessHandler.getInstance().getType() == DataStorageAccessType.ROLE;
         return new OptionsBuilder()
                 .nameAndDescription("username")
                 .addString(user)
@@ -105,30 +101,25 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                             && !f.getFile().isInDataDirectory();
                     return !wrong;
                 }))
-                .nameAndDescription(
-                        handler.getActiveUser() != null
-                                ? (handler.getVaultAuthenticationType() == VaultAuthentication.GROUP
-                                        ? "identityPerGroup"
-                                        : "identityPerUser")
-                                : "identityPerUserDisabled")
-                .addToggle(perUser)
-                .disable(handler.getActiveUser() == null)
+                .nameAndDescription(roleBased ? "identityPerRole" : "identityPerRoleDisabled")
+                .addComp(new DataStoreAccessScopeComp(scope), scope)
+                .nonNull()
                 .bind(
                         () -> {
                             return SyncedIdentityStore.builder()
                                     .username(user.get())
                                     .password(
                                             st.getEncryptedPassword() != null
-                                                    ? st.getEncryptedPassword().withValue(pass.get())
-                                                    : EncryptedValue.VaultKey.of(pass.get()))
+                                                    ? st.getEncryptedPassword().with(pass.get(), scope.get())
+                                                    : EncryptedValue.of(pass.get(), scope.get()))
                                     .sshIdentity(
                                             st.getEncryptedSshIdentity() != null
                                                     ? st.getEncryptedSshIdentity()
-                                                            .withValue(identity.get())
-                                                    : EncryptedValue.VaultKey.of(identity.get()))
-                                    .password(EncryptedValue.VaultKey.of(pass.get()))
-                                    .sshIdentity(EncryptedValue.VaultKey.of(identity.get()))
-                                    .perUser(perUser.get())
+                                                            .with(identity.get(), scope.get())
+                                                    : EncryptedValue.of(identity.get(), scope.get()))
+                                    .password(EncryptedValue.of(pass.get(), scope.get()))
+                                    .sshIdentity(EncryptedValue.of(identity.get(), scope.get()))
+                                    .accessScope(scope.get())
                                     .build();
                         },
                         store)
@@ -137,15 +128,21 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
 
     @Override
     public String summaryString(StoreEntryWrapper wrapper) {
-        return wrapper.getEntry().isPerUserStore() ? AppI18n.get("userIdentity") : AppI18n.get("globalIdentity");
+        if (!wrapper.getEntry().getAccessScope().isAccessRestricted()) {
+            return AppI18n.get("globalIdentity");
+        }
+
+        return (DataStorageAccessHandler.getInstance().getType() == DataStorageAccessType.ROLE
+                ? AppI18n.get("roleIdentity")
+                : AppI18n.get("userIdentity"));
     }
 
     @Override
     public DataStore defaultStore(DataStoreCategory category) {
         return SyncedIdentityStore.builder()
-                .password(EncryptedValue.VaultKey.of(new SecretNoneStrategy()))
-                .sshIdentity(EncryptedValue.VaultKey.of(new NoIdentityStrategy()))
-                .perUser(false)
+                .password(EncryptedValue.of(new SecretNoneStrategy(), DataStoreAccessScope.encryption()))
+                .sshIdentity(EncryptedValue.of(new NoIdentityStrategy(), DataStoreAccessScope.encryption()))
+                .accessScope(DataStoreAccessScope.encryption())
                 .build();
     }
 

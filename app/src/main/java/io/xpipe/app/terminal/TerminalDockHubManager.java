@@ -13,9 +13,9 @@ import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.NativeWinWindowControl;
+import io.xpipe.app.util.OsType;
 import io.xpipe.app.util.Rect;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.util.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

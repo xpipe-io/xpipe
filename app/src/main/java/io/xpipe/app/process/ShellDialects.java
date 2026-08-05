@@ -1,6 +1,6 @@
 package io.xpipe.app.process;
 
-import io.xpipe.app.util.ModuleLayerLoader;
+import io.xpipe.app.ext.ModuleLayerLoader;
 
 import java.util.ArrayList;
 import java.util.List;

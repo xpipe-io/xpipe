@@ -5,19 +5,24 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.DataStoreCreationCategory;
-import io.xpipe.app.ext.GuiDialog;
-import io.xpipe.app.hub.comp.StoreCreationModel;
-import io.xpipe.app.hub.comp.StoreListChoiceComp;
-import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.hub.creation.StoreCreationModel;
+import io.xpipe.app.hub.entry.StoreEntryBadge;
+import io.xpipe.app.hub.entry.StoreEntryInformation;
+import io.xpipe.app.hub.entry.StoreEntryWrapper;
+import io.xpipe.app.hub.list.StoreListChoiceComp;
+import io.xpipe.app.hub.list.StoreViewState;
+import io.xpipe.app.hub.section.StoreSection;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.prefs.DataStorageAccessType;
+import io.xpipe.app.secret.DataStorageAccessHandler;
 import io.xpipe.app.storage.*;
-
+import io.xpipe.app.store.DataStore;
+import io.xpipe.app.store.DataStoreCreationCategory;
+import io.xpipe.app.util.GuiDialog;
 import io.xpipe.app.util.ObservableSubscriber;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -28,6 +33,30 @@ import java.util.List;
 import java.util.UUID;
 
 public class MultiIdentityStoreProvider extends IdentityStoreProvider {
+
+    @Override
+    public UUID getTargetCategory(DataStore store, UUID target) {
+        var st = (MultiIdentityStore) store;
+        if (st == null) {
+            return target;
+        }
+
+        var cat = DataStorage.get().getStoreCategoryIfPresent(target).orElseThrow();
+        var inSynced = DataStorage.get().getCategoryParentHierarchy(cat).stream()
+                .anyMatch(dataStoreCategory ->
+                        dataStoreCategory.getUuid().equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID));
+
+        var childrenLocal = st.areAllChildrenLocal();
+        var childrenSynced = st.areAllChildrenSynced();
+
+        if (childrenSynced && !inSynced) {
+            return DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID;
+        } else if (childrenLocal && inSynced) {
+            return DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID;
+        } else {
+            return target;
+        }
+    }
 
     @Override
     public boolean allowCreation() {
@@ -47,62 +76,84 @@ public class MultiIdentityStoreProvider extends IdentityStoreProvider {
             if (available.isPresent()) {
                 identities.add(available.get());
             } else {
-                identities.add(new DataStoreEntryRef<>(DataStoreEntry.createNew(
-                        uuid, DataStorage.DEFAULT_CATEGORY_UUID, AppI18n.get("unknown"), null)));
+                var foundInaccessible = DataStorage.get().getInaccessibleEntry(uuid);
+                if (foundInaccessible.isPresent()) {
+                    identities.add(foundInaccessible.get().ref());
+                } else {
+                    identities.add(new DataStoreEntryRef<>(DataStoreEntry.createNew(
+                            uuid, DataStorage.DEFAULT_CATEGORY_UUID, AppI18n.get("unknown"), null)));
+                }
             }
         }
         var exclusive = new SimpleObjectProperty<>(st.getExclusive());
-        var perUser = new SimpleObjectProperty<>(st.getPerUser());
+        var scope = new SimpleObjectProperty<>(st.getAccessScope());
 
         var listUpdate = new ObservableSubscriber();
-        var selected = new SimpleObjectProperty<DataStoreEntryRef<IdentityStore>>(st.getSelected().orElse(null));
+        var selected = new SimpleObjectProperty<>(st.getSelected().orElse(null));
         identities.addListener((observable, oldValue, newValue) -> {
             var hasActive = identities.contains(selected.get());
             if (!hasActive) {
-                selected.set(identities.stream().filter(ref -> ref.get().getValidity().isUsable()).findFirst().orElse(null));
+                selected.set(identities.stream()
+                        .filter(ref -> ref.get().getValidity().isUsable())
+                        .findFirst()
+                        .orElse(null));
                 listUpdate.trigger();
             }
         });
 
-        var choice = new StoreListChoiceComp<>(identities, IdentityStore.class,
-                ref -> !(ref.get().equals(model.getExistingEntry())) && !identities.contains(ref) && !MultiIdentityStore.isExclusivelyHeld(ref),
-                StoreViewState.get().getAllIdentitiesCategory(),
-                DataStoreCreationCategory.IDENTITY) {
+        var choice =
+                new StoreListChoiceComp<>(
+                        identities,
+                        IdentityStore.class,
+                        ref -> !(ref.get().equals(model.getExistingEntry()))
+                                && !identities.contains(ref)
+                                && !MultiIdentityStore.isExclusivelyHeld(ref),
+                        StoreViewState.get().getAllIdentitiesCategory(),
+                        DataStoreCreationCategory.IDENTITY) {
 
-            @Override
-            protected ObservableValue<String> getName(DataStoreEntryRef<IdentityStore> ref) {
-                var labelName = Bindings.createStringBinding(() -> {
-                    var base = ref.get().getName();
-                    var active = ref.equals(selected.get());
-                    return base + (active ? " (" + AppI18n.get("active") + ")" : "");
-                }, selectedList, AppI18n.activeLanguage(), listUpdate);
-                return labelName;
-            }
+                    @Override
+                    protected ObservableValue<String> getName(DataStoreEntryRef<IdentityStore> ref) {
+                        var labelName = Bindings.createStringBinding(
+                                () -> {
+                                    var base = ref.get().getName();
+                                    var active = ref.equals(selected.get());
+                                    var inaccessible =
+                                            !DataStorage.get().getStoreEntries().contains(ref.get());
+                                    var suffix = active
+                                            ? " (" + AppI18n.get("active") + ")"
+                                            : inaccessible ? " (" + AppI18n.get("inaccessible") + ")" : "";
+                                    return base + suffix;
+                                },
+                                selectedList,
+                                AppI18n.activeLanguage(),
+                                listUpdate);
+                        return labelName;
+                    }
 
-            @Override
-            protected BaseRegionBuilder<?, ?> buildCustomButtons(DataStoreEntryRef<IdentityStore> ref) {
-                var select = new IconButtonComp("mdi2i-image-filter-center-focus", () -> {
-                    st.select(ref);
-                    selected.set(ref);
-                    listUpdate.trigger();
-                });
-                select.disable(ref.get().getProvider() == null);
-                select.describe(d -> d.nameKey("makeActive"));
-                return new HorizontalComp(List.of(select, RegionBuilder.hspacer(5)));
-            }
-        };
+                    @Override
+                    protected BaseRegionBuilder<?, ?> buildCustomButtons(DataStoreEntryRef<IdentityStore> ref) {
+                        var select = new IconButtonComp("mdi2c-check", () -> {
+                            st.select(ref);
+                            selected.set(ref);
+                            listUpdate.trigger();
+                        });
+                        var inaccessible = !DataStorage.get().getStoreEntries().contains(ref.get());
+                        select.disable(ref.get().getProvider() == null || inaccessible);
+                        select.hide(selected.isEqualTo(ref));
+                        select.describe(d -> d.nameKey("makeActive"));
+                        return new HorizontalComp(List.of(select, RegionBuilder.hspacer(5)));
+                    }
+                };
+        var roleBased = DataStorageAccessHandler.getInstance().isAccessRestricted()
+                && DataStorageAccessHandler.getInstance().getType() == DataStorageAccessType.ROLE;
         var options = new OptionsBuilder()
                 .nameAndDescription("multiIdentityList")
-                .addComp(choice,
-                        identities)
+                .addComp(choice, identities)
                 .nameAndDescription("multiIdentityExclusive")
                 .addToggle(exclusive)
-                .nameAndDescription(
-                        DataStorageUserHandler.getInstance().getActiveUser() != null
-                                ? "identityPerUser"
-                                : "identityPerUserDisabled")
-                .addToggle(perUser)
-                .disable(DataStorageUserHandler.getInstance().getActiveUser() == null)
+                .nameAndDescription(roleBased ? "identityPerRole" : "identityPerRoleDisabled")
+                .addComp(new DataStoreAccessScopeComp(scope), scope)
+                .nonNull()
                 .bind(
                         () -> {
                             // User made no changes in GUI
@@ -112,7 +163,7 @@ public class MultiIdentityStoreProvider extends IdentityStoreProvider {
                                     .equals(st.getIdentities())) {
                                 return MultiIdentityStore.builder()
                                         .identities(st.getIdentities())
-                                        .perUser(perUser.get())
+                                        .accessScope(scope.get())
                                         .exclusive(exclusive.get())
                                         .build();
                             }
@@ -125,7 +176,7 @@ public class MultiIdentityStoreProvider extends IdentityStoreProvider {
                             return MultiIdentityStore.builder()
                                     .identities(all)
                                     .exclusive(exclusive.get())
-                                    .perUser(perUser.get())
+                                    .accessScope(scope.get())
                                     .build();
                         },
                         store);
@@ -149,5 +200,30 @@ public class MultiIdentityStoreProvider extends IdentityStoreProvider {
     @Override
     public List<Class<?>> getStoreClasses() {
         return List.of(MultiIdentityStore.class);
+    }
+
+    @Override
+    public String summaryString(StoreEntryWrapper wrapper) {
+        var cat = DataStorage.get()
+                .getStoreCategoryIfPresent(wrapper.getEntry().getCategoryUuid())
+                .orElseThrow();
+        var inSynced = DataStorage.get().getCategoryParentHierarchy(cat).stream()
+                .anyMatch(dataStoreCategory ->
+                        dataStoreCategory.getUuid().equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID));
+        return (inSynced ? AppI18n.get("syncedMultiIdentity") : AppI18n.get("localMultiIdentity"));
+    }
+
+    @Override
+    public StoreEntryInformation buildInformation(StoreSection section) {
+        var st = (MultiIdentityStore) section.getWrapper().getStore().getValue();
+        var active = st.getSelected().orElse(null);
+        if (active == null) {
+            return StoreEntryInformation.of(StoreEntryBadge.ofFailure("None"));
+        }
+
+        var info = active.get().getProvider().buildInformation(section);
+        var selection = StoreEntryBadge.ofSetting(active.get().getName())
+                .withAction(StoreEntryBadge.Action.providerMenu("multiIdentitySwitch"));
+        return info.append(StoreEntryInformation.of(selection));
     }
 }

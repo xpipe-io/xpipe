@@ -1,7 +1,6 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppSystemInfo;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
@@ -9,13 +8,13 @@ import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.NativeWinWindowControl;
+import io.xpipe.app.util.OsType;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.WindowsRegistry;
-import io.xpipe.app.util.FilePath;
-import io.xpipe.app.util.OsType;
-
 import io.xpipe.app.webtop.WebtopApp;
+
 import lombok.SneakyThrows;
 
 import java.io.IOException;

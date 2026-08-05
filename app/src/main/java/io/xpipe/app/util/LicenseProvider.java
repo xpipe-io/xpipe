@@ -2,6 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.ext.ExtensionException;
+import io.xpipe.app.ext.ModuleLayerLoader;
 
 import javafx.beans.value.ObservableValue;
 

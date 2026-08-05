@@ -1,8 +1,10 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.cred.SshIdentityStrategy;
-import io.xpipe.app.cred.UsernameStrategy;
+import io.xpipe.app.identity.NoIdentityStrategy;
+import io.xpipe.app.identity.SshIdentityStrategy;
+import io.xpipe.app.identity.UsernameStrategy;
 import io.xpipe.app.secret.EncryptedValue;
+import io.xpipe.app.secret.SecretNoneStrategy;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
@@ -26,6 +28,17 @@ public class LocalIdentityStore extends IdentityStore {
     String username;
     EncryptedValue<SecretRetrievalStrategy> password;
     EncryptedValue<SshIdentityStrategy> sshIdentity;
+
+    @Override
+    public String toSummary() {
+        var user = getUsername().hasUser()
+                ? getUsername().getFixedUsername().map(s -> "User " + s).orElse("User")
+                : "Anonymous user";
+        var s = user
+                + (getPassword() == null || getPassword() instanceof SecretNoneStrategy ? "" : " + password")
+                + (getSshIdentity() == null || getSshIdentity() instanceof NoIdentityStrategy ? "" : " + key");
+        return s;
+    }
 
     @Override
     public DataStoreEntryRef<IdentityStore> getCustomEditTarget() {

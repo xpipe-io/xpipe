@@ -32,3 +32,16 @@
 .scroll-pane .corner {
     -fx-background-insets: 0;
 }
+
+/**
+This will change the min height of scrollbars due to
+the calculation of the default scrollbar skin.
+
+Without this, the min height will be too small
+ */
+.root .scroll-bar >.decrement-button >.decrement-arrow {
+    -fx-padding: 0 3 0 4;
+}
+.root .scroll-bar >.increment-button >.increment-arrow {
+    -fx-padding: 0 3 0 4;
+}

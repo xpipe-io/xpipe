@@ -1,6 +1,6 @@
 package io.xpipe.app.process;
 
-import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 
 import lombok.SneakyThrows;
@@ -22,7 +22,7 @@ public class LocalShell {
             return found;
         }
 
-        var sc = ProcessControlProvider.get().createLocalProcessControl(true).start();
+        var sc = ProcModuleProvider.get().createLocalProcessControl(true).start();
         localShellInstances.put(key, sc);
         return sc;
     }
@@ -33,9 +33,7 @@ public class LocalShell {
 
     public static synchronized ShellControl init() throws Exception {
         if (local == null) {
-            local = ProcessControlProvider.get()
-                    .createLocalProcessControl(false)
-                    .start();
+            local = ProcModuleProvider.get().createLocalProcessControl(false).start();
         }
         return local;
     }
@@ -80,7 +78,7 @@ public class LocalShell {
             }
 
             powershellInitialized = true;
-            localPowershell = ProcessControlProvider.get()
+            localPowershell = ProcModuleProvider.get()
                     .createLocalProcessControl(false)
                     .subShell(ShellDialects.POWERSHELL)
                     .start();
@@ -105,6 +103,6 @@ public class LocalShell {
     }
 
     public static ShellDialect getDialect() {
-        return ProcessControlProvider.get().getEffectiveLocalDialect();
+        return ProcModuleProvider.get().getEffectiveLocalDialect();
     }
 }

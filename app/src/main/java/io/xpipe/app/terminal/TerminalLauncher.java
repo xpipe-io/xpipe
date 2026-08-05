@@ -7,10 +7,10 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.FailableFunction;
 import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.OsType;
+import io.xpipe.app.util.ThreadHelper;
 
 import lombok.Value;
 
@@ -239,8 +239,12 @@ public class TerminalLauncher {
             return false;
         }
 
-        if (OsType.ofLocal() == OsType.WINDOWS && multiplexer.get().requiresUnixEnvironment() && TerminalProxyManager.getProxy().isEmpty()) {
-            throw ErrorEventFactory.expected(new IllegalStateException("The currently active terminal multiplexer is only supported with a WSL terminal environment on Windows"));
+        if (OsType.ofLocal() == OsType.WINDOWS
+                && multiplexer.get().requiresUnixEnvironment()
+                && TerminalProxyManager.getProxy().isEmpty()) {
+            throw ErrorEventFactory.expected(
+                    new IllegalStateException(
+                            "The currently active terminal multiplexer is only supported with a WSL terminal environment on Windows"));
         }
 
         var control = TerminalProxyManager.getProxy().orElse(LocalShell.getShell());

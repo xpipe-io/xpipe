@@ -1,14 +1,13 @@
 package io.xpipe.app.comp.base;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.FailableSupplier;
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -16,6 +15,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
+
+import atlantafx.base.theme.Styles;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -54,8 +55,8 @@ public class BusyButtonComp extends RegionBuilder<Button> {
                             () -> {
                                 return busy.get()
                                         ? new LoadingIconComp(busy, AppFontSizes::base)
-                                          .style("busy-loading-icon")
-                                          .build()
+                                                .style("busy-loading-icon")
+                                                .build()
                                         : null;
                             },
                             PlatformThread.sync(busy)));

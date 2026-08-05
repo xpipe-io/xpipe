@@ -78,15 +78,20 @@ public class RemminaHelper {
             if (configuration.getGateway().getUsername() != null) {
                 gateway.add("gateway_username=" + configuration.getGateway().getUsernameWithoutDomain());
                 if (configuration.getGateway().getDomain().isPresent()) {
-                    gateway.add("gateway_domain=" + configuration.getGateway().getDomain().get());
+                    gateway.add("gateway_domain="
+                            + configuration.getGateway().getDomain().get());
                 }
             }
             if (configuration.getGateway().getPassword() != null) {
-                gateway.add("gateway_password=" + RemminaHelper.encryptPassword(configuration.getGateway().getPassword()).orElse(""));
+                gateway.add("gateway_password="
+                        + RemminaHelper.encryptPassword(
+                                        configuration.getGateway().getPassword())
+                                .orElse(""));
             }
         }
 
-        var optionsString = options != null ? options.lines().filter(s -> !s.isBlank()).collect(Collectors.joining("\n")) : "";
+        var optionsString =
+                options != null ? options.lines().filter(s -> !s.isBlank()).collect(Collectors.joining("\n")) : "";
 
         var string = """
                      [remmina]
@@ -102,22 +107,25 @@ public class RemminaHelper {
                      window_height=%s
                      window_maximize=%s%s%s
                      """.formatted(
-                configuration.getTitle(),
-                configuration.getUsernameWithoutDomain(),
-                configuration.getDomain().orElse(""),
-                configuration.getHost(),
-                configuration.getPassword() != null ? encryptPassword(configuration.getPassword()).orElse("") : "",
-                w,
-                h,
-                maximize,
-                !gateway.isEmpty() ? "\n" + String.join("\n", gateway) : "",
-                optionsString);
+                        configuration.getTitle(),
+                        configuration.getUsernameWithoutDomain(),
+                        configuration.getDomain().orElse(""),
+                        configuration.getHost(),
+                        configuration.getPassword() != null
+                                ? encryptPassword(configuration.getPassword()).orElse("")
+                                : "",
+                        w,
+                        h,
+                        maximize,
+                        !gateway.isEmpty() ? "\n" + String.join("\n", gateway) : "",
+                        optionsString);
         Files.createDirectories(file.getParent());
         Files.writeString(file, string);
         return file;
     }
 
-    public static Path writeRemminaVncConfigFile(VncLaunchConfig configuration, String password, String options) throws Exception {
+    public static Path writeRemminaVncConfigFile(VncLaunchConfig configuration, String password, String options)
+            throws Exception {
         var name = OsFileSystem.ofLocal().makeFileSystemCompatible(configuration.getTitle());
         var file = AppLocalTemp.getLocalTempDataDirectory("remmina").resolve("xpipe-" + name + ".remmina");
 
@@ -127,7 +135,8 @@ public class RemminaHelper {
         // Use window size as remmina's autosize is broken
         var maximize = "0"; // AppMainWindow.get().getStage().isMaximized() ? "1" : "0";
 
-        var optionsString = options != null ? options.lines().filter(s -> !s.isBlank()).collect(Collectors.joining("\n")) : "";
+        var optionsString =
+                options != null ? options.lines().filter(s -> !s.isBlank()).collect(Collectors.joining("\n")) : "";
 
         var string = """
                      [remmina]
@@ -148,7 +157,7 @@ public class RemminaHelper {
                         w,
                         h,
                         maximize,
-                optionsString);
+                        optionsString);
         Files.createDirectories(file.getParent());
         Files.writeString(file, string);
         return file;

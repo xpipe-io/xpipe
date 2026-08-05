@@ -1,16 +1,13 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.cred.NoIdentityStrategy;
-import io.xpipe.app.cred.SshIdentityStrategy;
-import io.xpipe.app.ext.DataStoreDependencies;
-import io.xpipe.app.ext.ValidationException;
+import io.xpipe.app.identity.NoIdentityStrategy;
+import io.xpipe.app.identity.SshIdentityStrategy;
 import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.SecretNoneStrategy;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
-import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreCategory;
-import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.storage.*;
+import io.xpipe.app.store.DataStoreDependencies;
+import io.xpipe.app.util.ValidationException;
 import io.xpipe.app.util.Validators;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -65,8 +62,8 @@ public interface IdentityValue {
 
     static IdentityValue.InPlace none() {
         var s = LocalIdentityStore.builder()
-                .password(EncryptedValue.of(new SecretNoneStrategy()))
-                .sshIdentity(EncryptedValue.of(new NoIdentityStrategy()))
+                .password(EncryptedValue.of(new SecretNoneStrategy(), DataStoreAccessScope.encryption()))
+                .sshIdentity(EncryptedValue.of(new NoIdentityStrategy(), DataStoreAccessScope.encryption()))
                 .build();
         return of(s);
     }
@@ -82,8 +79,9 @@ public interface IdentityValue {
     static IdentityValue.InPlace of(String user, SecretRetrievalStrategy password, SshIdentityStrategy sshIdentity) {
         var s = LocalIdentityStore.builder()
                 .username(user)
-                .password(password != null ? EncryptedValue.of(password) : null)
-                .sshIdentity(sshIdentity != null ? EncryptedValue.of(sshIdentity) : null)
+                .password(password != null ? EncryptedValue.of(password, DataStoreAccessScope.encryption()) : null)
+                .sshIdentity(
+                        sshIdentity != null ? EncryptedValue.of(sshIdentity, DataStoreAccessScope.encryption()) : null)
                 .build();
         return of(s);
     }
@@ -92,7 +90,7 @@ public interface IdentityValue {
 
     IdentityStore unwrap();
 
-    boolean isPerUser();
+    DataStoreAccessScope getScope();
 
     boolean isInPlace();
 
@@ -139,8 +137,8 @@ public interface IdentityValue {
         }
 
         @Override
-        public boolean isPerUser() {
-            return false;
+        public DataStoreAccessScope getScope() {
+            return DataStoreAccessScope.encryption();
         }
 
         @Override
@@ -177,8 +175,8 @@ public interface IdentityValue {
         }
 
         @Override
-        public boolean isPerUser() {
-            return ref != null && ref.get().isPerUserStore();
+        public DataStoreAccessScope getScope() {
+            return ref != null ? ref.get().getAccessScope() : DataStoreAccessScope.encryption();
         }
 
         @Override

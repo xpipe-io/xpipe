@@ -3,6 +3,7 @@ package io.xpipe.app.webtop;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
+
 import javafx.geometry.Pos;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ToggleButton;
@@ -10,6 +11,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.text.TextAlignment;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 public class WebtopModeComp extends SimpleRegionBuilder {

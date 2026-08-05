@@ -1,9 +1,9 @@
 package io.xpipe.app.hub.action.impl;
 
-import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.action.HubLeafProvider;
-import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStore;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;

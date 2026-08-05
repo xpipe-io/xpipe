@@ -1,1 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><title>file_type_appsemble</title><path fill="#a6cfff" d="m 8,3 h 1.607 a 5,5 0 0 1 5,5 v 6.607 H 3 V 8 A 5,5 0 0 1 8,3 Z"/><path fill="#4a90e2" d="M 22.393,3 H 29 v 11.607 h -6.607 a 5,5 0 0 1 -5,-5 V 8 a 5,5 0 0 1 5,-5 z"/><path fill="#a6cfff" d="M 14.607,29 H 3 V 17.393 h 11.607 z"/><path fill="#4a90e2" d="M 24,29 H 17.393 V 17.393 H 24 a 5,5 0 0 1 5,5 V 24 a 5,5 0 0 1 -5,5 z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    <title>file_type_appsemble</title>
+    <path fill="#a6cfff" d="M8 3h1.607a5 5 0 0 1 5 5v6.607H3V8a5 5 0 0 1 5-5"/>
+    <path fill="#4a90e2" d="M22.393 3H29v11.607h-6.607a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5"/>
+    <path fill="#a6cfff" d="M14.607 29H3V17.393h11.607z"/>
+    <path fill="#4a90e2" d="M24 29h-6.607V17.393H24a5 5 0 0 1 5 5V24a5 5 0 0 1-5 5"/>
+</svg>

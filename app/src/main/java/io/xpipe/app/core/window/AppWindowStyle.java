@@ -31,30 +31,9 @@ public class AppWindowStyle {
         scene.fillProperty()
                 .bind(Bindings.createObjectBinding(
                         () -> {
-                            return AppPrefs.get().theme().getValue().isDark()
-                                    ? Color.BLACK
-                                    : Color.WHITE;
+                            return AppPrefs.get().theme().getValue().isDark() ? Color.BLACK : Color.WHITE;
                         },
                         AppPrefs.get().theme()));
-    }
-
-    public static void addSizePseudoClasses(Stage stage) {
-        stage.getScene().rootProperty().subscribe(root -> {
-            AppSizeBreakpoints.compactMode().subscribe(v -> {
-                root.pseudoClassStateChanged(PseudoClass.getPseudoClass("compact"), v);
-            });
-            AppSizeBreakpoints.portraitMode().subscribe(v -> {
-                root.pseudoClassStateChanged(PseudoClass.getPseudoClass("portrait"), v);
-            });
-        });
-    }
-
-    public static void addMaximizedPseudoClass(Stage stage) {
-        stage.getScene().rootProperty().subscribe(root -> {
-            stage.maximizedProperty().subscribe(v -> {
-                root.pseudoClassStateChanged(PseudoClass.getPseudoClass("maximized"), v);
-            });
-        });
     }
 
     public static void addFontSize(Scene scene) {
@@ -133,7 +112,6 @@ public class AppWindowStyle {
                 event.consume();
             }
         });
-        TrackEvent.debug("Set stylesheet reload listener");
     }
 
     public static void addClickShield(Stage stage) {

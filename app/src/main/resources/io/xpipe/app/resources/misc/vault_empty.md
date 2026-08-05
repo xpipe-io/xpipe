@@ -15,4 +15,6 @@ The sync settings for a category are inherited by default from its parent if not
 
 ## Local connections are not synced
 
-Any connection located under the local machine can not be shared as it refers to connections and data that are only available on the local system.
+Any connections located under the local machine are not synced as they are only available on the local system. You can sync any other types of remote connections like SSH connections.
+
+Some types of connection entries that are local by default, e.g. an SSH config file, can be configured to sync by syncing the underlying data, e.g. files, with this repository as well. You can find details for each type of connection entry at https://docs.xpipe.io/.

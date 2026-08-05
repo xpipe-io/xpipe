@@ -3,10 +3,10 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.AuthModuleProvider;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
-import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.util.*;
 
 import javafx.beans.binding.Bindings;
@@ -23,7 +23,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
 
         var choiceBuilder = OptionsChoiceBuilder.builder()
                 .property(prefs.passwordManager)
-                .available(PasswordManager.getClasses())
+                .available(AuthModuleProvider.get().getPasswordManagerClasses())
                 .allowNull(true)
                 .transformer(entryComboBox -> {
                     var websiteLinkButton =
@@ -44,10 +44,11 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                     var hbox = new HBox(entryComboBox, websiteLinkButton.build());
                     HBox.setHgrow(entryComboBox, Priority.ALWAYS);
                     hbox.setSpacing(10);
+                    hbox.setMaxWidth(600);
                     return hbox;
                 })
                 .build();
-        var choice = choiceBuilder.build().buildComp().maxWidth(600);
+        var choice = choiceBuilder.build().buildComp();
 
         return new OptionsBuilder().pref(prefs.passwordManager).addComp(choice);
     }

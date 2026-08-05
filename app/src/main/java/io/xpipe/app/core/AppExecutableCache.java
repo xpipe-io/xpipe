@@ -2,8 +2,8 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.LabelGraphic;
-import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.FailableConsumer;
+import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.OsType;
 
 import java.nio.file.Files;

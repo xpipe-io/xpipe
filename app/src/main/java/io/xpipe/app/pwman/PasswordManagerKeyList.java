@@ -1,19 +1,21 @@
 package io.xpipe.app.pwman;
 
 import io.xpipe.app.prefs.AppPrefs;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableBooleanValue;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PasswordManagerKeyList {
 
     public static ObservableBooleanValue isSupported() {
-        return Bindings.createBooleanBinding(() -> {
-            var pwman = AppPrefs.get().passwordManager().getValue();
-            return pwman != null && pwman.supportsList();
-        }, AppPrefs.get().passwordManager());
+        return Bindings.createBooleanBinding(
+                () -> {
+                    var pwman = AppPrefs.get().passwordManager().getValue();
+                    return pwman != null && pwman.supportsList();
+                },
+                AppPrefs.get().passwordManager());
     }
 
     private static List<PasswordManager.ListEntry> cached;
@@ -23,7 +25,7 @@ public class PasswordManagerKeyList {
             return List.of();
         }
 
-        if (cached != null && !refresh) {
+        if (cached != null && !cached.isEmpty() && !refresh) {
             return cached;
         }
 

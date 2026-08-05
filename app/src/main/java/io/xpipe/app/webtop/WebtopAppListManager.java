@@ -9,6 +9,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.GlobalTimer;
+
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
@@ -98,7 +99,7 @@ public class WebtopAppListManager {
                 for (Path selectedFile : selectedFiles) {
                     var name = selectedFile.getFileName().toString();
                     var app = WebtopApp.fromString(name);
-                    if (app.isPresent()) {
+                    if (app.isPresent() && available.contains(app.get())) {
                         selected.add(app.get());
                     }
                 }
@@ -113,9 +114,10 @@ public class WebtopAppListManager {
             try (var stream = Files.list(installedDir).sorted()) {
                 var installedFiles = stream.toList();
                 for (Path installedFile : installedFiles) {
-                    var name = FilenameUtils.getBaseName(installedFile.getFileName().toString());
+                    var name = FilenameUtils.getBaseName(
+                            installedFile.getFileName().toString());
                     var app = WebtopApp.fromString(name);
-                    if (app.isPresent()) {
+                    if (app.isPresent() && available.contains(app.get())) {
                         installed.add(app.get());
                     }
                 }
@@ -159,8 +161,11 @@ public class WebtopAppListManager {
         }
 
         try {
-            var fromStores = DataStorage.get().getStoreEntries().stream().filter(entry -> entry.getValidity().isUsable()).map(
-                    entry -> entry.getProvider().getRequiredWebtopApp(entry)).filter(Objects::nonNull).toList();
+            var fromStores = DataStorage.get().getStoreEntries().stream()
+                    .filter(entry -> entry.getValidity().isUsable())
+                    .map(entry -> entry.getProvider().getRequiredWebtopApp(entry))
+                    .filter(Objects::nonNull)
+                    .toList();
             all.addAll(fromStores);
         } catch (Exception e) {
             // Guard against exceptions in provider method
@@ -176,7 +181,8 @@ public class WebtopAppListManager {
             try (var stream = Files.list(availableDir).sorted()) {
                 var availableFiles = stream.toList();
                 for (Path availableFile : availableFiles) {
-                    var name = FilenameUtils.getBaseName(availableFile.getFileName().toString());
+                    var name = FilenameUtils.getBaseName(
+                            availableFile.getFileName().toString());
                     var app = WebtopApp.fromString(name);
                     if (app.isPresent()) {
                         available.add(app.get());
@@ -192,27 +198,42 @@ public class WebtopAppListManager {
     }
 
     public void install(List<WebtopApp> toInstall) throws Exception {
-        var rem = new ArrayList<>(toInstall);
-        rem.removeAll(installed);
-        if (rem.isEmpty()) {
+        var remaining = new ArrayList<>(toInstall);
+        remaining.removeIf(webtopApp -> !available.contains(webtopApp));
+        remaining.removeAll(installed);
+        if (remaining.isEmpty()) {
             return;
         }
 
         var selectedDir = AppSystemInfo.ofCurrent().getUserHome().resolve(".xpipe", "webtop", "installed");
         Files.createDirectories(selectedDir);
         for (WebtopApp webtopApp : toInstall) {
-            if (!Files.exists(selectedDir.resolve(webtopApp.getId()))) {
-                Files.createFile(selectedDir.resolve(webtopApp.getId()));
+            var file = selectedDir.resolve(webtopApp.getId());
+            if (!Files.exists(file)) {
+                Files.createFile(file);
             }
             this.selected.add(webtopApp);
         }
 
-        var requiresRestart = rem.stream().anyMatch(webtopApp -> webtopApp.isRequiresRestart());
-        var command = "/apps/install.sh " + rem.stream()
-                .map(webtopApp -> webtopApp.getId())
-                .collect(Collectors.joining(" "));
+        var selectedToRemove = new ArrayList<>(selected);
+        toInstall.forEach(selectedToRemove::remove);
+        selectedToRemove.removeAll(installed);
+        for (WebtopApp webtopApp : selectedToRemove) {
+            var file = selectedDir.resolve(webtopApp.getId());
+            Files.deleteIfExists(file);
+            this.selected.remove(webtopApp);
+        }
+
+        var requiresRestart = remaining.stream().anyMatch(webtopApp -> webtopApp.isRequiresRestart());
+        var command = "/apps/install.sh "
+                + remaining.stream().map(webtopApp -> webtopApp.getId()).collect(Collectors.joining(" "));
         var exec = AppInstallation.ofCurrent().getCliExecutablePath();
-        var endCommand = requiresRestart ? exec + " daemon stop --wait\n" + exec + " open" : exec + " open";
-        TerminalLaunch.builder().title("Install packages").localScript(ShellScript.lines(command, endCommand)).pauseOnExit(false).launch();
+        var endCommand =
+                requiresRestart ? " && " + exec + " daemon stop --wait && " + exec + " open" : ";" + exec + " open";
+        TerminalLaunch.builder()
+                .title("Install packages")
+                .localScript(ShellScript.lines(command, endCommand))
+                .pauseOnExit(true)
+                .launch();
     }
 }

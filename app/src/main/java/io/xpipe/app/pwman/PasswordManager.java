@@ -2,21 +2,20 @@ package io.xpipe.app.pwman;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.ext.AuthModuleProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.util.InPlaceSecretValue;
-import io.xpipe.app.util.OsType;
+import io.xpipe.app.secret.InPlaceSecretValue;
 import io.xpipe.app.util.SecretValue;
+import io.xpipe.app.webtop.WebtopApp;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.webtop.WebtopApp;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
@@ -54,7 +53,7 @@ public interface PasswordManager {
         }
 
         try {
-            for (Class<?> c : PasswordManager.getClasses()) {
+            for (Class<?> c : AuthModuleProvider.get().getPasswordManagerClasses()) {
                 var bm = c.getDeclaredMethod("builder");
                 bm.setAccessible(true);
                 var b = bm.invoke(null);
@@ -70,49 +69,6 @@ public interface PasswordManager {
             ErrorEventFactory.fromThrowable(e).handle();
         }
         return null;
-    }
-
-    @SneakyThrows
-    static boolean isPasswordManagerSshAgent(String s) {
-        for (Class<?> c : PasswordManager.getClasses()) {
-            var bm = c.getDeclaredMethod("builder");
-            bm.setAccessible(true);
-            var b = bm.invoke(null);
-
-            var m = b.getClass().getDeclaredMethod("build");
-            m.setAccessible(true);
-            var defValue = (PasswordManager) c.cast(m.invoke(b));
-            var config = defValue.getKeyConfiguration();
-            if (config.getDefaultSocketLocation() != null
-                    && config.getDefaultSocketLocation().toString().equals(s)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    static List<Class<?>> getClasses() {
-        var l = new ArrayList<Class<?>>();
-        l.add(OnePasswordManager.class);
-        l.add(KeePassXcPasswordManager.class);
-        l.add(BitwardenPasswordManager.class);
-        l.add(KeeperPasswordManager.class);
-        l.add(ProtonPasswordManager.class);
-        l.add(HashicorpVaultPasswordManager.class);
-        l.add(OpenBaoPasswordManager.class);
-        if (OsType.ofLocal() != OsType.WINDOWS) {
-            l.add(LastpassPasswordManager.class);
-            l.add(EnpassPasswordManager.class);
-        }
-        l.add(DashlanePasswordManager.class);
-        l.add(PassworkPasswordManager.class);
-        l.add(PsonoPasswordManager.class);
-        l.add(PassboltPasswordManager.class);
-        if (OsType.ofLocal() == OsType.WINDOWS) {
-            l.add(WindowsCredentialManager.class);
-        }
-        l.add(PasswordManagerCommand.class);
-        return l;
     }
 
     Result query(String key);
@@ -136,7 +92,7 @@ public interface PasswordManager {
     }
 
     enum ListEntryType {
-
+        UNKNOWN,
         LOGIN,
         KEY,
         BOTH
@@ -147,6 +103,7 @@ public interface PasswordManager {
     @AllArgsConstructor
     class ListEntry {
 
+        String customReadableName;
         String key;
         ListEntryType type;
     }

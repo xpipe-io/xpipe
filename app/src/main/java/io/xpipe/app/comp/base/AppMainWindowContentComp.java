@@ -54,7 +54,8 @@ public class AppMainWindowContentComp extends SimpleRegionBuilder {
 
             Color color;
             if (AppPrefs.get() != null) {
-                var baseColor = AppPrefs.get().theme().getValue().getEmphasisColor().get();
+                var baseColor =
+                        AppPrefs.get().theme().getValue().getEmphasisColor().get();
                 if (baseColor == null) {
                     baseColor = Platform.getPreferences().getAccentColor();
                 }

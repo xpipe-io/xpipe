@@ -2,15 +2,15 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
-import io.xpipe.app.ext.FileKind;
-import io.xpipe.app.ext.FileSystem;
-import io.xpipe.app.ext.FileSystemStore;
+import io.xpipe.app.fs.FileKind;
+import io.xpipe.app.fs.FileSystem;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.FileSystemStore;
 import io.xpipe.app.util.BooleanScope;
-import io.xpipe.app.util.FileReference;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.FailableFunction;
 import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.FileReference;
+import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -43,9 +43,11 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
             }
 
             newModel.getFileList().getSelection().addListener((ListChangeListener<? super BrowserEntry>) c -> {
-                var updated = newModel.getFileList().getSelection().filtered(browserEntry ->
-                        (directory && browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY) ||
-                                (!directory && browserEntry.getRawFileEntry().getKind() != FileKind.DIRECTORY));
+                var updated = newModel.getFileList()
+                        .getSelection()
+                        .filtered(browserEntry -> (directory
+                                        && browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY)
+                                || (!directory && browserEntry.getRawFileEntry().getKind() != FileKind.DIRECTORY));
                 if (!updated.isEmpty()) {
                     fileSelection.setAll(updated);
                 }

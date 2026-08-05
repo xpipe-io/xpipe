@@ -16,7 +16,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Getter;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -67,7 +66,7 @@ public class AppInstaller {
                 var logsDir =
                         AppLogs.get().getSessionLogsDirectory().getParent().toString();
                 var logFile = FilePath.of(logsDir, "installer.log");
-                var systemWide = isSystemWide();
+                var systemWide = AppInstallation.ofWindows().isSystemWide();
                 var cmdScript = LocalShell.getDialect() == ShellDialects.CMD && !systemWide;
                 var command = cmdScript
                         ? getCmdCommand(file.toString(), logFile.toString(), uninstall)
@@ -81,14 +80,14 @@ public class AppInstaller {
                                     + ScriptHelper.createExecScript(ShellDialects.CMD, sc, command) + "\"";
                         } else {
                             toRun = sc.getShellDialect() == ShellDialects.POWERSHELL
-                                    ? "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList  \"-ExecutionPolicy\", \"Bypass\", "
-                                      + "\"-File\", \"`\""
-                                      + ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, command)
-                                      + "`\"\""
+                                    ? "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList  \"-NoProfile\", \"-ExecutionPolicy\", \"Bypass\", "
+                                            + "\"-File\", \"`\""
+                                            + ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, command)
+                                            + "`\"\""
                                     : "start \"" + AppNames.ofCurrent().getName()
-                                      + " Updater\" /min powershell -ExecutionPolicy Bypass -File \""
-                                      + ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, command)
-                                      + "\"";
+                                            + " Updater\" /min powershell -ExecutionPolicy Bypass -NoProfile -File \""
+                                            + ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, command)
+                                            + "\"";
                         }
                         sc.command(toRun).execute();
                     }
@@ -100,11 +99,6 @@ public class AppInstaller {
                 return "msi";
             }
 
-            private boolean isSystemWide() {
-                return Files.exists(
-                        AppInstallation.ofCurrent().getBaseInstallationPath().resolve("system"));
-            }
-
             private Optional<String> getProductCode() {
                 var sc = LocalShell.getLocalPowershell();
                 if (sc.isEmpty()) {
@@ -112,14 +106,16 @@ public class AppInstaller {
                 }
 
                 try {
-                    var context = isSystemWide() ? "4" : "3";
+                    var context = AppInstallation.ofWindows().isSystemWide() ? "4" : "3";
                     var name = AppProperties.get().isStaging() ? "XPipe PTB" : "XPipe";
-                    var out = sc.get().command("""
+                    var out = sc.get()
+                            .command("""
                                                $Installer = New-Object -ComObject WindowsInstaller.Installer
                                                $InstallerProducts = $Installer.ProductsEx("", "", %s)
                                                $Product = $InstallerProducts | Where-Object { $_.InstallProperty("ProductName") -eq '%s' }
                                                echo $Product.ProductCode()
-                                               """.formatted(context, name).lines().collect(Collectors.joining(";"))).readStdoutIfPossible();
+                                               """.formatted(context, name).lines().collect(Collectors.joining(";")))
+                            .readStdoutIfPossible();
                     return out.filter(s -> !s.isEmpty());
                 } catch (Exception e) {
                     ErrorEventFactory.fromThrowable(e).omit().handle();
@@ -158,11 +154,11 @@ public class AppInstaller {
                         logFile,
                         args,
                         AppRestart.getBackgroundRestartCommand(
-                                AppProperties.get().getDataDir(), null, ShellDialects.CMD));
+                                AppProperties.get().getDataDir(), ShellDialects.CMD));
             }
 
             private String getPowershellCommand(String file, String logFile, boolean uninstall, boolean systemWide) {
-                var property = "MSIFASTINSTALL=7 DISABLEROLLBACK=1" + (systemWide ? " ALLUSERS=1" : "");
+                var property = "MSIFASTINSTALL=7 DISABLEROLLBACK=1" + (systemWide ? " ALLUSERS=1" : " ALLUSERS=0");
                 var startProcessProperty = ", MSIFASTINSTALL=7, DISABLEROLLBACK=1" + (systemWide ? ", ALLUSERS=1" : "");
                 var runas = systemWide ? "-Verb runAs" : "";
                 String uninstallCommand = "";
@@ -180,9 +176,10 @@ public class AppInstaller {
                                      echo Installing %s ...
                                      cd "$env:HOMEDRIVE\\$env:HOMEPATH"
                                      %s
-                                     echo '+ msiexec /i "%s" /lv "%s" /qb%s'
+                                     echo '+ msiexec /i "%s" /lv "%s" /qb %s'
                                      Start-Process %s -FilePath msiexec -Wait -ArgumentList "/i", "`"%s`"", "/lv", "`"%s`"", "/qb"%s
                                      %s
+                                     exit
                                      """,
                         file,
                         uninstall ? uninstallCommand : "",
@@ -194,7 +191,7 @@ public class AppInstaller {
                         logFile,
                         startProcessProperty,
                         AppRestart.getBackgroundRestartCommand(
-                                AppProperties.get().getDataDir(), null, ShellDialects.POWERSHELL));
+                                AppProperties.get().getDataDir(), ShellDialects.POWERSHELL));
             }
         }
 

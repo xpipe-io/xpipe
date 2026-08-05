@@ -9,18 +9,23 @@ import io.xpipe.app.browser.menu.BrowserMenuItemProvider;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.*;
+import io.xpipe.app.fs.FileEntry;
+import io.xpipe.app.fs.FileKind;
+import io.xpipe.app.fs.FileSystem;
+import io.xpipe.app.fs.WrapperFileSystem;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.FileSystemStore;
 import io.xpipe.app.terminal.*;
 import io.xpipe.app.util.BooleanScope;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.FailableFunction;
 import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.OsType;
+import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -165,7 +170,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 getFileSystemNameSuffix().set(fs.getSuffix());
             });
             if (fs.getShell().isPresent()) {
-                ProcessControlProvider.get().withDefaultScripts(fs.getShell().get());
+                ProcModuleProvider.get().withDefaultScripts(fs.getShell().get());
             }
             fs.open();
 
@@ -483,8 +488,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                                 .map(shellControl -> shellControl.getShellDialect())
                                 .orElse(null)
                         == ShellDialects.CMD) {
-            var env =
-                    ProcessControlProvider.get().subShellEnvironment(getEntry().asNeeded(), ShellDialects.POWERSHELL);
+            var env = ProcModuleProvider.get().subShellEnvironment(getEntry().asNeeded(), ShellDialects.POWERSHELL);
             var entry = DataStoreEntry.createNew(getName().getValue() + " (PowerShell)", env);
             entry.setColor(DataStorage.get().getEffectiveColor(getEntry().get()));
             entry.setCategoryUuid(getEntry().get().getCategoryUuid());

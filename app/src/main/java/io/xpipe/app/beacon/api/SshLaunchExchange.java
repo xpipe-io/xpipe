@@ -1,11 +1,11 @@
 package io.xpipe.app.beacon.api;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.beacon.BeaconInterface;
-
-import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.terminal.TerminalLauncherManager;
+
+import com.sun.net.httpserver.HttpExchange;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -38,7 +38,7 @@ public class SshLaunchExchange extends BeaconInterface<SshLaunchExchange.Request
         // There are sometimes multiple requests by a terminal client (e.g. Termius)
         // This might fail sometimes, but it is expected
         var r = TerminalLauncherManager.sshLaunchExchange();
-        var c = ProcessControlProvider.get()
+        var c = ProcModuleProvider.get()
                 .getEffectiveLocalDialect()
                 .getOpenScriptCommand(r.toString())
                 .buildBaseParts(null);

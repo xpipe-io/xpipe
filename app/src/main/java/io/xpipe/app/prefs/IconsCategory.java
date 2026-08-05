@@ -16,8 +16,6 @@ import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
-import io.xpipe.app.util.FilePath;
-import io.xpipe.app.util.OsType;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;

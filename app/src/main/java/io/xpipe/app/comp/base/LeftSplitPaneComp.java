@@ -3,8 +3,8 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionStructure;
 import io.xpipe.app.comp.RegionStructureBuilder;
-
 import io.xpipe.app.core.AppLayoutModel;
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
@@ -31,7 +31,8 @@ public class LeftSplitPaneComp extends RegionStructureBuilder<SplitPane, LeftSpl
     @Override
     public Structure createBase() {
         var c = center.build();
-        var sidebar = left.hide(AppLayoutModel.get().getPortraitLayoutCollapsed()).build();
+        var sidebar =
+                left.hide(AppLayoutModel.get().getPortraitLayoutCollapsed()).build();
         if (initialWidth != null) {
             sidebar.setPrefWidth(initialWidth);
         }

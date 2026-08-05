@@ -1,5 +1,5 @@
 # Xshell kurulumu
 
-Xshell'i terminaliniz olarak kullanmak için XPipe SSH köprüsüne bağlayabilirsiniz. Yerel köprü ssh anahtarı Xshell'e doğru isimle eklendiğinde bu otomatik olarak çalışabilir.
+Xshell’i terminaliniz olarak kullanmak için, onu XPipe SSH köprüsüne bağlayabilirsiniz. Yerel köprü SSH anahtarı, doğru adla Xshell’e eklendiğinde bu işlem otomatik olarak gerçekleşebilir.
 
-Manuel olarak yapmanız gereken tek şey `%s` özel anahtar dosyasını `%s` sabit adıyla Xshell'e eklemektir.
+Manuel olarak yapmanız gereken tek şey, `%s` adlı özel anahtar dosyasını, `%s` adıyla Xshell'e eklemektir.

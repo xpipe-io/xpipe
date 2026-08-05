@@ -1,5 +1,7 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.secret.EncryptedSecretValue;
+
 import lombok.EqualsAndHashCode;
 import lombok.SneakyThrows;
 import lombok.experimental.SuperBuilder;
@@ -15,19 +17,41 @@ import javax.crypto.spec.GCMParameterSpec;
 @EqualsAndHashCode(callSuper = true)
 public abstract class AesSecretValue extends EncryptedSecretValue {
 
+    public static AesSecretValue encrypt(char[] secret, SecretKey key) {
+        var enc = new AesSecretValue(secret) {
+
+            @Override
+            protected SecretKey getSecretKey() {
+                return key;
+            }
+        };
+        return enc;
+    }
+
+    public static AesSecretValue wrap(String encrypted, SecretKey key) {
+        var enc = new AesSecretValue(encrypted) {
+
+            @Override
+            protected SecretKey getSecretKey() {
+                return key;
+            }
+        };
+        return enc;
+    }
+
     private static final String ENCRYPT_ALGO = "AES/GCM/NoPadding";
     private static final int TAG_LENGTH_BIT = 128;
     private static final int IV_LENGTH_BYTE = 12;
 
-    public AesSecretValue(String encryptedValue) {
+    private AesSecretValue(String encryptedValue) {
         super(encryptedValue);
     }
 
-    public AesSecretValue(char[] secret) {
+    protected AesSecretValue(char[] secret) {
         super(secret);
     }
 
-    public AesSecretValue(byte[] b) {
+    protected AesSecretValue(byte[] b) {
         super(b);
     }
 

@@ -3,8 +3,8 @@ package io.xpipe.app.core;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.OsType;
+import io.xpipe.app.util.ThreadHelper;
 
 public class AppAotTrain {
 

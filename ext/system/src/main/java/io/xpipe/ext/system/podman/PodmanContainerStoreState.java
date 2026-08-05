@@ -1,7 +1,7 @@
 package io.xpipe.ext.system.podman;
 
-import io.xpipe.app.ext.ContainerStoreState;
-import io.xpipe.app.ext.DataStoreState;
+import io.xpipe.app.store.ContainerStoreState;
+import io.xpipe.app.store.DataStoreState;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;

@@ -38,8 +38,8 @@ public class GunzipUnixMenuProvider implements BrowserMenuLeafProvider, BrowserA
         var dir = entries.size() > 1
                 ? "[...]"
                 : GunzipActionProvider.getTarget(
-                                        entries.getFirst().getRawFileEntry().getPath())
-                                .getFileName();
+                                entries.getFirst().getRawFileEntry().getPath())
+                        .getFileName();
         return AppI18n.observable("gunzipDirectory", dir);
     }
 
@@ -55,15 +55,14 @@ public class GunzipUnixMenuProvider implements BrowserMenuLeafProvider, BrowserA
             return false;
         }
 
-        return entries.stream()
-                        .allMatch(entry -> {
-                            var s = entry.getRawFileEntry().getPath().toString();
-                            if (s.endsWith(".tar.gz") || s.endsWith(".tgz") || s.equals("tar.gzip")) {
-                                return false;
-                            }
+        return entries.stream().allMatch(entry -> {
+                    var s = entry.getRawFileEntry().getPath().toString();
+                    if (s.endsWith(".tar.gz") || s.endsWith(".tgz") || s.equals("tar.gzip")) {
+                        return false;
+                    }
 
-                            return s.endsWith(".gz") || s.endsWith(".gzip");
-                                })
+                    return s.endsWith(".gz") || s.endsWith(".gzip");
+                })
                 && model.getFileSystem().getShell().orElseThrow().getOsType() != OsType.WINDOWS;
     }
 

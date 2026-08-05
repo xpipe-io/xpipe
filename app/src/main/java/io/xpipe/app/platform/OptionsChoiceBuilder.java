@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 @Builder
 public class OptionsChoiceBuilder {
@@ -161,7 +160,8 @@ public class OptionsChoiceBuilder {
         for (int i = 0; i < available.size(); i++) {
             map.put(
                     AppI18n.observable(createIdForClass(available.get(i))),
-                    createOptionsForClass(available.get(i), properties.get(i + (allowNull ? 1 : 0)), customConfiguration));
+                    createOptionsForClass(
+                            available.get(i), properties.get(i + (allowNull ? 1 : 0)), customConfiguration));
         }
         if (allowNull) {
             var key = AppI18n.observable("none");

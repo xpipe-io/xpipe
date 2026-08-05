@@ -22,7 +22,7 @@ public class ApiCategory extends AppPrefsCategory {
         var prefs = AppPrefs.get();
 
         return new OptionsBuilder()
-                .title("httpServer")
+                .title("apiServer")
                 .sub(new OptionsBuilder()
                         .pref(prefs.enableHttpApi)
                         .addToggle(prefs.enableHttpApi)

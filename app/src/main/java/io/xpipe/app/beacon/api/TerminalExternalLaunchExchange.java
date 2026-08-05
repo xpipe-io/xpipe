@@ -1,17 +1,17 @@
 package io.xpipe.app.beacon.api;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.beacon.BeaconClientException;
 import io.xpipe.app.beacon.BeaconInterface;
-
 import io.xpipe.app.beacon.BeaconServerException;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageQuery;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.store.ShellStore;
 import io.xpipe.app.terminal.TerminalLauncherManager;
+
+import com.sun.net.httpserver.HttpExchange;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;

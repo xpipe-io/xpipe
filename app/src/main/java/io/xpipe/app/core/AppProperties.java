@@ -1,9 +1,9 @@
 package io.xpipe.app.core;
 
+import io.xpipe.app.beacon.BeaconServer;
 import io.xpipe.app.core.check.AppDirectoryPermissionsCheck;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.beacon.BeaconServer;
 import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.OsType;
 import io.xpipe.app.util.XPipeDaemonMode;
@@ -62,16 +62,17 @@ public class AppProperties {
     boolean logToFile;
     boolean logPlatformDebug;
     String logLevel;
-    String loginTarget;
     int defaultBeaconPort;
     Path beaconAuthFile;
     Path beaconLockFile;
     boolean debugCli;
     boolean isDaemon;
     boolean isCli;
+
     @NonFinal
     @Getter(AccessLevel.PRIVATE)
     Integer effectiveBeaconPort;
+
     FilePath localWebtopDockerfile;
 
     public AppProperties(String[] args) {
@@ -127,7 +128,13 @@ public class AppProperties {
                 .map(Boolean::parseBoolean)
                 .orElse(false);
         defaultReleaseDataDir = AppSystemInfo.ofCurrent().getUserHome().resolve(".xpipe");
-        defaultDataDir = AppSystemInfo.ofCurrent().getUserHome().resolve(isStaging() ? ".xpipe-ptb" : ".xpipe");
+        // TODO: Change this for the release
+        defaultDataDir = AppSystemInfo.ofCurrent()
+                .getUserHome()
+                .resolve(
+                        isStaging()
+                                ? (Files.exists(Path.of("/apps/available")) ? ".xpipe-ptb" : ".xpipe-ptb-v24")
+                                : ".xpipe");
         dataDir = Optional.ofNullable(System.getProperty(AppNames.propertyName("dataDir")))
                 .map(s -> {
                     var p = Path.of(s);
@@ -136,6 +143,8 @@ public class AppProperties {
                     }
                     return p;
                 })
+                .filter(path ->
+                        !path.equals(AppSystemInfo.ofCurrent().getUserHome().resolve(".xpipe-ptb")))
                 .orElse(defaultDataDir);
         showcase = Optional.ofNullable(System.getProperty(AppNames.propertyName("showcase")))
                 .map(Boolean::parseBoolean)
@@ -173,10 +182,9 @@ public class AppProperties {
         logLevel = Optional.ofNullable(System.getProperty(AppNames.propertyName("logLevel")))
                 .filter(s -> AppLogs.LOG_LEVELS.contains(s))
                 .orElse("info");
-        loginTarget = Optional.ofNullable(System.getProperty(AppNames.propertyName("login")))
-                .orElse(null);
         localWebtopDockerfile = Optional.ofNullable(System.getProperty(AppNames.propertyName("localWebtopDockerfile")))
-                .map(s -> FilePath.parse(s)).orElse(null);
+                .map(s -> FilePath.parse(s))
+                .orElse(null);
         isCli = Optional.ofNullable(System.getProperty(AppNames.propertyName("isCli")))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
@@ -281,7 +289,7 @@ public class AppProperties {
             }
         }
 
-        var effectivePort = customPort != null ? customPort : 21721 + (staging ? 1 : 0);;
+        var effectivePort = customPort != null ? customPort : 21721 + (staging ? 1 : 0);
         return effectivePort;
     }
 

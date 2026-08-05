@@ -3,10 +3,9 @@ package io.xpipe.app.beacon;
 import io.xpipe.app.beacon.api.HandshakeExchange;
 import io.xpipe.app.util.JacksonMapper;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.SneakyThrows;
+import tools.jackson.databind.node.ObjectNode;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -33,7 +32,8 @@ public class BeaconClient {
         this.port = port;
     }
 
-    public static BeaconClient establishConnection(int port, BeaconClientInformation information, Path authFile) throws Exception {
+    public static BeaconClient establishConnection(int port, BeaconClientInformation information, Path authFile)
+            throws Exception {
         var client = new BeaconClient(port);
         var auth = Files.readString(authFile);
         HandshakeExchange.Response response = client.performRequest(HandshakeExchange.Request.builder()
@@ -96,7 +96,7 @@ public class BeaconClient {
             }
             var v = (RES) reader.readValue(body);
             return v;
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             throw new BeaconConnectorException("Couldn't parse response", ex);
         }
     }
@@ -136,7 +136,7 @@ public class BeaconClient {
         try {
             var v = JacksonMapper.getDefault().readValue(response.body(), BeaconClientErrorResponse.class);
             return Optional.of(v);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             throw new BeaconConnectorException("Couldn't parse client error message", ex);
         }
     }
@@ -150,7 +150,7 @@ public class BeaconClient {
         try {
             var v = JacksonMapper.getDefault().readValue(response.body(), BeaconServerErrorResponse.class);
             return Optional.of(v);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             throw new BeaconConnectorException("Couldn't parse client error message", ex);
         }
     }

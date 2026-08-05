@@ -1,6 +1,6 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.util.ModuleLayerLoader;
+import io.xpipe.app.prefs.PrefsHandler;
 
 import java.util.List;
 import java.util.ServiceLoader;

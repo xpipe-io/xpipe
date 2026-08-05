@@ -1,6 +1,6 @@
 package io.xpipe.app.beacon;
 
-import io.xpipe.app.util.ModuleLayerLoader;
+import io.xpipe.app.ext.ModuleLayerLoader;
 
 import com.sun.net.httpserver.HttpExchange;
 import lombok.SneakyThrows;

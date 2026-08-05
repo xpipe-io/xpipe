@@ -22,6 +22,10 @@ public class WindowsAppRdpClient implements ExternalApplicationType.MacApplicati
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
         var adjusted = AppDisplayScale.getEffectiveDisplayScale() >= 2.0
+                        && configuration
+                                .getConfig()
+                                .get("ForceHiDpiOptimizations")
+                                .isEmpty()
                 ? configuration
                         .getConfig()
                         .overlay(Map.of("ForceHiDpiOptimizations", new RdpConfig.TypedValue("i", "1")))

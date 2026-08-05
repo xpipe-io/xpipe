@@ -7,14 +7,17 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppCertStore;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.*;
-import io.xpipe.app.hub.comp.StoreChoiceComp;
-import io.xpipe.app.hub.comp.StoreCreationDialog;
-import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.hub.creation.StoreChoiceComp;
+import io.xpipe.app.hub.creation.StoreCreationDialog;
+import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStore;
+import io.xpipe.app.store.DataStoreCreationCategory;
+import io.xpipe.app.store.DataStoreProvider;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.HttpHelper;
@@ -103,7 +106,7 @@ public class HttpProxyCategory extends AppPrefsCategory {
                     var initialRef = initial != null
                             ? DataStorage.get().getStoreEntries().stream()
                                     .filter(e -> {
-                                        return initial.equals(ProcessControlProvider.get()
+                                        return initial.equals(ProcModuleProvider.get()
                                                 .getHttpProxy(e.ref().asNeeded())
                                                 .orElse(null));
                                     })
@@ -115,7 +118,7 @@ public class HttpProxyCategory extends AppPrefsCategory {
                     ref.addListener((observable, oldValue, newValue) -> {
                         prefs.httpProxy.setValue(
                                 newValue != null
-                                        ? ProcessControlProvider.get()
+                                        ? ProcModuleProvider.get()
                                                 .getHttpProxy(newValue)
                                                 .orElse(null)
                                         : null);
@@ -165,7 +168,7 @@ public class HttpProxyCategory extends AppPrefsCategory {
         });
 
         var addButton = new ButtonComp(AppI18n.observable("addProxy"), () -> {
-            var selected = DataStoreProviders.byId("networkProxy").orElseThrow();
+            var selected = DataStoreProvider.byId("networkProxy").orElseThrow();
             StoreCreationDialog.showCreation(
                     null,
                     selected.defaultStore(DataStorage.get().getSelectedCategory()),

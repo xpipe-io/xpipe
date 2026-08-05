@@ -1,12 +1,12 @@
 package io.xpipe.app.beacon.mcp;
 
-import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.beacon.BeaconClientException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageQuery;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.beacon.BeaconClientException;
+import io.xpipe.app.store.ShellStore;
 import io.xpipe.app.util.FilePath;
 
 import io.modelcontextprotocol.server.McpSyncServerExchange;

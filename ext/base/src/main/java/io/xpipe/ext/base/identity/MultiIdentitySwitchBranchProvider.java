@@ -18,6 +18,11 @@ import java.util.stream.Collectors;
 public class MultiIdentitySwitchBranchProvider implements HubBranchProvider<MultiIdentityStore> {
 
     @Override
+    public String getId() {
+        return "multiIdentitySwitch";
+    }
+
+    @Override
     public boolean isMajor() {
         return true;
     }

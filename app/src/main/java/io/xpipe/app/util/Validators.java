@@ -1,9 +1,8 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStore;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,8 +22,10 @@ public class Validators {
             throws ValidationException {
         if (ref == null
                 || ref.getStore() == null
-                || Arrays.stream(cs).noneMatch(c -> c.isAssignableFrom(ref.getStore().getClass()))) {
-            throw new ValidationException("Value must be an instance of " + Arrays.stream(cs).map(Class::getSimpleName).toList());
+                || Arrays.stream(cs)
+                        .noneMatch(c -> c.isAssignableFrom(ref.getStore().getClass()))) {
+            throw new ValidationException("Value must be an instance of "
+                    + Arrays.stream(cs).map(Class::getSimpleName).toList());
         }
     }
 

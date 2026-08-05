@@ -4,7 +4,7 @@ import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.file.BrowserFileOpener;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.platform.LabelGraphic;
@@ -55,7 +55,7 @@ public class IncusContainerEditRunConfigActionProvider implements HubLeafProvide
         @Override
         public void executeImpl() throws Exception {
             var d = ref.getStore();
-            var elevatedRef = ProcessControlProvider.get()
+            var elevatedRef = ProcModuleProvider.get()
                     .elevated(d.getInstall().getStore().getHost().get().ref());
             var file = FilePath.of("/run/incus/" + d.getContainerName() + "/lxc.conf");
             var model = BrowserFullSessionModel.DEFAULT.openFileSystemSync(

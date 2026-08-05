@@ -6,7 +6,6 @@ import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLogs;
-import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
@@ -27,7 +26,8 @@ public class UpdateChangelogDialog {
             ErrorEvent.ErrorEventBuilder eventBuilder = ErrorEventFactory.fromMessage(AppI18n.get("updateFail"))
                     .documentationLink(DocumentationLink.UPDATE_FAIL);
 
-            if (OsType.ofLocal() == OsType.WINDOWS && AppDistributionType.get().getUpdateHandler() instanceof GitHubUpdater gh) {
+            if (OsType.ofLocal() == OsType.WINDOWS
+                    && AppDistributionType.get().getUpdateHandler() instanceof GitHubUpdater gh) {
                 var preparedUpdate = gh.getPreparedUpdate().getValue();
                 if (preparedUpdate != null) {
                     eventBuilder.customAction(ErrorAction.translated("updateReinstallAction", () -> {
@@ -38,9 +38,9 @@ public class UpdateChangelogDialog {
             }
 
             eventBuilder.customAction(ErrorAction.translated("updateFailAction", () -> {
-                        Hyperlinks.open(Hyperlinks.GITHUB_LATEST);
-                        return true;
-                    }));
+                Hyperlinks.open(Hyperlinks.GITHUB_LATEST);
+                return true;
+            }));
 
             if (OsType.ofLocal() == OsType.WINDOWS) {
                 var installerLog =

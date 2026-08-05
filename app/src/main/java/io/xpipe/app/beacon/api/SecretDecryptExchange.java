@@ -1,17 +1,15 @@
 package io.xpipe.app.beacon.api;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.beacon.BeaconClientException;
 import io.xpipe.app.beacon.BeaconInterface;
-
-import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.storage.DataStorageSecret;
+
+import com.sun.net.httpserver.HttpExchange;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
-
-import java.io.IOException;
+import tools.jackson.databind.JsonNode;
 
 public class SecretDecryptExchange extends BeaconInterface<SecretDecryptExchange.Request> {
 
@@ -21,13 +19,18 @@ public class SecretDecryptExchange extends BeaconInterface<SecretDecryptExchange
     }
 
     @Override
-    public Object handle(HttpExchange exchange, Request msg) throws IOException, BeaconClientException {
+    public Object handle(HttpExchange exchange, Request msg) throws BeaconClientException {
         var secret = DataStorageSecret.deserialize(msg.getEncrypted());
         if (secret == null) {
             throw new BeaconClientException("Unable to parse secret");
         }
+        if (secret.getInternalSecret() == null) {
+            throw new BeaconClientException("Unable to decrypt secret");
+        }
 
-        return Response.builder().decrypted(new String(secret.getSecret())).build();
+        return Response.builder()
+                .decrypted(new String(secret.getInternalSecret().getSecret()))
+                .build();
     }
 
     @Jacksonized

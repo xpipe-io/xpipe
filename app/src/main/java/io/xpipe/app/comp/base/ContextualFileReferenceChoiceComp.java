@@ -5,16 +5,16 @@ import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.cred.SshIdentityStrategy;
-import io.xpipe.app.ext.FileSystemStore;
-import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ProcModuleProvider;
+import io.xpipe.app.identity.SshIdentityStrategy;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.FileSystemStore;
+import io.xpipe.app.util.ContextualFileReference;
 import io.xpipe.app.util.FilePath;
 
 import javafx.application.Platform;
@@ -74,7 +74,7 @@ public class ContextualFileReferenceChoiceComp extends RegionBuilder<HBox> {
         var path = previousFileReferences.isEmpty() ? createTextField() : createComboBox();
         var busy = new SimpleBooleanProperty();
         var fileBrowseButton = new ButtonComp(null, new FontIcon("mdi2f-folder-open-outline"), () -> {
-            var replacement = ProcessControlProvider.get().replace(fileSystem.getValue());
+            var replacement = ProcModuleProvider.get().replace(fileSystem.getValue());
             BrowserFileChooserSessionComp.open(
                     () -> replacement,
                     () -> filePath.getValue() != null ? filePath.getValue().getParent() : null,
@@ -124,7 +124,7 @@ public class ContextualFileReferenceChoiceComp extends RegionBuilder<HBox> {
 
                 var handler = DataStorageSyncHandler.getInstance();
                 var syncedTarget =
-                        handler.addDataFile(source, target, sync.getPerUser().get());
+                        handler.addDataFile(source, target, sync.getScope().get());
 
                 var sourceBase = source.toString().endsWith(".pem")
                         ? Path.of(
@@ -135,13 +135,13 @@ public class ContextualFileReferenceChoiceComp extends RegionBuilder<HBox> {
                         .asLocalPath();
                 if (Files.exists(pubSource)) {
                     var pubTarget = sync.getTargetLocation().apply(pubSource);
-                    handler.addDataFile(pubSource, pubTarget, sync.getPerUser().get());
+                    handler.addDataFile(pubSource, pubTarget, sync.getScope().get());
                 }
 
                 var ppkSource = Path.of(sourceBase + ".ppk");
                 if (Files.exists(ppkSource)) {
                     var ppkTarget = Path.of(target.toString() + ".ppk");
-                    handler.addDataFile(ppkSource, ppkTarget, sync.getPerUser().get());
+                    handler.addDataFile(ppkSource, ppkTarget, sync.getScope().get());
                 }
 
                 Platform.runLater(() -> {

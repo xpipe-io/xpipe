@@ -1,7 +1,5 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.util.ModuleLayerLoader;
-
 import java.util.ServiceLoader;
 
 public abstract class CliProvider {

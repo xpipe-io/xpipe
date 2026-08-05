@@ -1,1 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32"><defs><linearGradient id="a" x1="-547.975" y1="-244.974" x2="-547" y2="-244.974" gradientTransform="matrix(4, 0, 0, -4, 2204, -974)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#eea831"/><stop offset="1" stop-color="#ffc929"/></linearGradient><linearGradient id="b" x1="-547" y1="-247.171" x2="-544.762" y2="-247.171" gradientTransform="matrix(4, 0, 0, -4, 2204, -974)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#b32629"/><stop offset="0.583" stop-color="#8c1e21"/><stop offset="1" stop-color="#7a1a1d"/></linearGradient><linearGradient id="c" x1="-547" y1="-244.974" x2="-546.025" y2="-244.974" gradientTransform="matrix(4, 0, 0, -4, 2204, -974)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#e8a333"/><stop offset="0.612" stop-color="#c68931"/><stop offset="1" stop-color="#ab762f"/></linearGradient><linearGradient id="d" y1="-249.368" x2="-543.5" y2="-249.368" xlink:href="#b"/><linearGradient id="e" x1="-550.5" y1="-249.368" x2="-547" y2="-249.368" gradientTransform="matrix(4, 0, 0, -4, 2204, -974)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ae2524"/><stop offset="0.563" stop-color="#d01d19"/><stop offset="1" stop-color="#ed1913"/></linearGradient><linearGradient id="f" x1="-549.238" y1="-247.171" y2="-247.171" xlink:href="#e"/></defs><title>file_type_red2</title><polygon points="16 9.792 16 2 12.097 7.77 16 9.792" style="fill:url(#a)"/><polygon points="16 12.097 16 19.903 16 19.903 24.952 15.236 21.048 9.467 16 12.097" style="fill:url(#b)"/><polygon points="16 9.792 19.903 7.77 16 2 16 9.792" style="fill:url(#c)"/><polygon points="26.097 16.947 16 22.208 16 22.208 16 30 30 22.717 26.097 16.947" style="fill:url(#d)"/><polygon points="2 22.717 16 30 16 22.208 5.903 16.947 2 22.717" style="fill:url(#e)"/><polygon points="10.952 9.467 7.048 15.236 16 19.903 16 12.097 10.952 9.467" style="fill:url(#f)"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32">
+    <defs>
+        <linearGradient id="c" x1="-547.975" x2="-547" y1="-244.974" y2="-244.974" gradientTransform="matrix(4 0 0 -4 2204 -974)" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#eea831"/>
+            <stop offset="1" stop-color="#ffc929"/>
+        </linearGradient>
+        <linearGradient id="a" x1="-547" x2="-544.762" y1="-247.171" y2="-247.171" gradientTransform="matrix(4 0 0 -4 2204 -974)" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#b32629"/>
+            <stop offset=".583" stop-color="#8c1e21"/>
+            <stop offset="1" stop-color="#7a1a1d"/>
+        </linearGradient>
+        <linearGradient id="d" x1="-547" x2="-546.025" y1="-244.974" y2="-244.974" gradientTransform="matrix(4 0 0 -4 2204 -974)" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#e8a333"/>
+            <stop offset=".612" stop-color="#c68931"/>
+            <stop offset="1" stop-color="#ab762f"/>
+        </linearGradient>
+        <linearGradient xlink:href="#a" id="e" x2="-543.5" y1="-249.368" y2="-249.368"/>
+        <linearGradient id="b" x1="-550.5" x2="-547" y1="-249.368" y2="-249.368" gradientTransform="matrix(4 0 0 -4 2204 -974)" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#ae2524"/>
+            <stop offset=".563" stop-color="#d01d19"/>
+            <stop offset="1" stop-color="#ed1913"/>
+        </linearGradient>
+        <linearGradient xlink:href="#b" id="f" x1="-549.238" y1="-247.171" y2="-247.171"/>
+    </defs>
+    <title>file_type_red2</title>
+    <path d="M16 9.792V2l-3.903 5.77z" style="fill:url(#c)"/>
+    <path d="M16 12.097v7.806l8.952-4.667-3.904-5.769z" style="fill:url(#a)"/>
+    <path d="m16 9.792 3.903-2.022L16 2z" style="fill:url(#d)"/>
+    <path d="M26.097 16.947 16 22.208V30l14-7.283z" style="fill:url(#e)"/>
+    <path d="M2 22.717 16 30v-7.792L5.903 16.947z" style="fill:url(#b)"/>
+    <path d="m10.952 9.467-3.904 5.769L16 19.903v-7.806z" style="fill:url(#f)"/>
+</svg>

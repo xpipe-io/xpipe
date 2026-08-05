@@ -1,43 +1,10 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg
-   viewBox="0 0 402.72794 402.72794"
-   version="1.1"
-   id="svg5"
-   width="402.72794"
-   height="402.72794"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
-  <defs
-     id="defs5" />
-  <g
-     id="a"
-     transform="translate(-54.636039,-54.636039)">
-    <path
-       d="M 118,118 H 242 V 242 H 118 Z"
-       fill="#9ccd2a"
-       id="path1" />
-    <path
-       d="M 270,118 H 394 V 242 H 270 Z"
-       fill="#932279"
-       id="path2" />
-    <path
-       d="M 270,270 H 394 V 394 H 270 Z"
-       fill="#efa724"
-       id="path3" />
-    <path
-       d="M 118,270 H 242 V 394 H 118 Z"
-       fill="#262577"
-       id="path4" />
-  </g>
-  <use
-     transform="rotate(-135,201.36396,201.36396)"
-     xlink:href="#a"
-     id="use4" />
-  <path
-     d="M 63.363961,215.36396 H 187.36396 v 124 H 63.363961 Z m 151.999999,0 h 124 v 124 h -124 z m 0,-151.999999 h 124 V 187.36396 h -124 z m -151.999999,0 H 187.36396 V 187.36396 H 63.363961 Z m 244.999999,225.999999 -87,-88 87,-88 88,88 z m -107,-108 -88,-86.999999 88,-88 88,88 z m -106.999999,108 -88,-88 88,-88 86.999999,88 z m 106.999999,107 -88,-88 88,-87 88,87 z"
-     fill="none"
-     stroke="#ffffff"
-     stroke-width="9"
-     id="path5" />
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="402.728" height="402.728" viewBox="0 0 402.728 402.728">
+    <g id="a">
+        <path fill="#9ccd2a" d="M63.364 63.364h124v124h-124Z"/>
+        <path fill="#932279" d="M215.364 63.364h124v124h-124Z"/>
+        <path fill="#efa724" d="M215.364 215.364h124v124h-124Z"/>
+        <path fill="#262577" d="M63.364 215.364h124v124h-124Z"/>
+    </g>
+    <use xlink:href="#a" transform="rotate(-135 201.364 201.364)"/>
+    <path fill="none" stroke="#fff" stroke-width="9" d="M63.364 215.364h124v124h-124Zm152 0h124v124h-124zm0-152h124v124h-124zm-152 0h124v124h-124Zm245 226-87-88 87-88 88 88zm-107-108-88-87 88-88 88 88zm-107 108-88-88 88-88 87 88zm107 107-88-88 88-87 88 87z"/>
 </svg>

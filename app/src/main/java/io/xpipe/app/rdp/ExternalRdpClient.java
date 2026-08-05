@@ -1,11 +1,10 @@
 package io.xpipe.app.rdp;
 
 import io.xpipe.app.core.AppLocalTemp;
-import io.xpipe.app.ext.PrefsValue;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.PrefsValue;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.util.*;
-import io.xpipe.app.util.OsType;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -30,6 +29,7 @@ public interface ExternalRdpClient extends PrefsValue {
                 l.add(FreeRdpClient.class);
             }
             case OsType.Windows ignored -> {
+                l.add(MsrdcRdpClient.class);
                 l.add(MstscRdpClient.class);
                 l.add(DevolutionsRdpClient.class);
             }
@@ -40,7 +40,10 @@ public interface ExternalRdpClient extends PrefsValue {
 
     static ExternalRdpClient getApplicationLauncher() {
         if (OsType.ofLocal() == OsType.WINDOWS) {
-            return MstscRdpClient.builder().smartSizing(false).build();
+            var msrdc = AppPrefs.get().rdpClientType().getValue() instanceof MsrdcRdpClient;
+            return msrdc
+                    ? MsrdcRdpClient.builder().smartSizing(false).build()
+                    : MstscRdpClient.builder().smartSizing(false).build();
         } else {
             return AppPrefs.get().rdpClientType().getValue();
         }
@@ -80,7 +83,19 @@ public interface ExternalRdpClient extends PrefsValue {
                 yield windowsApp;
             }
             case OsType.Windows ignored -> {
-                yield MstscRdpClient.builder().smartSizing(true).dock(true).build();
+                var msrdc =
+                        MsrdcRdpClient.builder().smartSizing(true).dock(true).build();
+                if (msrdc.isAvailable()) {
+                    yield msrdc;
+                }
+
+                var mstsc =
+                        MstscRdpClient.builder().smartSizing(true).dock(true).build();
+                if (mstsc.isAvailable()) {
+                    yield mstsc;
+                }
+
+                yield mstsc;
             }
         };
     }

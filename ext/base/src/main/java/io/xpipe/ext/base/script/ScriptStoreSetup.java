@@ -1,11 +1,11 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.ext.StatefulDataStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.StatefulDataStore;
 import io.xpipe.app.util.FilePath;
 
 import lombok.SneakyThrows;

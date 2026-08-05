@@ -1,14 +1,14 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
+import io.xpipe.app.prefs.PrefsChoiceValue;
 import io.xpipe.app.process.*;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.OsType;
-
 import io.xpipe.app.webtop.WebtopApp;
+
 import lombok.Getter;
 
 import java.util.*;

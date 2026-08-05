@@ -1,12 +1,12 @@
 package io.xpipe.app.beacon.api;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BeaconInterface;
 import io.xpipe.app.beacon.BlobManager;
 import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.app.util.FilePath;
 
+import com.sun.net.httpserver.HttpExchange;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.SneakyThrows;

@@ -26,18 +26,20 @@ public interface CredAdvapi32 extends StdCallLibrary {
      * CredRead flag
      */
     int CRED_FLAGS_PROMPT_NOW = 0x0002;
+
     int CRED_FLAGS_USERNAME_TARGET = 0x0004;
 
     /**
      * Type of Credential
      */
     int CRED_TYPE_GENERIC = 1;
+
     int CRED_TYPE_DOMAIN_PASSWORD = 2;
     int CRED_TYPE_DOMAIN_CERTIFICATE = 3;
     int CRED_TYPE_DOMAIN_VISIBLE_PASSWORD = 4;
     int CRED_TYPE_GENERIC_CERTIFICATE = 5;
     int CRED_TYPE_DOMAIN_EXTENDED = 6;
-    int CRED_TYPE_MAXIMUM = 7;       // Maximum supported cred type
+    int CRED_TYPE_MAXIMUM = 7; // Maximum supported cred type
     int CRED_TYPE_MAXIMUM_EX = CRED_TYPE_MAXIMUM + 1000;
 
     /**
@@ -49,6 +51,7 @@ public interface CredAdvapi32 extends StdCallLibrary {
      * Values of the Credential Persist field
      */
     int CRED_PERSIST_NONE = 0;
+
     int CRED_PERSIST_SESSION = 1;
     int CRED_PERSIST_LOCAL_MACHINE = 2;
     int CRED_PERSIST_ENTERPRISE = 3;
@@ -68,14 +71,11 @@ public interface CredAdvapi32 extends StdCallLibrary {
      */
     class CREDENTIAL_ATTRIBUTE extends Structure {
 
-        public static class ByReference extends CREDENTIAL_ATTRIBUTE implements Structure.ByReference { }
+        public static class ByReference extends CREDENTIAL_ATTRIBUTE implements Structure.ByReference {}
 
         @Override
         protected List<String> getFieldOrder() {
-            return Arrays.asList("Keyword",
-                    "Flags",
-                    "ValueSize",
-                    "Value");
+            return Arrays.asList("Keyword", "Flags", "ValueSize", "Value");
         }
 
         /**
@@ -158,7 +158,8 @@ public interface CredAdvapi32 extends StdCallLibrary {
 
         @Override
         protected List<String> getFieldOrder() {
-            return Arrays.asList("Flags",
+            return Arrays.asList(
+                    "Flags",
                     "Type",
                     "TargetName",
                     "Comment",
@@ -260,7 +261,7 @@ public interface CredAdvapi32 extends StdCallLibrary {
          *   Application-defined attributes that are associated with the credential. This member can be read
          *   and written.
          */
-        //notTODO: Need to make this into array
+        // notTODO: Need to make this into array
         public CREDENTIAL_ATTRIBUTE.ByReference Attributes;
 
         /**

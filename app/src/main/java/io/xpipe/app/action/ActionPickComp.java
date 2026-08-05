@@ -19,9 +19,7 @@ public class ActionPickComp extends ModalOverlayContentComp {
     protected Region createSimple() {
         var prop = new SimpleObjectProperty<>(action);
         var top = new ActionConfigComp(prop);
-        var bottom = new ActionShortcutComp(prop, () -> {
-            getModalOverlay().close();
-        });
+        var bottom = new ActionShortcutComp(prop);
         var options = new OptionsBuilder().addComp(top).addComp(bottom);
         var scroll = new ScrollComp(options.buildComp());
         return scroll.build();

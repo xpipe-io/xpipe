@@ -1,1 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 74.375 85" fill="#fff" fill-rule="evenodd" stroke="#000" stroke-linecap="round" stroke-linejoin="round"><use xlink:href="#A" x="2.188" y="2.5"/><symbol id="A" overflow="visible"><g stroke="none"><path d="M3.511 14.898L0 16.56V63.44l3.511 1.662 14.209-23.887L3.511 14.898z" fill="#9d5025"/><path d="M11.694 63.285l-8.183 1.817V14.898l8.183 1.769v46.618z" fill="#f58536"/><path d="M7.382 13.061l4.312-2.031 20.483 31.079L11.694 68.97l-4.312-2.031V13.061z" fill="#9d5025"/><path d="M21.899 66.239L11.694 68.97V11.03l10.205 2.74v52.468z" fill="#f58536"/><path d="M16.499 8.746l5.4-2.556 30.216 39.32-30.216 28.299-5.4-2.556V8.746z" fill="#9d5025"/><path d="M34.989 69.281l-13.09 4.529V6.19l13.09 4.538v58.552z" fill="#f58536"/><path d="M28.008 3.304L34.99 0l32.69 42.264L34.99 80l-6.982-3.304V3.304z" fill="#9d5025"/><path d="M70 63.431L34.99 80V0L70 16.57v46.861z" fill="#f58536"/></g></symbol></svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#fff" fill-rule="evenodd" stroke="#000" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 74.375 85">
+    <use xlink:href="#a" x="2.188" y="2.5"/>
+    <symbol id="a" overflow="visible">
+        <g stroke="none">
+            <path fill="#9d5025" d="M3.511 14.898 0 16.56v46.88l3.511 1.662L17.72 41.215z"/>
+            <path fill="#f58536" d="m11.694 63.285-8.183 1.817V14.898l8.183 1.769z"/>
+            <path fill="#9d5025" d="m7.382 13.061 4.312-2.031 20.483 31.079L11.694 68.97l-4.312-2.031z"/>
+            <path fill="#f58536" d="M21.899 66.239 11.694 68.97V11.03l10.205 2.74v52.468z"/>
+            <path fill="#9d5025" d="m16.499 8.746 5.4-2.556 30.216 39.32-30.216 28.299-5.4-2.556z"/>
+            <path fill="#f58536" d="m34.989 69.281-13.09 4.529V6.19l13.09 4.538V69.28z"/>
+            <path fill="#9d5025" d="M28.008 3.304 34.99 0l32.69 42.264L34.99 80l-6.982-3.304z"/>
+            <path fill="#f58536" d="M70 63.431 34.99 80V0L70 16.57z"/>
+        </g>
+    </symbol>
+</svg>

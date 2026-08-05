@@ -1,15 +1,14 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.core.AppSystemInfo;
-import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.FlatpakCache;
-import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.app.util.OsType;
-
+import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.app.webtop.WebtopApp;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 
@@ -64,9 +63,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     return perUser;
                 }
 
-                var perMachine = AppSystemInfo.ofWindows()
-                        .getProgramFiles()
-                        .resolve("VSCodium");
+                var perMachine = AppSystemInfo.ofWindows().getProgramFiles().resolve("VSCodium");
                 return perMachine;
             },
             "VSCodium.exe");
@@ -83,9 +80,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     return perUser;
                 }
 
-                var perMachine = AppSystemInfo.ofWindows()
-                        .getProgramFiles()
-                        .resolve("Antigravity");
+                var perMachine = AppSystemInfo.ofWindows().getProgramFiles().resolve("Antigravity");
                 return perMachine;
             },
             "Antigravity.exe");
@@ -102,9 +97,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     return perUser;
                 }
 
-                var perMachine = AppSystemInfo.ofWindows()
-                        .getProgramFiles()
-                        .resolve("cursor");
+                var perMachine = AppSystemInfo.ofWindows().getProgramFiles().resolve("cursor");
                 return perMachine;
             },
             "Cursor.exe");
@@ -121,9 +114,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     return perUser;
                 }
 
-                var perMachine = AppSystemInfo.ofWindows()
-                        .getProgramFiles()
-                        .resolve("Void");
+                var perMachine = AppSystemInfo.ofWindows().getProgramFiles().resolve("Void");
                 return perMachine;
             },
             "Void.exe");
@@ -140,9 +131,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     return perUser;
                 }
 
-                var perMachine = AppSystemInfo.ofWindows()
-                        .getProgramFiles()
-                        .resolve("Windsurf");
+                var perMachine = AppSystemInfo.ofWindows().getProgramFiles().resolve("Windsurf");
                 return perMachine;
             },
             "Windsurf.exe");
@@ -159,9 +148,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     return perUser;
                 }
 
-                var perMachine = AppSystemInfo.ofWindows()
-                        .getProgramFiles()
-                        .resolve("Kiro");
+                var perMachine = AppSystemInfo.ofWindows().getProgramFiles().resolve("Kiro");
                 return perMachine;
             },
             "Kiro.exe");
@@ -213,9 +200,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     return perUser;
                 }
 
-                var perMachine = AppSystemInfo.ofWindows()
-                        .getProgramFiles()
-                        .resolve("Trae");
+                var perMachine = AppSystemInfo.ofWindows().getProgramFiles().resolve("Trae");
                 return perMachine;
             },
             "Trae.exe");
@@ -232,9 +217,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     return perUser;
                 }
 
-                var perMachine = AppSystemInfo.ofWindows()
-                        .getProgramFiles()
-                        .resolve("Microsoft VS Code");
+                var perMachine = AppSystemInfo.ofWindows().getProgramFiles().resolve("Microsoft VS Code");
                 return perMachine;
             },
             "Code.exe");
@@ -251,9 +234,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     return perUser;
                 }
 
-                var perMachine = AppSystemInfo.ofWindows()
-                        .getProgramFiles()
-                        .resolve("Microsoft VS Code Insiders");
+                var perMachine = AppSystemInfo.ofWindows().getProgramFiles().resolve("Microsoft VS Code Insiders");
                 return perMachine;
             },
             "Code - Insiders.exe");

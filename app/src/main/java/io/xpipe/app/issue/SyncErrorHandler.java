@@ -29,7 +29,7 @@ public class SyncErrorHandler implements ErrorHandler {
         errorHandler.handle(event);
         synchronized (eventQueue) {
             eventQueue.forEach(errorEvent -> {
-                var te = EventHandlerImpl.fromErrorEvent(errorEvent);
+                var te = TrackEvent.fromErrorEvent(errorEvent);
                 System.out.println("Event happened during error handling: " + te.toString());
             });
             eventQueue.clear();

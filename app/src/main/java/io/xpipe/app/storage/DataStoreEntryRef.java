@@ -1,6 +1,6 @@
 package io.xpipe.app.storage;
 
-import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.store.DataStore;
 
 import lombok.NonNull;
 

@@ -1,19 +1,16 @@
 package io.xpipe.app.util;
 
-
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
+import io.xpipe.app.issue.ErrorEventFactory;
 
 import com.sun.jna.LastErrorException;
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
-import com.sun.jna.platform.win32.Advapi32;
 import com.sun.jna.win32.W32APIOptions;
-import io.xpipe.app.issue.ErrorEventFactory;
 import lombok.Value;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 public class WinCred {
 

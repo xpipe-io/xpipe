@@ -1,6 +1,7 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.core.window.AppMainWindow;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -20,11 +21,15 @@ public class AppSizeBreakpoints {
     }
 
     public static void init() {
-        compactMode.bind(Bindings.createBooleanBinding(() -> {
-            return AppMainWindow.get().getStage().getWidth() <= 1000;
-        }, AppMainWindow.get().getStage().widthProperty()));
-        portraitMode.bind(Bindings.createBooleanBinding(() -> {
-            return AppMainWindow.get().getStage().getWidth() <= 700;
-        }, AppMainWindow.get().getStage().widthProperty()));
+        compactMode.bind(Bindings.createBooleanBinding(
+                () -> {
+                    return AppMainWindow.get().getStage().getWidth() <= 1000;
+                },
+                AppMainWindow.get().getStage().widthProperty()));
+        portraitMode.bind(Bindings.createBooleanBinding(
+                () -> {
+                    return AppMainWindow.get().getStage().getWidth() <= 700;
+                },
+                AppMainWindow.get().getStage().widthProperty()));
     }
 }

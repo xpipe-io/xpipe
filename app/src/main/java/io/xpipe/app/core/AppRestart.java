@@ -66,22 +66,19 @@ public class AppRestart {
         }
     }
 
-    public static String getBackgroundRestartCommand(Path dataDir, String user, ShellDialect dialect) {
+    public static String getBackgroundRestartCommand(Path dataDir, ShellDialect dialect) {
         var l = new ArrayList<String>();
         l.addAll(List.of(
                 "-Dio.xpipe.app.mode=gui",
                 "-Dio.xpipe.app.acceptEula=true",
                 "-Dio.xpipe.app.dataDir=\"" + dataDir + "\"",
                 "-Dio.xpipe.app.restarted=true"));
-        if (user != null) {
-            l.add("-Dio.xpipe.app.login=\"" + user + "\"");
-        }
         var exec = createBackgroundLaunchCommand(l, dialect);
         return exec;
     }
 
     public static String getBackgroundRestartCommand() {
-        return getBackgroundRestartCommand(AppProperties.get().getDataDir(), null, LocalShell.getDialect());
+        return getBackgroundRestartCommand(AppProperties.get().getDataDir(), LocalShell.getDialect());
     }
 
     public static String getTerminalRestartCommand(ShellDialect dialect) {
@@ -111,7 +108,7 @@ public class AppRestart {
     public static void restart(Path dataDir) {
         AppOperationMode.executeAfterShutdown(() -> {
             try (var sc = LocalShell.getShell().start()) {
-                sc.command(getBackgroundRestartCommand(dataDir, null, sc.getShellDialect()))
+                sc.command(getBackgroundRestartCommand(dataDir, sc.getShellDialect()))
                         .execute();
             }
         });
