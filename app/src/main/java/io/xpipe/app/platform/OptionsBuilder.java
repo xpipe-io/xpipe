@@ -122,13 +122,13 @@ public class OptionsBuilder {
         var selected =
                 new SimpleObjectProperty<>(selectedIndex.getValue() != -1 ? list.get(selectedIndex.getValue()) : null);
         selected.addListener((observable, oldValue, newValue) -> {
-            selectedIndex.setValue(newValue != null ? list.indexOf(newValue) : null);
+            selectedIndex.setValue(newValue != null ? list.indexOf(newValue) : -1);
             if (newValue != null) {
                 validatorList.get(list.indexOf(newValue)).validate();
             }
         });
         selectedIndex.addListener((observable, oldValue, newValue) -> {
-            selected.setValue(list.get(newValue.intValue()));
+            selected.setValue(selectedIndex.getValue() != -1 ? list.get(newValue.intValue()) : null);
         });
         var pane = new ChoicePaneComp(list, selected);
         if (transformer != null) {

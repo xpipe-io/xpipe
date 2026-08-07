@@ -817,11 +817,6 @@ public final class AppPrefs {
     }
 
     private void fixLocalValues() {
-        // The theme detection does not work in the webtop for some reason
-        if (AppProperties.get().isInitialLaunch() && AppDistributionType.get() == AppDistributionType.WEBTOP) {
-            theme.set(AppTheme.Theme.PRIMER_DARK);
-        }
-
         uiScale.setValue(AppDisplayScale.clampValue(uiScale.getValue()));
 
         if (AppDistributionType.get() == AppDistributionType.WEBTOP) {

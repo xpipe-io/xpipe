@@ -12,6 +12,10 @@
     -fx-background-color: -color-bg-default-transparent;
 }
 
+.root:dark .prefs .prefs-container {
+    -fx-background-color: derive(-color-bg-default-transparent, 8%)
+}
+
 .root:nord .prefs .prefs-container {
     -fx-border-radius: 0;
     -fx-background-radius: 0;
@@ -71,6 +75,10 @@
     -fx-border-width: 1;
     -fx-border-color: -color-border-default;
     -fx-background-color: -color-bg-default-transparent;
+}
+
+.root:dark .prefs .sidebar {
+    -fx-background-color: derive(-color-bg-default-transparent, 8%)
 }
 
 .root:nord .prefs .sidebar {

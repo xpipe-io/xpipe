@@ -23,7 +23,7 @@ public class StoreActiveComp extends SimpleRegionBuilder {
     protected Region createSimple() {
         var c = new Circle(6);
         c.getStyleClass().add("dot");
-        c.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+        c.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
                 wrapper.stopSession();
                 event.consume();

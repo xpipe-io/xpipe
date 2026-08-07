@@ -42,8 +42,6 @@ public class DisplayCategory extends AppPrefsCategory {
                                 }),
                                 prefs.uiScale)
                         .hide(new SimpleBooleanProperty(OsType.ofLocal() == OsType.MACOS))
-                        .pref(prefs.performanceMode)
-                        .addToggle(prefs.performanceMode)
                         .pref(prefs.useSystemFont)
                         .addToggle(prefs.useSystemFont)
                         .pref(prefs.censorMode)

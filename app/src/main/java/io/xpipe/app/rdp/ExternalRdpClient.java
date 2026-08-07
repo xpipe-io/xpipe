@@ -70,7 +70,7 @@ public interface ExternalRdpClient extends PrefsValue {
                     yield remoteDesktopApp;
                 }
 
-                var windowsApp = new WindowsAppRdpClient();
+                var windowsApp = WindowsAppRdpClient.builder().hidpi(true).build();
                 if (windowsApp.isAvailable()) {
                     yield windowsApp;
                 }

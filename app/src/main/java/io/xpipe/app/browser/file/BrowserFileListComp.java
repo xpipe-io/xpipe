@@ -43,7 +43,6 @@ public final class BrowserFileListComp extends SimpleRegionBuilder {
     private static final PseudoClass EMPTY = PseudoClass.getPseudoClass("empty");
     private static final PseudoClass FILE = PseudoClass.getPseudoClass("file");
     private static final PseudoClass FOLDER = PseudoClass.getPseudoClass("folder");
-    private static final PseudoClass DRAG = PseudoClass.getPseudoClass("drag");
     private static final PseudoClass DRAG_OVER = PseudoClass.getPseudoClass("drag-over");
     private static final PseudoClass DRAG_INTO_CURRENT = PseudoClass.getPseudoClass("drag-into-current");
 
@@ -484,7 +483,6 @@ public final class BrowserFileListComp extends SimpleRegionBuilder {
             });
 
             row.itemProperty().addListener((observable, oldValue, newValue) -> {
-                row.pseudoClassStateChanged(DRAG, false);
                 row.pseudoClassStateChanged(DRAG_OVER, false);
             });
 

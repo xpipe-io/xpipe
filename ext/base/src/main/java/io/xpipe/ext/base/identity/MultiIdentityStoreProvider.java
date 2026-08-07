@@ -222,8 +222,9 @@ public class MultiIdentityStoreProvider extends IdentityStoreProvider {
         }
 
         var info = active.get().getProvider().buildInformation(section);
-        var selection = StoreEntryBadge.ofSetting(active.get().getName())
-                .withAction(StoreEntryBadge.Action.providerMenu("multiIdentitySwitch"));
+        var selection = StoreEntryBadge.ofSetting(active.get().getName());
+        selection = selection != null ? selection
+                .withAction(StoreEntryBadge.Action.providerMenu("multiIdentitySwitch")) : null;
         return info.append(StoreEntryInformation.of(selection));
     }
 }

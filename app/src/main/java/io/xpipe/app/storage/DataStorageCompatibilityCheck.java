@@ -40,7 +40,7 @@ public class DataStorageCompatibilityCheck {
 
         ErrorEventFactory.fromMessage("The vault" + (version.isPresent() ? " from v" + version.get() + " " : " ")
                         + "comes from an XPipe version prior to v24."
-                        + " This legacy format is unsupported in newer versions. To migrate your data, first install and launch XPipe v23.9."
+                        + " This legacy format is unsupported in newer versions. To migrate your data, first install and launch XPipe v23.10."
                         + " This will start a migration for the vault data. Afterwards, you can upgrade to XPipe v24+ and launch it as normal."
                         + " XPipe will now exit.")
                 .documentationLink(DocumentationLink.MIGRATION)

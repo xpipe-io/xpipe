@@ -51,15 +51,15 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
 
     private final ObjectProperty<DataStoreEntryRef<IdentityStore>> selectedReference;
     private final Property<String> inPlaceUser;
-    private final ObservableValue<SecretRetrievalStrategy> password;
-    private final ObservableValue<SshIdentityStrategy> identityStrategy;
+    private final Property<SecretRetrievalStrategy> password;
+    private final Property<SshIdentityStrategy> identityStrategy;
     private final boolean allowUserInput;
 
     public IdentitySelectComp(
             ObjectProperty<DataStoreEntryRef<IdentityStore>> selectedReference,
             Property<String> inPlaceUser,
-            ObservableValue<SecretRetrievalStrategy> password,
-            ObservableValue<SshIdentityStrategy> identityStrategy,
+            Property<SecretRetrievalStrategy> password,
+            Property<SshIdentityStrategy> identityStrategy,
             boolean allowUserInput) {
         this.selectedReference = selectedReference;
         this.inPlaceUser = inPlaceUser;
@@ -245,6 +245,16 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
                 });
             } else {
                 prop.setValue(null);
+            }
+        });
+
+        // Clear old state of in-place identity
+        selectedReference.addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                PlatformThread.runLaterIfNeeded(() -> {
+                    password.setValue(null);
+                    identityStrategy.setValue(null);
+                });
             }
         });
 

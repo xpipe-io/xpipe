@@ -144,6 +144,7 @@ public class OptionsChoiceBuilder {
 
         property.addListener((obs, oldValue, newValue) -> {
             if (newValue == null) {
+                selected.set(allowNull ? 0 : -1);
                 return;
             }
 

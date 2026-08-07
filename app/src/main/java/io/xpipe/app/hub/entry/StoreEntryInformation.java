@@ -45,7 +45,7 @@ public class StoreEntryInformation {
             } else if (s.getShellDialect() == ShellDialects.DISABLED_INTERACTION) {
                 return StoreEntryInformation.of(l);
             } else if (s.getShellDialect() != null) {
-                l.add(StoreEntryBadge.ofSetting(s.getShellDialect().getDisplayName()));
+                l.add(StoreEntryBadge.ofSuccess(s.getShellDialect().getDisplayName()));
                 return StoreEntryInformation.of(l);
             } else {
                 return StoreEntryInformation.of(l);
