@@ -11,7 +11,6 @@ import io.xpipe.app.util.Validators;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Singular;
-import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -62,7 +61,7 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
         return getShellDialect() == null || getShellDialect().isCompatibleTo(dialect);
     }
 
-    private String assembleScript(ShellControl shellControl, boolean args) {
+    public String assembleScriptCall(ShellControl shellControl, boolean args) {
         if (isCompatible(shellControl)) {
             var raw = getTextSource().getText().withoutShebang().getValue();
             if (raw.isBlank()) {
@@ -82,7 +81,6 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
         return null;
     }
 
-    @SneakyThrows
     public ShellScript assembleScriptChain(ShellControl shellControl, boolean args) {
         var all = queryFlattenedScripts();
 
@@ -91,7 +89,7 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
         }
 
         var r = all.stream()
-                .map(ref -> ref.getStore().assembleScript(shellControl, args))
+                .map(ref -> ref.getStore().assembleScriptCall(shellControl, args))
                 .filter(s -> s != null)
                 .toList();
         if (r.isEmpty()) {
