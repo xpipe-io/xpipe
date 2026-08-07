@@ -49,6 +49,7 @@ public class StoreEntryInformationComp extends SimpleRegionBuilder {
         h.spacing(8);
 
         var hbox = h.build();
+        hbox.setFillHeight(true);
         hbox.setMinWidth(0);
         hbox.setPrefWidth(Region.USE_COMPUTED_SIZE);
         hbox.setAlignment(Pos.CENTER_LEFT);
@@ -136,6 +137,7 @@ public class StoreEntryInformationComp extends SimpleRegionBuilder {
                 ? val.getCompressedName().orElse(val.getGraphic() != null ? null : val.getName())
                 : val.getName();
         var button = new ButtonComp(new ReadOnlyObjectWrapper<>(name), val.getGraphic(), null);
+        button.maxHeight(100);
         button.minWidth(Region.USE_PREF_SIZE);
         button.style("store-entry-badge");
         val.getAction()

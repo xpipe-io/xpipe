@@ -294,6 +294,7 @@
     -fx-background-radius: 4;
     -fx-font-size: 1.0em;
     -fx-padding: 2 5 2 5;
+    -fx-background-color: -color-bg-default-transparent;
 }
 
 .store-entry-badge .stacked-ikonli-font-icon > .outer-icon {
@@ -321,8 +322,9 @@
     -fx-icon-color: -color-accent-emphasis;
 }
 
-.store-entry-badge.clickable:hover {
+.store-entry-badge:hover {
     -fx-background-color: -color-bg-default-transparent;
+    -fx-border-color: -color-accent-muted;
 }
 
 .root:nord .store-entry-badge {

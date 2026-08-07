@@ -105,6 +105,10 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         controls.setAlignment(Pos.CENTER_RIGHT);
         controls.setSpacing(10);
 
+        var bbButton = (Region) bb.getChildrenUnmodifiable().getFirst();
+        info.prefHeightProperty().bind(bbButton.heightProperty());
+        info.maxHeightProperty().bind(bbButton.heightProperty());
+
         var rightWidth = Bindings.createDoubleBinding(
                 () -> {
                     return controls.getWidth();
