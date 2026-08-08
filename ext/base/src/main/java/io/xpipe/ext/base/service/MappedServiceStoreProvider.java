@@ -28,7 +28,7 @@ public class MappedServiceStoreProvider extends FixedServiceStoreProvider {
 
     protected String formatPortMapping(AbstractServiceStore s) {
         var m = (MappedServiceStore) s;
-        var desc = m.getRemotePort() + " <- :" + m.getContainerPort();
+        var desc = ":" + m.getRemotePort() + " <- :" + m.getContainerPort();
         return desc;
     }
 

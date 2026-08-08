@@ -133,6 +133,6 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
     public StoreEntryInformation buildInformation(StoreSection section) {
         var st = (DesktopApplicationStore) section.getEntry().getStore();
         return StoreEntryInformation.of(
-                StoreEntryBadge.ofSetting(st.getPath() + (st.getArguments() != null ? " " + st.getArguments() : "")));
+                StoreEntryBadge.ofCommand(st.getPath() + (st.getArguments() != null ? " " + st.getArguments() : "")));
     }
 }

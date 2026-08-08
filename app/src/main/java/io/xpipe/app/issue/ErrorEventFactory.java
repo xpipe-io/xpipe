@@ -5,6 +5,7 @@ import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.util.OsType;
 
 import java.nio.file.AccessDeniedException;
+import java.nio.file.FileSystemException;
 import java.nio.file.NoSuchFileException;
 import java.util.*;
 
@@ -96,6 +97,10 @@ public class ErrorEventFactory {
                 && t.getMessage().contains("The cloud file provider is not running")) {
             b.description(
                     "The OneDrive cloud file provider is not running. Verify that your cloud storage is working and you are logged in.");
+            b.expected();
+        }
+
+        if (t instanceof FileSystemException) {
             b.expected();
         }
 

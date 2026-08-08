@@ -41,6 +41,8 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
 
     private static final PseudoClass SELECTED = PseudoClass.getPseudoClass("selected");
     private static final PseudoClass ROOT = PseudoClass.getPseudoClass("root");
+    private static final PseudoClass FLAT = PseudoClass.getPseudoClass("flat");
+    private static final PseudoClass RECURSIVE = PseudoClass.getPseudoClass("recursive");
 
     StoreCategoryWrapper category;
 
@@ -185,12 +187,6 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
                     return;
                 }
 
-                var clickCount =
-                        AppPrefs.get().requireDoubleClickForConnections().get() ? 2 : 1;
-                if (mouseEvent.getClickCount() != clickCount) {
-                    return;
-                }
-
                 category.select();
                 mouseEvent.consume();
             });
@@ -236,6 +232,11 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
 
             category.getColor().subscribe((c) -> {
                 DataStoreColor.applyStyleClasses(c, struc);
+            });
+
+            Listeners.subscribeWeak(struc, AppPrefs.get().showChildCategoriesInParentCategory(), (vBox, aBoolean) -> {
+                vBox.pseudoClassStateChanged(RECURSIVE, aBoolean);
+                vBox.pseudoClassStateChanged(FLAT, !aBoolean);
             });
         });
 

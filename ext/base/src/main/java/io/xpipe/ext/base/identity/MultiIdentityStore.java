@@ -159,7 +159,7 @@ public class MultiIdentityStore extends IdentityStore
     @Override
     public void checkComplete() throws ValidationException {
         Validators.nonNull(accessScope);
-        getSelectedOrThrow();
+        Validators.nonNull(getSelected().orElse(null));
     }
 
     @Override

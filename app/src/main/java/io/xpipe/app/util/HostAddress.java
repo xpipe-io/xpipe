@@ -5,8 +5,11 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @EqualsAndHashCode
 @Builder
@@ -46,6 +49,21 @@ public class HostAddress {
         return new HostAddress(
                 addresses.getFirst().strip(),
                 addresses.stream().map(s -> s.strip()).toList());
+    }
+
+    public static HostAddress of(String... addresses) {
+        var l = new ArrayList<String>();
+        for (String s : addresses) {
+            if (s != null) {
+                l.add(s);
+            }
+        }
+
+        if (l.isEmpty()) {
+            return null;
+        }
+
+        return of(l);
     }
 
     public static HostAddress of(String host, @NonNull List<String> addresses) {

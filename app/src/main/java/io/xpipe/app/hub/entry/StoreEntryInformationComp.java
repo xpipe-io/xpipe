@@ -138,7 +138,7 @@ public class StoreEntryInformationComp extends SimpleRegionBuilder {
                 : val.getName();
         var button = new ButtonComp(new ReadOnlyObjectWrapper<>(name), val.getGraphic(), null);
         button.maxHeight(100);
-        button.minWidth(Region.USE_PREF_SIZE);
+        button.maxWidth(400);
         button.style("store-entry-badge");
         val.getAction()
                 .filter(action -> action.checkApplicable(wrapper))

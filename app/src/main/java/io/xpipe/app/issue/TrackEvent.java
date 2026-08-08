@@ -24,7 +24,6 @@ public class TrackEvent {
         te.type("error");
         te.tag("omitted", ee.isOmitted());
         te.tag("terminal", ee.isTerminal());
-        te.elements(ee.getAttachments().stream().map(Path::toString).toList());
         return te.build();
     }
 

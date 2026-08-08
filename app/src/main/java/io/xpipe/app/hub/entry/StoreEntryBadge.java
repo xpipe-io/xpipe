@@ -3,6 +3,7 @@ package io.xpipe.app.hub.entry;
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.HubLeafProvider;
+import io.xpipe.app.platform.ClipboardHelper;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.util.*;
@@ -22,6 +23,7 @@ public interface StoreEntryBadge {
         HIDE
     }
 
+    @FunctionalInterface
     interface Action {
 
         static Action provider(String id) {
@@ -122,12 +124,29 @@ public interface StoreEntryBadge {
                 .withCompressBehaviour(CompressBehaviour.DONT_COMPRESS);
     }
 
-    static StoreEntryBadge ofUser(String s) {
+    static StoreEntryBadge ofAuth(String s) {
         if (s == null) {
             return null;
         }
 
         return of("mdi2a-account", s);
+    }
+
+
+    static StoreEntryBadge ofUsername(String s) {
+        if (s == null) {
+            return null;
+        }
+
+        return of("mdi2a-account", s).withCopyAction();
+    }
+
+    static StoreEntryBadge ofUsername(String display, String copy) {
+        if (display == null) {
+            return null;
+        }
+
+        return of("mdi2a-account", display).withCopyAction(copy);
     }
 
     static StoreEntryBadge ofPassword(String s) {
@@ -136,6 +155,14 @@ public interface StoreEntryBadge {
         }
 
         return of("mdi2l-lock-open-plus-outline", s);
+    }
+
+    static StoreEntryBadge ofCommand(String s) {
+        if (s == null) {
+            return null;
+        }
+
+        return of("mdi2c-console", s).withCopyAction();
     }
 
     static StoreEntryBadge ofKey(String s) {
@@ -155,7 +182,11 @@ public interface StoreEntryBadge {
     }
 
     static StoreEntryBadge ofAddress(String s) {
-        return StoreEntryBadge.ofAddress(HostAddress.of(s));
+        if (s == null) {
+            return null;
+        }
+
+        return of("mdi2s-server-network-outline", s).withCopyAction();
     }
 
     static StoreEntryBadge ofAddress(HostAddress addr) {
@@ -176,6 +207,8 @@ public interface StoreEntryBadge {
                     && l.isApplicable(wrapper.getEntry().ref())) {
                 var action = l.createAction(wrapper.getEntry().ref());
                 action.executeAsync();
+            } else {
+                ClipboardHelper.copyText(effective);
             }
         });
     }
@@ -352,6 +385,10 @@ public interface StoreEntryBadge {
 
     Optional<Action> getAction();
 
+    public StoreEntryBadge withCopyAction();
+
+    public StoreEntryBadge withCopyAction(String s);
+
     class Simple implements StoreEntryBadge {
 
         private final LabelGraphic graphic;
@@ -384,6 +421,25 @@ public interface StoreEntryBadge {
             this.compressBehaviour = compressBehaviour;
             this.action = action;
         }
+
+        public StoreEntryBadge withCopyAction() {
+            return withCopyAction(name);
+        }
+
+
+        public StoreEntryBadge withCopyAction(String s) {
+            if (s == null) {
+                return this;
+            }
+
+            return new Simple(graphic, name, compressedName, styleClass, compressBehaviour, new Action() {
+                @Override
+                public void run(StoreEntryWrapper wrapper, Button button) {
+                    ClipboardHelper.copyText(s);
+                }
+            });
+        }
+
 
         @Override
         public boolean equals(Object o) {

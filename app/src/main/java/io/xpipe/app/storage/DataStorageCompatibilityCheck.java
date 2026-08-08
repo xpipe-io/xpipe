@@ -33,7 +33,7 @@ public class DataStorageCompatibilityCheck {
 
             if (canonicalVersion.get().getMajor() >= 24
                     || (canonicalVersion.get().getMajor() == 23
-                            && canonicalVersion.get().getMinor() >= 9)) {
+                            && canonicalVersion.get().getMinor() >= 10)) {
                 return;
             }
         }
@@ -45,6 +45,7 @@ public class DataStorageCompatibilityCheck {
                         + " XPipe will now exit.")
                 .documentationLink(DocumentationLink.MIGRATION)
                 .expected()
+                .term()
                 .handle();
         AppOperationMode.shutdown(false);
     }

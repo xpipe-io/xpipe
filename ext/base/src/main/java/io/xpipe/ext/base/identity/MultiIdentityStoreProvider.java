@@ -221,10 +221,9 @@ public class MultiIdentityStoreProvider extends IdentityStoreProvider {
             return StoreEntryInformation.of(StoreEntryBadge.ofFailure("None"));
         }
 
-        var info = active.get().getProvider().buildInformation(section);
-        var selection = StoreEntryBadge.ofSetting(active.get().getName());
+        var selection = StoreEntryBadge.ofAuth(active.get().getName());
         selection = selection != null ? selection
                 .withAction(StoreEntryBadge.Action.providerMenu("multiIdentitySwitch")) : null;
-        return info.append(StoreEntryInformation.of(selection));
+        return StoreEntryInformation.of(selection);
     }
 }

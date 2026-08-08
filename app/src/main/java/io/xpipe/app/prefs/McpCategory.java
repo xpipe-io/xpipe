@@ -90,6 +90,20 @@ public class McpCategory extends AppPrefsCategory {
                $ claude mcp add %s --transport http "http://localhost:%s/mcp" --header "Authorization: Bearer %s"
                """);
 
+
+        var antigravityTemplate = createMcpConfig("""
+               {
+                 "mcpServers": {
+                   "%s": {
+                     "serverUrl": "http://localhost:%s/mcp",
+                     "headers": {
+                       "Authorization": "Bearer %s"
+                     }
+                   }
+                 }
+               }
+               """);
+
         var tabComp = RegionBuilder.of(() -> {
             var vsCode = new TextArea();
             vsCode.setEditable(false);
@@ -127,8 +141,17 @@ public class McpCategory extends AppPrefsCategory {
             claudeTab.setContent(claude);
             claudeTab.setClosable(false);
 
+            var antigravity = new TextArea();
+            antigravity.setEditable(false);
+            antigravity.textProperty().bind(antigravityTemplate);
+            antigravity.setPrefRowCount(12);
+            var anvigravityTab = new Tab();
+            anvigravityTab.textProperty().bind(AppI18n.observable("antigravity"));
+            anvigravityTab.setContent(antigravity);
+            anvigravityTab.setClosable(false);
+
             var tabPane = new TabPane();
-            tabPane.getTabs().addAll(vsCodeTab, cursorTab, warpTab, claudeTab);
+            tabPane.getTabs().addAll(vsCodeTab, cursorTab, warpTab, claudeTab, anvigravityTab);
             return tabPane;
         });
 

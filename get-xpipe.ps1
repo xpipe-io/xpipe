@@ -187,7 +187,12 @@ Write-Host "$ProductName has been successfully installed. You should be able to 
 Write-Host
 
 # Use absolute path as we can't assume that the user has selected to put XPipe into the Path
-& "$env:LOCALAPPDATA\$ProductName\bin\xpipe.exe" open
+# Check for legacy and current location
+if (Test-Path "$env:LOCALAPPDATA\$ProductName\xpipe.exe" -PathType Leaf) {
+    & "$env:LOCALAPPDATA\$ProductName\xpipe.exe" open
+} else {
+    & "$env:LOCALAPPDATA\$ProductName\bin\xpipe.exe" open
+}
 
 #endregion Install XPipe
 

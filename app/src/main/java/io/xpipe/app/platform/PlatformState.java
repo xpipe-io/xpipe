@@ -157,7 +157,7 @@ public enum PlatformState {
 
         // This issue is now fixed in 27-ea+4
         // The bellsoft JavaFX build for ARM does not contain the fix yet
-        if (OsType.ofLocal() == OsType.WINDOWS && !AppProperties.get().getArch().equals("x86_64")) {
+        if (OsType.ofLocal() == OsType.WINDOWS && !AppProperties.get().getArch().equals("x86_64") && System.getProperty("prism.forceUploadingPainter") == null) {
             // This is primarily intended to fix Windows unified stage transparency issues
             // (https://bugs.openjdk.org/browse/JDK-8329382)
             // But apparently it can also occur without a custom stage on Windows
