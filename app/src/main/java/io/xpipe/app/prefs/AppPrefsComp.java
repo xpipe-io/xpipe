@@ -39,11 +39,6 @@ public class AppPrefsComp extends SimpleRegionBuilder {
             struc.getContent().getStyleClass().add("prefs-box");
         });
         boxComp.maxWidth(1050);
-        var box = boxComp.build();
-
-        var pane = new GraphicDecorationStackPane();
-        pane.getChildren().add(box);
-
         var externalUpdate = new SimpleBooleanProperty();
 
         boxComp.apply(scrollPane -> {
@@ -61,8 +56,8 @@ public class AppPrefsComp extends SimpleRegionBuilder {
 
                     for (int i = categories.size() - 1; i >= 0; i--) {
                         var category = categories.get(i);
-                        var min = computeCategoryOffset(box, scrollPane, category);
-                        if (offset + (100.0 / box.getHeight()) > min) {
+                        var min = computeCategoryOffset((Region) scrollPane.getContent(), scrollPane, category);
+                        if (offset + (100.0 / ((Region) scrollPane.getContent()).getHeight()) > min) {
                             AppPrefs.get().getSelectedCategory().setValue(category);
                             return;
                         }
@@ -83,12 +78,16 @@ public class AppPrefsComp extends SimpleRegionBuilder {
                     BooleanScope.executeExclusive(externalUpdate, () -> {
                         // This value is off initially if we haven't opened the settings before
                         // Perhaps it's the layout that is not done yet?
-                        var off = computeCategoryOffset(box, scrollPane, val);
+                        var off = computeCategoryOffset((Region) scrollPane.getContent(), scrollPane, val);
                         scrollPane.setVvalue(off);
                     });
                 });
             });
         });
+
+        var box = boxComp.build();
+        var pane = new GraphicDecorationStackPane();
+        pane.getChildren().add(box);
 
         var sidebar = new AppPrefsSidebarComp();
         var sidebarWrapper = new StackComp(List.of(sidebar));
@@ -96,7 +95,7 @@ public class AppPrefsComp extends SimpleRegionBuilder {
         sidebarWrapper.minWidth(265);
         sidebarWrapper.maxWidth(265);
 
-        var split = new LeftSplitPaneComp(sidebarWrapper, new StackComp(List.of(boxComp)).padding(new Insets(4, 0, 0, 0)));
+        var split = new LeftSplitPaneComp(sidebarWrapper, RegionBuilder.of(() -> pane).padding(new Insets(4, 0, 0, 0)));
         split.withInitialWidth(265);
         split.style("prefs");
         return split.build();
