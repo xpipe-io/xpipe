@@ -43,7 +43,7 @@
 }
 
 .root:dark .category:recursive:selected {
-    -fx-background-color: -color-border-default, derive(-color-bg-default, -15%);
+    -fx-background-color: -color-border-default, -color-bg-default;
     -fx-background-insets: 0, 1;
     -fx-background-radius: 4px;
     -fx-border-radius: 4px;

@@ -337,6 +337,7 @@ public class BrowserFileTransferOperation {
                     throw new IllegalStateException();
                 }
 
+                var accurateTransferProgress = optimizedSourceFs.hasAccurateProgress() && targetFs.hasAccurateProgress();
                 if (sourceFile.getKind() == FileKind.DIRECTORY) {
                     targetFs.mkdirs(targetFile);
                 } else if (sourceFile.getKind() == FileKind.FILE) {
@@ -358,9 +359,9 @@ public class BrowserFileTransferOperation {
                     var targetId = targetFs.getIdentifier();
                     var fileSize = optimizedSourceFs.getFileSize(sourceFile.getPath());
                     var startTransferred = transferred.get();
-                    if ((!optimizedSourceFs.hasAccurateProgress() || !targetFs.hasAccurateProgress())
-                            && sourceId.isPresent()
-                            && targetId.isPresent()) {
+                    var canCacheProgressInfo = sourceId.isPresent()
+                            && targetId.isPresent();
+                    if (!accurateTransferProgress && canCacheProgressInfo) {
                         var mapKey = sourceId.get() + "-" + targetId.get();
                         Long cachedSpeed =
                                 AppCache.getNonNullMapEntry("transferSpeedEstimate", mapKey, Long.class, () -> null);
@@ -381,6 +382,8 @@ public class BrowserFileTransferOperation {
                         } else {
                             updateProgress(new BrowserTransferProgress(sourceFile.getName(), 0, 0));
                         }
+                    } else if (!accurateTransferProgress) {
+                        updateProgress(new BrowserTransferProgress(sourceFile.getName(), 0, 0));
                     }
 
                     var startProgress =
@@ -393,7 +396,8 @@ public class BrowserFileTransferOperation {
                                 targetFs,
                                 transferred,
                                 totalSize,
-                                fileSize);
+                                fileSize,
+                                accurateTransferProgress);
                     } finally {
                         transferRunning.set(false);
                     }
@@ -462,13 +466,16 @@ public class BrowserFileTransferOperation {
             FileSystem targetFs,
             AtomicLong transferred,
             AtomicLong totalSize,
-            long fileSize)
+            long fileSize,
+            boolean reportProgress)
             throws Exception {
         if (cancelled()) {
             return;
         }
 
-        updateProgress(new BrowserTransferProgress(sourceFile.getFileName(), transferred.get(), totalSize.get()));
+        if (reportProgress) {
+            updateProgress(new BrowserTransferProgress(sourceFile.getFileName(), transferred.get(), totalSize.get()));
+        }
 
         if (transferInline(sourceFile, sourceFs, targetFile, targetFs) || cancelled()) {
             if (!cancelled()) {
@@ -504,7 +511,7 @@ public class BrowserFileTransferOperation {
                     transferred,
                     totalSize,
                     fileSize,
-                    sourceFs.hasAccurateProgress() && targetFs.hasAccurateProgress());
+                    reportProgress);
         } catch (Exception ex) {
             // Mark progress as finished to reset any progress display
             updateProgress(BrowserTransferProgress.finished(sourceFile.getFileName(), transferred.get()));
@@ -581,8 +588,10 @@ public class BrowserFileTransferOperation {
             long expectedFileSize,
             boolean reportProgress)
             throws Exception {
-        // Initialize progress immediately prior to reading anything
-        updateProgress(new BrowserTransferProgress(sourceFile.getFileName(), transferred.get(), total.get()));
+        if (reportProgress) {
+            // Initialize progress immediately prior to reading anything
+            updateProgress(new BrowserTransferProgress(sourceFile.getFileName(), transferred.get(), total.get()));
+        }
 
         var killStreams = new AtomicBoolean(false);
         var exception = new AtomicReference<Exception>();
