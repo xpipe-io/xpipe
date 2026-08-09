@@ -38,11 +38,15 @@
 .root:light .category:recursive:selected {
     -fx-background-color: -color-border-default, derive(-color-bg-default, 10%);
     -fx-background-insets: 0, 1;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
 }
 
 .root:dark .category:recursive:selected {
     -fx-background-color: -color-border-default, derive(-color-bg-default, -15%);
     -fx-background-insets: 0, 1;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
 }
 
 .category .count {

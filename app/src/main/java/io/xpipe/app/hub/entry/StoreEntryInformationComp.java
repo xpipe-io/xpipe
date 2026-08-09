@@ -14,6 +14,7 @@ import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
+import javafx.scene.control.OverrunStyle;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -137,6 +138,7 @@ public class StoreEntryInformationComp extends SimpleRegionBuilder {
                 ? val.getCompressedName().orElse(val.getGraphic() != null ? null : val.getName())
                 : val.getName();
         var button = new ButtonComp(new ReadOnlyObjectWrapper<>(name), val.getGraphic(), null);
+        button.apply(struc -> struc.setTextOverrun(OverrunStyle.CLIP));
         button.maxHeight(100);
         button.maxWidth(400);
         button.style("store-entry-badge");
