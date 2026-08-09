@@ -4,12 +4,14 @@ import io.xpipe.app.cred.SshIdentityStrategy;
 import io.xpipe.app.cred.UsernameStrategy;
 import io.xpipe.app.ext.StatefulDataStore;
 import io.xpipe.app.ext.UserScopeStore;
+import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.util.Validators;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
@@ -91,8 +93,8 @@ public class MultiIdentityStore extends IdentityStore
     }
 
     @Override
-    public void checkComplete() {
-        getSelectedOrThrow();
+    public void checkComplete() throws ValidationException {
+        Validators.nonNull(getSelected().orElse(null));
     }
 
     public UsernameStrategy getUsername() {

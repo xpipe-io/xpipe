@@ -66,8 +66,10 @@ public class DataStorageMigration {
         return (StandardStorage) DataStorage.get();
     }
 
-    public static void migrate() throws IOException {
+    public static void migrate() throws Exception {
         var dir = DataStorage.getStorageDirectory();
+
+        DataStorageSyncHandler.getInstance().decryptDataFiles();
 
         var file = dir.resolve("vaultkey");
         try {
@@ -93,6 +95,8 @@ public class DataStorageMigration {
         getStorage().save(false);
 
         AppPrefs.get().save();
+
+        DataStorageSyncHandler.getInstance().commitDataFiles();
 
         var versionFile = dir.resolve("vaultversion");
         Files.writeString(versionFile, AppProperties.get().getCanonicalVersion().map(appVersion -> appVersion.toString()).orElse("23.9"));

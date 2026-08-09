@@ -11,6 +11,10 @@ public interface DataStorageSyncHandler {
         return (DataStorageSyncHandler) ProcessControlProvider.get().getStorageSyncHandler();
     }
 
+    void decryptDataFiles() throws Exception;
+
+    boolean commitDataFiles() throws Exception;
+
     void pullManually();
 
     void pushManually();

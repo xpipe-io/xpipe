@@ -52,18 +52,25 @@ public class DataStorageSecret {
                 return null;
             }
 
-            var jsonNode = secretTree.get(0);
-            var secretNode = jsonNode.get("secret");
-            var uuidNode = jsonNode.get("principal");
-            var iterationNode = jsonNode.get("iteration");
-            var tokenNode = jsonNode.get("token");
-            if (secretNode == null || uuidNode == null || iterationNode == null || tokenNode == null) {
-                return null;
+            for (JsonNode jsonNode : secretTree) {
+                var secretNode = jsonNode.get("secret");
+                var uuidNode = jsonNode.get("principal");
+                var iterationNode = jsonNode.get("iteration");
+                var tokenNode = jsonNode.get("token");
+                if (secretNode == null || uuidNode == null || iterationNode == null || tokenNode == null) {
+                    continue;
+                }
+
+                if (uuidNode.asText().equals("be815152-05d2-4094-84d3-f0eea9200d5f")) {
+                    continue;
+                }
+
+                var secret = VaultKeySecretValue.builder().encryptedValue(SecretValue.toBase64e(Base64Helper.fromBase64UrlString(secretNode.textValue()))).build().inPlace();
+                var token = JacksonMapper.getDefault().treeToValue(tokenNode, EncryptionToken.class);
+                return new DataStorageSecret(token, secretNode, secret.inPlace());
             }
 
-            var secret = VaultKeySecretValue.builder().encryptedValue(SecretValue.toBase64e(Base64Helper.fromBase64UrlString(secretNode.textValue()))).build().inPlace();
-            var token = JacksonMapper.getDefault().treeToValue(tokenNode, EncryptionToken.class);
-            return new DataStorageSecret(token, secretNode, secret.inPlace());
+            return null;
         }
 
         var legacy = JacksonMapper.getDefault().treeToValue(tree, SecretValue.class);
