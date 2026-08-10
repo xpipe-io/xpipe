@@ -51,7 +51,7 @@ public class DataStorageMigration {
             var canonicalVersion = AppVersion.parse(version.get());
             if (canonicalVersion.isEmpty()) {
                 requiresMigration = true;
-            } else if (canonicalVersion.get().getMajor() < 23 || (canonicalVersion.get().getMajor() == 23 && canonicalVersion.get().getMinor() < 9)) {
+            } else if (canonicalVersion.get().getMajor() < 23 || (canonicalVersion.get().getMajor() == 23 && canonicalVersion.get().getMinor() < 99)) {
                 requiresMigration = true;
             }
         } else {
@@ -68,6 +68,7 @@ public class DataStorageMigration {
     }
 
     public static void migrate() throws Exception {
+        var hasAuth = DataStorageUserHandler.getInstance().getUserCount() > 0;
         var dir = DataStorage.getStorageDirectory();
 
         DataStorageSyncHandler.getInstance().decryptDataFiles();
@@ -100,11 +101,13 @@ public class DataStorageMigration {
         DataStorageSyncHandler.getInstance().commitDataFiles();
 
         var versionFile = dir.resolve("vaultversion");
-        Files.writeString(versionFile, AppProperties.get().getCanonicalVersion().map(appVersion -> appVersion.toString()).orElse("23.9"));
+        Files.writeString(versionFile, AppProperties.get().getCanonicalVersion().map(appVersion -> appVersion.toString()).orElse("23.99"));
 
         AppCache.update("vaultMigrated", true);
 
-        DataStorage.get().pushManually();
+        if (hasAuth) {
+            AppCache.update("vaultMigratedAuth", true);
+        }
 
         Platform.runLater(() -> {
             StoreViewState.get().getGlobalSortMode().setValue(StoreSectionSortMode.INDEX_DESC);
