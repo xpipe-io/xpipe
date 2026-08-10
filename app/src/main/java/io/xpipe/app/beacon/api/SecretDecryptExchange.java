@@ -21,11 +21,8 @@ public class SecretDecryptExchange extends BeaconInterface<SecretDecryptExchange
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws BeaconClientException {
         var secret = DataStorageSecret.deserialize(msg.getEncrypted());
-        if (secret == null) {
-            throw new BeaconClientException("Unable to parse secret");
-        }
-        if (secret.getInternalSecret() == null) {
-            throw new BeaconClientException("Unable to decrypt secret");
+        if (secret == null || secret.getInternalSecret() == null) {
+            throw new BeaconClientException("Unable to parse or decrypt secret");
         }
 
         return Response.builder()

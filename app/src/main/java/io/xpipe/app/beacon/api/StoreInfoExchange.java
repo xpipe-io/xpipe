@@ -59,6 +59,7 @@ public class StoreInfoExchange extends BeaconInterface<StoreInfoExchange.Request
             var apply = InfoResponse.builder()
                     .lastModified(e.getLastModified())
                     .lastUsed(e.getLastUsed())
+                    .created(e.getCreated())
                     .store(e.getUuid())
                     .category(cat)
                     .name(DataStorage.get().getStorePath(e))
@@ -121,6 +122,9 @@ public class StoreInfoExchange extends BeaconInterface<StoreInfoExchange.Request
 
         @NonNull
         Instant lastModified;
+
+        @NonNull
+        Instant created;
 
         @NonNull
         Object state;

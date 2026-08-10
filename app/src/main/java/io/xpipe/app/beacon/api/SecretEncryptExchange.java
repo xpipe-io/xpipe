@@ -15,6 +15,8 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import tools.jackson.databind.JsonNode;
 
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 public class SecretEncryptExchange extends BeaconInterface<SecretEncryptExchange.Request> {
@@ -26,35 +28,42 @@ public class SecretEncryptExchange extends BeaconInterface<SecretEncryptExchange
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws BeaconClientException {
-        EncryptionPrincipal p;
-        if (msg.getPrincipal() != null) {
-            var byName = DataStorageAccessHandler.getInstance().getAllEncryptionPrincipals().stream()
-                    .filter(encryptionPrincipal -> encryptionPrincipal.getName().equals(msg.getPrincipal()))
-                    .findFirst();
-            if (byName.isPresent()) {
-                p = byName.get();
-            } else {
-                var uuid = UuidHelper.parse(msg.getPrincipal());
-                if (uuid.isPresent()) {
-                    var principal = DataStorageAccessHandler.getInstance().getEncryptionPrincipal(uuid.get());
-                    p = principal.orElse(null);
+        Set<EncryptionPrincipal> resolvedPrincipals = new LinkedHashSet<>();
+        if (msg.getPrincipals() != null) {
+            EncryptionPrincipal p;
+            for (String pr : msg.getPrincipals()) {
+                var byName = DataStorageAccessHandler.getInstance().getAllEncryptionPrincipals().stream()
+                        .filter(encryptionPrincipal -> encryptionPrincipal.getName().equals(pr))
+                        .findFirst();
+                if (byName.isPresent()) {
+                    p = byName.get();
                 } else {
-                    p = null;
+                    var uuid = UuidHelper.parse(pr);
+                    if (uuid.isPresent()) {
+                        var principal = DataStorageAccessHandler.getInstance().getEncryptionPrincipal(uuid.get());
+                        p = principal.orElse(null);
+                    } else {
+                        p = null;
+                    }
                 }
-            }
 
-            if (p == null) {
-                throw new BeaconClientException("Unknown principal " + msg.getPrincipal());
-            }
+                if (p == null) {
+                    throw new BeaconClientException("Unknown principal " + pr);
+                }
 
-            if (!p.isAccessible()) {
-                throw new BeaconClientException("Principal " + p.getName() + " is not accessible");
+                if (!p.isAccessible()) {
+                    throw new BeaconClientException("Principal " + p.getName() + " is not accessible");
+                }
+
+                resolvedPrincipals.add(p);
             }
-        } else {
-            p = DataStorageAccessHandler.getInstance().getEncryptAllPrincipal();
         }
 
-        var secret = DataStorageSecret.of(InPlaceSecretValue.of(msg.getValue()), Set.of(p));
+        if (resolvedPrincipals.isEmpty()) {
+            resolvedPrincipals.add(DataStorageAccessHandler.getInstance().getEncryptAllPrincipal());
+        }
+
+        var secret = DataStorageSecret.of(InPlaceSecretValue.of(msg.getValue()), resolvedPrincipals);
         return Response.builder().encrypted(secret.serialize()).build();
     }
 
@@ -65,7 +74,7 @@ public class SecretEncryptExchange extends BeaconInterface<SecretEncryptExchange
         @NonNull
         String value;
 
-        String principal;
+        List<String> principals;
     }
 
     @Jacksonized

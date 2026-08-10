@@ -452,10 +452,12 @@ public class StandardStorage extends DataStorage {
 
         storeCategories.forEach(e -> {
             try {
-                var exists = Files.exists(e.getDirectory());
-                var dirty = e.isDirty();
-                e.writeDataToDisk();
-                dataStorageSyncHandler.handleCategory(e, exists, dirty);
+                synchronized (dir) {
+                    var exists = Files.exists(e.getDirectory());
+                    var dirty = e.isDirty();
+                    e.writeDataToDisk();
+                    dataStorageSyncHandler.handleCategory(e, exists, dirty);
+                }
             } catch (IOException ex) {
                 // IO exceptions are not expected
                 exception.set(ex);
@@ -469,10 +471,12 @@ public class StandardStorage extends DataStorage {
                 .filter(dataStoreEntry -> dataStoreEntry.shouldSave())
                 .forEach(e -> {
                     try {
-                        var exists = Files.exists(e.getDirectory());
-                        var dirty = e.isDirty();
-                        e.writeDataToDisk();
-                        dataStorageSyncHandler.handleEntry(e, exists, dirty);
+                        synchronized (dir) {
+                            var exists = Files.exists(e.getDirectory());
+                            var dirty = e.isDirty();
+                            e.writeDataToDisk();
+                            dataStorageSyncHandler.handleEntry(e, exists, dirty);
+                        }
                     } catch (Exception ex) {
                         // Data corruption and schema changes are expected
                         exception.set(ex);
@@ -510,10 +514,12 @@ public class StandardStorage extends DataStorage {
         var dir = entry.getDirectory();
         if (dir != null) {
             try {
-                FileUtils.deleteDirectory(dir.toFile());
-                dataStorageSyncHandler.handleDeletion(dir, entry.getName());
+                synchronized (this.dir) {
+                    FileUtils.deleteDirectory(dir.toFile());
+                    dataStorageSyncHandler.handleDeletion(dir, entry.getName());
+                }
             } catch (IOException e) {
-                ErrorEventFactory.fromThrowable(e).expected().handle();
+                ErrorEventFactory.fromThrowable(e).handle();
             }
         }
     }
