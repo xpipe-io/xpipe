@@ -25,6 +25,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.WorkspaceManager;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStorageMigratedDialog;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.store.StartOnInitStore;
 import io.xpipe.app.terminal.TerminalDockHubManager;
@@ -201,6 +202,8 @@ public class AppBaseMode extends AppOperationMode {
         StartOnInitStore.init();
 
         AppConfigurationDialog.showIfNeeded();
+
+        DataStorageMigratedDialog.showIfNeeded();
 
         TrackEvent.info("Finished base components initialization");
         initialized = true;
