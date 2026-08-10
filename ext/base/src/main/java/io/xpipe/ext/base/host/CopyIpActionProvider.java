@@ -15,26 +15,26 @@ import javafx.beans.value.ObservableValue;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-public class CopyIpActionProvider implements HubLeafProvider<HostAddressStore> {
+public class CopyIpActionProvider implements HubLeafProvider<io.xpipe.app.store.HostAddressStore> {
 
     @Override
-    public AbstractAction createAction(DataStoreEntryRef<HostAddressStore> ref) {
+    public AbstractAction createAction(DataStoreEntryRef<io.xpipe.app.store.HostAddressStore> ref) {
         return Action.builder().ref(ref).build();
     }
 
     @Override
-    public ObservableValue<String> getName(DataStoreEntryRef<HostAddressStore> store) {
+    public ObservableValue<String> getName(DataStoreEntryRef<io.xpipe.app.store.HostAddressStore> store) {
         return AppI18n.observable("copyIp");
     }
 
     @Override
-    public LabelGraphic getIcon(DataStoreEntryRef<HostAddressStore> store) {
+    public LabelGraphic getIcon(DataStoreEntryRef<io.xpipe.app.store.HostAddressStore> store) {
         return new LabelGraphic.IconGraphic("mdi2c-clipboard-list-outline");
     }
 
     @Override
     public Class<?> getApplicableClass() {
-        return HostAddressStore.class;
+        return io.xpipe.app.store.HostAddressStore.class;
     }
 
     @Override
@@ -44,7 +44,7 @@ public class CopyIpActionProvider implements HubLeafProvider<HostAddressStore> {
 
     @Jacksonized
     @SuperBuilder
-    public static class Action extends StoreAction<HostAddressStore> {
+    public static class Action extends StoreAction<io.xpipe.app.store.HostAddressStore> {
 
         @Override
         public void executeImpl() throws Exception {

@@ -20,7 +20,7 @@ import java.util.List;
 @SuperBuilder
 @Jacksonized
 @JsonTypeName("abstractHost")
-public class AbstractHostStore implements DataStore, HostAddressStore, HostAddressGatewayStore {
+public class AbstractHostStore implements DataStore, io.xpipe.app.store.HostAddressStore, HostAddressGatewayStore {
 
     String host;
     DataStoreEntryRef<NetworkTunnelStore> gateway;

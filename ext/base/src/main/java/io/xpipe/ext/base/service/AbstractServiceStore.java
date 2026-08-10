@@ -8,7 +8,7 @@ import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.ValidationException;
 import io.xpipe.app.util.Validators;
 import io.xpipe.ext.base.host.HostAddressGatewayStore;
-import io.xpipe.ext.base.host.HostAddressStore;
+import io.xpipe.app.store.HostAddressStore;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

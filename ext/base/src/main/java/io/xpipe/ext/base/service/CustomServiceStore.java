@@ -5,7 +5,7 @@ import io.xpipe.app.store.DataStoreDependencies;
 import io.xpipe.app.store.NetworkTunnelStore;
 import io.xpipe.ext.base.host.AbstractHostStore;
 import io.xpipe.ext.base.host.AbstractHostTransformStore;
-import io.xpipe.ext.base.host.HostAddressStore;
+import io.xpipe.app.store.HostAddressStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;

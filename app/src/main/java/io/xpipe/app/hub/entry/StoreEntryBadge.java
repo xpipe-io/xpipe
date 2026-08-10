@@ -6,11 +6,14 @@ import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.platform.ClipboardHelper;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.MenuHelper;
+import io.xpipe.app.store.HostAddressStore;
 import io.xpipe.app.util.*;
 
+import javafx.application.Platform;
 import javafx.geometry.Side;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -199,14 +202,47 @@ public interface StoreEntryBadge {
             return null;
         }
 
+        var cm = new AtomicReference<ContextMenu>();
         return of("mdi2s-server-network-outline", effective).withAction((wrapper, b) -> {
-            var p = ActionProvider.byId("copyIp");
-            if (p instanceof HubLeafProvider<?> l
-                    && l.getApplicableClass()
-                            .isAssignableFrom(wrapper.getEntry().getStore().getClass())
-                    && l.isApplicable(wrapper.getEntry().ref())) {
-                var action = l.createAction(wrapper.getEntry().ref());
-                action.executeAsync();
+            if (wrapper.getEntry().getStore() instanceof HostAddressStore has && wrapper.getEntry().getValidity().isUsable()) {
+                b.setDisable(true);
+                ThreadHelper.runFailableAsync(() -> {
+                    try {
+                        has.refreshHostAddressOrThrow();
+                    } finally {
+                        Platform.runLater(() -> {
+                            b.setDisable(false);
+                        });
+                    }
+
+                    var refreshed = has.getHostAddress();
+                    if (refreshed == null || refreshed.isEmpty()) {
+                        return;
+                    }
+
+                    if (refreshed.isSingle()) {
+                        ClipboardHelper.copyText(refreshed.get());
+                        return;
+                    }
+
+                    Platform.runLater(() -> {
+                        if (cm.get() == null) {
+                            cm.set(MenuHelper.createContextMenu());
+                        }
+
+                        cm.get().getItems().clear();
+                        for (var a : refreshed.getAvailable()) {
+                            var i = new MenuItem();
+                            i.setText(a);
+                            i.setOnAction(event -> {
+                                ClipboardHelper.copyText(a);
+                                event.consume();
+                            });
+                            cm.get().getItems().add(i);
+                        }
+                        MenuHelper.toggleMenuShow(cm.get(), b, Side.BOTTOM);
+                    });
+                });
             } else {
                 ClipboardHelper.copyText(effective);
             }

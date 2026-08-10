@@ -18,7 +18,7 @@ import io.xpipe.app.util.GuiDialog;
 import io.xpipe.app.util.HostAddress;
 import io.xpipe.ext.base.host.AbstractHostStore;
 import io.xpipe.ext.base.host.HostAddressGatewayStore;
-import io.xpipe.ext.base.host.HostAddressStore;
+import io.xpipe.app.store.HostAddressStore;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;

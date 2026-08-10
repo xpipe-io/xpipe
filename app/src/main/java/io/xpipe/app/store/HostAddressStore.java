@@ -1,6 +1,5 @@
-package io.xpipe.ext.base.host;
+package io.xpipe.app.store;
 
-import io.xpipe.app.store.DataStore;
 import io.xpipe.app.util.HostAddress;
 
 public interface HostAddressStore extends DataStore {

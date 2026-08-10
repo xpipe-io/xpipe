@@ -29,7 +29,7 @@ public interface ExternalRdpClient extends PrefsValue {
                 l.add(FreeRdpClient.class);
             }
             case OsType.Windows ignored -> {
-                l.add(MsrdcRdpClient.class);
+                // l.add(MsrdcRdpClient.class);
                 l.add(MstscRdpClient.class);
                 l.add(DevolutionsRdpClient.class);
             }
@@ -86,7 +86,7 @@ public interface ExternalRdpClient extends PrefsValue {
                 var msrdc =
                         MsrdcRdpClient.builder().smartSizing(true).dock(true).build();
                 if (msrdc.isAvailable()) {
-                    yield msrdc;
+                    // yield msrdc;
                 }
 
                 var mstsc =

@@ -272,8 +272,6 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         button.describe(d -> d.nameKey("restrictedConnection"));
         button.apply(struc -> {
             AppFontSizes.base(struc);
-            struc.setDisable(true);
-            struc.setOpacity(1.0);
         });
         button.hide(Bindings.not(getWrapper().getAccessScopeRestricted()).or(AppSizeBreakpoints.compactMode()));
         button.apply(struc -> struc.setOpacity(0.85));
@@ -286,8 +284,6 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         button.describe(d -> d.nameKey("template"));
         button.apply(struc -> {
             AppFontSizes.base(struc);
-            struc.setDisable(true);
-            struc.setOpacity(1.0);
         });
         button.hide(Bindings.not(getWrapper().getTemplate()).or(AppSizeBreakpoints.compactMode()));
         button.apply(struc -> struc.setOpacity(0.85));
