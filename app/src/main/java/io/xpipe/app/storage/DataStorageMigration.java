@@ -37,6 +37,7 @@ public class DataStorageMigration {
 
     public static void showLegacyVaultMigrationErrorIfNeeded() {
         if (!requiresMigration) {
+            DataStorageMigratedDialog.show();
             return;
         }
 
@@ -108,5 +109,7 @@ public class DataStorageMigration {
         Platform.runLater(() -> {
             StoreViewState.get().getGlobalSortMode().setValue(StoreSectionSortMode.INDEX_DESC);
         });
+
+        DataStorageMigratedDialog.show();
     }
 }

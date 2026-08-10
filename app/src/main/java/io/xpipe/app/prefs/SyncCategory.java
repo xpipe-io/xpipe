@@ -49,6 +49,7 @@ public class SyncCategory extends AppPrefsCategory {
                 .sub(new OptionsBuilder()
                         .pref(prefs.enableGitStorage)
                         .addToggle(prefs.enableGitStorage)
+                        .disable()
                         .pref(prefs.storageGitRemote)
                         .addComp(remoteRepo.maxWidth(getCompWidth()), prefs.storageGitRemote)
                         .addComp(testButton)
