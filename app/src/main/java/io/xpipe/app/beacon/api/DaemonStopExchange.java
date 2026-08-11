@@ -33,7 +33,7 @@ public class DaemonStopExchange extends BeaconInterface<DaemonStopExchange.Reque
     public Object handle(HttpExchange exchange, Request msg) {
         ThreadHelper.runAsync(() -> {
             ThreadHelper.sleep(1000);
-            AppOperationMode.close();
+            AppOperationMode.shutdown(false);
         });
         return Response.builder().success(true).build();
     }

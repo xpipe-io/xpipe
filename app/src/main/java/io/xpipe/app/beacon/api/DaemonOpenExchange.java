@@ -37,7 +37,7 @@ public class DaemonOpenExchange extends BeaconInterface<DaemonOpenExchange.Reque
         if (msg.getDirectory() != null && !AppProperties.get().getDataDir().equals(msg.getDirectory())) {
             ThreadHelper.runAsync(() -> {
                 ThreadHelper.sleep(1000);
-                AppOperationMode.close();
+                AppOperationMode.shutdown(false);
             });
             return Response.builder().restartRequired(true).build();
         }

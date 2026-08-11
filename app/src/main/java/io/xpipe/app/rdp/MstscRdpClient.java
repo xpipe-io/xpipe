@@ -13,8 +13,6 @@ import lombok.extern.jackson.Jacksonized;
 import java.nio.file.Path;
 import java.util.Optional;
 
-import static io.xpipe.app.util.CredAdvapi32.*;
-
 @JsonTypeName("mstsc")
 @Jacksonized
 @SuperBuilder(toBuilder = true)

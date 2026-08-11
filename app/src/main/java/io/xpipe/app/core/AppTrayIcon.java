@@ -46,7 +46,7 @@ public class AppTrayIcon {
             var quit = new MenuItem(AppI18n.get("quit"));
             quit.addActionListener(e -> {
                 tray.remove(trayIcon);
-                AppOperationMode.close();
+                AppOperationMode.shutdown(false);
             });
             popupMenu.add(quit);
         }

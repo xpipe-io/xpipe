@@ -58,7 +58,7 @@ public class TerminalLaunch {
                 TerminalLauncher.openDirect(
                         getFullTitle(),
                         sc -> new ShellScript(cc.getTerminalCommand().buildFull(sc)),
-                        ExternalTerminalType.determineFallbackTerminalToOpen(type));
+                        ExternalTerminalType.determineFallbackTerminalToOpen(type, false));
             }
             return;
         }

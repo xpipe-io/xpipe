@@ -247,10 +247,6 @@ public abstract class AppOperationMode {
         return true;
     }
 
-    public static void close() {
-        set(null);
-    }
-
     public static List<AppOperationMode> getAll() {
         return ALL;
     }
