@@ -89,9 +89,7 @@ public class StoreEntryWrapper {
         var newCat = StoreViewState.get().getCategoryWrapper(category);
 
         ThreadHelper.runAsync(() -> {
-            synchronized (this) {
-                DataStorage.get().moveEntryToCategory(entry, category);
-            }
+            DataStorage.get().moveEntryToCategory(entry, category);
             Platform.runLater(() -> {
                 oldCat.update();
                 newCat.update();
@@ -113,9 +111,7 @@ public class StoreEntryWrapper {
 
     public void delete() {
         ThreadHelper.runAsync(() -> {
-            synchronized (this) {
-                DataStorage.get().deleteWithChildren(this.entry);
-            }
+            DataStorage.get().deleteWithChildren(this.entry);
         });
     }
 

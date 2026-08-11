@@ -12,6 +12,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import lombok.Getter;
@@ -32,6 +33,7 @@ public class StoreSectionState {
     private final ObservableList<StoreEntryWrapper> selected;
     private final ObservableValue<StoreSectionSortMode> sortMode;
     private final ObservableValue<StoreSectionDrag> dragOperation;
+    private final ObservableList<StoreEntryWrapper> added = FXCollections.observableArrayList();
     private final IntegerProperty orderUpdateIndex = new SimpleIntegerProperty();
     private final ObservableBooleanValue enabled;
 
@@ -92,7 +94,8 @@ public class StoreSectionState {
                 filter.getValue(),
                 category.getValue(),
                 new HashSet<>(selected),
-                dragOperation.getValue());
+                dragOperation.getValue(),
+                new HashSet<>(added));
         rootSection.refreshAll(all, config, 0, orderUpdateIndex.get());
         rootSection.refreshShown(config);
         rootSection.apply(true);
@@ -106,7 +109,8 @@ public class StoreSectionState {
                 filter.getValue(),
                 category.getValue(),
                 new HashSet<>(selected),
-                dragOperation.getValue());
+                dragOperation.getValue(),
+                new HashSet<>(added));
         rootSection.refreshShown(config);
         rootSection.apply(alwaysUpdateAll);
     }
@@ -121,6 +125,16 @@ public class StoreSectionState {
         });
 
         Listeners.attach(enabled, filter, () -> {
+            added.clear();
+            updateShown(false);
+        });
+
+        Listeners.listen(enabled, StoreViewState.get().getAllEntries().getList(), change -> {
+            while (change.next()) {
+                if (change.wasAdded()) {
+                    added.addAll(change.getAddedSubList());
+                }
+            }
             updateShown(false);
         });
 

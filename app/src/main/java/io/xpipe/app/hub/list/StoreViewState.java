@@ -555,18 +555,6 @@ public class StoreViewState {
                             .filter(storeEntryWrapper -> a.contains(storeEntryWrapper.getEntry()))
                             .toList();
                 }
-                List<StoreCategoryWrapper> cats;
-                synchronized (this) {
-                    cats = categories.getList().stream()
-                            .filter(storeCategoryWrapper -> allEntries.getList().stream()
-                                    .anyMatch(storeEntryWrapper -> storeEntryWrapper
-                                            .getEntry()
-                                            .getCategoryUuid()
-                                            .equals(storeCategoryWrapper
-                                                    .getCategory()
-                                                    .getUuid())))
-                            .toList();
-                }
                 Platform.runLater(() -> {
                     // Don't update anything if we have already reset
                     if (INSTANCE == null) {
@@ -576,7 +564,7 @@ public class StoreViewState {
                     synchronized (this) {
                         allEntries.getList().removeAll(l);
                     }
-                    cats.forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
+                    categories.getList().forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
                 });
             }
 

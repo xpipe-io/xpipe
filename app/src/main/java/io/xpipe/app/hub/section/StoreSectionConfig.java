@@ -22,6 +22,7 @@ public class StoreSectionConfig {
     StoreCategoryWrapper category;
     Set<StoreEntryWrapper> selected;
     StoreSectionDrag dragOperation;
+    Set<StoreEntryWrapper> added;
 
     public boolean isTop(StoreEntryWrapper wrapper) {
         if (wrapper.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
@@ -74,11 +75,12 @@ public class StoreSectionConfig {
         }
 
         var isBatchSelected = selected.contains(section.getWrapper());
+        var wasAddedAfterFilter = added.contains(section.getWrapper());
 
         var matchesFilterThis = filter != null && matchesFilter(section, filter);
         var matchesFilterParents = filter != null && parents.stream().anyMatch(p -> p.matchesFilter(filter));
         var matchesFilter = filter == null || matchesFilterThis || matchesFilterParents;
-        if (!isBatchSelected && !matchesFilter) {
+        if (!isBatchSelected && !matchesFilter && !wasAddedAfterFilter) {
             return false;
         }
 
@@ -164,6 +166,6 @@ public class StoreSectionConfig {
         if (parent != null) {
             l.add(parent);
         }
-        return new StoreSectionConfig(l, selector, filter, category, selected, dragOperation);
+        return new StoreSectionConfig(l, selector, filter, category, selected, dragOperation, added);
     }
 }

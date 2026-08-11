@@ -6,6 +6,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.GlobalTimer;
@@ -230,10 +231,15 @@ public class WebtopAppListManager {
         var exec = AppInstallation.ofCurrent().getCliExecutablePath();
         var endCommand =
                 requiresRestart ? " && " + exec + " daemon stop --wait && " + exec + " open" : ";" + exec + " open";
+
+        var termPref = AppPrefs.get().terminalType().getValue();
+        var term = termPref == null || !termPref.isAvailable() ? ExternalTerminalType.determineFallbackTerminalToOpen(termPref) : null;
+
         TerminalLaunch.builder()
                 .title("Install packages")
                 .localScript(ShellScript.lines(command, endCommand))
                 .pauseOnExit(true)
+                .terminal(term)
                 .launch();
     }
 }

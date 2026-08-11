@@ -47,12 +47,7 @@ public class DevolutionsRdpClient implements ExternalApplicationType.WindowsType
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
         var config = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
-        launch(CommandBuilder.of().addFile(config));
-        ThreadHelper.runFailableAsync(() -> {
-            // Startup is slow
-            ThreadHelper.sleep(10000);
-            FileUtils.deleteQuietly(config.toFile());
-        });
+        launch(CommandBuilder.of().addQuoted(config.toString()));
     }
 
     @Override

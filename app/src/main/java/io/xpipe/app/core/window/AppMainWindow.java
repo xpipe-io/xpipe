@@ -366,8 +366,8 @@ public class AppMainWindow {
 
         var screens = Screen.getScreens();
         if (screens.size() > 1) {
-            stage.setWidth(1280);
-            stage.setHeight(780);
+            stage.setWidth(1520);
+            stage.setHeight(860);
             return;
         }
 

@@ -107,7 +107,7 @@ public interface ExternalRdpClient extends PrefsValue {
     String getWebsite();
 
     default Path writeRdpConfigFile(String title, RdpConfig input) throws Exception {
-        var name = OsFileSystem.ofLocal().makeFileSystemCompatible(title);
+        var name = OsFileSystem.ofLocal().makeFileSystemCompatible(title).replaceAll("\\s+", "_");
         var file = AppLocalTemp.getLocalTempDataDirectory("rdp").resolve(name + ".rdp");
         var string = input.toString() + "\n";
         Files.createDirectories(file.getParent());

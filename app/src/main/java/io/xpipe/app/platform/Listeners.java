@@ -98,4 +98,20 @@ public class Listeners {
             }
         });
     }
+
+    public static <T> void listen(ObservableValue<Boolean> enabled, ObservableList<T> value, Consumer<ListChangeListener.Change<? extends T>> consumer) {
+        var listener = new ListChangeListener<T>() {
+            @Override
+            public void onChanged(Change<? extends T> c) {
+                consumer.accept(c);
+            }
+        };
+        enabled.subscribe(v -> {
+            if (v) {
+                value.addListener(listener);
+            } else {
+                value.removeListener(listener);
+            }
+        });
+    }
 }
