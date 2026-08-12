@@ -56,7 +56,7 @@ public interface StoreEntryBadge {
                         var item = StoreEntryComp.buildMenuItemForAction(wrapper, p);
                         cm.get().getItems().add(item);
                     }
-                    MenuHelper.toggleMenuShow(cm.get(), button, Side.BOTTOM);
+                    MenuHelper.show(cm.get(), button, Side.BOTTOM);
                 }
 
                 @Override
@@ -204,7 +204,7 @@ public interface StoreEntryBadge {
 
         var cm = new AtomicReference<ContextMenu>();
         return of("mdi2s-server-network-outline", effective).withAction((wrapper, b) -> {
-            if (wrapper.getEntry().getStore() instanceof HostAddressStore has && wrapper.getEntry().getValidity().isUsable()) {
+            if (wrapper.getEntry().getStore() instanceof HostAddressStore has) {
                 b.setDisable(true);
                 ThreadHelper.runFailableAsync(() -> {
                     try {
@@ -240,7 +240,7 @@ public interface StoreEntryBadge {
                             });
                             cm.get().getItems().add(i);
                         }
-                        MenuHelper.toggleMenuShow(cm.get(), b, Side.BOTTOM);
+                        MenuHelper.show(cm.get(), b, Side.BOTTOM);
                     });
                 });
             } else {

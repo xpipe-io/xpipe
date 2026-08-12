@@ -30,14 +30,15 @@ public class StarshipTerminalPrompt extends ConfigFileTerminalPrompt {
     public void checkValidInstall(ShellControl sc) throws Exception {
         if (sc.getOsType() != OsType.WINDOWS) {
             var dir = getBinaryDirectory(sc);
-            var executable = sc.command(CommandBuilder.of().add("test", "-x").addFile(dir.join("starship")))
-                    .executeAndCheck();
-            if (!executable) {
-                throw ErrorEventFactory.expected(
-                        new IllegalStateException("This system's /tmp file system is protected via a noexec flag. "
-                                + "The starship prompt won't be able to be used from there. "
-                                + "XPipe can use run starship by installing it into /usr/bin with root permissions. "
-                                + "See https://starship.rs/#quick-install"));
+            var file = dir.join("starship");
+            if (sc.view().fileExists(file)) {
+                var executable = sc.command(CommandBuilder.of().add("test", "-x").addFile(file)).executeAndCheck();
+                if (!executable) {
+                    throw ErrorEventFactory.expected(new IllegalStateException("This system's /tmp file system is protected via a noexec flag. " +
+                            "The starship prompt won't be able to be used from there. " +
+                            "XPipe can use run starship by installing it into /usr/bin with root permissions. " +
+                            "See https://starship.rs/#quick-install"));
+                }
             }
         }
     }

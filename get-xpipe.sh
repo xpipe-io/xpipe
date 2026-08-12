@@ -214,8 +214,14 @@ if [ "$(uname -s)" = "Linux" ]; then
     rm -rf "/tmp/xpipe_aur" || true
     if [[ -z "$version" ]] ; then
       git clone "$aur" /tmp/xpipe_aur
+      if [ "$?" != 0 ]; then
+        return 1
+      fi
     else
       git clone --branch "$version" "$aur" /tmp/xpipe_aur
+      if [ "$?" != 0 ]; then
+        return 1
+      fi
     fi
     cd "/tmp/xpipe_aur"
     makepkg -si

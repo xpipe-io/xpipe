@@ -133,7 +133,7 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
             if (selected.size() > 0 && selected.getLast() == getTableRow().getItem()) {
                 var cm = new BrowserContextMenu(
                         fileList.getFileSystemModel(), getTableRow().getItem(), false);
-                MenuHelper.toggleMenuShow(cm, this, Side.RIGHT);
+                MenuHelper.show(cm, this, Side.RIGHT);
                 event.consume();
             }
         });
