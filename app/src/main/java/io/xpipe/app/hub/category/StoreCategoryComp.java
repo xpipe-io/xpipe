@@ -211,6 +211,7 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
         children.style("children");
         children.minHeight(0);
         children.setVisibilityControl(true);
+        children.setFixScrollReset(true);
 
         var hide = Bindings.createBooleanBinding(
                 () -> {

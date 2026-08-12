@@ -52,6 +52,7 @@ public class StoreEntryListComp extends SimpleRegionBuilder {
                 },
                 true);
         content.setVisibilityControl(true);
+        content.setFixScrollReset(true);
         content.apply(struc -> {
             // Reset scroll
             StoreViewState.get().getActiveCategory().addListener((observable, oldValue, newValue) -> {

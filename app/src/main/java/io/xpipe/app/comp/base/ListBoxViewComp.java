@@ -44,6 +44,9 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
     @Setter
     private boolean visibilityControl = false;
 
+    @Setter
+    private boolean fixScrollReset = false;
+
     public ListBoxViewComp(
             ObservableList<T> shown,
             ObservableList<T> all,
@@ -135,17 +138,20 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
             }
         };
 
-        scroll.vvalueProperty().addListener((observable, oldValue, newValue) -> {
-            // Fix scrollbar resetting on fast scroll
-            // If one node within has focus and moves out of focus fast,
-            // the scrollbar will try to focus another one and move it into view
-            // This can result in flicker when scrolling fast enough
-            var hasWindowFocus = scroll.getScene().getWindow().isFocused();
-            if (scroll.isFocusWithin() || !hasWindowFocus) {
-                scroll.requestFocus();
-            }
-            dirty.set(true);
-        });
+        if (fixScrollReset) {
+            scroll.vvalueProperty().addListener((observable, oldValue, newValue) -> {
+                // Fix scrollbar resetting on fast scroll
+                // If one node within has focus and moves out of focus fast,
+                // the scrollbar will try to focus another one and move it into view
+                // This can result in flicker when scrolling fast enough
+                var hasWindowFocus = scroll.getScene().getWindow().isFocused();
+                if (scroll.isFocusWithin() || !hasWindowFocus) {
+                    scroll.requestFocus();
+                }
+                dirty.set(true);
+            });
+        }
+
         scroll.heightProperty().addListener((observable, oldValue, newValue) -> {
             dirty.set(true);
         });

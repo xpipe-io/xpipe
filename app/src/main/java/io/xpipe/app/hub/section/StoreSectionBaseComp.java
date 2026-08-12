@@ -156,6 +156,7 @@ public abstract class StoreSectionBaseComp extends RegionBuilder<VBox> {
                 function,
                 section.getWrapper() == null);
         content.setVisibilityControl(true);
+        content.setFixScrollReset(true);
         content.minHeight(0);
         content.hgrow();
         content.style("children-content");
