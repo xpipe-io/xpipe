@@ -8,6 +8,7 @@ import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.hub.section.StoreSection;
 import io.xpipe.app.util.OsType;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.geometry.HPos;
@@ -114,6 +115,16 @@ public class StandardStoreEntryComp extends StoreEntryComp {
                     return controls.getWidth();
                 },
                 controls.widthProperty());
+
+        rightWidth.addListener((observable, oldValue, newValue) -> {
+            if (newValue.doubleValue() > 0.0) {
+                Platform.runLater(() -> {
+                    info.setVisible(true);
+                });
+            }
+        });
+        info.setVisible(false);
+
         var infoWidth = Bindings.createDoubleBinding(
                 () -> {
                     if (getWrapper().getShownInformation().getValue() == null) {
@@ -127,6 +138,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
                 getWrapper().getShownInformation());
 
         grid.add(info, 3, 0, 1, 2);
+
         var infoCC = new ColumnConstraints();
         infoCC.prefWidthProperty().bind(infoWidth);
         infoCC.setHalignment(HPos.LEFT);

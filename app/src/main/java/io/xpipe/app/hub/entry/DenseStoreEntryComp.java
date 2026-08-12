@@ -7,6 +7,7 @@ import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.hub.section.StoreSection;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.geometry.HPos;
@@ -109,6 +110,15 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                 INFO_WIDTH,
                 rightWidth,
                 getWrapper().getShownInformation());
+
+        rightWidth.addListener((observable, oldValue, newValue) -> {
+            if (newValue.doubleValue() > 0.0) {
+                Platform.runLater(() -> {
+                    info.setVisible(true);
+                });
+            }
+        });
+        info.setVisible(false);
 
         var rightCC = new ColumnConstraints();
         rightCC.setMinWidth(0);

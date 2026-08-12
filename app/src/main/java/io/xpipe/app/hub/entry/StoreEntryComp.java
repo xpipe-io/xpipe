@@ -53,7 +53,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
     public static final ObservableDoubleValue INFO_WIDTH = Bindings.createDoubleBinding(
             () -> {
                 var w = App.getApp().getStage().getWidth();
-                if (w > 1500) {
+                if (w > 1400) {
                     return (w / 1.8) - 100;
                 } else if (w >= 1000) {
                     return (w / 2.0) - 100;
@@ -232,8 +232,8 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         tagsLabel.apply(struc -> struc.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.SECONDARY) {
                 getWrapper().toggleTag(val.get());
-                event.consume();
             }
+            event.consume();
         }));
         return tagsLabel;
     }

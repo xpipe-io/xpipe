@@ -351,11 +351,14 @@ public class AppMainWindow {
     }
 
     private void setDefaultSize() {
+        int defWidth = 1520;
+        int defHeight = 800;
+
         if (AppProperties.get().isShowcase()) {
-            stage.setX(312);
-            stage.setY(149);
-            stage.setWidth(1296);
-            stage.setHeight(759);
+            stage.setX((double) (1920 - defWidth) / 2 - 8);
+            stage.setY((double) (1080 - defHeight) / 2 - 31);
+            stage.setWidth(defWidth + (2 * 8));
+            stage.setHeight(defHeight + 31 + 8);
             return;
         }
 
@@ -366,8 +369,8 @@ public class AppMainWindow {
 
         var screens = Screen.getScreens();
         if (screens.size() > 1) {
-            stage.setWidth(1520);
-            stage.setHeight(860);
+            stage.setWidth(defWidth);
+            stage.setHeight(defHeight);
             return;
         }
 

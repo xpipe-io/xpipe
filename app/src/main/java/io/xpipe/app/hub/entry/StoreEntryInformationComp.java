@@ -4,6 +4,7 @@ import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.HorizontalComp;
+import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.Listeners;
@@ -118,7 +119,8 @@ public class StoreEntryInformationComp extends SimpleRegionBuilder {
                 breakpoint.set(maxX);
             }
 
-            compress.set(hbox.getWidth() < breakpoint.get());
+            var newCompress = hbox.getWidth() < breakpoint.get() && AppSizeBreakpoints.compactMode().get();
+            compress.set(newCompress);
             if (wasCompress != compress.get()) {
                 fill(hbox, badges, compress, breakpoint, false, true);
             }
