@@ -91,7 +91,7 @@ public class McpCategory extends AppPrefsCategory {
                """);
 
 
-        var antigravityTemplate = createMcpConfig("""
+        var geminiTemplate = createMcpConfig("""
                {
                  "mcpServers": {
                    "%s": {
@@ -141,17 +141,17 @@ public class McpCategory extends AppPrefsCategory {
             claudeTab.setContent(claude);
             claudeTab.setClosable(false);
 
-            var antigravity = new TextArea();
-            antigravity.setEditable(false);
-            antigravity.textProperty().bind(antigravityTemplate);
-            antigravity.setPrefRowCount(12);
-            var anvigravityTab = new Tab();
-            anvigravityTab.textProperty().bind(AppI18n.observable("antigravity"));
-            anvigravityTab.setContent(antigravity);
-            anvigravityTab.setClosable(false);
+            var gemini = new TextArea();
+            gemini.setEditable(false);
+            gemini.textProperty().bind(geminiTemplate);
+            gemini.setPrefRowCount(12);
+            var geminiTab = new Tab();
+            geminiTab.textProperty().bind(AppI18n.observable("gemini"));
+            geminiTab.setContent(gemini);
+            geminiTab.setClosable(false);
 
             var tabPane = new TabPane();
-            tabPane.getTabs().addAll(vsCodeTab, cursorTab, warpTab, claudeTab, anvigravityTab);
+            tabPane.getTabs().addAll(vsCodeTab, cursorTab, warpTab, claudeTab, geminiTab);
             return tabPane;
         });
 

@@ -209,7 +209,7 @@ while getopts 'sv:' OPTION; do
 done
 
 if [ "$(uname -s)" = "Linux" ]; then
-  if ! [ -x "$(command -v apt)" ] && ! [ -x "$(command -v rpm)" ] && [ -x "$(command -v pacman)" ]; then
+  if [ -x "$(command -v pacman)" ]; then
     info "Installing from AUR at $aur"
     rm -rf "/tmp/xpipe_aur" || true
     if [[ -z "$version" ]] ; then

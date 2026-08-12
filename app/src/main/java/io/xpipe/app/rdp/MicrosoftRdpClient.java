@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppDisplayScale;
 import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.ext.AuthModuleProvider;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
@@ -29,8 +30,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static io.xpipe.app.util.CredAdvapi32.CRED_PERSIST_SESSION;
-import static io.xpipe.app.util.CredAdvapi32.CRED_TYPE_DOMAIN_PASSWORD;
 
 @SuperBuilder(toBuilder = true)
 @Getter
@@ -147,6 +146,10 @@ public abstract class MicrosoftRdpClient implements ExternalApplicationType.Inst
     private final boolean smartSizing;
     private final boolean useSystemDisplayScale;
 
+    private static final int CRED_TYPE_GENERIC = 1;
+    private static final int CRED_TYPE_DOMAIN_PASSWORD = 2;
+    private static final int CRED_PERSIST_SESSION = 1;
+
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
         var securityDialogShown = AppCache.getBoolean("rdpWindowsSecurityWarningDialog", false);
@@ -184,7 +187,7 @@ public abstract class MicrosoftRdpClient implements ExternalApplicationType.Inst
         disableSignatureWarning(configuration);
 
         if (configuration.getPassword() != null) {
-            WinCred.setCredential(
+            AuthModuleProvider.get().setWindowsCredential(
                     "TERMSRV/" + configuration.getHost(),
                     CRED_TYPE_DOMAIN_PASSWORD,
                     CRED_PERSIST_SESSION,
@@ -194,7 +197,7 @@ public abstract class MicrosoftRdpClient implements ExternalApplicationType.Inst
 
         var gateway = configuration.getGateway();
         if (gateway != null && gateway.getPassword() != null) {
-            WinCred.setCredential(
+            AuthModuleProvider.get().setWindowsCredential(
                     gateway.getHost(),
                     CRED_TYPE_DOMAIN_PASSWORD,
                     CRED_PERSIST_SESSION,
