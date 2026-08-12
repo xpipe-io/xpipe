@@ -32,9 +32,7 @@ public class SecurityCategory extends AppPrefsCategory {
                         .pref(prefs.disableSshPinCaching)
                         .addToggle(prefs.disableSshPinCaching)
                         .pref(prefs.dontAutomaticallyStartVmSshServer)
-                        .addToggle(prefs.dontAutomaticallyStartVmSshServer)
-                        .pref(prefs.disableTerminalRemotePasswordPreparation)
-                        .addToggle(prefs.disableTerminalRemotePasswordPreparation));
+                        .addToggle(prefs.dontAutomaticallyStartVmSshServer));
         return builder.buildComp();
     }
 }

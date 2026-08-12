@@ -237,8 +237,6 @@ public final class AppPrefs {
             .requiresRestart(true)
             .build());
 
-    public final BooleanProperty disableTerminalRemotePasswordPreparation = mapVaultShared(
-            new GlobalBooleanProperty(false), "disableTerminalRemotePasswordPreparation", Boolean.class, false);
     public final Property<Boolean> alwaysConfirmElevation =
             mapVaultShared(new GlobalObjectProperty<>(false), "alwaysConfirmElevation", Boolean.class, false);
     public final BooleanProperty focusWindowOnNotifications = map(Mapping.builder()
@@ -672,10 +670,6 @@ public final class AppPrefs {
 
     public ObservableValue<ShellDialect> localShellDialect() {
         return localShellDialect;
-    }
-
-    public ObservableBooleanValue disableTerminalRemotePasswordPreparation() {
-        return disableTerminalRemotePasswordPreparation;
     }
 
     public ObservableValue<HibernateBehaviour> hibernateBehaviour() {
