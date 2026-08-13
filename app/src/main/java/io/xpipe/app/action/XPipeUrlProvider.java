@@ -2,7 +2,9 @@ package io.xpipe.app.action;
 
 import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.Base64Helper;
 
 import java.net.URI;
@@ -18,6 +20,13 @@ public class XPipeUrlProvider implements LauncherUrlProvider {
     @Override
     public AbstractAction createAction(URI uri) throws Exception {
         var a = uri.getHost();
+
+        if ("mobile-connect".equals(a)) {
+            if (AppDistributionType.get() == AppDistributionType.WEBTOP) {
+                ProcModuleProvider.get().showLocalWebtopMobileConnectDialog();
+            }
+            return null;
+        }
 
         if ("webtop".equals(a)) {
             AppDialog.information("webtopUrlDialog");

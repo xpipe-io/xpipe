@@ -140,8 +140,8 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
                         : s.isSessionEnabled() ? AppI18n.get("starting") : AppI18n.get("inactive");
         return StoreEntryInformation.of(
                 s.isSessionRunning() ? StoreEntryBadge.ofSuccess(state) : StoreEntryBadge.ofIndeterminant(state),
-                StoreEntryBadge.ofSetting(type),
                 StoreEntryBadge.ofAddress(addr),
+                StoreEntryBadge.ofSetting(type),
                 StoreEntryBadge.ofSetting(port));
     }
 

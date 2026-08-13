@@ -326,6 +326,12 @@ public class StoreCategoryWrapper {
                             .noneMatch(h -> h.getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
         }
 
+        var isSpecialIdentity = wrapper.getEntry().getValidity().isUsable() &&
+                (wrapper.getEntry().getProvider().getId().equals("passwordManagerIdentity") || wrapper.getEntry().getProvider().getId().equals("multiIdentity"));
+        if (isSpecialIdentity) {
+            return targetHierarchy.stream().anyMatch(h -> h.getUuid().equals(DataStorage.ALL_IDENTITIES_CATEGORY_UUID));
+        }
+
         var isLocalIdentity = DataStorage.get().getCategoryParentHierarchy(sourceCat).stream()
                 .anyMatch(h -> h.getUuid().equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID));
         if (isLocalIdentity) {

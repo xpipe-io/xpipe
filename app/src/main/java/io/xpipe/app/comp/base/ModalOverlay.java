@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Value
-@With
 @Builder(toBuilder = true)
 public class ModalOverlay {
 

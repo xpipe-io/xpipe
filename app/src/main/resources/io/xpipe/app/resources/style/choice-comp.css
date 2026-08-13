@@ -44,3 +44,7 @@
 .host-address-choice-comp:empty .arrow-button .arrow {
     -fx-shape: "";
 }
+
+.combo-box-popup .list-cell:disabled  {
+    -fx-opacity: 0.4 ;
+}
