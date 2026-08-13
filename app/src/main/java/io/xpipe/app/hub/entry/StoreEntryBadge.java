@@ -10,10 +10,13 @@ import io.xpipe.app.store.HostAddressStore;
 import io.xpipe.app.util.*;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Side;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -202,17 +205,21 @@ public interface StoreEntryBadge {
         }
 
         var cm = new AtomicReference<ContextMenu>();
+        var busy = new SimpleBooleanProperty();
         return of("mdi2s-server-network-outline", effective).withAction((wrapper, b) -> {
+            b.opacityProperty().bind(Bindings.createDoubleBinding(() -> {
+                return busy.get() ? 0.5 : 1.0;
+            }, busy));
+
             if (wrapper.getEntry().getStore() instanceof HostAddressStore has) {
-                b.setDisable(true);
+                if (busy.get()) {
+                    return;
+                }
+
                 ThreadHelper.runFailableAsync(() -> {
-                    try {
+                    BooleanScope.executeExclusive(busy, () -> {
                         has.refreshHostAddressOrThrow();
-                    } finally {
-                        Platform.runLater(() -> {
-                            b.setDisable(false);
-                        });
-                    }
+                    });
 
                     var refreshed = has.getHostAddress();
                     if (refreshed == null || refreshed.isEmpty()) {
@@ -233,6 +240,7 @@ public interface StoreEntryBadge {
                         for (var a : refreshed.getAvailable()) {
                             var i = new MenuItem();
                             i.setText(a);
+                            i.setGraphic(new FontIcon("mdi2c-clipboard-multiple-outline"));
                             i.setOnAction(event -> {
                                 ClipboardHelper.copyText(a);
                                 event.consume();

@@ -69,8 +69,7 @@ public class UserReportComp extends ModalOverlayContentComp {
                 event1.consume();
             });
 
-            var agree = new Label("Note the issue reporter ");
-            var buttons = new HBox(agree, dataPolicyButton);
+            var buttons = new HBox(dataPolicyButton);
             buttons.setAlignment(Pos.CENTER_LEFT);
             buttons.setMinWidth(Region.USE_PREF_SIZE);
             return buttons;

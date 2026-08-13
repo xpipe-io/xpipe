@@ -24,9 +24,7 @@ import io.xpipe.app.util.FileReference;
 import io.xpipe.app.util.ObservableSubscriber;
 import io.xpipe.app.util.ThreadHelper;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.*;
 import javafx.collections.ListChangeListener;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -163,7 +161,7 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
                     if (selected != null) {
                         s.getChildren().setAll(new BrowserFileSystemTabComp(selected, false).build());
                     } else {
-                        s.getChildren().clear();
+                        s.getChildren().setAll(new LoadingIconComp(new ReadOnlyBooleanWrapper(true), node -> AppFontSizes.title(node)).prefWidth(50).prefHeight(50).build());
                     }
                 });
             });

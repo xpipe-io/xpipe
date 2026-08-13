@@ -6,9 +6,13 @@ import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.Base64Helper;
+import io.xpipe.app.webtop.WebtopApp;
+import io.xpipe.app.webtop.WebtopAppListManager;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Optional;
 
 public class XPipeUrlProvider implements LauncherUrlProvider {
 
@@ -28,7 +32,16 @@ public class XPipeUrlProvider implements LauncherUrlProvider {
             return null;
         }
 
-        if ("webtop".equals(a)) {
+        if ("webtop-install".equals(a)) {
+            if (AppDistributionType.get() == AppDistributionType.WEBTOP && uri.getPath() != null) {
+                var ids = uri.getPath().split(";");
+                var apps = Arrays.stream(ids).map(s -> WebtopApp.fromString(s)).flatMap(Optional::stream).toList();
+                WebtopAppListManager.get().install(apps);
+            }
+            return null;
+        }
+
+        if ("webtop-scan".equals(a)) {
             AppDialog.information("webtopUrlDialog");
             return null;
         }

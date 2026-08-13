@@ -297,6 +297,16 @@
     -fx-background-color: -color-bg-default-transparent;
 }
 
+.store-entry-badge:focused {
+    -fx-background-color: -color-bg-default-transparent;
+    -fx-border-color: -color-accent-muted;
+}
+
+.store-entry-badge.no-action:hover {
+    -fx-border-color: -color-border-subtle;
+    -fx-background-color: -color-bg-default-transparent;
+}
+
 .store-entry-badge .stacked-ikonli-font-icon > .outer-icon {
     -fx-icon-size: 26px;
     -fx-opacity: 0.4;
@@ -332,11 +342,11 @@
     -fx-background-radius: 0;
 }
 
-.store-entry-comp .store-entry-badge, .store-entry-comp .store-entry-badge:disabled {
+.store-entry-comp .store-entry-badge, .store-entry-comp .store-entry-badge.no-action, .store-entry-comp .store-entry-badge:disabled {
     -fx-opacity: 0.85;
 }
 
-.store-entry-comp:hover .store-entry-badge:disabled, .store-entry-comp:hover .store-entry-badge:disabled {
+.store-entry-comp:hover .store-entry-badge.no-action, .store-entry-comp:hover .store-entry-badge.no-action, .store-entry-comp:hover .store-entry-badge:disabled {
     -fx-opacity: 0.6;
 }
 

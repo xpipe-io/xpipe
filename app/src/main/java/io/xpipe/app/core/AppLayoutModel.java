@@ -289,20 +289,18 @@ public class AppLayoutModel {
                     null));
         }
 
-        if (AppProperties.get().isStaging()) {
-            l.add(new Entry(
-                    AppI18n.observable("feedback"),
-                    new LabelGraphic.IconGraphic("mdoal-bug_report"),
-                    null,
-                    () -> {
-                        var event = ErrorEventFactory.fromMessage("User Report");
-                        if (AppLogs.get().isWriteToFile()) {
-                            event.attachment(AppLogs.get().getSessionLogsDirectory());
-                        }
-                        UserReportComp.show(event.build());
-                    },
-                    null));
-        }
+        l.add(new Entry(
+                AppI18n.observable("feedback"),
+                new LabelGraphic.IconGraphic("mdoal-bug_report"),
+                null,
+                () -> {
+                    var event = ErrorEventFactory.fromMessage("User Report");
+                    if (AppLogs.get().isWriteToFile()) {
+                        event.attachment(AppLogs.get().getSessionLogsDirectory());
+                    }
+                    UserReportComp.show(event.build());
+                },
+                null));
 
         return l;
     }

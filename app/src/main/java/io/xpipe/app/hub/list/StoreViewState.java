@@ -412,6 +412,10 @@ public class StoreViewState {
         batchMode.addListener((observable, oldValue, newValue) -> {
             batchModeSelection.getList().clear();
         });
+
+        sortMode.addListener((observable, oldValue, newValue) -> {
+            batchModeSelection.getList().clear();
+        });
     }
 
     private void initContent() {

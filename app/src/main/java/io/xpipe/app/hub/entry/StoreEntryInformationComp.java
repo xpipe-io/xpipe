@@ -14,8 +14,11 @@ import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
+import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
+import javafx.scene.AccessibleRole;
 import javafx.scene.control.OverrunStyle;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -148,6 +151,7 @@ public class StoreEntryInformationComp extends SimpleRegionBuilder {
                 .filter(action -> action.checkApplicable(wrapper))
                 .ifPresentOrElse(
                         action -> {
+                            button.style("action");
                             button.apply(b -> {
                                 b.setOnMouseClicked(event -> {
                                     if (event.getButton() != MouseButton.PRIMARY) {
@@ -157,10 +161,19 @@ public class StoreEntryInformationComp extends SimpleRegionBuilder {
                                     action.run(wrapper, b);
                                     event.consume();
                                 });
+
+                                b.setOnKeyPressed(event -> {
+                                    if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE) {
+                                        action.run(wrapper, b);
+                                        event.consume();
+                                    }
+                                });
                             });
                         },
                         () -> {
-                            button.disable(true);
+                            button.style("no-action");
+                            button.disable(Platform.accessibilityActiveProperty().not());
+                            button.apply(b -> b.setAccessibleRole(AccessibleRole.TEXT));
                         });
         if (val.getGraphic() instanceof LabelGraphic.ImageGraphic) {
             button.apply(b -> b.setGraphicTextGap(7));

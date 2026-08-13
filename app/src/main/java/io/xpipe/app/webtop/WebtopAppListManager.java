@@ -150,17 +150,6 @@ public class WebtopAppListManager {
             all.add(editor.getRequiredWebtopApp());
         }
 
-        var env = System.getenv("XPIPE_PREINSTALLED_WEBTOP_APPS");
-        if (env != null && !env.isEmpty()) {
-            var split = env.split(",");
-            for (String s : split) {
-                var app = WebtopApp.fromString(s);
-                if (app.isPresent()) {
-                    all.add(app.get());
-                }
-            }
-        }
-
         try {
             var fromStores = DataStorage.get().getStoreEntries().stream()
                     .filter(entry -> entry.getValidity().isUsable())
