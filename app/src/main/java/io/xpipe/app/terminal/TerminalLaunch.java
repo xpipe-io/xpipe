@@ -4,11 +4,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.process.CommandControl;
-import io.xpipe.app.process.LocalShell;
-import io.xpipe.app.process.ProcessControl;
-import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.FailableFunction;
@@ -55,9 +51,10 @@ public class TerminalLaunch {
 
         if (AppOperationMode.get() == null) {
             if (command instanceof CommandControl cc) {
+                var s = cc.prepareTerminalOpen(TerminalInitScriptConfig.ofName(getFullTitle()), WorkingDirectoryFunction.fixed(directory));
                 TerminalLauncher.openDirect(
                         getFullTitle(),
-                        sc -> new ShellScript(cc.getTerminalCommand().buildFull(sc)),
+                        ignored -> new ShellScript(s),
                         ExternalTerminalType.determineFallbackTerminalToOpen(type, false));
             }
             return;
