@@ -17,7 +17,7 @@ public enum WebtopApp {
     KEEPER("keeper"),
     KUBECTL("kubectl"),
     HCLOUD("hetznerCloud", "hcloud"),
-    NETBIRD("netbird"),
+    NETBIRD("netbird", "netbird", true),
     OPENBAO("openBao", "openbao"),
     PROTON_PASS("protonPass", "proton-pass"),
     TAILSCALE("tailscale", "tailscale", true),

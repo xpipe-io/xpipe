@@ -20,6 +20,7 @@ import javafx.beans.property.Property;
 
 import io.modelcontextprotocol.spec.McpSchema;
 
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -106,6 +107,8 @@ public abstract class ProcModuleProvider {
     public abstract void showWebtopDeploymentDialog();
 
     public abstract void showLocalWebtopMobileConnectDialog();
+
+    public abstract void openWebtopUrl(URI uri) throws Exception;
 
     public abstract void importRdpFile(Path file) throws Exception;
 

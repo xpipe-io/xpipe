@@ -226,7 +226,7 @@ public class WebtopAppListManager {
 
         TerminalLaunch.builder()
                 .title("Install packages")
-                .localScript(ShellScript.lines(command, endCommand))
+                .localScript(ShellScript.lines(command + endCommand))
                 .pauseOnExit(true)
                 .terminal(term)
                 .launch();
