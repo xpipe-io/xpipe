@@ -917,7 +917,7 @@ public abstract class DataStorage {
         if (toDelete.isEmpty()) {
             return;
         }
-        
+
         this.listeners.forEach(l -> l.onStoreRemove(toDelete.toArray(DataStoreEntry[]::new)));
 
         for (var td : toDelete) {

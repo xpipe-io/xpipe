@@ -90,7 +90,6 @@ public class McpCategory extends AppPrefsCategory {
                $ claude mcp add %s --transport http "http://localhost:%s/mcp" --header "Authorization: Bearer %s"
                """);
 
-
         var geminiTemplate = createMcpConfig("""
                {
                  "mcpServers": {

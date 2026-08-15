@@ -2,10 +2,10 @@ package io.xpipe.ext.base.service;
 
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.store.DataStoreDependencies;
+import io.xpipe.app.store.HostAddressStore;
 import io.xpipe.app.store.NetworkTunnelStore;
 import io.xpipe.ext.base.host.AbstractHostStore;
 import io.xpipe.ext.base.host.AbstractHostTransformStore;
-import io.xpipe.app.store.HostAddressStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;

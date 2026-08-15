@@ -4,16 +4,10 @@ import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.Base64Helper;
-import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.webtop.WebtopApp;
-import io.xpipe.app.webtop.WebtopAppListManager;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Optional;
 
 public class XPipeUrlProvider implements LauncherUrlProvider {
 

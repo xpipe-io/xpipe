@@ -12,13 +12,13 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.store.DataStore;
 import io.xpipe.app.store.DataStoreCreationCategory;
+import io.xpipe.app.store.HostAddressStore;
 import io.xpipe.app.store.LocalStore;
 import io.xpipe.app.store.NetworkTunnelStore;
 import io.xpipe.app.util.GuiDialog;
 import io.xpipe.app.util.HostAddress;
 import io.xpipe.ext.base.host.AbstractHostStore;
 import io.xpipe.ext.base.host.HostAddressGatewayStore;
-import io.xpipe.app.store.HostAddressStore;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;

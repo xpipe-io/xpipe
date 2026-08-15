@@ -533,7 +533,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     List<ExternalTerminalType> ALL_ON_ALL_PLATFORMS = getTypes(null, true);
 
     static ExternalTerminalType determineFallbackTerminalToOpen(ExternalTerminalType type, boolean force) {
-        if (!force && type != null
+        if (!force
+                && type != null
                 && type != XSHELL
                 && type != MOBAXTERM
                 && type != SECURECRT

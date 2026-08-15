@@ -5,7 +5,6 @@ import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.LeftSplitPaneComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.StackComp;
-import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
 
@@ -26,14 +25,14 @@ public class AppPrefsComp extends SimpleRegionBuilder {
         var categories = AppPrefs.get().getCategories().stream()
                 .filter(appPrefsCategory -> appPrefsCategory.show())
                 .toList();
-        var boxComp = new ListBoxViewComp<>(FXCollections.observableArrayList(categories),
-                FXCollections.observableArrayList(categories), appPrefsCategory -> {
-            var r = appPrefsCategory
-                    .create()
-                    .style("prefs-container")
-                    .style(appPrefsCategory.getId());
-            return r;
-        }, true);
+        var boxComp = new ListBoxViewComp<>(
+                FXCollections.observableArrayList(categories),
+                FXCollections.observableArrayList(categories),
+                appPrefsCategory -> {
+                    var r = appPrefsCategory.create().style("prefs-container").style(appPrefsCategory.getId());
+                    return r;
+                },
+                true);
         boxComp.setVisibilityControl(true);
         boxComp.apply(struc -> {
             struc.getContent().getStyleClass().add("prefs-box");
@@ -95,7 +94,8 @@ public class AppPrefsComp extends SimpleRegionBuilder {
         sidebarWrapper.minWidth(265);
         sidebarWrapper.maxWidth(265);
 
-        var split = new LeftSplitPaneComp(sidebarWrapper, RegionBuilder.of(() -> pane).padding(new Insets(4, 0, 0, 0)));
+        var split = new LeftSplitPaneComp(
+                sidebarWrapper, RegionBuilder.of(() -> pane).padding(new Insets(4, 0, 0, 0)));
         split.withInitialWidth(265);
         split.style("prefs");
         return split.build();

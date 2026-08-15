@@ -33,7 +33,8 @@ public class SecretEncryptExchange extends BeaconInterface<SecretEncryptExchange
             EncryptionPrincipal p;
             for (String pr : msg.getPrincipals()) {
                 var byName = DataStorageAccessHandler.getInstance().getAllEncryptionPrincipals().stream()
-                        .filter(encryptionPrincipal -> encryptionPrincipal.getName().equals(pr))
+                        .filter(encryptionPrincipal ->
+                                encryptionPrincipal.getName().equals(pr))
                         .findFirst();
                 if (byName.isPresent()) {
                     p = byName.get();

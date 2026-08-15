@@ -3,12 +3,12 @@ package io.xpipe.ext.base.service;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.store.*;
+import io.xpipe.app.store.HostAddressStore;
 import io.xpipe.app.util.HostHelper;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.ValidationException;
 import io.xpipe.app.util.Validators;
 import io.xpipe.ext.base.host.HostAddressGatewayStore;
-import io.xpipe.app.store.HostAddressStore;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

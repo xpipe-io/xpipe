@@ -30,7 +30,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
 @SuperBuilder(toBuilder = true)
 @Getter
 public abstract class MicrosoftRdpClient implements ExternalApplicationType.InstallLocationType, ExternalRdpClient {
@@ -187,22 +186,24 @@ public abstract class MicrosoftRdpClient implements ExternalApplicationType.Inst
         disableSignatureWarning(configuration);
 
         if (configuration.getPassword() != null) {
-            AuthModuleProvider.get().setWindowsCredential(
-                    "TERMSRV/" + configuration.getHost(),
-                    CRED_TYPE_DOMAIN_PASSWORD,
-                    CRED_PERSIST_SESSION,
-                    configuration.getUsername(),
-                    configuration.getPassword());
+            AuthModuleProvider.get()
+                    .setWindowsCredential(
+                            "TERMSRV/" + configuration.getHost(),
+                            CRED_TYPE_DOMAIN_PASSWORD,
+                            CRED_PERSIST_SESSION,
+                            configuration.getUsername(),
+                            configuration.getPassword());
         }
 
         var gateway = configuration.getGateway();
         if (gateway != null && gateway.getPassword() != null) {
-            AuthModuleProvider.get().setWindowsCredential(
-                    gateway.getHost(),
-                    CRED_TYPE_DOMAIN_PASSWORD,
-                    CRED_PERSIST_SESSION,
-                    gateway.getUsername(),
-                    gateway.getPassword());
+            AuthModuleProvider.get()
+                    .setWindowsCredential(
+                            gateway.getHost(),
+                            CRED_TYPE_DOMAIN_PASSWORD,
+                            CRED_PERSIST_SESSION,
+                            gateway.getUsername(),
+                            gateway.getPassword());
         }
 
         var file = writeRdpConfigFile(configuration.getTitle(), adaptedRdpConfig);

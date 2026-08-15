@@ -5,18 +5,14 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
-import io.xpipe.app.util.LombokHelper;
 import io.xpipe.app.util.RdpConfig;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.util.ThreadHelper;
-import javafx.application.Platform;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.util.Map;
@@ -38,15 +34,18 @@ public class WindowsAppRdpClient implements ExternalApplicationType.MacApplicati
                 .addToggle(hidpi)
                 .bind(
                         () -> {
-                            return WindowsAppRdpClient.builder().hidpi(hidpi.get()).build();
+                            return WindowsAppRdpClient.builder()
+                                    .hidpi(hidpi.get())
+                                    .build();
                         },
                         property);
     }
 
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
-        var optimizeHidpi = hidpi && AppDisplayScale.getEffectiveDisplayScale() >= 2.0 && configuration.getConfig().get(
-                "ForceHiDpiOptimizations").isEmpty();
+        var optimizeHidpi = hidpi
+                && AppDisplayScale.getEffectiveDisplayScale() >= 2.0
+                && configuration.getConfig().get("ForceHiDpiOptimizations").isEmpty();
         var adjusted = optimizeHidpi
                 ? configuration
                         .getConfig()

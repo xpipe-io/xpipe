@@ -161,7 +161,12 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
                     if (selected != null) {
                         s.getChildren().setAll(new BrowserFileSystemTabComp(selected, false).build());
                     } else {
-                        s.getChildren().setAll(new LoadingIconComp(new ReadOnlyBooleanWrapper(true), node -> AppFontSizes.title(node)).prefWidth(50).prefHeight(50).build());
+                        s.getChildren()
+                                .setAll(new LoadingIconComp(
+                                                new ReadOnlyBooleanWrapper(true), node -> AppFontSizes.title(node))
+                                        .prefWidth(50)
+                                        .prefHeight(50)
+                                        .build());
                     }
                 });
             });

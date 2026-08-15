@@ -50,15 +50,18 @@ public class StoreSectionDragComp extends SimpleRegionBuilder {
 
         var r = new StoreSectionDragComp(FXCollections.observableList(filtered));
 
-        var label = new LabelComp(AppI18n.observable("orderDisabledNotice"), new ReadOnlyObjectWrapper<>(new LabelGraphic.IconGraphic("mdi2i-information-outline")));
-        label.hide(Bindings.createBooleanBinding(() -> {
-            return StoreViewState.get().getSortMode().getValue().supportsReordering();
-        }, StoreViewState.get().getSortMode()));
+        var label = new LabelComp(
+                AppI18n.observable("orderDisabledNotice"),
+                new ReadOnlyObjectWrapper<>(new LabelGraphic.IconGraphic("mdi2i-information-outline")));
+        label.hide(Bindings.createBooleanBinding(
+                () -> {
+                    return StoreViewState.get().getSortMode().getValue().supportsReordering();
+                },
+                StoreViewState.get().getSortMode()));
         label.apply(struc -> struc.setWrapText(true));
         label.maxWidth(200);
 
-        var vbox = new VerticalComp(List.of(r, label))
-                .style("drag-comp").build();
+        var vbox = new VerticalComp(List.of(r, label)).style("drag-comp").build();
 
         var scene = new Scene(vbox);
         AppWindowStyle.addStylesheets(scene);

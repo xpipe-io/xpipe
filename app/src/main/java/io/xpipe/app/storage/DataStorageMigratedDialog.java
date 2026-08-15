@@ -19,10 +19,12 @@ public class DataStorageMigratedDialog {
             return;
         }
 
-
         var gitSync = AppPrefs.get().storageGitRemote().getValue() != null;
-        var modal = ModalOverlay.of("vaultMigratedTitle", AppDialog.dialogTextKey(gitSync ? "vaultMigratedGitContent" : "vaultMigratedContent"));
-        modal.addButton(new ModalButton("openSettings", () -> AppPrefs.get().selectCategory("vaultAccess"), true, true));
+        var modal = ModalOverlay.of(
+                "vaultMigratedTitle",
+                AppDialog.dialogTextKey(gitSync ? "vaultMigratedGitContent" : "vaultMigratedContent"));
+        modal.addButton(
+                new ModalButton("openSettings", () -> AppPrefs.get().selectCategory("vaultAccess"), true, true));
         modal.show();
 
         AppCache.clear("vaultMigrated");

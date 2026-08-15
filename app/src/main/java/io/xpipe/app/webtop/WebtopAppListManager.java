@@ -222,7 +222,9 @@ public class WebtopAppListManager {
                 requiresRestart ? " && " + exec + " daemon stop --wait && " + exec + " open" : ";" + exec + " open";
 
         var termPref = AppPrefs.get().terminalType().getValue();
-        var term = termPref == null || !termPref.isAvailable() ? ExternalTerminalType.determineFallbackTerminalToOpen(termPref, true) : null;
+        var term = termPref == null || !termPref.isAvailable()
+                ? ExternalTerminalType.determineFallbackTerminalToOpen(termPref, true)
+                : null;
 
         TerminalLaunch.builder()
                 .title("Install packages")

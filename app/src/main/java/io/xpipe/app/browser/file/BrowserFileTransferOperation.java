@@ -337,7 +337,8 @@ public class BrowserFileTransferOperation {
                     throw new IllegalStateException();
                 }
 
-                var accurateTransferProgress = optimizedSourceFs.hasAccurateProgress() && targetFs.hasAccurateProgress();
+                var accurateTransferProgress =
+                        optimizedSourceFs.hasAccurateProgress() && targetFs.hasAccurateProgress();
                 if (sourceFile.getKind() == FileKind.DIRECTORY) {
                     targetFs.mkdirs(targetFile);
                 } else if (sourceFile.getKind() == FileKind.FILE) {
@@ -359,8 +360,7 @@ public class BrowserFileTransferOperation {
                     var targetId = targetFs.getIdentifier();
                     var fileSize = optimizedSourceFs.getFileSize(sourceFile.getPath());
                     var startTransferred = transferred.get();
-                    var canCacheProgressInfo = sourceId.isPresent()
-                            && targetId.isPresent();
+                    var canCacheProgressInfo = sourceId.isPresent() && targetId.isPresent();
                     if (!accurateTransferProgress && canCacheProgressInfo) {
                         var mapKey = sourceId.get() + "-" + targetId.get();
                         Long cachedSpeed =
@@ -504,14 +504,7 @@ public class BrowserFileTransferOperation {
             }
 
             outputStream = targetFs.openOutput(targetFile, fileSize);
-            transferFile(
-                    sourceFile,
-                    inputStream,
-                    outputStream,
-                    transferred,
-                    totalSize,
-                    fileSize,
-                    reportProgress);
+            transferFile(sourceFile, inputStream, outputStream, transferred, totalSize, fileSize, reportProgress);
         } catch (Exception ex) {
             // Mark progress as finished to reset any progress display
             updateProgress(BrowserTransferProgress.finished(sourceFile.getFileName(), transferred.get()));

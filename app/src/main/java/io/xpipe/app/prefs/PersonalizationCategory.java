@@ -98,7 +98,9 @@ public class PersonalizationCategory extends AppPrefsCategory {
         var prefs = AppPrefs.get();
         return new OptionsBuilder()
                 .title("personalization")
-                .sub(new OptionsBuilder().sub(languageChoice()).sub(themeChoice())
+                .sub(new OptionsBuilder()
+                        .sub(languageChoice())
+                        .sub(themeChoice())
                         .pref(prefs.performanceMode)
                         .addToggle(prefs.performanceMode))
                 .buildComp();

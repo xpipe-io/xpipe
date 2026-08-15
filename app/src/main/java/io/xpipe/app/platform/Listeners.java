@@ -99,7 +99,10 @@ public class Listeners {
         });
     }
 
-    public static <T> void attach(ObservableValue<Boolean> enabled, ObservableList<T> value, Consumer<ListChangeListener.Change<? extends T>> consumer) {
+    public static <T> void attach(
+            ObservableValue<Boolean> enabled,
+            ObservableList<T> value,
+            Consumer<ListChangeListener.Change<? extends T>> consumer) {
         var listener = new ListChangeListener<T>() {
             @Override
             public void onChanged(Change<? extends T> c) {
@@ -116,7 +119,10 @@ public class Listeners {
         consumer.accept(null);
     }
 
-    public static <T> void listen(ObservableValue<Boolean> enabled, ObservableList<T> value, Consumer<ListChangeListener.Change<? extends T>> consumer) {
+    public static <T> void listen(
+            ObservableValue<Boolean> enabled,
+            ObservableList<T> value,
+            Consumer<ListChangeListener.Change<? extends T>> consumer) {
         var listener = new ListChangeListener<T>() {
             @Override
             public void onChanged(Change<? extends T> c) {

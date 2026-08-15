@@ -14,10 +14,8 @@ import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
-import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.AccessibleRole;
-import javafx.scene.control.OverrunStyle;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
@@ -122,7 +120,8 @@ public class StoreEntryInformationComp extends SimpleRegionBuilder {
                 breakpoint.set(maxX);
             }
 
-            var newCompress = hbox.getWidth() < breakpoint.get() && AppSizeBreakpoints.compactMode().get();
+            var newCompress = hbox.getWidth() < breakpoint.get()
+                    && AppSizeBreakpoints.compactMode().get();
             compress.set(newCompress);
             if (wasCompress != compress.get()) {
                 fill(hbox, badges, compress, breakpoint, false, true);
@@ -172,7 +171,8 @@ public class StoreEntryInformationComp extends SimpleRegionBuilder {
                         },
                         () -> {
                             button.style("no-action");
-                            button.disable(Platform.accessibilityActiveProperty().not());
+                            button.disable(
+                                    Platform.accessibilityActiveProperty().not());
                             button.apply(b -> b.setAccessibleRole(AccessibleRole.TEXT));
                         });
         if (val.getGraphic() instanceof LabelGraphic.ImageGraphic) {

@@ -16,6 +16,7 @@ import javafx.geometry.Side;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.*;
@@ -137,7 +138,6 @@ public interface StoreEntryBadge {
         return of("mdi2a-account", s);
     }
 
-
     static StoreEntryBadge ofUsername(String s) {
         if (s == null) {
             return null;
@@ -207,9 +207,12 @@ public interface StoreEntryBadge {
         var cm = new AtomicReference<ContextMenu>();
         var busy = new SimpleBooleanProperty();
         return of("mdi2s-server-network-outline", effective).withAction((wrapper, b) -> {
-            b.opacityProperty().bind(Bindings.createDoubleBinding(() -> {
-                return busy.get() ? 0.5 : 1.0;
-            }, busy));
+            b.opacityProperty()
+                    .bind(Bindings.createDoubleBinding(
+                            () -> {
+                                return busy.get() ? 0.5 : 1.0;
+                            },
+                            busy));
 
             if (wrapper.getEntry().getStore() instanceof HostAddressStore has) {
                 if (busy.get()) {
@@ -469,7 +472,6 @@ public interface StoreEntryBadge {
             return withCopyAction(name);
         }
 
-
         public StoreEntryBadge withCopyAction(String s) {
             if (s == null) {
                 return this;
@@ -482,7 +484,6 @@ public interface StoreEntryBadge {
                 }
             });
         }
-
 
         @Override
         public boolean equals(Object o) {
