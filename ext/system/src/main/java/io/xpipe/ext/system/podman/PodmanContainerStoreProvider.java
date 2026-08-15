@@ -99,11 +99,11 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
         var state = st.getState();
         var parentInfo = ShellStoreProvider.super.buildInformation(section);
         var cs = state.getContainerState();
+        var running = cs != null && cs.toLowerCase().contains("up");
+        var exited = cs != null && cs.toLowerCase().contains("exited");
         return parentInfo.append(StoreEntryInformation.of(
                 StoreEntryBadge.ofRunningState(
-                        cs,
-                        cs != null && cs.toLowerCase().contains("up"),
-                        cs != null && cs.toLowerCase().contains("exited")),
+                        running ? "Up" : exited ? "Exited": cs, running, exited),
                 StoreEntryBadge.ofFailure(
                         state.getShellMissing() != null && state.getShellMissing() ? "No shell available" : null)));
     }

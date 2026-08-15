@@ -11,6 +11,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.store.DataStore;
 
+import io.xpipe.app.util.JacksonMapper;
 import javafx.beans.value.ObservableValue;
 
 import lombok.experimental.SuperBuilder;
@@ -56,8 +57,14 @@ public class CloneHubLeafProvider implements HubLeafProvider<DataStore> {
 
         @Override
         public void executeImpl() {
+            // Guarantee that no store entries have the same store object where == equality returns true for multiple entries
+            var storeCopy = JacksonMapper.getDefault().treeToValue(JacksonMapper.getDefault().valueToTree(ref.getStore()), DataStore.class);
+            if (storeCopy == null) {
+                return;
+            }
+
             var entry = DataStoreEntry.createNew(
-                    ref.get().getName() + " (" + AppI18n.get("connectionCopy") + ")", ref.getStore());
+                    ref.get().getName() + " (" + AppI18n.get("connectionCopy") + ")", storeCopy);
 
             entry.setIcon(ref.get().getIcon(), true);
             entry.setColor(ref.get().getColor());
