@@ -458,6 +458,10 @@ public class StoreEntryWrapper {
         DataStorage.get().setOrderIndex(entry, index);
     }
 
+    public void expand() {
+        this.expanded.set(true);
+    }
+
     public void toggleExpanded() {
         this.expanded.set(!expanded.getValue());
     }

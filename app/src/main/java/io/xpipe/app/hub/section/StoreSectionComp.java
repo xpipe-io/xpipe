@@ -61,6 +61,9 @@ public class StoreSectionComp extends StoreSectionBaseComp {
         indicators.apply(struc -> {
             var pane = (Pane) ((VBox) struc.getChildren().get(1)).getChildren().getFirst();
             addVisibilityListeners(struc, pane, () -> buildContent(entryButton).build());
+            struc.setOnMouseClicked(e -> {
+                e.consume();
+            });
         });
 
         return indicators.build();

@@ -182,8 +182,10 @@ public class RemoteDesktopWindow {
     }
 
     public void select(RemoteDesktopDockEntry entry) {
-        model.select(entry);
-        selected.set(entry);
+        ThreadHelper.runFailableAsync(() -> {
+            model.select(entry);
+            selected.set(entry);
+        });
     }
 
     public void close(RemoteDesktopDockEntry entry, boolean closeWindowIfNeeded) {

@@ -342,8 +342,8 @@
     -fx-background-radius: 0;
 }
 
-.store-entry-comp .store-entry-badge, .store-entry-comp .store-entry-badge.no-action, .store-entry-comp .store-entry-badge:disabled {
-    -fx-opacity: 0.85;
+.store-entry-badge {
+    -fx-opacity: 0.75;
 }
 
 .store-entry-comp:hover .store-entry-badge.no-action, .store-entry-comp:hover .store-entry-badge.no-action, .store-entry-comp:hover .store-entry-badge:disabled {

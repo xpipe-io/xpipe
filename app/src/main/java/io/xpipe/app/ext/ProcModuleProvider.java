@@ -51,6 +51,8 @@ public abstract class ProcModuleProvider {
         return INSTANCE;
     }
 
+    public abstract void postInitWebtopSetup();
+
     public abstract String generatePublicSshKey(SecretValue privateKey, SecretRetrievalStrategy passphrase);
 
     public abstract Optional<String> generatePublicSshKey(FilePath file) throws Exception;

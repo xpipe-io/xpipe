@@ -6,6 +6,7 @@ import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.CliProvider;
 import io.xpipe.app.ext.ExtensionException;
 import io.xpipe.app.ext.ModuleLayerLoader;
+import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.app.platform.PlatformState;
@@ -204,6 +205,7 @@ public abstract class AppOperationMode {
                 DataStorage.get().generateCaches();
             });
             AppMainWindow.postInit();
+            ProcModuleProvider.get().postInitWebtopSetup();
         } catch (Throwable ex) {
             ErrorEventFactory.fromThrowable(ex).term().handle();
         }

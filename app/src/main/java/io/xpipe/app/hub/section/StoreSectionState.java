@@ -116,7 +116,14 @@ public class StoreSectionState {
     }
 
     private void addListeners() {
-        Listeners.attach(enabled, all, () -> {
+        Listeners.attach(enabled, all, (change) -> {
+            if (change != null) {
+                while (change.next()) {
+                    if (change.wasAdded()) {
+                        added.addAll(change.getAddedSubList());
+                    }
+                }
+            }
             updateAll();
         });
 
@@ -126,15 +133,6 @@ public class StoreSectionState {
 
         Listeners.attach(enabled, filter, () -> {
             added.clear();
-            updateShown(false);
-        });
-
-        Listeners.listen(enabled, StoreViewState.get().getAllEntries().getList(), change -> {
-            while (change.next()) {
-                if (change.wasAdded()) {
-                    added.addAll(change.getAddedSubList());
-                }
-            }
             updateShown(false);
         });
 
