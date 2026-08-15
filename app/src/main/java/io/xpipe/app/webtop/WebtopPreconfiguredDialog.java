@@ -15,6 +15,11 @@ public class WebtopPreconfiguredDialog {
             return;
         }
 
+        // TODO: This is disabled for now
+        if (true) {
+            return;
+        }
+
         AppDialog.information("webtopPreconfiguredDialog");
     }
 }
