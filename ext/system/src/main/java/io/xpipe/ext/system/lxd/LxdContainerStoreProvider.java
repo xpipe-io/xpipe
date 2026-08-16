@@ -23,9 +23,10 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
         var st = (LxdContainerStore) section.getEntry().getStore().asNeeded();
         var state = st.getState();
         var parentInfo = ShellStoreProvider.super.buildInformation(section);
+        var addr = HostAddress.of(state.getIpv4(), state.getIpv6());
         return parentInfo.append(StoreEntryInformation.of(
                 StoreEntryBadge.ofRunningState(state.getContainerState(), "Running", "Stopped"),
-                StoreEntryBadge.ofAddress(state.getIpv4()),
+                StoreEntryBadge.ofDynamicAddress(addr),
                 StoreEntryBadge.ofFailure(
                         state.getShellMissing() != null && state.getShellMissing() ? "No shell available" : null)));
     }

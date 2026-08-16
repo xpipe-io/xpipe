@@ -186,7 +186,7 @@ public interface StoreEntryBadge {
         return of("mdi2c-connection", s).withCompressBehaviour(CompressBehaviour.HIDE);
     }
 
-    static StoreEntryBadge ofAddress(String s) {
+    static StoreEntryBadge ofStaticAddress(String s) {
         if (s == null) {
             return null;
         }
@@ -194,7 +194,7 @@ public interface StoreEntryBadge {
         return of("mdi2s-server-network-outline", s).withCopyAction();
     }
 
-    static StoreEntryBadge ofAddress(HostAddress addr) {
+    static StoreEntryBadge ofDynamicAddress(HostAddress addr) {
         if (addr == null) {
             return null;
         }

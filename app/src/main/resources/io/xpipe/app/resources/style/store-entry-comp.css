@@ -66,7 +66,11 @@
     -fx-icon-color: #5b2cffff;
 }
 
-.store-entry-grid .template-icon .ikonli-font-icon {
+.root:light .store-entry-grid .template-icon .ikonli-font-icon {
+    -fx-icon-color: #A66606CC;
+}
+
+.root:dark .store-entry-grid .template-icon .ikonli-font-icon {
     -fx-icon-color: #E6A616CC;
 }
 

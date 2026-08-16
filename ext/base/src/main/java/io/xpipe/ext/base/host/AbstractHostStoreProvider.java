@@ -77,7 +77,7 @@ public class AbstractHostStoreProvider implements CountGroupStoreProvider {
     @Override
     public StoreEntryInformation buildInformation(StoreSection section) {
         var st = (AbstractHostStore) section.getEntry().getStore();
-        return StoreEntryInformation.of(StoreEntryBadge.ofAddress(st.getHost()));
+        return StoreEntryInformation.of(StoreEntryBadge.ofStaticAddress(st.getHost()));
     }
 
     @Override

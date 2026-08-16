@@ -103,7 +103,7 @@ public class BrowserStatusBarComp extends SimpleRegionBuilder {
 
                     // Handle unknown transfers
                     if (p.getTotal() == 0) {
-                        return HumanReadableFormat.byteCount(p.getTransferred());
+                        return "...";
                     }
 
                     var elapsed = (p.getTotal() - p.getTransferred() / (double) p.getTotal()) * expected.toMillis();
