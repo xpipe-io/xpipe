@@ -78,7 +78,7 @@ public enum DocumentationLink {
     SSH_DISABLE_TIMEOUT("guide/ssh#connection-timeout"),
     SSH_X11("guide/ssh#x11-forwarding"),
     SSH_LIMITED("guide/ssh#limited--embedded-systems"),
-    MIGRATION("troubleshoot/migration"),
+    MIGRATION("troubleshoot/vault-migration"),
     PSSESSION("guide/pssession"),
     CONNECTION_SEARCH("guide/connection-search#adding-connections"),
     NETWORK_SCAN("guide/connection-search#network-scan"),
