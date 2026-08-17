@@ -1,5 +1,6 @@
 package io.xpipe.app.beacon;
 
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
@@ -85,13 +86,17 @@ public class BeaconRequestHandler<T> implements HttpHandler {
                         object = createRawDataRequest(beaconInterface, read);
                     } else {
                         var tree = JacksonMapper.getDefault().readTree(read);
-                        TrackEvent.trace("Parsed raw request:\n" + tree.toPrettyString());
+                        if (AppProperties.get().isPrintBeaconMessages()) {
+                            TrackEvent.trace("Parsed raw request:\n" + tree.toPrettyString());
+                        }
                         var emptyRequestClass = tree.isEmpty()
                                 && beaconInterface.getRequestClass().getDeclaredFields().length == 0;
                         object = emptyRequestClass
                                 ? createDefaultRequest(beaconInterface)
                                 : JacksonMapper.getDefault().treeToValue(tree, beaconInterface.getRequestClass());
-                        TrackEvent.trace("Parsed request object:\n" + object);
+                        if (AppProperties.get().isPrintBeaconMessages()) {
+                            TrackEvent.trace("Parsed request object:\n" + object);
+                        }
                     }
                 }
             }
@@ -150,9 +155,10 @@ public class BeaconRequestHandler<T> implements HttpHandler {
                         || !AppPrefs.get().developerMode().getValue()
                         || !AppPrefs.get().developerShowSensitiveCommands().get();
                 var mapper = redact ? JacksonMapper.getRedactedSecretMapper() : JacksonMapper.getUnredactSecretMapper();
-                TrackEvent.trace("Sending response:\n" + response);
-                TrackEvent.trace(
-                        "Sending raw response:\n" + mapper.valueToTree(response).toPrettyString());
+                if (AppProperties.get().isPrintBeaconMessages()) {
+                    TrackEvent.trace("Sending response:\n" + response);
+                    TrackEvent.trace("Sending raw response:\n" + mapper.valueToTree(response).toPrettyString());
+                }
                 var bytes = JacksonMapper.getDefault()
                         .valueToTree(response)
                         .toPrettyString()

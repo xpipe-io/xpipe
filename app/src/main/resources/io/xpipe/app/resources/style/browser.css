@@ -15,6 +15,11 @@
     -fx-background-radius: 4;
 }
 
+.root .browser .transfer:hover > .download-background.color-box {
+    -fx-border-color: -color-accent-emphasis;
+    -fx-background-color: derive(-color-bg-subtle, 5%);
+}
+
 .root .browser .transfer:highlighted > .download-background.color-box {
     -fx-border-color: -color-accent-emphasis;
     -fx-background-color: derive(-color-bg-subtle, 5%);

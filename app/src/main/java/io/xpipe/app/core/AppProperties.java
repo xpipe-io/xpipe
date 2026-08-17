@@ -68,6 +68,7 @@ public class AppProperties {
     boolean debugCli;
     boolean isDaemon;
     boolean isCli;
+    boolean printBeaconMessages;
 
     @NonFinal
     @Getter(AccessLevel.PRIVATE)
@@ -120,6 +121,9 @@ public class AppProperties {
         useVirtualThreads = Optional.ofNullable(System.getProperty(AppNames.propertyName("useVirtualThreads")))
                 .map(Boolean::parseBoolean)
                 .orElse(true);
+        printBeaconMessages = Optional.ofNullable(System.getProperty(AppNames.propertyName("printBeaconMessages")))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
         debugThreads = Optional.ofNullable(System.getProperty(AppNames.propertyName("debugThreads")))
                 .map(Boolean::parseBoolean)
                 .orElse(false);

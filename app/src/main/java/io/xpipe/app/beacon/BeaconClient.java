@@ -1,6 +1,7 @@
 package io.xpipe.app.beacon;
 
 import io.xpipe.app.beacon.api.HandshakeExchange;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.util.JacksonMapper;
 
 import lombok.SneakyThrows;
@@ -15,15 +16,6 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 public class BeaconClient {
-
-    private static final String PRINT_MESSAGES_PROPERTY = "io.xpipe.beacon.printMessages";
-
-    private static boolean printMessages() {
-        if (System.getProperty(PRINT_MESSAGES_PROPERTY) != null) {
-            return Boolean.parseBoolean(System.getProperty(PRINT_MESSAGES_PROPERTY));
-        }
-        return false;
-    }
 
     private final int port;
     private String token;
@@ -48,7 +40,7 @@ public class BeaconClient {
     public <RES> RES performRequest(BeaconInterface<?> prov, String rawNode)
             throws BeaconConnectorException, BeaconClientException, BeaconServerException {
         var content = rawNode;
-        if (printMessages()) {
+        if (AppProperties.get().isPrintBeaconMessages()) {
             System.out.println("Sending raw request:");
             System.out.println(content);
         }
@@ -72,7 +64,7 @@ public class BeaconClient {
             throw new BeaconConnectorException("Couldn't send request", ex);
         }
 
-        if (printMessages()) {
+        if (AppProperties.get().isPrintBeaconMessages()) {
             System.out.println("Received raw response:");
             System.out.println(response.body());
         }
@@ -119,7 +111,7 @@ public class BeaconClient {
         if (prov.isEmpty()) {
             throw new IllegalArgumentException("Unknown request class " + req.getClass());
         }
-        if (printMessages()) {
+        if (AppProperties.get().isPrintBeaconMessages()) {
             System.out.println(
                     "Sending request to server of type " + req.getClass().getName());
         }

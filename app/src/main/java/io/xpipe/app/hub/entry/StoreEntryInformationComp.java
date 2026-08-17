@@ -100,6 +100,7 @@ public class StoreEntryInformationComp extends SimpleRegionBuilder {
                 var comp = createBadge(badge, compress.get());
                 if (comp != null) {
                     var r = comp.build();
+                    r.setVisible(false);
                     hbox.getChildren().add(r);
                 }
             }
@@ -111,7 +112,7 @@ public class StoreEntryInformationComp extends SimpleRegionBuilder {
         for (var child : hbox.getChildren()) {
             Region childRegion = (Region) child;
             maxX = childRegion.localToParent(childRegion.getBoundsInLocal()).getMaxX();
-            childRegion.setVisible(hbox.getWidth() > 0.0 && maxX < hbox.getWidth());
+            childRegion.setVisible(childRegion.getWidth() > 10.0 && hbox.getWidth() > 0.0 && maxX < hbox.getWidth());
             layouted = layouted && childRegion.getWidth() > 10.0;
         }
 
