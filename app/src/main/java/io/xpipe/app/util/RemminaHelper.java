@@ -110,7 +110,7 @@ public class RemminaHelper {
                         configuration.getTitle(),
                         configuration.getUsernameWithoutDomain(),
                         configuration.getDomain().orElse(""),
-                        configuration.getHost(),
+                        configuration.getHost() + ":" + configuration.getPort(),
                         configuration.getPassword() != null
                                 ? encryptPassword(configuration.getPassword()).orElse("")
                                 : "",
