@@ -189,7 +189,7 @@ public abstract class MicrosoftRdpClient implements ExternalApplicationType.Inst
             AuthModuleProvider.get()
                     .setWindowsCredential(
                             "TERMSRV/" + configuration.getHost(),
-                            CRED_TYPE_DOMAIN_PASSWORD,
+                            CRED_TYPE_GENERIC,
                             CRED_PERSIST_SESSION,
                             configuration.getUsername(),
                             configuration.getPassword());
@@ -200,7 +200,7 @@ public abstract class MicrosoftRdpClient implements ExternalApplicationType.Inst
             AuthModuleProvider.get()
                     .setWindowsCredential(
                             gateway.getHost(),
-                            CRED_TYPE_DOMAIN_PASSWORD,
+                            CRED_TYPE_GENERIC,
                             CRED_PERSIST_SESSION,
                             gateway.getUsername(),
                             gateway.getPassword());
