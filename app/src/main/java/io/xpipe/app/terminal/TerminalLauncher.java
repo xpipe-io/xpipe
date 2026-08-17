@@ -252,7 +252,7 @@ public class TerminalLauncher {
         // Throw if not supported
         multiplexer.get().checkSupported(control);
 
-        var session = TerminalMultiplexerManager.getActiveMultiplexerSession(true);
+        var session = TerminalMultiplexerManager.getActiveMultiplexerSession();
         if (session.isEmpty()) {
             return false;
         }

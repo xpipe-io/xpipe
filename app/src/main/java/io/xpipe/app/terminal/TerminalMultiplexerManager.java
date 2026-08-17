@@ -99,24 +99,12 @@ public class TerminalMultiplexerManager {
             return;
         }
 
-        // Wait if we are currently opening a new multiplexer
+        // Step 1: Wait for currently opening multiplexer container shell
         if (pendingMultiplexerLaunch != null) {
             // Wait for max 30s
             // Multiplexer launches in WSL may take a while
             for (int i = 0; i < 300; i++) {
                 if (pendingMultiplexerLaunch == null) {
-                    // Give it a bit more time if it just started
-                    ThreadHelper.sleep(1000);
-
-                    // Wait for max 10s
-                    for (int j = 0; j < 100; j++) {
-                        if (getActiveMultiplexerSession(false).isPresent()) {
-                            break;
-                        }
-
-                        ThreadHelper.sleep(100);
-                    }
-
                     break;
                 }
 
@@ -126,6 +114,19 @@ public class TerminalMultiplexerManager {
             // We timed out
             pendingMultiplexerLaunch = null;
         }
+
+        // Step 2: Wait for first tab to open in multiplexer container to make sure that the session is started
+        if (runningMultiplexerContainer != null) {
+            // Wait for max 10s
+            for (int j = 0; j < 100; j++) {
+                if (getActiveMultiplexerSession().isPresent()) {
+                    break;
+                }
+
+                ThreadHelper.sleep(100);
+            }
+        }
+
     }
 
     public static void registerSessionLaunch(TerminalLaunchConfiguration configuration) {
@@ -159,22 +160,10 @@ public class TerminalMultiplexerManager {
         return Optional.ofNullable(runningMultiplexerContainer);
     }
 
-    public static Optional<TerminalView.TerminalSession> getActiveMultiplexerSession(boolean includeStarting) {
+    public static Optional<TerminalView.TerminalSession> getActiveMultiplexerSession() {
         var mult = getEffectiveMultiplexer();
         if (mult.isEmpty()) {
             return Optional.empty();
-        }
-
-        var noSessions = TerminalView.get().getSessions().stream()
-                .noneMatch(shellSession -> shellSession.getTerminal().isRunning()
-                        && (mult.get() == connectionHubRequests.get(shellSession.getRequest())));
-        if (includeStarting && noSessions) {
-            var starting = TerminalView.get().getSessions().stream()
-                    .filter(shellSession -> shellSession.getTerminal().isRunning()
-                            && runningMultiplexerContainerType == mult.get()
-                            && shellSession.getRequest().equals(runningMultiplexerContainer))
-                    .findFirst();
-            return starting.map(shellSession -> shellSession.getTerminal());
         }
 
         var session = TerminalView.get().getSessions().stream()
