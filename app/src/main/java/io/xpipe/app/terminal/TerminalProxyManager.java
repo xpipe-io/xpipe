@@ -40,6 +40,21 @@ public class TerminalProxyManager {
         return id.equals("wsl");
     }
 
+    public static boolean hasConfiguredProxy() {
+        var uuid = AppPrefs.get().terminalProxy().getValue();
+        var hasCustomTerminalShell = uuid != null && !DataStorage.get().local().getUuid().equals(uuid);
+        if (!hasCustomTerminalShell) {
+            return false;
+        }
+
+        var foundEntry = DataStorage.get().getStoreEntryIfPresent(uuid);
+        if (foundEntry.isEmpty()) {
+            return false;
+        }
+
+        return true;
+    }
+
     public static Optional<ShellControl> getProxy() {
         var uuid = AppPrefs.get().terminalProxy().getValue();
         var hasCustomTerminalShell =

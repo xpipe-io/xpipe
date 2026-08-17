@@ -107,6 +107,16 @@ public class TerminalMultiplexerManager {
                 if (pendingMultiplexerLaunch == null) {
                     // Give it a bit more time if it just started
                     ThreadHelper.sleep(1000);
+
+                    // Wait for max 10s
+                    for (int j = 0; j < 100; j++) {
+                        if (getActiveMultiplexerSession(false).isPresent()) {
+                            break;
+                        }
+
+                        ThreadHelper.sleep(100);
+                    }
+
                     break;
                 }
 
@@ -149,7 +159,7 @@ public class TerminalMultiplexerManager {
         return Optional.ofNullable(runningMultiplexerContainer);
     }
 
-    public static Optional<TerminalView.TerminalSession> getActiveMultiplexerSession() {
+    public static Optional<TerminalView.TerminalSession> getActiveMultiplexerSession(boolean includeStarting) {
         var mult = getEffectiveMultiplexer();
         if (mult.isEmpty()) {
             return Optional.empty();
@@ -158,7 +168,7 @@ public class TerminalMultiplexerManager {
         var noSessions = TerminalView.get().getSessions().stream()
                 .noneMatch(shellSession -> shellSession.getTerminal().isRunning()
                         && (mult.get() == connectionHubRequests.get(shellSession.getRequest())));
-        if (noSessions) {
+        if (includeStarting && noSessions) {
             var starting = TerminalView.get().getSessions().stream()
                     .filter(shellSession -> shellSession.getTerminal().isRunning()
                             && runningMultiplexerContainerType == mult.get()

@@ -391,7 +391,7 @@ public class TerminalCategory extends AppPrefsCategory {
                             return false;
                         }
 
-                        return TerminalProxyManager.getProxy().isEmpty()
+                        return !TerminalProxyManager.hasConfiguredProxy()
                                 && !TerminalMultiplexerManager.isAvailableOnWindows();
                     },
                     prefs.terminalProxy(),

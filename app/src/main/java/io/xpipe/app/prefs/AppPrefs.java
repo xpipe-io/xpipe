@@ -875,7 +875,9 @@ public final class AppPrefs {
         rdpClientType.setValue(ExternalRdpClient.determineDefault(rdpClientType.get()));
         spiceClient.setValue(ExternalSpiceClient.determineDefault(spiceClient.getValue()));
         passwordManager.setValue(PasswordManager.determineDefault(passwordManager.getValue()));
-        terminalMultiplexer.setValue(TerminalMultiplexer.determineDefault(terminalMultiplexer.getValue()));
+
+        // We don't want to set a multiplexer by default really
+        // terminalMultiplexer.setValue(TerminalMultiplexer.determineDefault(terminalMultiplexer.getValue()));
 
         PrefsProvider.getAll().forEach(prov -> prov.initDefaultValues());
     }
