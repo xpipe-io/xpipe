@@ -22,7 +22,7 @@ public class StoreIdentitiesIntroComp extends SimpleRegionBuilder {
         top.setButtonDefault(true);
         top.setButtonGraphic(new LabelGraphic.IconGraphic("mdi2p-play-circle"));
         top.setButtonAction(() -> {
-            var canSync = DataStorage.get().supportsSync();
+            var canSync = DataStorage.get().syncEnabled();
             var prov = canSync
                     ? DataStoreProvider.byId("syncedIdentity").orElseThrow()
                     : DataStoreProvider.byId("localIdentity").orElseThrow();

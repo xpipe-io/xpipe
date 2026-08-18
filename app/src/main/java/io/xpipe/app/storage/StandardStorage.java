@@ -392,11 +392,11 @@ public class StandardStorage extends DataStorage {
         }
 
         ThreadHelper.runAsync(() -> {
-            save(false);
+            save(false, false);
         });
     }
 
-    public void save(boolean dispose) {
+    public void save(boolean dispose, boolean forceSync) {
         try {
             // If another save operation is in progress, we have to wait on dispose
             // Otherwise the application may quit and kill the daemon thread that is performing the other save operation
@@ -408,8 +408,11 @@ public class StandardStorage extends DataStorage {
             return;
         }
 
-        // We don't need to wait on normal saves though
-        if (!dispose && !busyIo.tryLock()) {
+        // Wait for sync lock
+        if (forceSync) {
+            busyIo.lock();
+        } else if (!dispose && !busyIo.tryLock()) {
+            // We don't need to wait on normal saves though
             saveQueued = true;
             return;
         }
@@ -426,8 +429,10 @@ public class StandardStorage extends DataStorage {
         if (syncEnabled) {
             GlobalTimer.delay(
                     () -> {
-                        if (saveActive.get()) {
-                            AppLayoutModel.get().showQueueEntry(queueEntry, null, false);
+                        synchronized (queueEntry) {
+                            if (saveActive.get()) {
+                                AppLayoutModel.get().showQueueEntry(queueEntry, null, false);
+                            }
                         }
                     },
                     Duration.ofSeconds(5));
@@ -499,8 +504,10 @@ public class StandardStorage extends DataStorage {
             disposed = true;
         }
 
-        saveActive.set(false);
-        queueEntry.hide();
+        synchronized (queueEntry) {
+            saveActive.set(false);
+            queueEntry.hide();
+        }
 
         busyIo.unlock();
         if (!dispose && saveQueued) {
@@ -545,7 +552,7 @@ public class StandardStorage extends DataStorage {
     }
 
     @Override
-    public boolean supportsSync() {
+    public boolean syncEnabled() {
         return dataStorageSyncHandler.supportsSync();
     }
 

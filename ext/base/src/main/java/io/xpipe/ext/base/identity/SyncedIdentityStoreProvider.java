@@ -1,6 +1,7 @@
 package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.hub.creation.StoreCreationModel;
 import io.xpipe.app.hub.entry.StoreEntryWrapper;
 import io.xpipe.app.identity.KeyFileStrategy;
@@ -10,6 +11,7 @@ import io.xpipe.app.identity.SshIdentityStrategyChoiceConfig;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.platform.Validator;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.DataStorageAccessType;
 import io.xpipe.app.secret.*;
 import io.xpipe.app.storage.*;
@@ -27,7 +29,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
 
     @Override
     public boolean allowCreation() {
-        return DataStorage.get().supportsSync();
+        return AppPrefs.get().enableGitStorage().get();
     }
 
     @Override

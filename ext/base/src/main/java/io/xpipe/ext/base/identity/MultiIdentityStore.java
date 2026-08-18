@@ -54,6 +54,11 @@ public class MultiIdentityStore extends IdentityStore
     DataStoreAccessScope accessScope;
 
     @Override
+    public DataStoreAccessScope getAccessScope() {
+        return accessScope != null ? accessScope : DataStoreAccessScope.encryption();
+    }
+
+    @Override
     public String toSummary() {
         var selected = getSelected();
         if (selected.isPresent()) {

@@ -167,7 +167,7 @@ public interface StoreEntryBadge {
             return null;
         }
 
-        return of("mdi2c-console", s).withCopyAction();
+        return of("mdi2c-console", s);
     }
 
     static StoreEntryBadge ofKey(String s) {

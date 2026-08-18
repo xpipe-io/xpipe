@@ -107,7 +107,7 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
                         return new LabelGraphic.IconGraphic("mdomz-settings");
                     }
 
-                    if (!DataStorage.get().supportsSync()
+                    if (!DataStorage.get().syncEnabled()
                             || (!category.getCategory().canShare())) {
                         return new LabelGraphic.IconGraphic("mdi2g-git");
                     }
@@ -155,7 +155,7 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
         var dragOver = new SimpleBooleanProperty();
         var dragIntoIndicator = createDragIntoIndicator(dragOver);
 
-        var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().supportsSync()))
+        var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().syncEnabled()))
                 .or(showing)
                 .or(focus);
         var h = new HorizontalComp(List.of(

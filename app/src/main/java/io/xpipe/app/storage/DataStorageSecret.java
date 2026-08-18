@@ -207,6 +207,10 @@ public class DataStorageSecret {
             newEntries.add(newEntry);
         }
 
+        if (newEntries.equals(entries)) {
+            return this;
+        }
+
         return new DataStorageSecret(newEntries, secret);
     }
 

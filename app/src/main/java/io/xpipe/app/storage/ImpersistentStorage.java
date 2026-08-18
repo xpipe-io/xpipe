@@ -48,10 +48,10 @@ public class ImpersistentStorage extends DataStorage {
     public void saveAsync() {}
 
     @Override
-    public synchronized void save(boolean dispose) {}
+    public synchronized void save(boolean dispose, boolean forceSync) {}
 
     @Override
-    public boolean supportsSync() {
+    public boolean syncEnabled() {
         return false;
     }
 

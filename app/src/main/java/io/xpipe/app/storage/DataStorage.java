@@ -132,7 +132,7 @@ public abstract class DataStorage {
     }
 
     private void dispose() {
-        save(true);
+        save(true, true);
         var finalizing = false;
         for (DataStoreEntry entry : getStoreEntries()) {
             // Prevent blocking of shutdown
@@ -202,7 +202,7 @@ public abstract class DataStorage {
             localIdentities.get().setParentCategory(ALL_IDENTITIES_CATEGORY_UUID);
         }
 
-        if (supportsSync()) {
+        if (syncEnabled()) {
             var sharedIdentities = getStoreCategoryIfPresent(SYNCED_IDENTITIES_CATEGORY_UUID);
             if (sharedIdentities.isEmpty()) {
                 var cat = DataStoreCategory.createNew(
@@ -267,9 +267,9 @@ public abstract class DataStorage {
 
     public abstract void saveAsync();
 
-    public abstract void save(boolean dispose);
+    public abstract void save(boolean dispose, boolean forceSync);
 
-    public abstract boolean supportsSync();
+    public abstract boolean syncEnabled();
 
     public boolean shouldSync(DataStoreCategory category) {
         // Don't sync lone identities category

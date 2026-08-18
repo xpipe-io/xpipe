@@ -1,14 +1,18 @@
 package io.xpipe.ext.base.identity;
 
+import io.xpipe.app.beacon.BeaconAuthMethod;
 import io.xpipe.app.identity.NoIdentityStrategy;
 import io.xpipe.app.identity.SshIdentityStrategy;
 import io.xpipe.app.identity.UsernameStrategy;
 import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.SecretNoneStrategy;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
+import io.xpipe.app.storage.DataStoreAccessScope;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.store.AccessScopeStore;
+import io.xpipe.app.store.DataStore;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
@@ -23,11 +27,25 @@ import java.util.List;
 @Value
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class LocalIdentityStore extends IdentityStore {
+public class LocalIdentityStore extends IdentityStore implements AccessScopeStore {
 
     String username;
     EncryptedValue<SecretRetrievalStrategy> password;
     EncryptedValue<SshIdentityStrategy> sshIdentity;
+
+    @Override
+    public DataStoreAccessScope getAccessScope() {
+        return DataStoreAccessScope.encryption();
+    }
+
+    @Override
+    public DataStore withUpdatedPrincipals() {
+        return LocalIdentityStore.builder()
+                .username(username)
+                .password(password != null ? password.withUpdatedPrincipals() : null)
+                .sshIdentity(sshIdentity != null ? sshIdentity.withUpdatedPrincipals() : null)
+                .build();
+    }
 
     @Override
     public String toSummary() {

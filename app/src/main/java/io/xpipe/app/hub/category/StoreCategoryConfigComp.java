@@ -86,7 +86,7 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
         var options = new OptionsBuilder();
 
         var specialCategorySync = !wrapper.getCategory().canShare();
-        var syncDisable = !DataStorage.get().supportsSync()
+        var syncDisable = !DataStorage.get().syncEnabled()
                 || ((sync.getValue() == null || !sync.getValue())
                         && !wrapper.getCategory().canShare());
         options.title("sync")

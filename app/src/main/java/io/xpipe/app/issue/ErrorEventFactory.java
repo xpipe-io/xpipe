@@ -6,6 +6,7 @@ import io.xpipe.app.util.OsType;
 
 import java.nio.file.AccessDeniedException;
 import java.nio.file.FileSystemException;
+import java.nio.file.InvalidPathException;
 import java.nio.file.NoSuchFileException;
 import java.util.*;
 
@@ -112,6 +113,10 @@ public class ErrorEventFactory {
         if (t instanceof NoSuchFileException nsfe) {
             b.description("No such file: " + nsfe.getMessage());
             b.expected();
+        }
+
+        if (t instanceof InvalidPathException ipe) {
+            b.description("Invalid file path: " + ipe.getMessage());
         }
 
         return b;

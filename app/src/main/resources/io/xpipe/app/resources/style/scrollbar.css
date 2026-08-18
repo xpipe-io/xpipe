@@ -39,9 +39,9 @@ the calculation of the default scrollbar skin.
 
 Without this, the min height will be too small
  */
-.root .scroll-bar >.decrement-button >.decrement-arrow {
+.root .scroll-bar:vertical >.decrement-button >.decrement-arrow {
     -fx-padding: 0 3 0 4;
 }
-.root .scroll-bar >.increment-button >.increment-arrow {
+.root .scroll-bar:vertical >.increment-button >.increment-arrow {
     -fx-padding: 0 3 0 4;
 }

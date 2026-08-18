@@ -70,15 +70,17 @@ public class DataStoreEntryNode<T> {
             return null;
         }
 
-        var scope = entry.getAccessScope();
-        var shouldEncrypt = (encryptIfRestricted && scope.isAccessRestricted())
+        var currentScope = enc.getSecret() != null ? enc.getSecret().getScope() : DataStoreAccessScope.vault();
+        var targetScope = DataStoreAccessScope.getTargetScope(entry.getAccessScope());
+
+        var shouldEncrypt = (encryptIfRestricted && targetScope.isAccessRestricted())
                 || AppPrefs.get().encryptAllVaultData().get();
         var encryptionChange = shouldEncrypt && !enc.isEncrypted() || !shouldEncrypt && enc.isEncrypted();
-        var scopeTargetChange = !DataStoreAccessScope.getTargetScope(scope).equals(scope);
+        var scopeTargetChange = !targetScope.equals(currentScope);
         var valueChange = !getValue().equals(newValue);
         if (encryptionChange || valueChange || scopeTargetChange) {
             return new DataStoreEntryNode<>(
-                    shouldEncrypt ? EncryptedValue.of(newValue, scope) : EncryptedValue.ofRaw(newValue), false);
+                    shouldEncrypt ? EncryptedValue.of(newValue, targetScope) : EncryptedValue.ofRaw(newValue), false);
         } else {
             return this;
         }
@@ -99,25 +101,27 @@ public class DataStoreEntryNode<T> {
         }
 
         if (getValue() instanceof AccessScopeStore s
-                && (s.getAccessScope() == null || !s.getAccessScope().isAccessible())) {
+                && !s.getAccessScope().isAccessible()) {
             return this;
         }
 
         T newValue = getValue() instanceof AccessScopeStore s ? (T) s.withUpdatedPrincipals() : getValue();
         if (newValue instanceof AccessScopeStore s
-                && (s.getAccessScope() == null || !s.getAccessScope().isAccessible())) {
+                && !s.getAccessScope().isAccessible()) {
             return this;
         }
 
-        var scope = entry.getAccessScope();
-        var shouldEncrypt = (encryptIfRestricted && scope.isAccessRestricted())
+        var currentScope = enc.getSecret() != null ? enc.getSecret().getScope() : DataStoreAccessScope.vault();
+        var targetScope = DataStoreAccessScope.getTargetScope(entry.getAccessScope());
+
+        var shouldEncrypt = (encryptIfRestricted && targetScope.isAccessRestricted())
                 || AppPrefs.get().encryptAllVaultData().get();
         var encryptionChange = shouldEncrypt && !enc.isEncrypted() || !shouldEncrypt && enc.isEncrypted();
-        var scopeTargetChange = !DataStoreAccessScope.getTargetScope(scope).equals(scope);
+        var scopeTargetChange = !targetScope.equals(currentScope);
         var valueChange = !getValue().equals(newValue);
         if (encryptionChange || scopeTargetChange || valueChange) {
             return new DataStoreEntryNode<>(
-                    shouldEncrypt ? EncryptedValue.of(newValue, scope) : EncryptedValue.ofRaw(newValue), false);
+                    shouldEncrypt ? EncryptedValue.of(newValue, targetScope) : EncryptedValue.ofRaw(newValue), false);
         } else {
             return this;
         }

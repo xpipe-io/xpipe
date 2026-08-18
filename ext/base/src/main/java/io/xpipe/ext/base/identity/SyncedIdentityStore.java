@@ -32,11 +32,14 @@ import java.util.List;
 public class SyncedIdentityStore extends IdentityStore implements AccessScopeStore {
 
     String username;
-    // We can encrypt it with only the vault key as
-    // per user stores are additionally encrypted on the entry level
     EncryptedValue<SecretRetrievalStrategy> password;
     EncryptedValue<SshIdentityStrategy> sshIdentity;
     DataStoreAccessScope accessScope;
+
+    @Override
+    public DataStoreAccessScope getAccessScope() {
+        return accessScope != null ? accessScope : DataStoreAccessScope.encryption();
+    }
 
     @Override
     public String toSummary() {

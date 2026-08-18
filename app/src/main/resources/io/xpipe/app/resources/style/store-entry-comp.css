@@ -298,7 +298,14 @@
     -fx-background-radius: 4;
     -fx-font-size: 1.0em;
     -fx-padding: 2 5 2 5;
-    -fx-background-color: -color-bg-default-transparent;
+}
+
+.root:light .store-entry-badge {
+    -fx-background-color: derive(-color-bg-default-transparent, -5%);
+}
+
+.root:dark .store-entry-badge {
+    -fx-background-color: derive(-color-bg-default-transparent, 5%);
 }
 
 .store-entry-badge:focused {

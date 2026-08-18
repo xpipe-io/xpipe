@@ -77,7 +77,7 @@ public class IdentityChoiceBuilder {
 
     private void addSyncCheckListener() {
         identity.addListener((observable, oldValue, newValue) -> {
-            if (DataStorage.get().supportsSync()
+            if (DataStorage.get().syncEnabled()
                     && syncedBase.getValue()
                     && newValue instanceof IdentityValue.Ref r
                     && r.unwrap() instanceof LocalIdentityStore) {

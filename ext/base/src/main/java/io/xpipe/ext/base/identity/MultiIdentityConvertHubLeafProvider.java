@@ -31,7 +31,7 @@ public class MultiIdentityConvertHubLeafProvider implements HubLeafProvider<Mult
 
     @Override
     public boolean isApplicable(DataStoreEntryRef<MultiIdentityStore> o) {
-        return DataStorage.get().supportsSync()
+        return DataStorage.get().syncEnabled()
                 && o.getStore().areAnyChildrenLocal()
                 && o.getStore().areAllIdentitiesAccessible()
                 && !o.getStore().hasNestedMultiIdentities();

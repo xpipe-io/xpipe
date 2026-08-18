@@ -33,7 +33,7 @@ public class SyncConfigHubLeafProvider implements HubLeafProvider<SyncConfigStor
 
     @Override
     public boolean isApplicable(DataStoreEntryRef<SyncConfigStore> o) {
-        return DataStorage.get().supportsSync() && !o.get().getProvider().isSyncable(o.get());
+        return DataStorage.get().syncEnabled() && !o.get().getProvider().isSyncable(o.get());
     }
 
     @Override

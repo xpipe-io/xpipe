@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,6 +15,14 @@ import java.util.stream.Collectors;
 @Getter
 @ToString
 public class DataStoreAccessScope {
+
+    public static DataStoreAccessScope merge(List<DataStoreAccessScope> scopes) {
+        var matching = DataStorageAccessHandler.getInstance().getAllEncryptionPrincipals().stream()
+                .filter(encryptionPrincipal -> {
+            return scopes.stream().allMatch(s -> s.getPrincipals().contains(encryptionPrincipal));
+        }).collect(Collectors.toSet());
+        return !matching.isEmpty() ? of(matching) : DataStoreAccessScope.of(Set.of(EncryptionPrincipal.inaccessible()));
+    }
 
     public static DataStoreAccessScope getTargetScope(DataStoreAccessScope scope) {
         var newPrincipals = scope.getPrincipals().stream()
@@ -30,11 +39,6 @@ public class DataStoreAccessScope {
     public static DataStoreAccessScope encryption() {
         return new DataStoreAccessScope(
                 Set.of(DataStorageAccessHandler.getInstance().getEncryptAllPrincipal()));
-    }
-
-    public static DataStoreAccessScope current() {
-        var handler = DataStorageAccessHandler.getInstance();
-        return new DataStoreAccessScope(handler.getCurrentEncryptionPrincipals());
     }
 
     public static DataStoreAccessScope of(Set<EncryptionPrincipal> encryptionPrincipals) {

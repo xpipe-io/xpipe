@@ -370,8 +370,7 @@ public class DataStoreEntry extends DataStorageElement {
         }
 
         // Check whether we need to write the node due to external changes
-        var scope = store instanceof AccessScopeStore s && s.getAccessScope() != null
-                ? s.getAccessScope()
+        var scope = store instanceof AccessScopeStore s ? s.getAccessScope()
                 : DataStoreAccessScope.encryption();
         var shouldEncrypt = (encryptIfRestricted && scope.isAccessRestricted())
                 || AppPrefs.get().encryptAllVaultData().get();
@@ -425,7 +424,7 @@ public class DataStoreEntry extends DataStorageElement {
 
     public DataStoreAccessScope getAccessScope() {
         try {
-            if (getStore() instanceof AccessScopeStore s && s.getAccessScope() != null) {
+            if (getStore() instanceof AccessScopeStore s) {
                 return s.getAccessScope();
             }
         } catch (Exception ignored) {
@@ -768,7 +767,7 @@ public class DataStoreEntry extends DataStorageElement {
 
         DataStoreAccessScope newAccessScope = null;
         try {
-            if (newStore instanceof AccessScopeStore u && u.getAccessScope() != null) {
+            if (newStore instanceof AccessScopeStore u) {
                 newAccessScope = u.getAccessScope();
             }
         } catch (Exception ignored) {
