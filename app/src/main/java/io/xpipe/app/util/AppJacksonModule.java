@@ -160,13 +160,13 @@ public class AppJacksonModule extends SimpleModule {
                 return InPlaceSecretValue.of(tree.stringValue());
             }
 
-            var type = tree.get("type");
-            if (type == null || !type.asString().equals("internal")) {
+            var enc = tree.get("encryptedValue");
+            if (enc == null) {
                 return null;
             }
 
-            var enc = tree.get("encryptedValue");
-            if (enc == null) {
+            var type = tree.get("type");
+            if (type != null && !type.asString().equals("internal")) {
                 return null;
             }
 
