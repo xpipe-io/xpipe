@@ -126,7 +126,12 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
             return;
         }
 
-        StoreCreationDialog.showEdit(id.get(), id.get().getStore(), true, false, ignored -> {});
+        StoreCreationDialog.showEdit(id.get(), id.get().getStore(), true, false, ignored -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                selectedReference.set(null);
+                selectedReference.set(id);
+            });
+        });
     }
 
     @Override

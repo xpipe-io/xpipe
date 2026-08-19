@@ -13,6 +13,7 @@ import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
@@ -70,19 +71,26 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
 
     @Override
     protected Region createSimple() {
+        var empty = new SimpleBooleanProperty(true);
+        busy.subscribe(v -> {
+            if (empty.get() && SystemIconManager.hasLoadedAnyImages()) {
+                empty.set(false);
+            }
+        });
+
         var table = new TableView<List<SystemIcon>>();
         table.visibleProperty().bind(PlatformThread.sync(busy.not()));
         initTable(table);
         filter.addListener((observable, oldValue, newValue) -> updateData(table, newValue));
         busy.addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) {
+            if (oldValue && !newValue && !empty.get()) {
                 PlatformThread.runLaterIfNeeded(() -> {
                     updateData(table, filter.getValue());
                 });
             }
         });
 
-        var loading = createLoadingPane();
+        var loading = createLoadingPane(empty);
         var stack = new StackPane();
         stack.getChildren().addAll(table, loading);
 
@@ -118,12 +126,7 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
         }
     }
 
-    private Region createLoadingPane() {
-        var empty = new SimpleBooleanProperty(!SystemIconManager.hasLoadedAnyImages());
-        busy.addListener((observable, oldValue, newValue) -> {
-            empty.set(false);
-        });
-
+    private Region createLoadingPane(ObservableBooleanValue empty) {
         var refreshButton = new ButtonComp(
                 Bindings.createStringBinding(
                         () -> {
@@ -149,7 +152,7 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
 
         var text = new LabelComp(Bindings.createStringBinding(
                 () -> {
-                    return empty.get()
+                    return empty.get() && !busy.get()
                             ? AppI18n.get("refreshIconsIntroDescription")
                             : AppI18n.get("refreshIconsDescription");
                 },

@@ -18,6 +18,7 @@ import io.xpipe.app.platform.*;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.store.DataStoreCreationCategory;
 import io.xpipe.app.util.*;
 
 import javafx.beans.binding.Bindings;
@@ -269,7 +270,8 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
     protected BaseRegionBuilder<?, ?> createScopeIcon() {
         var button = new IconButtonComp("mdi2a-account");
         button.style("user-icon");
-        button.describe(d -> d.nameKey("restrictedConnection"));
+        var identity = getWrapper().getEntry().getProvider() != null && getWrapper().getEntry().getProvider().getCreationCategory() == DataStoreCreationCategory.IDENTITY;
+        button.describe(d -> d.nameKey(identity ? "restrictedIdentity" : "restrictedConnection"));
         button.apply(struc -> {
             AppFontSizes.base(struc);
         });

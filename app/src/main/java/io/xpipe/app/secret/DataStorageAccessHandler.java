@@ -28,6 +28,8 @@ public interface DataStorageAccessHandler {
 
     Optional<EncryptionPrincipal> getEncryptionPrincipal(UUID uuid);
 
+    Optional<EncryptionPrincipal> getEncryptionPrincipal(String name);
+
     Set<EncryptionPrincipal> getCurrentEncryptionPrincipals();
 
     Set<EncryptionPrincipal> getAllEncryptionPrincipals();
