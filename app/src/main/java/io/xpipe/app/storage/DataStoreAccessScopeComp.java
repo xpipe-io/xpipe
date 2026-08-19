@@ -57,9 +57,10 @@ public class DataStoreAccessScopeComp extends SimpleRegionBuilder {
         allPrincipals.removeIf(
                 encryptionPrincipal -> encryptionPrincipal.getName().equals("vault"));
         allPrincipals.remove(handler.getEncryptAllPrincipal());
+        allPrincipals.sort(Comparator.comparing(encryptionPrincipal -> encryptionPrincipal.getName()));
 
         var selectedPrincipals = FXCollections.observableArrayList(
-                scope.getValue().isAccessRestricted() ? scope.getValue().getPrincipals() : List.of());
+                scope.getValue().isAccessSubRestricted() ? scope.getValue().getPrincipals() : List.of());
         selectedPrincipals.addListener((ListChangeListener<? super EncryptionPrincipal>) c -> {
             if (selectedPrincipals.isEmpty()) {
                 scope.setValue(DataStoreAccessScope.encryption());

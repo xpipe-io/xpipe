@@ -34,6 +34,7 @@ import atlantafx.base.util.Animations;
 import net.synedra.validatorfx.GraphicDecorationStackPane;
 
 import java.time.Instant;
+import java.util.function.Consumer;
 
 public class ModalOverlayComp extends RegionBuilder<Region> {
 
@@ -321,8 +322,8 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
         if (mb.isDefaultButton()) {
             button.getStyleClass().add(Styles.ACCENT);
         }
-        if (mb.getAugment() != null) {
-            mb.getAugment().accept(button);
+        for (Consumer<Button> augment : mb.getAugments()) {
+            augment.accept(button);
         }
         button.managedProperty().bind(button.visibleProperty());
         button.setOnAction(event -> {

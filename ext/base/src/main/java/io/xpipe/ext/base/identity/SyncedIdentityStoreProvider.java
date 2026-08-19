@@ -1,7 +1,6 @@
 package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.hub.creation.StoreCreationModel;
 import io.xpipe.app.hub.entry.StoreEntryWrapper;
 import io.xpipe.app.identity.KeyFileStrategy;
@@ -130,7 +129,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
 
     @Override
     public String summaryString(StoreEntryWrapper wrapper) {
-        if (!wrapper.getEntry().getAccessScope().isAccessRestricted()) {
+        if (!wrapper.getEntry().getAccessScope().isAccessSubRestricted()) {
             return AppI18n.get("globalIdentity");
         }
 

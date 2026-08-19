@@ -370,12 +370,15 @@ public class DataStoreEntry extends DataStorageElement {
         }
 
         // Check whether we need to write the node due to external changes
-        var scope = store instanceof AccessScopeStore s ? s.getAccessScope()
+
+        var currentScope = store instanceof AccessScopeStore s ? s.getAccessScope()
                 : DataStoreAccessScope.encryption();
-        var shouldEncrypt = (encryptIfRestricted && scope.isAccessRestricted())
+        var targetScope = DataStoreAccessScope.getTargetScope(currentScope);
+
+        var shouldEncrypt = (encryptIfRestricted && currentScope.isAccessSubRestricted())
                 || AppPrefs.get().encryptAllVaultData().get();
         var encryptionChange = shouldEncrypt && !node.isEncrypted() || !shouldEncrypt && node.isEncrypted();
-        var scopeTargetChange = !DataStoreAccessScope.getTargetScope(scope).equals(scope);
+        var scopeTargetChange = !targetScope.equals(currentScope);
         return encryptionChange || scopeTargetChange;
     }
 
@@ -787,6 +790,17 @@ public class DataStoreEntry extends DataStorageElement {
 
     public void refreshStoreEncryption() {
         if (storeNode == null) {
+            return;
+        }
+
+        var newStore = getStore() instanceof AccessScopeStore s ? s.withUpdatedPrincipals() : getStore();
+        var changedStore = !Objects.equals(getStore(), newStore);
+        if (changedStore) {
+            // This will take care of the encryption change for the node
+            // we don't have to do this further down below
+            storeNode = DataStoreEntryNode.of(newStore);
+            dirty = true;
+            notifyUpdate(false, false);
             return;
         }
 

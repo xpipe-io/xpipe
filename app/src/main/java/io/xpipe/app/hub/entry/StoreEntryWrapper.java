@@ -200,7 +200,7 @@ public class StoreEntryWrapper {
                 .findFirst()
                 .orElse(StoreViewState.get().getAllConnectionsCategory());
         category.setValue(newCat);
-        accessScopeRestricted.setValue(entry.getAccessScope().isAccessRestricted());
+        accessScopeRestricted.setValue(entry.getAccessScope().isAccessSubRestricted());
         pinToTop.setValue(entry.isPinToTop());
 
         var orderedTags = entry.getTags().stream().sorted().toList();

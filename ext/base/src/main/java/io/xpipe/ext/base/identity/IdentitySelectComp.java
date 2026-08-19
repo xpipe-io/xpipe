@@ -174,7 +174,7 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
                 : id.getClass().getSimpleName().equals("PasswordManagerIdentityStore")
                         ? AppI18n.get("passwordManagerIdentity")
                         : id instanceof SyncedIdentityStore
-                                        && storeEntry.getAccessScope().isAccessRestricted()
+                                        && storeEntry.getAccessScope().isAccessSubRestricted()
                                 ? (DataStorageAccessHandler.getInstance().getType() == DataStorageAccessType.ROLE
                                         ? AppI18n.get("roleIdentity")
                                         : AppI18n.get("userIdentity"))

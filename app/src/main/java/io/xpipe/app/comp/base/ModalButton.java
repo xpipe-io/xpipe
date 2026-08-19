@@ -1,13 +1,19 @@
 package io.xpipe.app.comp.base;
 
+import io.xpipe.app.core.AppFontSizes;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.mode.AppOperationMode;
 
+import io.xpipe.app.platform.PlatformThread;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Button;
 
 import lombok.Value;
-import lombok.experimental.NonFinal;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 @Value
@@ -16,9 +22,7 @@ public class ModalButton {
     Runnable action;
     boolean close;
     boolean defaultButton;
-
-    @NonFinal
-    Consumer<Button> augment;
+    List<Consumer<Button>> augments = new ArrayList<>();
 
     public ModalButton(String key, Runnable action, boolean close, boolean defaultButton) {
         this.key = key;
@@ -68,7 +72,35 @@ public class ModalButton {
     }
 
     public ModalButton augment(Consumer<Button> augment) {
-        this.augment = augment;
+        this.augments.add(augment);
         return this;
+    }
+
+    public ModalButton loadingIndicator(ObservableValue<Boolean> busy) {
+        return augment(button -> {
+            button.graphicProperty()
+                    .bind(Bindings.createObjectBinding(
+                            () -> {
+                                return busy.getValue()
+                                        ? new LoadingIconComp(busy, AppFontSizes::base)
+                                          .style("busy-loading-icon")
+                                          .build()
+                                        : null;
+                            },
+                            PlatformThread.sync(busy)));
+            button.textProperty()
+                    .bind(Bindings.createStringBinding(
+                            () -> {
+                                return !busy.getValue() ? AppI18n.get(key) : null;
+                            },
+                            PlatformThread.sync(busy),
+                            AppI18n.activeLanguage()));
+        });
+    }
+
+    public ModalButton disable(ObservableValue<Boolean> b) {
+        return augment(button -> {
+            button.disableProperty().bind(PlatformThread.sync(b));
+        });
     }
 }

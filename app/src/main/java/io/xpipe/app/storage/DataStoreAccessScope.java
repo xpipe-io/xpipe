@@ -17,9 +17,14 @@ import java.util.stream.Collectors;
 public class DataStoreAccessScope {
 
     public static DataStoreAccessScope merge(List<DataStoreAccessScope> scopes) {
+        var effectiveScopes = scopes.stream().filter(s -> !s.equals(vault())).collect(Collectors.toSet());
+        if (effectiveScopes.isEmpty()) {
+            return DataStoreAccessScope.vault();
+        }
+
         var matching = DataStorageAccessHandler.getInstance().getAllEncryptionPrincipals().stream()
                 .filter(encryptionPrincipal -> {
-            return scopes.stream().allMatch(s -> s.getPrincipals().contains(encryptionPrincipal));
+            return effectiveScopes.stream().allMatch(s -> s.getPrincipals().contains(encryptionPrincipal));
         }).collect(Collectors.toSet());
         return !matching.isEmpty() ? of(matching) : DataStoreAccessScope.of(Set.of(EncryptionPrincipal.inaccessible()));
     }
@@ -55,7 +60,7 @@ public class DataStoreAccessScope {
         this.principals = principals;
     }
 
-    public boolean isAccessRestricted() {
+    public boolean isAccessSubRestricted() {
         var all = this.equals(encryption()) || this.equals(vault());
         return !all;
     }
