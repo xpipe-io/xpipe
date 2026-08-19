@@ -33,8 +33,12 @@ public class FsReadExchange extends BeaconInterface<FsReadExchange.Request> {
         var shell = AppBeaconServer.get().getCache().getShellSession(msg.getStore());
         var fs = new ShellFileSystem(shell.getControl());
 
+        if (!msg.getPath().isAbsolute()) {
+            throw new BeaconClientException("File path " + msg.getPath() + " is not absolute");
+        }
+
         if (!fs.fileExists(msg.getPath())) {
-            throw new BeaconClientException("File does not exist");
+            throw new BeaconClientException("File " + msg.getPath() + " does not exist");
         }
 
         var size = fs.getFileSize(msg.getPath());

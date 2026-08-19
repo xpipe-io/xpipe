@@ -162,7 +162,6 @@ public class ScriptStoreProvider implements DataStoreProvider {
                                     return ScriptStore.builder()
                                             .textSource(textSource.get())
                                             .scripts(new ArrayList<>(others.get()))
-                                            .description(st.getDescription())
                                             .initScript(selectedExecTypes.contains(0))
                                             .runnableScript(selectedExecTypes.contains(1))
                                             .fileScript(selectedExecTypes.contains(2))

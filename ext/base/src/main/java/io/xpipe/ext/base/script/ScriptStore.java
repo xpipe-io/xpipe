@@ -31,8 +31,6 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
     @Singular
     List<DataStoreEntryRef<ScriptStore>> scripts;
 
-    String description;
-
     ScriptTextSource textSource;
     boolean initScript;
     boolean shellScript;

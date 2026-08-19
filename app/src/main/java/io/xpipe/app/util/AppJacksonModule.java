@@ -23,6 +23,7 @@ import tools.jackson.core.JsonParser;
 import tools.jackson.core.TokenStreamLocation;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.*;
+import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.annotation.JsonSerialize;
 import tools.jackson.databind.jsontype.NamedType;
 import tools.jackson.databind.jsontype.TypeDeserializer;
@@ -32,6 +33,7 @@ import tools.jackson.databind.module.SimpleModule;
 import tools.jackson.databind.node.JsonNodeFactory;
 
 import java.io.CharArrayReader;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -69,6 +71,9 @@ public class AppJacksonModule extends SimpleModule {
         registerSubtypes(ExternalRdpClient.getClasses());
         registerSubtypes(ExternalSpiceClient.getClasses());
         registerSubtypes(SecretRetrievalStrategy.getClasses());
+
+        addSerializer(InPlaceSecretValue.class, new InPlaceSecretValueSerializer());
+        addDeserializer(InPlaceSecretValue.class, new InPlaceSecretValueDeserializer());
 
         addSerializer(DataStoreEntryRef.class, new DataStoreEntryRefSerializer());
         addDeserializer(DataStoreEntryRef.class, new DataStoreEntryRefDeserializer());
@@ -116,6 +121,57 @@ public class AppJacksonModule extends SimpleModule {
         setMixInAnnotation(Throwable.class, ThrowableTypeMixIn.class);
 
         super.setupModule(context);
+    }
+
+    public static class InPlaceSecretValueSerializer extends ValueSerializer<InPlaceSecretValue> {
+
+        @Override
+        public void serializeWithType(InPlaceSecretValue value, JsonGenerator gen, SerializationContext ctxt, TypeSerializer typeSer) throws
+                JacksonException {
+            serialize(value, gen, ctxt);
+        }
+
+        @Override
+        public void serialize(InPlaceSecretValue value, JsonGenerator jgen, SerializationContext context) {
+            if (value == null) {
+                jgen.writeNull();
+                return;
+            }
+
+            var tree = JsonNodeFactory.instance.objectNode();
+            tree.put("type", "internal");
+            tree.put("encryptedValue", value.getEncryptedValue());
+            jgen.writeTree(tree);
+        }
+    }
+
+    public static class InPlaceSecretValueDeserializer extends ValueDeserializer<InPlaceSecretValue> {
+
+        @Override
+        public Object deserializeWithType(JsonParser p, DeserializationContext ctxt, TypeDeserializer typeDeserializer) throws JacksonException {
+            return deserialize(p, ctxt);
+        }
+
+        @Override
+        public InPlaceSecretValue deserialize(JsonParser p, DeserializationContext ctxt) throws
+                JacksonException {
+            JsonNode tree = JacksonMapper.getDefault().readTree(p);
+            if (tree.isString()) {
+                return InPlaceSecretValue.of(tree.stringValue());
+            }
+
+            var type = tree.get("type");
+            if (type == null || !type.asString().equals("internal")) {
+                return null;
+            }
+
+            var enc = tree.get("encryptedValue");
+            if (enc == null) {
+                return null;
+            }
+
+            return InPlaceSecretValue.builder().encryptedValue(enc.stringValue()).build();
+        }
     }
 
     public static class EncryptionTokenSerializer extends ValueSerializer<EncryptionToken> {
