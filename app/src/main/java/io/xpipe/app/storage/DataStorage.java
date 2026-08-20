@@ -651,6 +651,13 @@ public abstract class DataStorage {
     }
 
     public void setPinToTop(DataStoreEntry entry, boolean value) {
+        if (value) {
+            var hasParent = getDefaultDisplayParent(entry).isPresent();
+            if (!hasParent) {
+                return;
+            }
+        }
+
         entry.setPinToTop(value);
         listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
         saveAsync();
