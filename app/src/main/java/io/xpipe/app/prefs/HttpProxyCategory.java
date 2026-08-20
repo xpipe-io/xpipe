@@ -92,8 +92,19 @@ public class HttpProxyCategory extends AppPrefsCategory {
                                 DesktopHelper.browseFile(AppCertStore.getDir());
                             });
                         }))
+                        .pref(prefs.noProxyList)
+                        .addComp(new TextAreaComp(prefs.noProxyList)
+                                .applyStructure(structure -> {
+                                    structure.getTextArea().setPromptText("""
+                            my.domain
+                            *.example.com
+                            
+                            """);
+                                })
+                                .maxWidth(600), prefs.noProxyList)
                         .pref(prefs.disableHttpsTlsCheck)
-                        .addToggle(prefs.disableHttpsTlsCheck))
+                        .addToggle(prefs.disableHttpsTlsCheck)
+                )
                 .buildComp();
     }
 

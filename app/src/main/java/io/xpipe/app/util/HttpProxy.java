@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppCertStore;
 import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
@@ -17,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Value
 @Builder
@@ -61,6 +63,19 @@ public class HttpProxy {
         // Use HTTP protocol as well here as most proxies still require that
         map.put("https_proxy", http);
         map.put("HTTPS_PROXY", http);
+
+        AppCertStore.getBundleFile().ifPresent(bundleFile -> {
+            map.put("ssl_cert_file", bundleFile.toString());
+            map.put("SSL_CERT_FILE", bundleFile.toString());
+        });
+
+        var np = AppPrefs.get().noProxyList().getValue();
+        if (np != null && !np.isEmpty()) {
+            var val = np.lines().collect(Collectors.joining(","));
+            map.put("no_proxy", val);
+            map.put("NO_PROXY", val);
+        }
+
         return map;
     }
 

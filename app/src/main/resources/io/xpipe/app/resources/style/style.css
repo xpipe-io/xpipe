@@ -249,6 +249,10 @@
     -fx-prompt-text-fill: -color-fg-subtle;
 }
 
+.text-area:focused {
+    -fx-prompt-text-fill: -color-fg-subtle;
+}
+
 .agent-socket-choice:disabled .text-field {
     -fx-opacity: 1.0;
 }

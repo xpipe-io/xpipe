@@ -276,6 +276,12 @@ public final class AppPrefs {
             .valueClass(HttpProxy.class)
             .requiresRestart(true)
             .build());
+    final ObjectProperty<String> noProxyList = map(Mapping.builder()
+            .property(new GlobalObjectProperty<>())
+            .key("noProxy")
+            .valueClass(String.class)
+            .requiresRestart(true)
+            .build());
     final Property<UUID> terminalProxy = map(Mapping.builder()
             .property(new GlobalObjectProperty<>())
             .key("terminalProxy")
@@ -593,6 +599,10 @@ public final class AppPrefs {
 
     public ObservableValue<HttpProxy> httpProxy() {
         return httpProxy;
+    }
+
+    public ObservableValue<String> noProxyList() {
+        return noProxyList;
     }
 
     public ObservableBooleanValue disableApiAuthentication() {
