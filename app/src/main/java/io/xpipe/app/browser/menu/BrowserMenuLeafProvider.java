@@ -8,6 +8,7 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.comp.RegionDescriptor;
 import io.xpipe.app.hub.action.StoreAction;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
 import javafx.scene.control.Button;
@@ -88,7 +89,9 @@ public interface BrowserMenuLeafProvider extends BrowserMenuItemProvider {
 
         b.setDisable(!isActive(model));
         model.getCurrentPath().addListener((observable, oldValue, newValue) -> {
-            b.setDisable(!isActive(model));
+            PlatformThread.runLaterIfNeeded(() -> {
+                b.setDisable(!isActive(model));
+            });
         });
 
         return b;

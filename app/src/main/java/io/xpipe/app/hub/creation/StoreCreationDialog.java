@@ -264,7 +264,7 @@ public class StoreCreationDialog {
                             false))
                     .augment(button -> {
                         button.visibleProperty().bind(model.getSkippable());
-                        button.disableProperty().bind(model.getBusy());
+                        button.disableProperty().bind(PlatformThread.sync(model.getBusy()));
                     });
         }
 
