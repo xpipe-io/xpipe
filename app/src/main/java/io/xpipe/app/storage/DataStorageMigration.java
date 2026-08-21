@@ -37,7 +37,6 @@ public class DataStorageMigration {
 
     public static void showLegacyVaultMigrationErrorIfNeeded() {
         if (!requiresMigration) {
-            DataStorageMigratedDialog.show(false, false);
             return;
         }
 
