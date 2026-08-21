@@ -29,8 +29,8 @@ public class DataStorageMigratedDialog {
         if (temp && Files.exists(def.getDaemonExecutablePath())) {
             modal.addButton(new ModalButton("restart", () -> {
                 AppOperationMode.executeAfterShutdown(() -> {
-                    var cmd = CommandBuilder.of().addFile(def.getDaemonExecutablePath());
-                    ExternalApplicationHelper.startAsync(cmd);
+                    ExternalApplicationHelper.startAsync(CommandBuilder.of().addFile(def.getDaemonExecutablePath())
+                            .addQuoted("-Dio.xpipe.app.dataDir=" + AppProperties.get().getDataDir()));
                 });
             }, true, true));
         } else {
