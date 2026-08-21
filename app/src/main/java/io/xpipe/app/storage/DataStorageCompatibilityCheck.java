@@ -73,6 +73,7 @@ public class DataStorageCompatibilityCheck {
                 .documentationLink(DocumentationLink.MIGRATION)
                 .expected()
                 .handle();
+        AppOperationMode.halt(0);
     }
 
     private static void runTransitoryBuild() throws Exception {
@@ -82,6 +83,7 @@ public class DataStorageCompatibilityCheck {
         var shell = LocalShell.get(DataStorageCompatibilityCheck.class);
         switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> {
+                Files.createDirectories(tempTarget);
                 shell.command(CommandBuilder.of()
                         .add("tar", "-f")
                         .addFile(downloaded)
@@ -97,7 +99,7 @@ public class DataStorageCompatibilityCheck {
             }
             case OsType.MacOs ignored -> {
                 AppOperationMode.executeAfterShutdown(() -> {
-                    ExternalApplicationHelper.startAsync(CommandBuilder.of().add("open").addFile(tempTarget));
+                    ExternalApplicationHelper.startAsync(CommandBuilder.of().add("open").addFile(downloaded));
                 });
             }
             case OsType.Windows ignored -> {

@@ -61,7 +61,9 @@ public class SyncCategory extends AppPrefsCategory {
                                 ChoiceComp.ofTranslatable(prefs.syncMode, Arrays.asList(SyncMode.values()), false)
                                         .maxWidth(getCompWidth()),
                                 prefs.syncMode)
+                        .disable(prefs.storageGitRemote.isNull().or(prefs.enableGitStorage.not()))
                         .addComp(createManualControls())
+                        .disable(prefs.storageGitRemote.isNull().or(prefs.enableGitStorage.not()))
                         .hide(prefs.syncMode.isNotEqualTo(SyncMode.MANUAL).or(prefs.enableGitStorage.not()))
                         .nameAndDescription("browseVault")
                         .addComp(new ButtonComp(AppI18n.observable("browseVaultButton"), () -> {
