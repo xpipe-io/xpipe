@@ -21,9 +21,8 @@ import java.time.Duration;
 
 public class AppDownloads {
 
-    public static Path downloadInstaller(String version) throws Exception {
+    public static Path downloadInstaller(AppRelease release) throws Exception {
         try {
-            var release = AppRelease.of(version);
             var builder = HttpRequest.newBuilder();
             var httpRequest = builder.uri(URI.create(release.getUrl())).GET().build();
             var client = HttpHelper.client();
@@ -33,7 +32,7 @@ public class AppDownloads {
             var downloadFile = AppCache.getBasePath().resolve(release.getFile());
             Files.write(downloadFile, response.body());
             TrackEvent.withInfo("Downloaded asset")
-                    .tag("version", version)
+                    .tag("version", release.getTag())
                     .tag("url", release.getUrl())
                     .tag("size", FileUtils.byteCountToDisplaySize(response.body().length))
                     .tag("target", downloadFile)
@@ -116,7 +115,7 @@ public class AppDownloads {
                             Duration.ofSeconds(20));
                 }
             }
-            return AppRelease.of(ver);
+            return AppRelease.ofInstaller(ver);
         } catch (Exception e) {
             throw ErrorEventFactory.expected(e);
         }

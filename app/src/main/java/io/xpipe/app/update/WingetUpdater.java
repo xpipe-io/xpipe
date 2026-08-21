@@ -88,7 +88,7 @@ public class WingetUpdater extends UpdateHandler {
         var wingetRelease = getOutdatedPackageUpdateVersion();
         // Use current release if the update is not available for winget yet
         if (wingetRelease.isPresent() && !wingetRelease.get().equals(rel.getTag())) {
-            rel = AppRelease.of(AppProperties.get().getVersion());
+            rel = AppRelease.ofInstaller(AppProperties.get().getVersion());
         }
 
         var isUpdate = isUpdate(rel.getTag());

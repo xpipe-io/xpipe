@@ -14,7 +14,7 @@ public class AppRelease {
     String browserUrl;
     String file;
 
-    public static AppRelease of(String tag) {
+    public static AppRelease ofInstaller(String tag) {
         var type = AppInstaller.getSuitablePlatformAsset();
         var os =
                 switch (OsType.ofLocal()) {
@@ -24,6 +24,28 @@ public class AppRelease {
                 };
         var arch = AppProperties.get().getArch();
         var name = "xpipe-installer-%s-%s.%s".formatted(os, arch, type.getExtension());
+        var url = "https://github.com/xpipe-io/%s/releases/download/%s/%s"
+                .formatted(AppNames.ofCurrent().getKebapName(), tag, name);
+        var browser = "https://github.com/xpipe-io/%s/releases/%s"
+                .formatted(AppNames.ofCurrent().getKebapName(), tag);
+        return new AppRelease(tag, url, browser, name);
+    }
+
+    public static AppRelease ofPortable(String tag) {
+        var ext =
+                switch (OsType.ofLocal()) {
+                    case OsType.Linux ignored -> ".dmg";
+                    case OsType.MacOs ignored -> ".tar.gz";
+                    case OsType.Windows ignored -> ".zip";
+                };
+        var os =
+                switch (OsType.ofLocal()) {
+                    case OsType.Linux ignored -> "linux";
+                    case OsType.MacOs ignored -> "macos";
+                    case OsType.Windows ignored -> "windows";
+                };
+        var arch = AppProperties.get().getArch();
+        var name = "xpipe-portable-%s-%s.%s".formatted(os, arch, ext);
         var url = "https://github.com/xpipe-io/%s/releases/download/%s/%s"
                 .formatted(AppNames.ofCurrent().getKebapName(), tag, name);
         var browser = "https://github.com/xpipe-io/%s/releases/%s"

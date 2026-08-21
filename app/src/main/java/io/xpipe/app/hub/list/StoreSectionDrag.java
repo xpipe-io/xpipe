@@ -157,15 +157,16 @@ public class StoreSectionDrag {
                 && selection.stream().allMatch(wrapper -> wrapper.getPinToTop().get())) {
             var defParent = DataStorage.get()
                     .getDefaultDisplayParent(selection.getFirst().getEntry());
-            if (defParent.isPresent()
+            var allSameParent = selection.stream().allMatch(wrapper -> DataStorage.get()
+                    .getDefaultDisplayParent(wrapper.getEntry())
+                    .equals(defParent));
+            if (allSameParent && defParent.isPresent()
                     && parent.get().getWrapper() != null
                     && defParent.get().equals(parent.get().getEntry())) {
-                var allSameParent = selection.stream().allMatch(wrapper -> DataStorage.get()
-                        .getDefaultDisplayParent(wrapper.getEntry())
-                        .equals(defParent));
-                if (allSameParent) {
-                    return true;
-                }
+                return true;
+            } else if (allSameParent && defParent.isPresent()
+                    && defParent.get().equals(section.getWrapper().getEntry())) {
+                return true;
             }
         }
 
