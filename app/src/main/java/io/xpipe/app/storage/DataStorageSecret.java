@@ -61,7 +61,7 @@ public class DataStorageSecret {
                     continue;
                 }
 
-                if (uuidNode.asText().equals("be815152-05d2-4094-84d3-f0eea9200d5f")) {
+                if (!uuidNode.asText().equals("be815152-05d2-4094-84d3-f0eea9200d5f")) {
                     continue;
                 }
 

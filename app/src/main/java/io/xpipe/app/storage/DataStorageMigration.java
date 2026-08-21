@@ -37,7 +37,7 @@ public class DataStorageMigration {
 
     public static void showLegacyVaultMigrationErrorIfNeeded() {
         if (!requiresMigration) {
-            DataStorageMigratedDialog.show();
+            DataStorageMigratedDialog.show(false, false);
             return;
         }
 
@@ -113,6 +113,7 @@ public class DataStorageMigration {
             StoreViewState.get().getGlobalSortMode().setValue(StoreSectionSortMode.INDEX_DESC);
         });
 
-        DataStorageMigratedDialog.show();
+        var isTempPortable = System.getProperty("io.xpipe.app.portableMigration") != null;
+        DataStorageMigratedDialog.show(hasAuth, isTempPortable);
     }
 }

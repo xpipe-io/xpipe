@@ -258,7 +258,10 @@ public class DataStoreEntry extends StorageElement {
                 .orElse(null);
         var freeze = Optional.ofNullable(json.get("freeze"))
                 .map(jsonNode -> jsonNode.booleanValue())
-                .orElse(false);
+                .or(() -> {
+                    return Optional.ofNullable(json.get("template"))
+                            .map(jsonNode -> jsonNode.booleanValue());
+                }).orElse(false);
         var pinToTop = Optional.ofNullable(json.get("pinToTop"))
                 .map(jsonNode -> jsonNode.booleanValue())
                 .orElse(false);
@@ -543,9 +546,10 @@ public class DataStoreEntry extends StorageElement {
         obj.put("breakOutCategoryUuid", breakOutCategory != null ? breakOutCategory.toString() : null);
         obj.set("color", mapper.valueToTree(color));
         obj.set("icon", mapper.valueToTree(icon));
-        obj.put("freeze", freeze);
+        obj.put("template", freeze);
         obj.put("pinToTop", pinToTop);
         obj.put("orderIndex", orderIndex);
+        obj.put("created", lastModified.toString());
 
         var tagsArray = obj.putArray("tags");
         for (String tag : tags) {
