@@ -10,6 +10,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.HttpProxy;
 import io.xpipe.app.util.RemoteDesktopDockContentEntry;
 import io.xpipe.app.vnc.VncBaseStore;
+import io.xpipe.core.FilePath;
 import io.xpipe.core.SecretValue;
 
 import javafx.beans.property.Property;
@@ -38,6 +39,8 @@ public abstract class ProcessControlProvider {
     }
 
     public abstract String generatePublicSshKey(SecretValue privateKey, SecretRetrievalStrategy passphrase);
+
+    public abstract Optional<String> generatePublicSshKey(FilePath file) throws Exception;
 
     public abstract void showSshKeygenDialog(String commentDefault, Property<?> identityProperty);
 

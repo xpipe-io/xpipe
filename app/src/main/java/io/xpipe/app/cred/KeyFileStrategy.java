@@ -13,6 +13,7 @@ import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.secret.SecretNoneStrategy;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.ContextualFileReference;
@@ -150,13 +151,28 @@ public class KeyFileStrategy implements SshIdentityStrategy {
                         config.getFileSystem() != null && config.getFileSystem().getValue() != null
                                 ? config.getFileSystem().getValue().getStore()
                                 : (ShellStore) DataStorage.get().local().getStore();
-                var ex = fs.getOrStartSession().view().fileExists(pubFile);
-                if (ex) {
+                var pubExists = fs.getOrStartSession().view().fileExists(pubFile);
+                if (pubExists) {
                     var contents =
                             fs.getOrStartSession().view().readTextFile(pubFile).strip();
                     Platform.runLater(() -> {
                         publicKey.set(contents);
                     });
+                }
+
+                var pubKeyGenerated = ProcessControlProvider.get().generatePublicSshKey(newValue);
+                if (!pubExists && pubKeyGenerated.isPresent()) {
+                    Platform.runLater(() -> {
+                        publicKey.set(pubKeyGenerated.get());
+                    });
+                }
+
+                if (pubKeyGenerated.isPresent()) {
+                    if (keyPasswordProperty.get() == null) {
+                        Platform.runLater(() -> {
+                            keyPasswordProperty.set(new SecretNoneStrategy());
+                        });
+                    }
                 }
             });
         });
@@ -210,7 +226,6 @@ public class KeyFileStrategy implements SshIdentityStrategy {
 
     public void checkComplete() throws ValidationException {
         Validators.nonNull(file);
-        Validators.nonNull(password);
     }
 
     @Override
@@ -279,7 +294,7 @@ public class KeyFileStrategy implements SshIdentityStrategy {
 
     @Override
     public SecretRetrievalStrategy getAskpassStrategy() {
-        return password;
+        return password != null ? password : new SecretNoneStrategy();
     }
 
     public PublicKeyStrategy getPublicKeyStrategy() {
