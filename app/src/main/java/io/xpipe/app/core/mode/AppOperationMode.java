@@ -113,6 +113,12 @@ public abstract class AppOperationMode {
             AppMainWindow.loadingText("initializingApp");
             GlobalTimer.init();
             AppProperties.init(args);
+
+            var isTempPortable = System.getProperty("io.xpipe.app.portableMigration") != null;
+            if (isTempPortable) {
+                ThreadHelper.sleep(2000);
+            }
+
             PlatformThreadWatcher.init();
             AppLogs.init();
             AppDebugModeCheck.printIfNeeded();
