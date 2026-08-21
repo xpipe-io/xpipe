@@ -106,6 +106,7 @@ public class DataStorageMigration {
 
         if (hasAuth) {
             AppCache.update("vaultMigratedAuth", true);
+            AppPrefs.get().setFromExternal(AppPrefs.get().enableGitStorage(), false);
         }
 
         Platform.runLater(() -> {
