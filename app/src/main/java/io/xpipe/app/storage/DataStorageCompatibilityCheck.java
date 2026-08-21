@@ -44,7 +44,7 @@ public class DataStorageCompatibilityCheck {
 
             if (canonicalVersion.get().getMajor() >= 24
                     || (canonicalVersion.get().getMajor() == 23
-                    && canonicalVersion.get().getMinor() >= 10)) {
+                    && canonicalVersion.get().getMinor() >= 99)) {
                 return;
             }
         }

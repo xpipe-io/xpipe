@@ -34,8 +34,8 @@ public class AppRelease {
     public static AppRelease ofPortable(String tag) {
         var ext =
                 switch (OsType.ofLocal()) {
-                    case OsType.Linux ignored -> "dmg";
-                    case OsType.MacOs ignored -> "tar.gz";
+                    case OsType.Linux ignored -> "tar.gz";
+                    case OsType.MacOs ignored -> "dmg";
                     case OsType.Windows ignored -> "zip";
                 };
         var os =
