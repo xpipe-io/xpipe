@@ -21,7 +21,7 @@ import java.time.Duration;
 
 public class AppDownloads {
 
-    public static Path downloadInstaller(AppRelease release) throws Exception {
+    public static Path downloadArtifact(AppRelease release) throws Exception {
         try {
             var builder = HttpRequest.newBuilder();
             var httpRequest = builder.uri(URI.create(release.getUrl())).GET().build();

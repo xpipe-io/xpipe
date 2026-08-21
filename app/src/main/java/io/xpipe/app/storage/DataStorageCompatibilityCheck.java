@@ -1,6 +1,6 @@
 package io.xpipe.app.storage;
 
-import io.xpipe.app.browser.menu.impl.compress.UntarActionProvider;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.core.AppVersion;
 import io.xpipe.app.core.mode.AppOperationMode;
@@ -44,7 +44,7 @@ public class DataStorageCompatibilityCheck {
 
             if (canonicalVersion.get().getMajor() >= 24
                     || (canonicalVersion.get().getMajor() == 23
-                            && canonicalVersion.get().getMinor() >= 10)) {
+                    && canonicalVersion.get().getMinor() >= 10)) {
                 return;
             }
         }
@@ -56,7 +56,7 @@ public class DataStorageCompatibilityCheck {
                 .customAction(new ErrorAction() {
                     @Override
                     public String getName() {
-                        return "Perform automatically";
+                        return "Launch automatically";
                     }
 
                     @Override
@@ -73,11 +73,11 @@ public class DataStorageCompatibilityCheck {
                 .documentationLink(DocumentationLink.MIGRATION)
                 .expected()
                 .handle();
-        AppOperationMode.shutdown(false);
     }
 
     private static void runTransitoryBuild() throws Exception {
-        var downloaded = AppDownloads.downloadInstaller(AppRelease.ofPortable("23.99"));
+        var version = "23.99-2";
+        var downloaded = AppDownloads.downloadArtifact(AppRelease.ofPortable(version));
         var tempTarget = AppSystemInfo.ofCurrent().getTemp().resolve("xpipe-v23.99");
         var shell = LocalShell.get(DataStorageCompatibilityCheck.class);
         switch (OsType.ofLocal()) {
@@ -91,7 +91,8 @@ public class DataStorageCompatibilityCheck {
                         .add("-xz")).execute();
                 var executable = tempTarget.resolve("bin", "xpiped");
                 AppOperationMode.executeAfterShutdown(() -> {
-                    ExternalApplicationHelper.startAsync(CommandBuilder.of().addFile(executable));
+                    ExternalApplicationHelper.startAsync(CommandBuilder.of().addFile(executable).addQuoted("-Dio.xpipe.app.portableMigration=true").addQuoted("-Dio.xpipe.app.dataDir=" +
+                            AppProperties.get().getDataDir()));
                 });
             }
             case OsType.MacOs ignored -> {
@@ -106,6 +107,11 @@ public class DataStorageCompatibilityCheck {
                     command.add("-Path").addFile(downloaded);
                     pw.command(command).execute();
                     return null;
+                });
+                var executable = tempTarget.resolve("xpipe-" + version).resolve("xpiped.exe");
+                AppOperationMode.executeAfterShutdown(() -> {
+                    ExternalApplicationHelper.startAsync(CommandBuilder.of().addFile(executable).addQuoted("-Dio.xpipe.app.portableMigration=true").addQuoted("-Dio.xpipe.app.dataDir=" +
+                            AppProperties.get().getDataDir()));
                 });
             }
         }

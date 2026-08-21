@@ -50,7 +50,7 @@ public class GitHubUpdater extends UpdateHandler {
 
     public void prepareUpdateImpl() throws Exception {
         var downloadFile =
-                AppDownloads.downloadInstaller(AppRelease.ofInstaller(lastUpdateCheckResult.getValue().getVersion()));
+                AppDownloads.downloadArtifact(AppRelease.ofInstaller(lastUpdateCheckResult.getValue().getVersion()));
         var changelogString =
                 AppDownloads.downloadChangelog(lastUpdateCheckResult.getValue().getVersion());
         var rel = new PreparedUpdate(
