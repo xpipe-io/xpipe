@@ -15,6 +15,7 @@ import io.xpipe.app.update.AppDownloads;
 import io.xpipe.app.update.AppRelease;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.OsType;
+import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -77,13 +78,14 @@ public class DataStorageCompatibilityCheck {
     }
 
     private static void runTransitoryBuild() throws Exception {
-        var version = "23.99-2";
+        var version = AppProperties.get().isStaging() ? "23.99-3" : "23.99";
         var downloaded = AppDownloads.downloadArtifact(AppRelease.ofPortable(version));
         var tempTarget = AppSystemInfo.ofCurrent().getTemp().resolve("xpipe-v23.99");
         var shell = LocalShell.get(DataStorageCompatibilityCheck.class);
         switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> {
                 Files.createDirectories(tempTarget);
+                FileUtils.cleanDirectory(tempTarget.toFile());
                 shell.command(CommandBuilder.of()
                         .add("tar", "-f")
                         .addFile(downloaded)
@@ -103,6 +105,8 @@ public class DataStorageCompatibilityCheck {
                 });
             }
             case OsType.Windows ignored -> {
+                Files.createDirectories(tempTarget);
+                FileUtils.cleanDirectory(tempTarget.toFile());
                 shell.enforceDialect(ShellDialects.POWERSHELL, pw -> {
                     var command = CommandBuilder.of().add("Expand-Archive", "-Force");
                     command.add("-DestinationPath").addFile(tempTarget);
