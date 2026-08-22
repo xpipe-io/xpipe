@@ -36,7 +36,7 @@ public class TerminalLauncher {
             TerminalInitScriptConfig config,
             boolean exit)
             throws Exception {
-        var content = constructTerminalInitScript(t, processControl, workingDirectory, preInit, postInit, config, exit);
+        var content = constructTerminalInitScript(t, processControl, workingDirectory, preInit, postInit, config, exit, true);
         var hash = ScriptHelper.getScriptHash(processControl, content);
         var file = t.getInitFileName(processControl, hash);
         return ScriptHelper.createExecScriptRaw(processControl, file, content, true);
@@ -49,7 +49,8 @@ public class TerminalLauncher {
             List<String> preInit,
             List<String> postInit,
             TerminalInitScriptConfig config,
-            boolean exit)
+            boolean exit,
+            boolean formatScript)
             throws Exception {
         String nl = t.getNewLine().getNewLineString();
         var content = "";
@@ -87,7 +88,10 @@ public class TerminalLauncher {
             content += nl + t.getPassthroughExitCommand();
         }
 
-        content = t.prepareScriptContent(processControl, content);
+        if (formatScript) {
+            content = t.prepareScriptContent(processControl, content);
+        }
+
         return content;
     }
 
@@ -107,7 +111,8 @@ public class TerminalLauncher {
                                     && AppPrefs.get().clearTerminalOnInit().get()
                                     && !AppPrefs.get().developerPrintInitFiles().get(),
                             TerminalInitFunction.none()),
-                    true);
+                    true,
+                    false);
             var singlePane = new TerminalPaneConfiguration(UUID.randomUUID(), title, 0, script, sc.getShellDialect());
             var config = new TerminalLaunchConfiguration(null, title, title, true, false, List.of(singlePane));
             launch(type, config);
