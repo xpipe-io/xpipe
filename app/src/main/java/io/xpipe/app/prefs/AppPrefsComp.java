@@ -33,6 +33,7 @@ public class AppPrefsComp extends SimpleRegionBuilder {
                     return r;
                 },
                 true);
+        boxComp.setFixScrollReset(true);
         boxComp.setVisibilityControl(true);
         boxComp.apply(struc -> {
             struc.getContent().getStyleClass().add("prefs-box");

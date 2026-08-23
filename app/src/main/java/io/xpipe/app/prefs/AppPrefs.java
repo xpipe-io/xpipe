@@ -126,11 +126,12 @@ public final class AppPrefs {
             .key("mcpAdditionalContext")
             .valueClass(String.class)
             .requiresRestart(true)
+            .documentationLink(DocumentationLink.MCP_CONTEXT)
             .build());
     final BooleanProperty dontAutomaticallyStartVmSshServer =
-            mapVaultShared(new GlobalBooleanProperty(false), "dontAutomaticallyStartVmSshServer", Boolean.class, false);
+            mapVaultSynced(new GlobalBooleanProperty(false), "dontAutomaticallyStartVmSshServer", Boolean.class, false);
     final BooleanProperty dontAcceptNewHostKeys =
-            mapVaultShared(new GlobalBooleanProperty(false), "dontAcceptNewHostKeys", Boolean.class, false);
+            mapVaultSynced(new GlobalBooleanProperty(false), "dontAcceptNewHostKeys", Boolean.class, false);
     public final BooleanProperty performanceMode = map(Mapping.builder()
             .property(new GlobalBooleanProperty())
             .key("performanceMode")
@@ -238,14 +239,14 @@ public final class AppPrefs {
             .build());
 
     public final Property<Boolean> alwaysConfirmElevation =
-            mapVaultShared(new GlobalObjectProperty<>(false), "alwaysConfirmElevation", Boolean.class, false);
+            mapVaultSynced(new GlobalObjectProperty<>(false), "alwaysConfirmElevation", Boolean.class, false);
     public final BooleanProperty focusWindowOnNotifications = map(Mapping.builder()
             .property(new GlobalBooleanProperty(true))
             .key("focusWindowOnNotifications")
             .valueClass(Boolean.class)
             .build());
     public final BooleanProperty dontCachePasswords =
-            mapVaultShared(new GlobalBooleanProperty(false), "dontCachePasswords", Boolean.class, false);
+            mapVaultSynced(new GlobalBooleanProperty(false), "dontCachePasswords", Boolean.class, false);
     public final Property<ExternalVncClient> vncClient = map(Mapping.builder()
             .property(new GlobalObjectProperty<>(InternalVncClient.builder().build()))
             .key("vncClient")
@@ -275,6 +276,7 @@ public final class AppPrefs {
             .key("httpProxy")
             .valueClass(HttpProxy.class)
             .requiresRestart(true)
+            .documentationLink(DocumentationLink.PROXY)
             .build());
     final ObjectProperty<String> noProxyList = map(Mapping.builder()
             .property(new GlobalObjectProperty<>())
@@ -353,8 +355,13 @@ public final class AppPrefs {
             mapLocal(new GlobalBooleanProperty(false), "customEditorCommandInTerminal", Boolean.class, false);
     final BooleanProperty automaticallyCheckForUpdates =
             mapLocal(new GlobalBooleanProperty(true), "automaticallyCheckForUpdates", Boolean.class, false);
-    final BooleanProperty encryptAllVaultData =
-            mapVaultShared(new GlobalBooleanProperty(false), "encryptAllVaultData", Boolean.class, false);
+    final BooleanProperty encryptAllVaultData = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(false))
+            .key("encryptAllVaultData")
+            .valueClass(Boolean.class)
+            .documentationLink(DocumentationLink.ENCRYPT_ALL)
+            .sync(true)
+            .build());
     final BooleanProperty enableTerminalLogging = map(Mapping.builder()
             .property(new GlobalBooleanProperty(false))
             .key("enableTerminalLogging")
@@ -376,10 +383,20 @@ public final class AppPrefs {
             mapLocal(new GlobalBooleanProperty(true), "showChildrenConnectionsInParentCategory", Boolean.class, false);
     final Property<HibernateBehaviour> hibernateBehaviour =
             mapLocal(new GlobalObjectProperty<>(), "hibernateBehaviour", HibernateBehaviour.class, false);
-    final BooleanProperty openConnectionSearchWindowOnConnectionCreation = mapLocal(
-            new GlobalBooleanProperty(true), "openConnectionSearchWindowOnConnectionCreation", Boolean.class, false);
+    final BooleanProperty openConnectionSearchWindowOnConnectionCreation =
+            map(Mapping.builder()
+                    .property(new GlobalBooleanProperty(true))
+                    .key("openConnectionSearchWindowOnConnectionCreation")
+                    .valueClass(Boolean.class)
+                    .documentationLink(DocumentationLink.CONNECTION_SEARCH)
+                    .build());
     final ObjectProperty<FilePath> downloadsDirectory =
-            mapLocal(new GlobalObjectProperty<>(), "downloadsDirectory", FilePath.class, false);
+            map(Mapping.builder()
+                    .property(new GlobalObjectProperty<>())
+                    .key("downloadsDirectory")
+                    .valueClass(FilePath.class)
+                    .documentationLink(DocumentationLink.BROWSER_DOWNLOADS)
+                    .build());
     final BooleanProperty developerMode =
             mapLocal(new GlobalBooleanProperty(false), "developerMode", Boolean.class, true);
     final BooleanProperty developerDisableUpdateVersionCheck =
@@ -411,10 +428,18 @@ public final class AppPrefs {
             mapLocal(new GlobalBooleanProperty(false), "requireDoubleClickForConnections", Boolean.class, false);
     final BooleanProperty editFilesWithDoubleClick =
             mapLocal(new GlobalBooleanProperty(false), "editFilesWithDoubleClick", Boolean.class, false);
-    final BooleanProperty enableFileBrowserTerminalDocking =
-            mapLocal(new GlobalBooleanProperty(true), "enableFileBrowserTerminalDocking", Boolean.class, false);
-    final BooleanProperty enableConnectionHubTerminalDocking =
-            mapLocal(new GlobalBooleanProperty(true), "enableConnectionHubTerminalDocking", Boolean.class, false);
+    final BooleanProperty enableFileBrowserTerminalDocking = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(true))
+            .key("enableFileBrowserTerminalDocking")
+            .valueClass(Boolean.class)
+            .documentationLink(DocumentationLink.BROWSER_DOCKING)
+            .build());
+    final BooleanProperty enableConnectionHubTerminalDocking = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(true))
+            .key("enableConnectionHubTerminalDocking")
+            .valueClass(Boolean.class)
+            .documentationLink(DocumentationLink.TERMINAL_DOCKING)
+            .build());
     final BooleanProperty censorMode = mapLocal(new GlobalBooleanProperty(false), "censorMode", Boolean.class, false);
     final BooleanProperty sshVerboseOutput = map(Mapping.builder()
             .property(new GlobalBooleanProperty(false))
@@ -798,7 +823,7 @@ public final class AppPrefs {
         return map(new Mapping(name, o, clazz, false, requiresRestart, true, null));
     }
 
-    private <T> T mapVaultShared(Property<?> o, String name, Class<?> clazz, boolean requiresRestart) {
+    private <T> T mapVaultSynced(Property<?> o, String name, Class<?> clazz, boolean requiresRestart) {
         return map(new Mapping(name, o, clazz, true, requiresRestart, true, null));
     }
 

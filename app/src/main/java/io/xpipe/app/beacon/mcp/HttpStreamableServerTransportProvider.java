@@ -1,5 +1,6 @@
 package io.xpipe.app.beacon.mcp;
 
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.TrackEvent;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -10,11 +11,13 @@ import io.modelcontextprotocol.server.McpTransportContextExtractor;
 import io.modelcontextprotocol.spec.*;
 import io.modelcontextprotocol.util.Assert;
 import io.modelcontextprotocol.util.KeepAliveScheduler;
+import io.xpipe.app.util.JacksonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.sound.midi.Track;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -169,7 +172,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 
         if (!badRequestErrors.isEmpty()) {
             String combinedMessage = String.join("; ", badRequestErrors);
-            this.sendError(exchange, 400, combinedMessage);
+            this.sendMcpError(exchange, 400, McpError.builder(McpSchema.ErrorCodes.METHOD_NOT_FOUND).message(combinedMessage).build());
             return;
         }
 
@@ -234,7 +237,20 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
             os.write(b);
         }
 
-        TrackEvent.error("MCP server error " + code + ": " + message);
+        TrackEvent.withError("MCP server error " + code).tag("message", message).handle();
+    }
+
+    public void sendMcpError(HttpExchange exchange, int httpCode, McpError mcpError) throws IOException {
+        exchange.getResponseHeaders().add("Content-Encoding", UTF_8);
+        exchange.getResponseHeaders().add("Content-Type", APPLICATION_JSON);
+        var jsonError = jsonMapper.writeValueAsString(mcpError);
+        var b = jsonError.getBytes(StandardCharsets.UTF_8);
+        exchange.sendResponseHeaders(httpCode, b.length);
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(b);
+        }
+        TrackEvent.withError("MCP server error " + httpCode)
+                .tag("error", JacksonMapper.getDefault().readTree(jsonError).toPrettyString()).handle();
     }
 
     public void doPost(HttpExchange exchange) throws IOException {
@@ -264,6 +280,12 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 
         try {
             var body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+            var log = AppProperties.get().isPrintBeaconMessages();
+            if (log) {
+                TrackEvent.withTrace("Received MCP request")
+                        .tag("data", JacksonMapper.getDefault().readTree(body).toPrettyString())
+                        .handle();
+            }
 
             McpSchema.JSONRPCMessage message = McpSchema.deserializeJsonRpcMessage(jsonMapper, body);
 
@@ -272,7 +294,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                     && jsonrpcRequest.method().equals(McpSchema.METHOD_INITIALIZE)) {
                 if (!badRequestErrors.isEmpty()) {
                     String combinedMessage = String.join("; ", badRequestErrors);
-                    this.sendError(exchange, 400, combinedMessage);
+                    this.sendMcpError(exchange, 400, McpError.builder(McpSchema.ErrorCodes.METHOD_NOT_FOUND).message(combinedMessage).build());
                     return;
                 }
 
@@ -289,6 +311,13 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                             McpSchema.JSONRPC_VERSION, jsonrpcRequest.id(), initResult, null));
                     var jsonBytes = jsonResponse.getBytes(StandardCharsets.UTF_8);
 
+                    if (log) {
+                        TrackEvent.withTrace("Sending MCP response")
+                                .tag("id", init.session().getId())
+                                .tag("data", JacksonMapper.getDefault().readTree(jsonResponse).toPrettyString())
+                                .handle();
+                    }
+
                     exchange.getResponseHeaders().add("Content-Type", APPLICATION_JSON);
                     exchange.getResponseHeaders().add("Content-Encoding", UTF_8);
                     exchange.getResponseHeaders()
@@ -298,7 +327,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                     return;
                 } catch (Exception e) {
                     logger.error("Failed to initialize session: {}", e.getMessage());
-                    this.sendError(exchange, 500, "Failed to initialize session: " + e.getMessage());
+                    this.sendMcpError(exchange, 500, McpError.builder(McpSchema.ErrorCodes.INTERNAL_ERROR).message("Failed to initialize session: " + e.getMessage()).build());
                     return;
                 }
             }
@@ -311,14 +340,15 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 
             if (!badRequestErrors.isEmpty()) {
                 String combinedMessage = String.join("; ", badRequestErrors);
-                this.sendError(exchange, 400, combinedMessage);
+                this.sendMcpError(exchange, 400, McpError.builder(McpSchema.ErrorCodes.METHOD_NOT_FOUND).message(combinedMessage).build());
                 return;
             }
 
             McpStreamableServerSession session = this.sessions.get(sessionId);
 
             if (session == null) {
-                this.sendError(exchange, 404, "Session not found: " + sessionId + ". Was the session not refreshed?");
+                this.sendMcpError(exchange, 404, McpError.builder(McpSchema.ErrorCodes.INTERNAL_ERROR)
+                        .message("Session not found: " + sessionId + ". Was the session not refreshed?").build());
                 return;
             }
 
@@ -327,11 +357,17 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                         .contextWrite(ctx -> ctx.put(McpTransportContext.KEY, transportContext))
                         .block();
                 exchange.sendResponseHeaders(200, -1);
+                if (log) {
+                    TrackEvent.withTrace("Sending MCP response").tag("id", sessionId).tag("data", "<empty>").handle();
+                }
             } else if (message instanceof McpSchema.JSONRPCNotification jsonrpcNotification) {
                 session.accept(jsonrpcNotification)
                         .contextWrite(ctx -> ctx.put(McpTransportContext.KEY, transportContext))
                         .block();
                 exchange.sendResponseHeaders(202, -1);
+                if (log) {
+                    TrackEvent.withTrace("Sending MCP response").tag("id", sessionId).tag("data", "<empty>").handle();
+                }
             } else if (message instanceof McpSchema.JSONRPCRequest jsonrpcRequest) {
                 // For streaming responses, we need to return SSE
                 exchange.getResponseHeaders().add("Content-Type", TEXT_EVENT_STREAM);
@@ -355,15 +391,18 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                     exchange.close();
                 }
             } else {
-                this.sendError(exchange, 500, "Unknown message type");
+                this.sendMcpError(exchange, 500, McpError.builder(McpSchema.ErrorCodes.INVALID_REQUEST)
+                        .message("Unknown message type").build());
             }
         } catch (IllegalArgumentException | IOException e) {
             logger.error("Failed to deserialize message: {}", e.getMessage());
-            this.sendError(exchange, 400, "Invalid message format: " + e.getMessage());
+            this.sendMcpError(exchange, 400, McpError.builder(McpSchema.ErrorCodes.INVALID_REQUEST)
+                    .message("Invalid message format: " + e.getMessage()).build());
         } catch (Exception e) {
             logger.error("Error handling message: {}", e.getMessage());
             try {
-                this.sendError(exchange, 500, "Error processing message: " + e.getMessage());
+                this.sendMcpError(exchange, 500, McpError.builder(McpSchema.ErrorCodes.INTERNAL_ERROR)
+                        .message("Error processing message: " + e.getMessage()).build());
             } catch (IOException ex) {
                 logger.error(FAILED_TO_SEND_ERROR_RESPONSE, ex.getMessage());
                 sendError(exchange, 500, "Error processing message");
@@ -396,7 +435,8 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
         McpTransportContext transportContext = this.contextExtractor.extract(exchange);
 
         if (exchange.getRequestHeaders().getFirst(HttpHeaders.MCP_SESSION_ID) == null) {
-            sendError(exchange, 400, "Session ID required in mcp-session-id header");
+            this.sendMcpError(exchange, 400, McpError.builder(McpSchema.ErrorCodes.METHOD_NOT_FOUND)
+                    .message("Session ID required in mcp-session-id header").build());
             return;
         }
 
@@ -414,9 +454,15 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                     .block();
             this.sessions.remove(sessionId);
             exchange.sendResponseHeaders(200, -1);
+            var log = AppProperties.get().isPrintBeaconMessages();
+            if (log) {
+                TrackEvent.withTrace("Sending MCP response").tag("id", sessionId).tag("data", "<empty>").handle();
+            }
         } catch (Exception e) {
             logger.error("Failed to delete session {}: {}", sessionId, e.getMessage());
             try {
+                this.sendMcpError(exchange, 500, McpError.builder(McpSchema.ErrorCodes.INTERNAL_ERROR)
+                        .message(e.getMessage()).build());
                 sendError(exchange, 500, e.getMessage());
             } catch (IOException ex) {
                 logger.error(FAILED_TO_SEND_ERROR_RESPONSE, ex.getMessage());
@@ -426,6 +472,15 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
     }
 
     private void sendEvent(PrintWriter writer, String eventType, String data, String id) throws IOException {
+        var log = AppProperties.get().isPrintBeaconMessages();
+        if (log) {
+            TrackEvent.withTrace("Sending MCP response")
+                    .tag("id", id)
+                    .tag("event", eventType)
+                    .tag("data", JacksonMapper.getDefault().readTree(data).toPrettyString())
+                    .handle();
+        }
+
         if (id != null) {
             writer.write("id: " + id + "\n");
         }

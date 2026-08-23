@@ -258,7 +258,10 @@ public class StoreEntryWrapper {
         } else {
             var provider = getEntry().getProvider();
             if (provider != null) {
-                shownDescription.setValue(AppI18n.get(provider.getId() + ".displayName"));
+                var providerName = AppI18n.get(provider.getId() + ".displayName");
+                shownDescription.setValue(AppPrefs.get().censorMode().get()
+                        ? "*".repeat(providerName.length())
+                        : providerName);
             } else {
                 shownDescription.setValue(null);
             }

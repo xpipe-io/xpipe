@@ -59,7 +59,7 @@ public class BrowserFileSystemTabComp extends SimpleRegionBuilder {
                 .shortcut(new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN))
                 .build()
                 .apply(overview);
-        overview.disableProperty().bind(model.getInOverview());
+        overview.disableProperty().bind(PlatformThread.sync(model.getInOverview()));
         InputHelper.onKeyCombination(
                 root, new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN), true, keyEvent -> {
                     overview.fire();
@@ -80,7 +80,7 @@ public class BrowserFileSystemTabComp extends SimpleRegionBuilder {
                         null,
                         () -> new BrowserContextMenu(model, null, false))
                 .accept(menuButton);
-        menuButton.disableProperty().bind(model.getInOverview());
+        menuButton.disableProperty().bind(PlatformThread.sync(model.getInOverview()));
         RegionDescriptor.builder().nameKey("directoryOptions").build().apply(menuButton);
 
         var smallWidth = Bindings.createBooleanBinding(

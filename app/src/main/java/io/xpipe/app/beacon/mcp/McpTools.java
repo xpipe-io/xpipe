@@ -1,5 +1,7 @@
 package io.xpipe.app.beacon.mcp;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.Nulls;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BeaconClientException;
 import io.xpipe.app.beacon.BeaconInterface;
@@ -29,6 +31,7 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.node.JsonNodeFactory;
 
 import java.io.IOException;
@@ -157,9 +160,13 @@ public final class McpTools {
                         list.add(r);
                     }
 
+                    JsonMapper mapper = JacksonMapper.getDefault()
+                            .rebuild()
+                            .changeDefaultPropertyInclusion(value -> value.withValueInclusion(JsonInclude.Include.NON_NULL))
+                            .build();
                     var json = JsonNodeFactory.instance.arrayNode();
                     for (var e : list) {
-                        json.add(JacksonMapper.getDefault().valueToTree(e));
+                        json.add(mapper.valueToTree(e));
                     }
 
                     var object = JsonNodeFactory.instance.objectNode();

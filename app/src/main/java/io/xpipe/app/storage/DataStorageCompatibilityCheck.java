@@ -71,7 +71,6 @@ public class DataStorageCompatibilityCheck {
                         return true;
                     }
                 })
-                .documentationLink(DocumentationLink.MIGRATION)
                 .expected()
                 .handle();
         AppOperationMode.halt(0);

@@ -19,10 +19,7 @@ import io.xpipe.app.store.DataStore;
 import io.xpipe.app.store.DataStoreCreationCategory;
 import io.xpipe.app.store.DataStoreProvider;
 import io.xpipe.app.update.AppDistributionType;
-import io.xpipe.app.util.DesktopHelper;
-import io.xpipe.app.util.HttpHelper;
-import io.xpipe.app.util.HttpProxy;
-import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.util.*;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -190,6 +187,7 @@ public class HttpProxyCategory extends AppPrefsCategory {
 
         return new OptionsBuilder()
                 .nameAndDescription("httpProxy")
+                .documentationLink(DocumentationLink.PROXY)
                 .addComp(proxyChoice, ref)
                 .addComp(addButton);
     }
