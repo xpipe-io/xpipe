@@ -57,7 +57,7 @@ public final class AppPrefs {
         INSTANCE.localInitialized = true;
     }
 
-    public static void initSynced() throws Exception {
+    public static void initSynced() {
         INSTANCE.loadSharedRemote();
         INSTANCE.syncInitialized = true;
     }
@@ -383,20 +383,18 @@ public final class AppPrefs {
             mapLocal(new GlobalBooleanProperty(true), "showChildrenConnectionsInParentCategory", Boolean.class, false);
     final Property<HibernateBehaviour> hibernateBehaviour =
             mapLocal(new GlobalObjectProperty<>(), "hibernateBehaviour", HibernateBehaviour.class, false);
-    final BooleanProperty openConnectionSearchWindowOnConnectionCreation =
-            map(Mapping.builder()
-                    .property(new GlobalBooleanProperty(true))
-                    .key("openConnectionSearchWindowOnConnectionCreation")
-                    .valueClass(Boolean.class)
-                    .documentationLink(DocumentationLink.CONNECTION_SEARCH)
-                    .build());
-    final ObjectProperty<FilePath> downloadsDirectory =
-            map(Mapping.builder()
-                    .property(new GlobalObjectProperty<>())
-                    .key("downloadsDirectory")
-                    .valueClass(FilePath.class)
-                    .documentationLink(DocumentationLink.BROWSER_DOWNLOADS)
-                    .build());
+    final BooleanProperty openConnectionSearchWindowOnConnectionCreation = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(true))
+            .key("openConnectionSearchWindowOnConnectionCreation")
+            .valueClass(Boolean.class)
+            .documentationLink(DocumentationLink.CONNECTION_SEARCH)
+            .build());
+    final ObjectProperty<FilePath> downloadsDirectory = map(Mapping.builder()
+            .property(new GlobalObjectProperty<>())
+            .key("downloadsDirectory")
+            .valueClass(FilePath.class)
+            .documentationLink(DocumentationLink.BROWSER_DOWNLOADS)
+            .build());
     final BooleanProperty developerMode =
             mapLocal(new GlobalBooleanProperty(false), "developerMode", Boolean.class, true);
     final BooleanProperty developerDisableUpdateVersionCheck =

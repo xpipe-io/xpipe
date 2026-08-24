@@ -24,7 +24,6 @@ import static com.sun.jna.win32.W32APIOptions.DEFAULT_OPTIONS;
 public class NativeWinWindowControl {
 
     private static final int WS_EX_APPWINDOW = 0x00040000;
-    private static final int WS_EX_NOACTIVATE = 0x08000000;
 
     public static NativeWinWindowControl MAIN_WINDOW;
     private final WinDef.HWND windowHandle;

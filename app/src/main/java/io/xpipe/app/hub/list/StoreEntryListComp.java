@@ -137,7 +137,7 @@ public class StoreEntryListComp extends SimpleRegionBuilder {
                     return;
                 }
 
-                if ((now - last) > 1 * 1_000_000L) {
+                if ((now - last) > 1_000_000L) {
                     last = now;
                     // Scroll values are not bounded
                     double v = Math.clamp(bar.getValue() + scrollSpeed.getValue() / 50.0, 0.0, 1.0);

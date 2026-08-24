@@ -36,7 +36,8 @@ public class TerminalLauncher {
             TerminalInitScriptConfig config,
             boolean exit)
             throws Exception {
-        var content = constructTerminalInitScript(t, processControl, workingDirectory, preInit, postInit, config, exit, true);
+        var content =
+                constructTerminalInitScript(t, processControl, workingDirectory, preInit, postInit, config, exit, true);
         var hash = ScriptHelper.getScriptHash(processControl, content);
         var file = t.getInitFileName(processControl, hash);
         return ScriptHelper.createExecScriptRaw(processControl, file, content, true);

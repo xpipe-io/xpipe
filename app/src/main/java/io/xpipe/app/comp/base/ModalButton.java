@@ -3,8 +3,8 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.mode.AppOperationMode;
-
 import io.xpipe.app.platform.PlatformThread;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
@@ -83,8 +83,8 @@ public class ModalButton {
                             () -> {
                                 return busy.getValue()
                                         ? new LoadingIconComp(busy, AppFontSizes::base)
-                                          .style("busy-loading-icon")
-                                          .build()
+                                                .style("busy-loading-icon")
+                                                .build()
                                         : null;
                             },
                             PlatformThread.sync(busy)));

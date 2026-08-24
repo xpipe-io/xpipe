@@ -162,7 +162,8 @@ public class BeaconRequestHandler<T> implements HttpHandler {
                 var mapper = redact ? JacksonMapper.getRedactedSecretMapper() : JacksonMapper.getUnredactSecretMapper();
                 if (AppProperties.get().isPrintBeaconMessages()) {
                     TrackEvent.trace("Sending response:\n" + response);
-                    TrackEvent.trace("Sending raw response:\n" + mapper.valueToTree(response).toPrettyString());
+                    TrackEvent.trace("Sending raw response:\n"
+                            + mapper.valueToTree(response).toPrettyString());
                 }
                 var bytes = JacksonMapper.getDefault()
                         .valueToTree(response)

@@ -164,10 +164,6 @@ public interface StoreSectionSortMode {
                     .orElseThrow();
         }
 
-        public StoreSection getRepresentative(StoreSection s) {
-            return getRepresentative(s, entriesListObservableIndex);
-        }
-
         public StoreSection getRepresentative(StoreSection s, int updateIndex) {
             if (updateIndex != entriesListObservableIndex) {
                 cachedRepresentatives.clear();

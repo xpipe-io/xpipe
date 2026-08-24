@@ -6,7 +6,8 @@ public interface AccessScopeDependencyStore extends AccessScopeStore, DependentD
 
     default DataStoreAccessScope getAccessScope() {
         var deps = getDependencies();
-        var scopes = deps.stream().map(ref -> ref.getStore() instanceof AccessScopeStore s ? s.getAccessScope() : null)
+        var scopes = deps.stream()
+                .map(ref -> ref.getStore() instanceof AccessScopeStore s ? s.getAccessScope() : null)
                 .filter(s -> s != null)
                 .toList();
         if (scopes.isEmpty()) {

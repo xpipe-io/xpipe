@@ -13,8 +13,8 @@ import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.update.AppDownloads;
 import io.xpipe.app.update.AppRelease;
-import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.OsType;
+
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
@@ -45,15 +45,16 @@ public class DataStorageCompatibilityCheck {
 
             if (canonicalVersion.get().getMajor() >= 24
                     || (canonicalVersion.get().getMajor() == 23
-                    && canonicalVersion.get().getMinor() >= 99)) {
+                            && canonicalVersion.get().getMinor() >= 99)) {
                 return;
             }
         }
 
-        ErrorEventFactory.fromMessage("The vault" + (version.isPresent() ? " from v" + version.get() + " " : " ")
-                        + "comes from an XPipe version prior to v24."
-                        + " This legacy format is unsupported in newer versions. To migrate your data, you need to first install and launch XPipe v23.99."
-                        + " This will start a migration for the vault data. Afterwards, you can upgrade to XPipe v24+ and launch it as normal.")
+        ErrorEventFactory.fromMessage(
+                        "The vault" + (version.isPresent() ? " from v" + version.get() + " " : " ")
+                                + "comes from an XPipe version prior to v24."
+                                + " This legacy format is unsupported in newer versions. To migrate your data, you need to first install and launch XPipe v23.99."
+                                + " This will start a migration for the vault data. Afterwards, you can upgrade to XPipe v24+ and launch it as normal.")
                 .customAction(new ErrorAction() {
                     @Override
                     public String getName() {
@@ -86,21 +87,26 @@ public class DataStorageCompatibilityCheck {
                 Files.createDirectories(tempTarget);
                 FileUtils.cleanDirectory(tempTarget.toFile());
                 shell.command(CommandBuilder.of()
-                        .add("tar", "-f")
-                        .addFile(downloaded)
-                        .add("--strip-components", "1")
-                        .add("-C")
-                        .addFile(tempTarget)
-                        .add("-xz")).execute();
+                                .add("tar", "-f")
+                                .addFile(downloaded)
+                                .add("--strip-components", "1")
+                                .add("-C")
+                                .addFile(tempTarget)
+                                .add("-xz"))
+                        .execute();
                 var executable = tempTarget.resolve("bin", "xpiped");
                 AppOperationMode.executeAfterShutdown(() -> {
-                    ExternalApplicationHelper.startAsync(CommandBuilder.of().addFile(executable).addQuoted("-Dio.xpipe.app.portableMigration=true").addQuoted("-Dio.xpipe.app.dataDir=" +
-                            AppProperties.get().getDataDir()));
+                    ExternalApplicationHelper.startAsync(CommandBuilder.of()
+                            .addFile(executable)
+                            .addQuoted("-Dio.xpipe.app.portableMigration=true")
+                            .addQuoted("-Dio.xpipe.app.dataDir="
+                                    + AppProperties.get().getDataDir()));
                 });
             }
             case OsType.MacOs ignored -> {
                 AppOperationMode.executeAfterShutdown(() -> {
-                    ExternalApplicationHelper.startAsync(CommandBuilder.of().add("open").addFile(downloaded));
+                    ExternalApplicationHelper.startAsync(
+                            CommandBuilder.of().add("open").addFile(downloaded));
                 });
             }
             case OsType.Windows ignored -> {
@@ -115,8 +121,11 @@ public class DataStorageCompatibilityCheck {
                 });
                 var executable = tempTarget.resolve("xpipe-" + version).resolve("xpiped.exe");
                 AppOperationMode.executeAfterShutdown(() -> {
-                    ExternalApplicationHelper.startAsync(CommandBuilder.of().addFile(executable).addQuoted("-Dio.xpipe.app.portableMigration=true").addQuoted("-Dio.xpipe.app.dataDir=" +
-                            AppProperties.get().getDataDir()));
+                    ExternalApplicationHelper.startAsync(CommandBuilder.of()
+                            .addFile(executable)
+                            .addQuoted("-Dio.xpipe.app.portableMigration=true")
+                            .addQuoted("-Dio.xpipe.app.dataDir="
+                                    + AppProperties.get().getDataDir()));
                 });
             }
         }

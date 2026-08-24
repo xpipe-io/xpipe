@@ -27,12 +27,6 @@ public class IntFieldComp extends RegionBuilder<TextField> {
         this.maxValue = Integer.MAX_VALUE;
     }
 
-    public IntFieldComp(Property<Integer> value, int minValue, int maxValue) {
-        this.value = value;
-        this.minValue = minValue;
-        this.maxValue = maxValue;
-    }
-
     @Override
     public TextField createSimple() {
         var field = new TextField(value.getValue() != null ? value.getValue().toString() : null);

@@ -1,6 +1,5 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.beacon.BeaconAuthMethod;
 import io.xpipe.app.identity.NoIdentityStrategy;
 import io.xpipe.app.identity.SshIdentityStrategy;
 import io.xpipe.app.identity.UsernameStrategy;
@@ -9,10 +8,10 @@ import io.xpipe.app.secret.SecretNoneStrategy;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStoreAccessScope;
 import io.xpipe.app.storage.DataStoreEntryRef;
-
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.store.AccessScopeStore;
 import io.xpipe.app.store.DataStore;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;

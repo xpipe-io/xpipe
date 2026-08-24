@@ -5,25 +5,6 @@ import io.xpipe.app.util.FilePath;
 
 public interface WorkingDirectoryFunction {
 
-    static WorkingDirectoryFunction of(FailableFunction<ShellControl, FilePath, Exception> path) {
-        return new WorkingDirectoryFunction() {
-            @Override
-            public boolean isFixed() {
-                return false;
-            }
-
-            @Override
-            public boolean isSpecified() {
-                return true;
-            }
-
-            @Override
-            public FilePath apply(ShellControl shellControl) throws Exception {
-                return path.apply(shellControl);
-            }
-        };
-    }
-
     static WorkingDirectoryFunction fixed(FilePath path) {
         return new WorkingDirectoryFunction() {
             @Override
@@ -66,5 +47,5 @@ public interface WorkingDirectoryFunction {
 
     boolean isSpecified();
 
-    FilePath apply(ShellControl shellControl) throws Exception;
+    FilePath apply(ShellControl shellControl);
 }

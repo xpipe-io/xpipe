@@ -90,18 +90,19 @@ public class HttpProxyCategory extends AppPrefsCategory {
                             });
                         }))
                         .pref(prefs.noProxyList)
-                        .addComp(new TextAreaComp(prefs.noProxyList)
-                                .applyStructure(structure -> {
-                                    structure.getTextArea().setPromptText("""
+                        .addComp(
+                                new TextAreaComp(prefs.noProxyList)
+                                        .applyStructure(structure -> {
+                                            structure.getTextArea().setPromptText("""
                             my.domain
                             *.example.com
-                            
+
                             """);
-                                })
-                                .maxWidth(600), prefs.noProxyList)
+                                        })
+                                        .maxWidth(600),
+                                prefs.noProxyList)
                         .pref(prefs.disableHttpsTlsCheck)
-                        .addToggle(prefs.disableHttpsTlsCheck)
-                )
+                        .addToggle(prefs.disableHttpsTlsCheck))
                 .buildComp();
     }
 

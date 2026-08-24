@@ -2,7 +2,6 @@ package io.xpipe.app.rdp;
 
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.util.*;
 
 import javafx.beans.property.Property;
 

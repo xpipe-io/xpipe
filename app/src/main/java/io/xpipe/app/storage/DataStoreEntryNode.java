@@ -49,22 +49,6 @@ public class DataStoreEntryNode<T> {
         return Objects.equals(enc.getValue(), newValue) ? enc.getValue() : newValue;
     }
 
-    public DataStoreEntryNode<T> with(T newValue) {
-        if (newValue == null) {
-            return null;
-        }
-
-        if (newValue.equals(enc.getValue())) {
-            return this;
-        }
-
-        return new DataStoreEntryNode<>(
-                isEncrypted()
-                        ? EncryptedValue.of(newValue, enc.getSecret().getScope())
-                        : EncryptedValue.ofRaw(newValue),
-                false);
-    }
-
     public DataStoreEntryNode<T> prepareForWrite(DataStoreEntry entry, boolean encryptIfRestricted, T newValue) {
         if (newValue == null) {
             return null;
@@ -100,14 +84,12 @@ public class DataStoreEntryNode<T> {
             return this;
         }
 
-        if (getValue() instanceof AccessScopeStore s
-                && !s.getAccessScope().isAccessible()) {
+        if (getValue() instanceof AccessScopeStore s && !s.getAccessScope().isAccessible()) {
             return this;
         }
 
         T newValue = getValue() instanceof AccessScopeStore s ? (T) s.withUpdatedPrincipals() : getValue();
-        if (newValue instanceof AccessScopeStore s
-                && !s.getAccessScope().isAccessible()) {
+        if (newValue instanceof AccessScopeStore s && !s.getAccessScope().isAccessible()) {
             return this;
         }
 

@@ -300,10 +300,6 @@ public interface StoreEntryBadge {
         return new Simple(new LabelGraphic.IconGraphic(icon), s);
     }
 
-    static StoreEntryBadge ofString(String s) {
-        return new Simple(null, s);
-    }
-
     static StoreEntryBadge ofSystemName(OsType.Any type, String s) {
         if (type == null && s == null) {
             return null;
@@ -432,9 +428,9 @@ public interface StoreEntryBadge {
 
     Optional<Action> getAction();
 
-    public StoreEntryBadge withCopyAction();
+    StoreEntryBadge withCopyAction();
 
-    public StoreEntryBadge withCopyAction(String s);
+    StoreEntryBadge withCopyAction(String s);
 
     class Simple implements StoreEntryBadge {
 

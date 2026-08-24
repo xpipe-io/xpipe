@@ -25,13 +25,6 @@ public class EncryptionToken {
         return EncryptionToken.builder().token(crypt).build();
     }
 
-    public static EncryptionToken of(UUID uuid, SecretKey secretKey) {
-        var name = uuid.toString();
-        var secretValue = AesSecretValue.encrypt(name.toCharArray(), secretKey);
-        var crypt = secretValue.getEncryptedValue();
-        return EncryptionToken.builder().token(crypt).build();
-    }
-
     public String decode(SecretKey secretKey) {
         var secretValue = AesSecretValue.wrap(token, secretKey);
         return secretValue.getSecretValue();

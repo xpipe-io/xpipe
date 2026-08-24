@@ -22,7 +22,8 @@ public class EventHandler {
     }
 
     public void handle(ErrorEvent ee) {
-        if ((AppProperties.get() != null && AppProperties.get().isAotTrainMode()) || (AppProperties.get() != null && AppProperties.get().isCli())) {
+        if ((AppProperties.get() != null && AppProperties.get().isAotTrainMode())
+                || (AppProperties.get() != null && AppProperties.get().isCli())) {
             new LogErrorHandler().handle(ee);
             if (ee.isTerminal()) {
                 AppOperationMode.halt(1);

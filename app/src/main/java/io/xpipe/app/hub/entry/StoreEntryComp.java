@@ -270,7 +270,8 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
     protected BaseRegionBuilder<?, ?> createScopeIcon() {
         var button = new IconButtonComp("mdi2a-account");
         button.style("user-icon");
-        var identity = getWrapper().getEntry().getProvider() != null && getWrapper().getEntry().getProvider().getCreationCategory() == DataStoreCreationCategory.IDENTITY;
+        var identity = getWrapper().getEntry().getProvider() != null
+                && getWrapper().getEntry().getProvider().getCreationCategory() == DataStoreCreationCategory.IDENTITY;
         button.describe(d -> d.nameKey(identity ? "restrictedIdentity" : "restrictedConnection"));
         button.apply(struc -> {
             AppFontSizes.base(struc);

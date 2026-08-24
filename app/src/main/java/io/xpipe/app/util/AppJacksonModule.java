@@ -23,7 +23,6 @@ import tools.jackson.core.JsonParser;
 import tools.jackson.core.TokenStreamLocation;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.*;
-import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.annotation.JsonSerialize;
 import tools.jackson.databind.jsontype.NamedType;
 import tools.jackson.databind.jsontype.TypeDeserializer;
@@ -33,7 +32,6 @@ import tools.jackson.databind.module.SimpleModule;
 import tools.jackson.databind.node.JsonNodeFactory;
 
 import java.io.CharArrayReader;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -126,8 +124,9 @@ public class AppJacksonModule extends SimpleModule {
     public static class InPlaceSecretValueSerializer extends ValueSerializer<InPlaceSecretValue> {
 
         @Override
-        public void serializeWithType(InPlaceSecretValue value, JsonGenerator gen, SerializationContext ctxt, TypeSerializer typeSer) throws
-                JacksonException {
+        public void serializeWithType(
+                InPlaceSecretValue value, JsonGenerator gen, SerializationContext ctxt, TypeSerializer typeSer)
+                throws JacksonException {
             serialize(value, gen, ctxt);
         }
 
@@ -148,13 +147,13 @@ public class AppJacksonModule extends SimpleModule {
     public static class InPlaceSecretValueDeserializer extends ValueDeserializer<InPlaceSecretValue> {
 
         @Override
-        public Object deserializeWithType(JsonParser p, DeserializationContext ctxt, TypeDeserializer typeDeserializer) throws JacksonException {
+        public Object deserializeWithType(JsonParser p, DeserializationContext ctxt, TypeDeserializer typeDeserializer)
+                throws JacksonException {
             return deserialize(p, ctxt);
         }
 
         @Override
-        public InPlaceSecretValue deserialize(JsonParser p, DeserializationContext ctxt) throws
-                JacksonException {
+        public InPlaceSecretValue deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException {
             JsonNode tree = JacksonMapper.getDefault().readTree(p);
             if (tree.isString()) {
                 return InPlaceSecretValue.of(tree.stringValue());
@@ -170,7 +169,9 @@ public class AppJacksonModule extends SimpleModule {
                 return null;
             }
 
-            return InPlaceSecretValue.builder().encryptedValue(enc.stringValue()).build();
+            return InPlaceSecretValue.builder()
+                    .encryptedValue(enc.stringValue())
+                    .build();
         }
     }
 
@@ -522,7 +523,8 @@ public class AppJacksonModule extends SimpleModule {
             var e = DataStorage.get()
                     .getStoreEntryIfPresent(id)
                     .filter(dataStoreEntry -> dataStoreEntry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED
-                            || (dataStoreEntry.getStoreNode() != null && !dataStoreEntry.getStoreNode().isAccessible()))
+                            || (dataStoreEntry.getStoreNode() != null
+                                    && !dataStoreEntry.getStoreNode().isAccessible()))
                     .orElse(null);
             if (e == null) {
                 return null;

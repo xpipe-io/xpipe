@@ -27,11 +27,6 @@ public class CacheableConfiguration<T> {
         });
     }
 
-    public void update(T val) {
-        AppCache.update(cacheKey, val);
-        value.set(val);
-    }
-
     public T get() {
         return value.get();
     }

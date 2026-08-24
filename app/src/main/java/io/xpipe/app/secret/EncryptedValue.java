@@ -56,10 +56,6 @@ public class EncryptedValue<T> {
         return new EncryptedValue<>(valueJson, value, secret.withUpdatedPrincipals(), encrypted);
     }
 
-    public EncryptedValue<T> with(DataStoreAccessScope scope) {
-        return with(value, scope);
-    }
-
     public EncryptedValue<T> with(T value, DataStoreAccessScope scope) {
         if (value == null) {
             return null;

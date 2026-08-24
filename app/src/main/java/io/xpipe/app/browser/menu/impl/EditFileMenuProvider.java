@@ -48,10 +48,10 @@ public class EditFileMenuProvider implements BrowserMenuLeafProvider {
     @Override
     public KeyCombination getShortcut() {
         return switch (OsType.ofLocal()) {
-            case OsType.Linux linux -> new KeyCodeCombination(KeyCode.ENTER, KeyCombination.SHORTCUT_DOWN);
-            case OsType.MacOs macOs ->
+            case OsType.Linux ignored -> new KeyCodeCombination(KeyCode.ENTER, KeyCombination.SHORTCUT_DOWN);
+            case OsType.MacOs ignored ->
                 new KeyCodeCombination(KeyCode.DOWN, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN);
-            case OsType.Windows windows -> new KeyCodeCombination(KeyCode.ENTER, KeyCombination.SHORTCUT_DOWN);
+            case OsType.Windows ignored -> new KeyCodeCombination(KeyCode.ENTER, KeyCombination.SHORTCUT_DOWN);
         };
     }
 

@@ -24,8 +24,10 @@ public class DataStoreAccessScope {
 
         var matching = DataStorageAccessHandler.getInstance().getAllEncryptionPrincipals().stream()
                 .filter(encryptionPrincipal -> {
-            return effectiveScopes.stream().allMatch(s -> s.getPrincipals().contains(encryptionPrincipal));
-        }).collect(Collectors.toSet());
+                    return effectiveScopes.stream()
+                            .allMatch(s -> s.getPrincipals().contains(encryptionPrincipal));
+                })
+                .collect(Collectors.toSet());
         return !matching.isEmpty() ? of(matching) : DataStoreAccessScope.of(Set.of(EncryptionPrincipal.inaccessible()));
     }
 

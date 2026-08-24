@@ -37,7 +37,7 @@ public class AppExtensionManager {
     @Getter
     private ModuleLayer extendedLayer;
 
-    public static synchronized void init() throws Exception {
+    public static synchronized void init() {
         if (INSTANCE != null) {
             return;
         }

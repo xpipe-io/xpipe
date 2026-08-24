@@ -25,10 +25,6 @@ public interface PublicKeyStrategy {
             this.publicKey = publicKey;
         }
 
-        public String get() {
-            return publicKey;
-        }
-
         private Optional<String> getFixedPublicKey() {
             return Optional.ofNullable(publicKey);
         }

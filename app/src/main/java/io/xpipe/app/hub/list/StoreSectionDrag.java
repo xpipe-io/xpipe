@@ -25,8 +25,6 @@ public class StoreSectionDrag {
 
         Optional<StoreSection> getSectionTarget();
 
-        Optional<StoreCategoryWrapper> getCategoryTarget();
-
         void execute(List<StoreEntryWrapper> selection);
     }
 
@@ -44,11 +42,6 @@ public class StoreSectionDrag {
         }
 
         @Override
-        public Optional<StoreCategoryWrapper> getCategoryTarget() {
-            return Optional.empty();
-        }
-
-        @Override
         public void execute(List<StoreEntryWrapper> selection) {}
     }
 
@@ -61,11 +54,6 @@ public class StoreSectionDrag {
         @Override
         public Optional<StoreSection> getSectionTarget() {
             return Optional.of(target);
-        }
-
-        @Override
-        public Optional<StoreCategoryWrapper> getCategoryTarget() {
-            return Optional.empty();
         }
 
         @Override
@@ -103,11 +91,6 @@ public class StoreSectionDrag {
         }
 
         @Override
-        public Optional<StoreCategoryWrapper> getCategoryTarget() {
-            return Optional.empty();
-        }
-
-        @Override
         public void execute(List<StoreEntryWrapper> selection) {
             var parent = StoreViewState.get()
                     .getParentSectionForWrapper(target.getWrapper())
@@ -125,11 +108,6 @@ public class StoreSectionDrag {
         @Override
         public Order getOrder() {
             return null;
-        }
-
-        @Override
-        public Optional<StoreCategoryWrapper> getCategoryTarget() {
-            return Optional.of(this.target);
         }
 
         @Override
@@ -160,11 +138,13 @@ public class StoreSectionDrag {
             var allSameParent = selection.stream().allMatch(wrapper -> DataStorage.get()
                     .getDefaultDisplayParent(wrapper.getEntry())
                     .equals(defParent));
-            if (allSameParent && defParent.isPresent()
+            if (allSameParent
+                    && defParent.isPresent()
                     && parent.get().getWrapper() != null
                     && defParent.get().equals(parent.get().getEntry())) {
                 return true;
-            } else if (allSameParent && defParent.isPresent()
+            } else if (allSameParent
+                    && defParent.isPresent()
                     && defParent.get().equals(section.getWrapper().getEntry())) {
                 return true;
             }

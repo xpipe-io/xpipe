@@ -46,9 +46,9 @@ public class RenameMenuProvider implements BrowserMenuLeafProvider {
     @Override
     public KeyCombination getShortcut() {
         return switch (OsType.ofLocal()) {
-            case OsType.Linux linux -> new KeyCodeCombination(KeyCode.F2);
-            case OsType.MacOs macOs -> new KeyCodeCombination(KeyCode.ENTER);
-            case OsType.Windows windows -> new KeyCodeCombination(KeyCode.F2);
+            case OsType.Linux ignored -> new KeyCodeCombination(KeyCode.F2);
+            case OsType.MacOs ignored -> new KeyCodeCombination(KeyCode.ENTER);
+            case OsType.Windows ignored -> new KeyCodeCombination(KeyCode.F2);
         };
     }
 

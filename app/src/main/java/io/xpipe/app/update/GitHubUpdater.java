@@ -49,8 +49,8 @@ public class GitHubUpdater extends UpdateHandler {
     }
 
     public void prepareUpdateImpl() throws Exception {
-        var downloadFile =
-                AppDownloads.downloadArtifact(AppRelease.ofInstaller(lastUpdateCheckResult.getValue().getVersion()));
+        var downloadFile = AppDownloads.downloadArtifact(
+                AppRelease.ofInstaller(lastUpdateCheckResult.getValue().getVersion()));
         var changelogString =
                 AppDownloads.downloadChangelog(lastUpdateCheckResult.getValue().getVersion());
         var rel = new PreparedUpdate(

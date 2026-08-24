@@ -245,7 +245,7 @@ public class SystemIconCache {
         g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
         g.setRenderingHint(SVGRenderingHints.KEY_IMAGE_ANTIALIASING, SVGRenderingHints.VALUE_IMAGE_ANTIALIASING_ON);
         g.setRenderingHint(SVGRenderingHints.KEY_SOFT_CLIPPING, SVGRenderingHints.VALUE_SOFT_CLIPPING_ON);
-        svgDocument.render((Component) null, g, new ViewBox(0, 0, px, px));
+        svgDocument.render(null, g, new ViewBox(0, 0, px, px));
         g.dispose();
         return image;
     }

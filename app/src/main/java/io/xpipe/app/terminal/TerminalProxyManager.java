@@ -42,7 +42,8 @@ public class TerminalProxyManager {
 
     public static boolean hasConfiguredProxy() {
         var uuid = AppPrefs.get().terminalProxy().getValue();
-        var hasCustomTerminalShell = uuid != null && !DataStorage.get().local().getUuid().equals(uuid);
+        var hasCustomTerminalShell =
+                uuid != null && !DataStorage.get().local().getUuid().equals(uuid);
         if (!hasCustomTerminalShell) {
             return false;
         }

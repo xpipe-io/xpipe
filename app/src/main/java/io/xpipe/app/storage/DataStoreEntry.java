@@ -371,8 +371,7 @@ public class DataStoreEntry extends DataStorageElement {
 
         // Check whether we need to write the node due to external changes
 
-        var currentScope = store instanceof AccessScopeStore s ? s.getAccessScope()
-                : DataStoreAccessScope.encryption();
+        var currentScope = store instanceof AccessScopeStore s ? s.getAccessScope() : DataStoreAccessScope.encryption();
         var targetScope = DataStoreAccessScope.getTargetScope(currentScope);
 
         var shouldEncrypt = (encryptIfRestricted && currentScope.isAccessSubRestricted())

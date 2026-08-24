@@ -198,9 +198,15 @@ public class StoreSection {
             var w = selection.get(i);
             w.orderWithIndex(start + (i + 1) * inc);
 
-            var isChildInSelection = selection.stream().anyMatch(other -> StoreViewState.get()
-                    .getSectionForWrapper(other).orElseThrow().getAllChildren().getList()
-                    .stream().anyMatch(child -> child.getWrapper().equals(w)));
+            var isChildInSelection = selection.stream()
+                    .anyMatch(other ->
+                            StoreViewState.get()
+                                    .getSectionForWrapper(other)
+                                    .orElseThrow()
+                                    .getAllChildren()
+                                    .getList()
+                                    .stream()
+                                    .anyMatch(child -> child.getWrapper().equals(w)));
             if (!isChildInSelection) {
                 DataStorage.get().setPinToTop(w.getEntry(), topLevel);
             }

@@ -259,9 +259,8 @@ public class StoreEntryWrapper {
             var provider = getEntry().getProvider();
             if (provider != null) {
                 var providerName = AppI18n.get(provider.getId() + ".displayName");
-                shownDescription.setValue(AppPrefs.get().censorMode().get()
-                        ? "*".repeat(providerName.length())
-                        : providerName);
+                shownDescription.setValue(
+                        AppPrefs.get().censorMode().get() ? "*".repeat(providerName.length()) : providerName);
             } else {
                 shownDescription.setValue(null);
             }
@@ -459,10 +458,6 @@ public class StoreEntryWrapper {
 
     public void orderWithIndex(double index) {
         DataStorage.get().setOrderIndex(entry, index);
-    }
-
-    public void expand() {
-        this.expanded.set(true);
     }
 
     public void toggleExpanded() {

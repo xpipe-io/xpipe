@@ -115,10 +115,6 @@ public class HttpProxy {
                 + port;
     }
 
-    public boolean hasAuth() {
-        return user != null && password != null;
-    }
-
     String host;
     int port;
     String user;

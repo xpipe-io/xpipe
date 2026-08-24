@@ -205,12 +205,6 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
                 var minY = new SimpleDoubleProperty();
                 var maxY = new SimpleDoubleProperty();
 
-                Node finalC = c;
-                c.boundsInParentProperty().addListener((observable1, oldValue1, newValue1) -> {
-                    var d = finalC;
-                    int a = 0;
-                });
-
                 c.boundsInParentProperty().subscribe(v -> {
                     if (Math.abs(minY.get() - v.getMinY()) > 5.0) {
                         minY.set(v.getMinY());

@@ -277,23 +277,4 @@ public class DerivedObservableList<T> {
         });
         return d;
     }
-
-    public DerivedObservableList<T> blockUpdatesIf(ObservableBooleanValue block) {
-        var d = this.<T>createNewDerived();
-        Runnable runnable = () -> {
-            d.setContent(list);
-        };
-        runnable.run();
-        list.addListener((ListChangeListener<? super T>) c -> {
-            if (!block.getValue()) {
-                runnable.run();
-            }
-        });
-        block.addListener(observable -> {
-            if (!block.getValue()) {
-                runnable.run();
-            }
-        });
-        return d;
-    }
 }

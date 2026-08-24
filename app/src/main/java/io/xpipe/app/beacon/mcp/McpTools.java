@@ -1,7 +1,5 @@
 package io.xpipe.app.beacon.mcp;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.Nulls;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BeaconClientException;
 import io.xpipe.app.beacon.BeaconInterface;
@@ -24,6 +22,7 @@ import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.HttpHelper;
 import io.xpipe.app.util.JacksonMapper;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.modelcontextprotocol.json.jackson3.JacksonMcpJsonMapper;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
@@ -162,7 +161,8 @@ public final class McpTools {
 
                     JsonMapper mapper = JacksonMapper.getDefault()
                             .rebuild()
-                            .changeDefaultPropertyInclusion(value -> value.withValueInclusion(JsonInclude.Include.NON_NULL))
+                            .changeDefaultPropertyInclusion(
+                                    value -> value.withValueInclusion(JsonInclude.Include.NON_NULL))
                             .build();
                     var json = JsonNodeFactory.instance.arrayNode();
                     for (var e : list) {

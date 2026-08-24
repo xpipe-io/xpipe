@@ -162,11 +162,13 @@ public enum DocumentationLink {
         return getRoot() + "/" + page;
     }
 
+    @SuppressWarnings("unused")
     public static void testDeadLinks() {
         for (DocumentationLink link : DocumentationLink.values()) {
             var url = URI.create(link.getLink());
             try {
-                var res = HttpHelper.client().send(HttpRequest.newBuilder().GET().uri(url).build(), HttpResponse.BodyHandlers.ofString());
+                var res = HttpHelper.client()
+                        .send(HttpRequest.newBuilder().GET().uri(url).build(), HttpResponse.BodyHandlers.ofString());
                 HttpHelper.checkOrThrow(res);
                 var body = res.body();
                 if (body.contains("404: This page could not be found.")) {

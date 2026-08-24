@@ -13,7 +13,6 @@ public class TerminalMultiplexerManager {
     private static final Map<UUID, TerminalMultiplexer> connectionHubRequests = new HashMap<>();
     private static UUID pendingMultiplexerLaunch;
     private static UUID runningMultiplexerContainer;
-    private static TerminalMultiplexer runningMultiplexerContainerType;
     private static Boolean availableOnWindows;
 
     public static void registerMultiplexerContainerLaunch(UUID uuid) {
@@ -24,7 +23,6 @@ public class TerminalMultiplexerManager {
                 if (session.getRequest().equals(pendingMultiplexerLaunch)) {
                     pendingMultiplexerLaunch = null;
                     runningMultiplexerContainer = uuid;
-                    runningMultiplexerContainerType = getEffectiveMultiplexer().orElse(null);
                 }
             }
 
@@ -40,7 +38,6 @@ public class TerminalMultiplexerManager {
                         .count();
                 if (left == 0) {
                     runningMultiplexerContainer = null;
-                    runningMultiplexerContainerType = null;
                     TerminalView.get().removeListener(this);
                 }
             }
@@ -126,7 +123,6 @@ public class TerminalMultiplexerManager {
                 ThreadHelper.sleep(100);
             }
         }
-
     }
 
     public static void registerSessionLaunch(TerminalLaunchConfiguration configuration) {

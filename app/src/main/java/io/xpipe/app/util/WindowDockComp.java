@@ -192,7 +192,8 @@ public class WindowDockComp<T extends WindowDockListener> extends SimpleRegionBu
 
             synchronized (this) {
                 if (syncCounter.get() == currentCounter) {
-                    model.resizeView((int) Math.round(x), (int) Math.round(y), (int) Math.round(w), (int) Math.round(h));
+                    model.resizeView(
+                            (int) Math.round(x), (int) Math.round(y), (int) Math.round(w), (int) Math.round(h));
                 }
             }
         });

@@ -79,13 +79,6 @@ public class StoreEntryInformation {
                 .toList());
     }
 
-    public StoreEntryInformation prepend(StoreEntryInformation information) {
-        var l = new ArrayList<StoreEntryBadge>();
-        l.addAll(information.getBadges());
-        l.addAll(badges);
-        return new StoreEntryInformation(l);
-    }
-
     public StoreEntryInformation append(StoreEntryInformation information) {
         var l = new ArrayList<>(badges);
         l.addAll(information.getBadges());

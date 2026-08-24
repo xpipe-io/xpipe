@@ -214,12 +214,6 @@ public class SystemIconManager {
         reloadImages();
     }
 
-    public static synchronized void reloadSourceHashes() throws Exception {
-        Files.createDirectories(DIRECTORY);
-        reloadSources();
-        sourceHash = calculateSourceHash();
-    }
-
     public static synchronized void loadAllAvailableIconImages() {
         for (SystemIcon icon : getIcons()) {
             getAndLoadIconFile(icon, false);
