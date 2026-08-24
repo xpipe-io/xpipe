@@ -122,7 +122,7 @@ public abstract class AppOperationMode {
                     throw ExtensionException.corrupt("Missing cli module");
                 }
                 var r = cli.execute(
-                        AppProperties.get().getArguments().getResolvedArgs().toArray(String[]::new));
+                        AppProperties.get().getArguments().getRawArgs().toArray(String[]::new));
                 if (AppProperties.get().isAotTrainMode()) {
                     r = 0;
                 }

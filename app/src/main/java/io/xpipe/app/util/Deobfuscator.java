@@ -60,7 +60,7 @@ public class Deobfuscator {
 
         // We probably can't run .bat scripts in this case
         if (OsType.ofLocal() == OsType.WINDOWS
-                && ProcModuleProvider.get().getEffectiveLocalDialect() != ShellDialects.CMD) {
+                && ProcModuleProvider.get() != null && ProcModuleProvider.get().getEffectiveLocalDialect() != ShellDialects.CMD) {
             return false;
         }
 

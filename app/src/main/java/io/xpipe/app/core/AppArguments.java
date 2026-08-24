@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 public class AppArguments {
 
     private static final Pattern PROPERTY_PATTERN = Pattern.compile("^-[DP](.+)=(.+)$");
+
     List<String> rawArgs;
     List<String> resolvedArgs;
     List<String> daemonOpenArgs;
