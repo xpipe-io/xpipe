@@ -1,8 +1,6 @@
 package io.xpipe.app.action;
 
 import java.net.URI;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 public interface LauncherUrlProvider extends ActionProvider {

@@ -1,10 +1,6 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.fs.FileKind;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.prefs.ExternalApplicationHelper;
-import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.ShellControl;
 
 import java.awt.*;
 import java.net.URI;

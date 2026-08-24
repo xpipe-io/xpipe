@@ -2,8 +2,8 @@ package io.xpipe.app.process;
 
 import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
-
 import io.xpipe.app.util.FailableConsumer;
+
 import lombok.SneakyThrows;
 
 import java.util.HashMap;
@@ -28,7 +28,8 @@ public class LocalShell {
         return sc;
     }
 
-    public static synchronized ShellControl get(Object key, FailableConsumer<ShellControl, Exception> func) throws Exception {
+    public static synchronized ShellControl get(Object key, FailableConsumer<ShellControl, Exception> func)
+            throws Exception {
         var found = localShellInstances.get(key);
         if (found != null) {
             var wasRunning = found.isRunning(true);
