@@ -74,6 +74,8 @@ public interface ShellDialect {
 
     String addToPathVariableCommand(List<String> entries, boolean append);
 
+    String formatError(String err);
+
     default String applyInitFileCommand(ShellControl sc) throws Exception {
         return null;
     }
