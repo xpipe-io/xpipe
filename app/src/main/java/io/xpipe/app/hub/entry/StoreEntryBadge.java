@@ -6,6 +6,7 @@ import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.platform.ClipboardHelper;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.MenuHelper;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.store.HostAddressStore;
 import io.xpipe.app.util.*;
 
@@ -208,11 +209,11 @@ public interface StoreEntryBadge {
         var busy = new SimpleBooleanProperty();
         return of("mdi2s-server-network-outline", effective).withAction((wrapper, b) -> {
             b.opacityProperty()
-                    .bind(Bindings.createDoubleBinding(
+                    .bind(PlatformThread.sync(Bindings.createDoubleBinding(
                             () -> {
                                 return busy.get() ? 0.5 : 1.0;
                             },
-                            busy));
+                            busy)));
 
             if (wrapper.getEntry().getStore() instanceof HostAddressStore has) {
                 if (busy.get()) {

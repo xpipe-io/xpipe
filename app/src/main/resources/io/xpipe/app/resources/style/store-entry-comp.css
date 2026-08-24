@@ -346,6 +346,7 @@
 .store-entry-badge:hover {
     -fx-background-color: -color-bg-default-transparent;
     -fx-border-color: -color-accent-muted;
+    -fx-cursor: hand;
 }
 
 .root:nord .store-entry-badge {
