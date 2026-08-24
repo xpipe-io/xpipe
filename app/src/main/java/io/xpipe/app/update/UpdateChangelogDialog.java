@@ -6,6 +6,7 @@ import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLogs;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
@@ -22,7 +23,7 @@ public class UpdateChangelogDialog {
 
     public static void showIfNeeded() {
         var update = AppDistributionType.get().getUpdateHandler().getPerformedUpdate();
-        if (update != null && !AppDistributionType.get().getUpdateHandler().isUpdateSucceeded()) {
+        if (update != null && !AppDistributionType.get().getUpdateHandler().isUpdateSucceeded() && System.getProperty("io.xpipe.app.portableMigration") == null) {
             ErrorEvent.ErrorEventBuilder eventBuilder = ErrorEventFactory.fromMessage(AppI18n.get("updateFail"))
                     .documentationLink(DocumentationLink.UPDATE_FAIL)
                     .customAction(ErrorAction.translated("updateFailAction", () -> {

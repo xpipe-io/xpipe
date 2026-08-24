@@ -28,7 +28,7 @@ public class DataStorageMigrationDialog {
         modal.addButtonBarComp(RegionBuilder.hspacer());
         modal.addButton(ModalButton.cancel());
         modal.addButton(new ModalButton(
-                        "apply",
+                        "migrate",
                         () -> {
                             ThreadHelper.runFailableAsync(() -> {
                                 if (busy.get()) {
@@ -57,7 +57,7 @@ public class DataStorageMigrationDialog {
                     button.textProperty()
                             .bind(Bindings.createStringBinding(
                                     () -> {
-                                        return !busy.get() ? AppI18n.get("apply") : null;
+                                        return !busy.get() ? AppI18n.get("migrate") : null;
                                     },
                                     PlatformThread.sync(busy),
                                     AppI18n.activeLanguage()));;
