@@ -31,8 +31,15 @@ public class FileOpener {
             return;
         }
 
+        var path = Path.of(localFile);
         try {
-            editor.launch(Path.of(localFile).toRealPath());
+            path = path.toRealPath();
+        } catch (IOException e) {
+            ErrorEventFactory.fromThrowable(e).expected().handle();
+        }
+
+        try {
+            editor.launch(path);
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(
                             "Unable to launch editor "
