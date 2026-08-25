@@ -109,6 +109,22 @@ public class DataStoreEntryNode<T> {
         }
     }
 
+    public DataStoreEntryNode<T> with(T newValue) {
+        if (newValue == null) {
+            return null;
+        }
+
+        if (newValue.equals(enc.getValue())) {
+            return this;
+        }
+
+        return new DataStoreEntryNode<>(
+                isEncrypted()
+                        ? EncryptedValue.of(newValue, enc.getSecret().getScope())
+                        : EncryptedValue.ofRaw(newValue),
+                false);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof DataStoreEntryNode<?> that)) {

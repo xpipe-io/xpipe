@@ -35,7 +35,8 @@ public class FileOpener {
         try {
             path = path.toRealPath();
         } catch (IOException e) {
-            ErrorEventFactory.fromThrowable(e).expected().handle();
+            ErrorEventFactory.fromThrowable(e).description("Unable to resolve link").expected().handle();
+            return;
         }
 
         try {

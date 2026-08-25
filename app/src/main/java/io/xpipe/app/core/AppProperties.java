@@ -77,8 +77,15 @@ public class AppProperties {
     FilePath localWebtopDockerfile;
 
     public AppProperties(String[] args) {
+        isCli = Optional.ofNullable(System.getProperty(AppNames.propertyName("isCli")))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
+        isDaemon = Optional.ofNullable(System.getProperty(AppNames.propertyName("isDaemon")))
+                .map(Boolean::parseBoolean)
+                .orElse(!isCli);
+
         var appDir = Path.of(System.getProperty("user.dir")).resolve("app");
-        Path propsFile = appDir.resolve("dev.properties");
+        Path propsFile = appDir.resolve(isCli ? "dev-cli.properties" : "dev.properties");
         if (Files.exists(propsFile)) {
             try {
                 Properties props = new Properties();
@@ -188,12 +195,6 @@ public class AppProperties {
         localWebtopDockerfile = Optional.ofNullable(System.getProperty(AppNames.propertyName("localWebtopDockerfile")))
                 .map(s -> FilePath.parse(s))
                 .orElse(null);
-        isCli = Optional.ofNullable(System.getProperty(AppNames.propertyName("isCli")))
-                .map(Boolean::parseBoolean)
-                .orElse(false);
-        isDaemon = Optional.ofNullable(System.getProperty(AppNames.propertyName("isDaemon")))
-                .map(Boolean::parseBoolean)
-                .orElse(!isCli);
 
         // We require the user dir from here
         AppDirectoryPermissionsCheck.checkDirectory(dataDir);

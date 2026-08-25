@@ -324,6 +324,7 @@ project.ext {
     obfuscate = true
     fullVersion = file("$rootDir/private_files.txt").exists()
     bundleCds = ci && fullVersion
+    debugCli = false
 
     // Names
     productName = isStage ? 'XPipe PTB' : 'XPipe'

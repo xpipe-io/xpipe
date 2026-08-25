@@ -755,7 +755,7 @@ public class DataStoreEntry extends DataStorageElement {
             if (!newComplete) {
                 var changed = !Objects.equals(getStore(), newStore) || validity != Validity.INCOMPLETE;
                 validity = Validity.INCOMPLETE;
-                storeNode = DataStoreEntryNode.of(newStore);
+                storeNode = storeNode.with(newStore);
                 provider = DataStoreProvider.byStore(getStore());
                 if (changed) {
                     notifyUpdate(false, false);
@@ -776,7 +776,7 @@ public class DataStoreEntry extends DataStorageElement {
         }
         var storeChanged = !Objects.equals(getStore(), newStore);
         if (storeChanged) {
-            storeNode = DataStoreEntryNode.of(newStore);
+            storeNode = storeNode.with(newStore);
             provider = DataStoreProvider.byStore(getStore());
         }
         var changed =

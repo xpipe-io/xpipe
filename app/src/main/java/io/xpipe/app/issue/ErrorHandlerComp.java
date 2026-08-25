@@ -99,19 +99,12 @@ public class ErrorHandlerComp extends SimpleRegionBuilder {
         String lastLine = desc;
         Throwable t = event.getThrowable();
         while (t != null) {
-            var toAppend = t.getMessage() != null
-                    ? t.getMessage()
-                    : AppI18n.get("errorTypeOccurred", t.getClass().getSimpleName());
+            var toAppend = ErrorEventFactory.formatThrowableMessage(t);
             if (!Objects.equals(toAppend, lastLine)) {
                 desc = desc != null ? desc + "\n\n" + toAppend : toAppend;
                 lastLine = toAppend;
             }
             t = t.getCause() != t && !(t instanceof ProcessOutputException) ? t.getCause() : null;
-        }
-
-        if (desc == null && event.getThrowable() != null) {
-            desc = AppI18n.get(
-                    "errorNoExceptionMessage", event.getThrowable().getClass().getSimpleName());
         }
 
         if (desc == null) {

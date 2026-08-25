@@ -34,6 +34,7 @@ import atlantafx.base.util.Animations;
 import net.synedra.validatorfx.GraphicDecorationStackPane;
 
 import java.time.Instant;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 public class ModalOverlayComp extends RegionBuilder<Region> {
@@ -237,13 +238,28 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
             for (var o : newValue.getButtons()) {
                 var node = o instanceof ModalButton mb ? toButton(mb) : ((BaseRegionBuilder<?, ?>) o).build();
                 if (o instanceof ModalButton) {
+                    // Make sure that all button retain the correct min width
+                    var maxNode = new AtomicReference<Region>();
                     node.widthProperty().addListener((observable, oldValue, n) -> {
                         var d = Math.clamp(n.doubleValue(), 70.0, 200.0);
                         if (d > max.get()) {
                             max.set(d);
+                            maxNode.set(node);
                         }
                     });
-                    node.minWidthProperty().bind(max);
+                    // Let largest button use its own pref size to always take the pref width, even if constrained
+                    // and make users use max size
+                    node.minWidthProperty().bind(Bindings.createDoubleBinding(() -> {
+                        if (node.equals(maxNode.get())) {
+                            if (node.getWidth() <= 70) {
+                                return 70.0;
+                            } else {
+                                return Region.USE_PREF_SIZE;
+                            }
+                        } else {
+                            return max.get();
+                        }
+                    }, node.widthProperty(), max));
                     node.prefHeightProperty().bind(buttonBar.heightProperty());
                 }
                 buttonBar.getChildren().add(node);
