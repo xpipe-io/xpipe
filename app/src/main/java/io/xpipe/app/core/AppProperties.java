@@ -132,12 +132,11 @@ public class AppProperties {
                 .map(Boolean::parseBoolean)
                 .orElse(false);
         defaultReleaseDataDir = AppSystemInfo.ofCurrent().getUserHome().resolve(".xpipe");
-        // TODO: Change this for the release
         defaultDataDir = AppSystemInfo.ofCurrent()
                 .getUserHome()
                 .resolve(
                         isStaging()
-                                ? (Files.exists(Path.of("/apps/available")) ? ".xpipe-ptb" : ".xpipe-ptb-v24")
+                                ? ".xpipe-ptb"
                                 : ".xpipe");
         dataDir = Optional.ofNullable(System.getProperty(AppNames.propertyName("dataDir")))
                 .map(s -> {
