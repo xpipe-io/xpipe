@@ -59,6 +59,9 @@ public class DataStorageMigration {
 
         if (isMigrated()) {
             EncryptionToken.setMigratedVaultToken(true);
+        } else {
+            AppPrefs.get().setFromExternal(AppPrefs.get().automaticallyUpdate(), false);
+            AppPrefs.get().setFromExternal(AppPrefs.get().checkForSecurityUpdates(), false);
         }
     }
 
@@ -115,5 +118,8 @@ public class DataStorageMigration {
 
         var isTempPortable = System.getProperty("io.xpipe.app.portableMigration") != null;
         DataStorageMigratedDialog.show(hasAuth, isTempPortable);
+
+        AppPrefs.get().setFromExternal(AppPrefs.get().automaticallyUpdate(), true);
+        AppPrefs.get().setFromExternal(AppPrefs.get().checkForSecurityUpdates(), true);
     }
 }

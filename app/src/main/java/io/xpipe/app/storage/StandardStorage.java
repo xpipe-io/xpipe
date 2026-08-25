@@ -332,8 +332,6 @@ public class StandardStorage extends DataStorage {
             }
 
             DataStorageMigration.init();
-
-            Files.writeString(dir.resolve("vaultversion"), AppProperties.get().getVersion());
         } catch (IOException e) {
             ErrorEventFactory.fromThrowable("Unable to load vault version data", e)
                     .terminal(true)
