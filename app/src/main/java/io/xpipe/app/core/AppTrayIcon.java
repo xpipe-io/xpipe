@@ -45,13 +45,17 @@ public class AppTrayIcon {
         {
             var quit = new MenuItem(AppI18n.get("quit"));
             quit.addActionListener(e -> {
-                tray.remove(trayIcon);
+                trayIcon.setPopupMenu(null);
                 AppOperationMode.shutdown(false);
             });
             popupMenu.add(quit);
         }
 
         trayIcon.addActionListener(e -> {
+            if (AppOperationMode.isInShutdown()) {
+                return;
+            }
+
             if (OsType.ofLocal() != OsType.MACOS) {
                 tray.remove(trayIcon);
                 AppOperationMode.switchToAsync(AppOperationMode.GUI);

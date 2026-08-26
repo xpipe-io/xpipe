@@ -21,6 +21,7 @@ import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.app.platform.PlatformState;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.WorkspaceManager;
 import io.xpipe.app.process.LocalShell;
@@ -228,6 +229,12 @@ public class AppBaseMode extends AppOperationMode {
         BrowserLocalFileSystem.reset();
         ProcModuleProvider.get().reset();
         AppBeaconServer.reset();
+
+        AppMainWindow.get().hide();
+        if (AppTray.get() != null) {
+            PlatformThread.runLaterIfNeededBlocking(() -> AppTray.get().hide());
+        }
+
         StoreViewState.reset();
         StoreFilterState.reset();
         AppLayoutModel.reset();
