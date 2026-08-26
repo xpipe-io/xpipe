@@ -61,7 +61,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                     if (AppLogs.get().isWriteToFile()) {
                                         event.attachment(AppLogs.get().getSessionLogsDirectory());
                                     }
-                                    UserReportComp.show(event.build());
+                                    UserReportComp.show(event.build(), true);
                                     e.consume();
                                 })
                                 .maxWidth(2000),

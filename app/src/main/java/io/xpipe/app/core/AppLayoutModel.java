@@ -298,7 +298,7 @@ public class AppLayoutModel {
                     if (AppLogs.get().isWriteToFile()) {
                         event.attachment(AppLogs.get().getSessionLogsDirectory());
                     }
-                    UserReportComp.show(event.build());
+                    UserReportComp.show(event.build(), true);
                 },
                 null));
 

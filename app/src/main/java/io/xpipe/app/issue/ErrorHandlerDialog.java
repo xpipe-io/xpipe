@@ -63,7 +63,7 @@ public class ErrorHandlerDialog {
                         .addButton(new ModalButton(
                                 "report",
                                 () -> {
-                                    if (UserReportComp.show(event)) {
+                                    if (UserReportComp.show(event, false)) {
                                         reported.set(true);
                                     }
                                 },

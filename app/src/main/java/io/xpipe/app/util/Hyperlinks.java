@@ -8,6 +8,7 @@ public class Hyperlinks {
     public static final String TRANSLATE = "https://github.com/xpipe-io/xpipe/tree/master/lang";
     public static final String DISCORD = "https://discord.gg/8y89vS8cRb";
     public static final String REDDIT = "https://reddit.com/r/xpipe";
+    public static final String REPORTER_PRIVACY_POLICY = "https://docs.xpipe.io/legal/reporter-privacy-policy";
 
     public static void open(String uri) {
         DesktopHelper.openBrowser(uri);
