@@ -189,6 +189,8 @@ public class AppBaseMode extends AppOperationMode {
         // AppGreetingsDialog.showAndWaitIfNeeded();
         TrackEvent.info("Waiting for startup dialogs to close");
         AppDialog.waitForAllDialogsClose();
+        DataStorageMigration.showLegacyVaultMigrationErrorIfNeeded();
+        ThreadHelper.sleep(100);
         UpdateChangelogDialog.showIfNeeded();
 
         ActionProvider.initProviders();
@@ -196,7 +198,6 @@ public class AppBaseMode extends AppOperationMode {
         StartOnInitStore.init();
 
         AppConfigurationDialog.showIfNeeded();
-        DataStorageMigration.showLegacyVaultMigrationErrorIfNeeded();
 
         TrackEvent.info("Finished base components initialization");
         initialized = true;
