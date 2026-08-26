@@ -544,6 +544,10 @@ public class StandardStorage extends DataStorage {
     }
 
     private void deleteLeftovers() {
+        if (true) {
+            return;
+        }
+
         var storesDir = getStoresDir();
         var categoriesDir = getCategoriesDir();
 

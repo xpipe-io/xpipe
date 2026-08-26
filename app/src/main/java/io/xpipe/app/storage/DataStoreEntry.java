@@ -231,6 +231,10 @@ public class DataStoreEntry extends StorageElement {
         }
 
         var json = mapper.readTree(entryFile.toFile());
+        if (!json.has("uuid")) {
+            return Optional.empty();
+        }
+
         var stateJson = mapper.readTree(stateFile.toFile());
         var uuid = UUID.fromString(json.required("uuid").textValue());
         var categoryUuid = Optional.ofNullable(json.get("categoryUuid"))
