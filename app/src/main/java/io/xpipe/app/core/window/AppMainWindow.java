@@ -8,6 +8,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.NativeWinWindowControl;
@@ -155,7 +156,7 @@ public class AppMainWindow {
 
     public static synchronized void resetContent() {
         PlatformThread.runLaterIfNeededBlocking(() -> {
-            loadingText.setValue(AppI18n.get("savingChanges"));
+            loadingText.setValue(AppI18n.get(DataStorage.get() != null && DataStorage.get().syncEnabled() ? "synchronizingChanges" : "savingChanges"));
             loadedContent.setValue(null);
         });
     }

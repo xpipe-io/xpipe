@@ -135,6 +135,10 @@ public class StoreFilterState {
     }
 
     public void putFilter(String s) {
+        if (s.length() < 2) {
+            return;
+        }
+
         synchronized (recentSearches) {
             var l = recentSearches.getList();
             l.remove(s);

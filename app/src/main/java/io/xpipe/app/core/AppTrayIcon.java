@@ -2,6 +2,7 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.OsType;
 import io.xpipe.app.util.ThreadHelper;
@@ -48,7 +49,7 @@ public class AppTrayIcon {
             var quit = new MenuItem(AppI18n.get("quit"));
             quit.addActionListener(e -> {
                 var closingMenu = new PopupMenu();
-                var mi = new MenuItem(AppI18n.get("savingChanges") + " ...");
+                var mi = new MenuItem(AppI18n.get(DataStorage.get() != null && DataStorage.get().syncEnabled() ? "synchronizingChanges" : "savingChanges") + " ...");
                 closingMenu.add(mi);
                 trayIcon.setPopupMenu(closingMenu);
 
