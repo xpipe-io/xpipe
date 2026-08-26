@@ -6,6 +6,7 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.hub.creation.StoreQuickConnect;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.DerivedObservableList;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.GlobalTimer;
 
 import javafx.application.Platform;
@@ -115,7 +116,7 @@ public class StoreFilterState {
                             return;
                         }
 
-                        Platform.runLater(() -> {
+                        PlatformThread.runLaterIfNeeded(() -> {
                             rawText.setValue(fieldText.getValue());
                         });
                     },

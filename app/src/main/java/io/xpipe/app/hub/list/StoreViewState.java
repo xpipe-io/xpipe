@@ -429,15 +429,6 @@ public class StoreViewState {
                         .map(StoreCategoryWrapper::new)
                         .toList()));
 
-        activeCategory.addListener((observable, oldValue, newValue) -> {
-            DataStorage.get().setSelectedCategory(newValue.getCategory());
-            batchModeSelection.getList().clear();
-            batchModeSelectionSet.clear();
-
-            Platform.runLater(() -> {
-                updateWrappers();
-            });
-        });
         var selected = AppCache.getNonNull("selectedCategory", UUID.class, () -> DataStorage.DEFAULT_CATEGORY_UUID);
         activeCategory.setValue(categories.getList().stream()
                 .filter(storeCategoryWrapper ->
@@ -448,6 +439,17 @@ public class StoreViewState {
                                 storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.DEFAULT_CATEGORY_UUID))
                         .findFirst()
                         .orElseThrow()));
+        DataStorage.get().setSelectedCategory(activeCategory.getValue().getCategory());
+
+        activeCategory.addListener((observable, oldValue, newValue) -> {
+            DataStorage.get().setSelectedCategory(newValue.getCategory());
+            batchModeSelection.getList().clear();
+            batchModeSelectionSet.clear();
+
+            Platform.runLater(() -> {
+                updateWrappers();
+            });
+        });
     }
 
     public void triggerStoreListVisibilityUpdate() {

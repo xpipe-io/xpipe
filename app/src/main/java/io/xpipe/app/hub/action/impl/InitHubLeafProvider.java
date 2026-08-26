@@ -2,6 +2,7 @@ package io.xpipe.app.hub.action.impl;
 
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.list.StoreViewState;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.store.DataStore;
 import io.xpipe.app.util.ThreadHelper;
@@ -16,7 +17,7 @@ public abstract class InitHubLeafProvider<T extends DataStore, O> implements Hub
     public void init() {
         ThreadHelper.runFailableAsync(() -> {
             available = check();
-            Platform.runLater(() -> {
+            PlatformThread.runLaterIfNeeded(() -> {
                 StoreViewState.get().updateWrappers();
             });
         });

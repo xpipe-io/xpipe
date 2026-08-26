@@ -230,7 +230,9 @@ public class AppBaseMode extends AppOperationMode {
         ProcModuleProvider.get().reset();
         AppBeaconServer.reset();
 
-        AppMainWindow.get().hide();
+        if (AppMainWindow.get() != null) {
+            AppMainWindow.get().hide();
+        }
         if (AppTray.get() != null) {
             PlatformThread.runLaterIfNeededBlocking(() -> AppTray.get().hide());
         }
