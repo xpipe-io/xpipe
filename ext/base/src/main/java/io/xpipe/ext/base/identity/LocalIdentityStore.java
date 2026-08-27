@@ -12,25 +12,42 @@ import io.xpipe.app.store.AccessScopeStore;
 import io.xpipe.app.store.DataStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
+import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 import java.util.List;
+import java.util.Objects;
 
 @SuperBuilder(toBuilder = true)
 @JsonTypeName("localIdentity")
 @Jacksonized
-@Value
-@EqualsAndHashCode(callSuper = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString(callSuper = true)
 public class LocalIdentityStore extends IdentityStore implements AccessScopeStore {
 
     String username;
     EncryptedValue<SecretRetrievalStrategy> password;
     EncryptedValue<SshIdentityStrategy> sshIdentity;
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof LocalIdentityStore that)) {
+            return false;
+        }
+        return Objects.equals(username, that.username) &&
+                Objects.equals(password, that.password) &&
+                Objects.equals(sshIdentity, that.sshIdentity);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username, password, sshIdentity);
+    }
 
     @Override
     public DataStoreAccessScope getAccessScope() {

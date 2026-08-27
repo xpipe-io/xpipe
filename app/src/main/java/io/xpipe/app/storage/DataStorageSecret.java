@@ -33,7 +33,7 @@ public class DataStorageSecret {
     private final List<Entry> entries;
 
     private DataStorageSecret(List<Entry> entries, InPlaceSecretValue secret) {
-        this.entries = entries;
+        this.entries = Collections.unmodifiableList(entries);
         this.secret = secret;
     }
 

@@ -58,22 +58,26 @@ public class EncryptedValue<T> {
             return this;
         }
 
-        var valueJson = JacksonMapper.getDefault().valueToTree(value);
+        var newValueJson = JacksonMapper.getDefault().valueToTree(value);
 
         if (secret == null) {
-            if (valueJson.equals(this.valueJson)) {
+            if (newValueJson.equals(this.valueJson)) {
                 return this;
             } else {
-                return new EncryptedValue<>(valueJson, value, null, false);
+                return new EncryptedValue<>(newValueJson, value, null, false);
             }
         }
 
-        var secret = this.secret.withUpdatedPrincipals();
-        if (valueJson.equals(this.valueJson) && secret.equals(this.secret)) {
-            return this;
-        } else {
-            return new EncryptedValue<>(valueJson, value, secret.withUpdatedPrincipals(), encrypted);
+        if (newValueJson.equals(this.valueJson)) {
+            var newSecret = this.secret.withUpdatedPrincipals();
+            if (newSecret.equals(this.secret)) {
+                return this;
+            }
         }
+
+        var s = newValueJson.toPrettyString();
+        var newSecret = secret.with(new InPlaceSecretValue(s.toCharArray()), secret.getScope());
+        return new EncryptedValue<>(newValueJson, value, newSecret, encrypted);
     }
 
     public EncryptedValue<T> with(T value, DataStoreAccessScope scope) {
@@ -83,23 +87,23 @@ public class EncryptedValue<T> {
 
         var encryptionUnchanged = (secret == null && scope == null) || (secret != null && scope != null && secret.matchesScope(scope));
 
-        var valueJson = JacksonMapper.getDefault().valueToTree(value);
+        var newValueJson = JacksonMapper.getDefault().valueToTree(value);
 
-        if (value.equals(this.value) && valueJson.equals(this.valueJson) && encryptionUnchanged) {
+        if (value.equals(this.value) && newValueJson.equals(this.valueJson) && encryptionUnchanged) {
             return this;
         }
 
-        if (valueJson.equals(this.valueJson) && encryptionUnchanged) {
-            return new EncryptedValue<>(valueJson, value, secret, encrypted);
+        if (newValueJson.equals(this.valueJson) && encryptionUnchanged) {
+            return new EncryptedValue<>(newValueJson, value, secret, encrypted);
         }
 
         if (scope == null) {
-            return new EncryptedValue<>(valueJson, value, null, false);
+            return new EncryptedValue<>(newValueJson, value, null, false);
         }
 
-        var s = valueJson.toPrettyString();
+        var s = newValueJson.toPrettyString();
         var newSecret = secret != null ? secret.with(new InPlaceSecretValue(s.toCharArray()), scope) : null;
-        return new EncryptedValue<>(valueJson, value, newSecret, encrypted);
+        return new EncryptedValue<>(newValueJson, value, newSecret, encrypted);
     }
 
     @SuppressWarnings("unchecked")
@@ -118,7 +122,7 @@ public class EncryptedValue<T> {
 
     @Override
     public int hashCode() {
-        return encrypted ? Objects.hash(value, secret.getScope()) : Objects.hash(value);
+        return encrypted ? Objects.hash(value, valueJson, secret.getScope()) : Objects.hash(value, valueJson);
     }
 
     @Override
@@ -127,6 +131,7 @@ public class EncryptedValue<T> {
             return false;
         }
         return Objects.equals(value, that.value)
+                && Objects.equals(valueJson, that.valueJson)
                 && (encrypted == that.encrypted)
                 && (!encrypted || Objects.equals(secret.getScope(), that.secret.getScope()));
     }

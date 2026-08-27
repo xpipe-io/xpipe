@@ -4,6 +4,7 @@ import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellControlFunction;
 import io.xpipe.app.process.ShellStoreState;
+import io.xpipe.app.storage.DataStoreAccessScope;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @JsonTypeName("local")
 @Value
-public class LocalStore implements NetworkTunnelStore, ShellStore, StatefulDataStore<ShellStoreState> {
+public class LocalStore implements NetworkTunnelStore, ShellStore, StatefulDataStore<ShellStoreState>, AccessScopeStore {
 
     @Override
     public Class<ShellStoreState> getStateClass() {
@@ -52,5 +53,10 @@ public class LocalStore implements NetworkTunnelStore, ShellStore, StatefulDataS
     @Override
     public List<DataStoreEntryRef<?>> getDependencies() {
         return List.of();
+    }
+
+    @Override
+    public DataStoreAccessScope getAccessScope() {
+        return DataStoreAccessScope.vault();
     }
 }

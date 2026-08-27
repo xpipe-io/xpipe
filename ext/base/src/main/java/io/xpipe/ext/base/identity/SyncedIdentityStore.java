@@ -15,18 +15,20 @@ import io.xpipe.app.util.ValidationException;
 import io.xpipe.app.util.Validators;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
+import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 import java.util.List;
+import java.util.Objects;
 
 @SuperBuilder
 @JsonTypeName("syncedIdentity")
-@Value
-@EqualsAndHashCode(callSuper = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString(callSuper = true)
 @Jacksonized
 public class SyncedIdentityStore extends IdentityStore implements AccessScopeStore {
@@ -35,6 +37,22 @@ public class SyncedIdentityStore extends IdentityStore implements AccessScopeSto
     EncryptedValue<SecretRetrievalStrategy> password;
     EncryptedValue<SshIdentityStrategy> sshIdentity;
     DataStoreAccessScope accessScope;
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof SyncedIdentityStore that)) {
+            return false;
+        }
+        return Objects.equals(username, that.username) &&
+                Objects.equals(password, that.password) &&
+                Objects.equals(sshIdentity, that.sshIdentity) &&
+                Objects.equals(accessScope, that.accessScope);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username, password, sshIdentity, accessScope);
+    }
 
     @Override
     public DataStoreAccessScope getAccessScope() {
@@ -102,10 +120,12 @@ public class SyncedIdentityStore extends IdentityStore implements AccessScopeSto
 
     @Override
     public DataStore withUpdatedPrincipals() {
+        var newPassword = password != null ? password.withUpdatedPrincipals() : null;
+        var newIdentity = sshIdentity != null ? sshIdentity.withUpdatedPrincipals() : null;
         return SyncedIdentityStore.builder()
                 .username(username)
-                .password(password != null ? password.withUpdatedPrincipals() : null)
-                .sshIdentity(sshIdentity != null ? sshIdentity.withUpdatedPrincipals() : null)
+                .password(newPassword)
+                .sshIdentity(newIdentity)
                 .accessScope(accessScope != null ? DataStoreAccessScope.getTargetScope(accessScope) : null)
                 .build();
     }

@@ -372,6 +372,10 @@ public class DataStoreEntry extends DataStorageElement {
         // Check whether we need to write the node due to external changes
 
         var targetScope = DataStoreAccessScope.getTargetScope(store instanceof AccessScopeStore s ? s.getAccessScope() : DataStoreAccessScope.encryption());
+        if (!targetScope.isAccessible()) {
+            return false;
+        }
+
         var currentScope = node.getEncryptedValue().getSecret() != null ? node.getEncryptedValue().getSecret().getScope() : targetScope;
 
         var canEncrypt = !(store instanceof LocalStore);
@@ -810,10 +814,6 @@ public class DataStoreEntry extends DataStorageElement {
             dirty = true;
             notifyUpdate(false, false);
         }
-    }
-
-    public boolean canEncrypt() {
-        return !(storeNode.getValue() instanceof LocalStore);
     }
 
     public void finalizeEntry() {

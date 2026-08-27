@@ -2,7 +2,7 @@
 
 It works! The git remote push succeeded. However, no connections have been pushed to this git repository yet.
 
-## Adding connections to the repository
+### Adding connections to the repository
 
 By default, no connection categories are set to sync so that you have explicit control on what connections to commit.
 
@@ -13,7 +13,7 @@ Then, set the `Sync with git repository` value to `Yes` to sync the category and
 This will add all syncable connections in that category to the git repository.
 The sync settings for a category are inherited by default from its parent if not explicitly set.
 
-## Local connections are not synced
+### Local connections are not synced
 
 Any connections located under the local machine are not synced as they are only available on the local system. You can sync any other types of remote connections like SSH connections.
 
