@@ -371,11 +371,12 @@ public class DataStoreEntry extends DataStorageElement {
 
         // Check whether we need to write the node due to external changes
 
-        var currentScope = store instanceof AccessScopeStore s ? s.getAccessScope() : DataStoreAccessScope.encryption();
-        var targetScope = DataStoreAccessScope.getTargetScope(currentScope);
+        var targetScope = DataStoreAccessScope.getTargetScope(store instanceof AccessScopeStore s ? s.getAccessScope() : DataStoreAccessScope.encryption());
+        var currentScope = node.getEncryptedValue().getSecret() != null ? node.getEncryptedValue().getSecret().getScope() : targetScope;
 
-        var shouldEncrypt = (encryptIfRestricted && currentScope.isAccessSubRestricted())
-                || AppPrefs.get().encryptAllVaultData().get();
+        var canEncrypt = !(store instanceof LocalStore);
+        var shouldEncrypt = canEncrypt && ((encryptIfRestricted && currentScope.isAccessSubRestricted())
+                || AppPrefs.get().encryptAllVaultData().get());
         var encryptionChange = shouldEncrypt && !node.isEncrypted() || !shouldEncrypt && node.isEncrypted();
         var scopeTargetChange = !targetScope.equals(currentScope);
         return encryptionChange || scopeTargetChange;
@@ -809,6 +810,10 @@ public class DataStoreEntry extends DataStorageElement {
             dirty = true;
             notifyUpdate(false, false);
         }
+    }
+
+    public boolean canEncrypt() {
+        return !(storeNode.getValue() instanceof LocalStore);
     }
 
     public void finalizeEntry() {

@@ -193,6 +193,7 @@ public class AppBaseMode extends AppOperationMode {
         // AppGreetingsDialog.showAndWaitIfNeeded();
         TrackEvent.info("Waiting for startup dialogs to close");
         AppDialog.waitForAllDialogsClose();
+        DataStorageMigratedDialog.showIfNeeded();
         UpdateChangelogDialog.showIfNeeded();
 
         WebtopMode.init();
@@ -203,8 +204,6 @@ public class AppBaseMode extends AppOperationMode {
         StartOnInitStore.init();
 
         AppConfigurationDialog.showIfNeeded();
-
-        DataStorageMigratedDialog.showIfNeeded();
 
         TrackEvent.info("Finished base components initialization");
         initialized = true;

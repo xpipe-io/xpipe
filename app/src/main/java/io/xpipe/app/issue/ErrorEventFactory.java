@@ -5,6 +5,7 @@ import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.util.OsType;
 
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.FileSystemException;
 import java.nio.file.InvalidPathException;
@@ -71,6 +72,10 @@ public class ErrorEventFactory {
 
         if (t instanceof InvalidPathException ipe) {
             return "Invalid file path: " + ipe.getMessage();
+        }
+
+        if (t instanceof InvocationTargetException ite && ite.getCause() != null && ite.getCause() != t) {
+            return formatThrowableMessage(ite.getCause());
         }
 
         if (t.getMessage() == null) {

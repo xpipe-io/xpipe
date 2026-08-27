@@ -40,6 +40,7 @@ public class AskpassAlert {
                     alert.setTitle(AppI18n.get("askpassAlertTitle"));
                     alert.setHeaderText(finalPrompt);
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
+                    alert.getButtonTypes().setAll(ButtonType.OK);
 
                     // Link to help page for double prompt
                     if (SecretManager.disableCachingForPrompt(finalPrompt)) {
@@ -113,8 +114,9 @@ public class AskpassAlert {
                         event.consume();
                     });
 
-                    alert.setOnHiding(event -> {
+                    alert.setOnHiding(e -> {
                         anim.stop();
+                        e.consume();
                     });
                 })
                 .filter(b -> b.getButtonData().isDefaultButton())
@@ -122,6 +124,11 @@ public class AskpassAlert {
                     return prop.getValue() != null ? prop.getValue() : InPlaceSecretValue.of("");
                 })
                 .orElse(null);
+
+        if (r != null && r.getSecret().length == 0) {
+            r = null;
+        }
+
         return new SecretQueryResult(r, r == null ? SecretQueryState.CANCELLED : SecretQueryState.NORMAL);
     }
 }

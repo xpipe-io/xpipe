@@ -413,11 +413,6 @@ public class AppJacksonModule extends SimpleModule {
 
         @Override
         public void serialize(EncryptedValue value, JsonGenerator jgen, SerializationContext context) {
-            if (value.getValue() == null) {
-                jgen.writeNull();
-                return;
-            }
-
             if (!value.isEncrypted()) {
                 jgen.writeTree(JacksonMapper.getDefault().valueToTree(value.getValue()));
                 return;

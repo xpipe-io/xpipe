@@ -109,9 +109,10 @@ public class AppMainWindowContentComp extends SimpleRegionBuilder {
 
             var loadingTextCounter = new SimpleIntegerProperty();
             GlobalTimer.scheduleUntil(Duration.ofMillis(500), false, () -> {
-                if (loaded.getValue() != null) {
-                    return true;
-                }
+                // We want to keep this running for animating the status on shutdown
+                // if (loaded.getValue() != null) {
+                //    return true;
+                // }
 
                 loadingTextCounter.set((loadingTextCounter.get() + 1) % 4);
                 return false;

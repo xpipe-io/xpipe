@@ -9,7 +9,6 @@ import tools.jackson.databind.JsonNode;
 
 import java.util.Objects;
 
-@AllArgsConstructor
 @Getter
 public class EncryptedValue<T> {
 
@@ -20,6 +19,13 @@ public class EncryptedValue<T> {
     private final DataStorageSecret secret;
 
     private final boolean encrypted;
+
+    public EncryptedValue(JsonNode valueJson, T value, DataStorageSecret secret, boolean encrypted) {
+        this.valueJson = valueJson;
+        this.value = value;
+        this.secret = secret;
+        this.encrypted = encrypted;
+    }
 
     @SneakyThrows
     public static <T> EncryptedValue<T> ofRaw(T value) {
@@ -44,16 +50,30 @@ public class EncryptedValue<T> {
     }
 
     public EncryptedValue<T> with(T value) {
-        return with(value, secret.getScope());
+        return with(value, secret != null ? secret.getScope() : null);
     }
 
     public EncryptedValue<T> withUpdatedPrincipals() {
-        var valueJson = value != null ? JacksonMapper.getDefault().valueToTree(value) : null;
-        if (secret == null) {
-            return new EncryptedValue<>(valueJson, value, null, false);
+        if (secret != null && !secret.isAccessible()) {
+            return this;
         }
 
-        return new EncryptedValue<>(valueJson, value, secret.withUpdatedPrincipals(), encrypted);
+        var valueJson = JacksonMapper.getDefault().valueToTree(value);
+
+        if (secret == null) {
+            if (valueJson.equals(this.valueJson)) {
+                return this;
+            } else {
+                return new EncryptedValue<>(valueJson, value, null, false);
+            }
+        }
+
+        var secret = this.secret.withUpdatedPrincipals();
+        if (valueJson.equals(this.valueJson) && secret.equals(this.secret)) {
+            return this;
+        } else {
+            return new EncryptedValue<>(valueJson, value, secret.withUpdatedPrincipals(), encrypted);
+        }
     }
 
     public EncryptedValue<T> with(T value, DataStoreAccessScope scope) {
@@ -61,11 +81,22 @@ public class EncryptedValue<T> {
             return null;
         }
 
-        if (value.equals(this.value) && secret != null && secret.matchesScope(scope)) {
+        var encryptionUnchanged = (secret == null && scope == null) || (secret != null && scope != null && secret.matchesScope(scope));
+
+        var valueJson = JacksonMapper.getDefault().valueToTree(value);
+
+        if (value.equals(this.value) && valueJson.equals(this.valueJson) && encryptionUnchanged) {
             return this;
         }
 
-        var valueJson = JacksonMapper.getDefault().valueToTree(value);
+        if (valueJson.equals(this.valueJson) && encryptionUnchanged) {
+            return new EncryptedValue<>(valueJson, value, secret, encrypted);
+        }
+
+        if (scope == null) {
+            return new EncryptedValue<>(valueJson, value, null, false);
+        }
+
         var s = valueJson.toPrettyString();
         var newSecret = secret != null ? secret.with(new InPlaceSecretValue(s.toCharArray()), scope) : null;
         return new EncryptedValue<>(valueJson, value, newSecret, encrypted);

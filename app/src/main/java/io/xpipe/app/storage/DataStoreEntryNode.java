@@ -54,11 +54,11 @@ public class DataStoreEntryNode<T> {
             return null;
         }
 
-        var currentScope = entry.getAccessScope();
-        var targetScope = DataStoreAccessScope.getTargetScope(currentScope);
+        var targetScope = DataStoreAccessScope.getTargetScope(entry.getAccessScope());
+        var currentScope = enc.getSecret() != null ? enc.getSecret().getScope() : targetScope;
 
-        var shouldEncrypt = (encryptIfRestricted && targetScope.isAccessSubRestricted())
-                || AppPrefs.get().encryptAllVaultData().get();
+        var shouldEncrypt = entry.canEncrypt() && ((encryptIfRestricted && targetScope.isAccessSubRestricted())
+                || AppPrefs.get().encryptAllVaultData().get());
         var encryptionChange = shouldEncrypt && !enc.isEncrypted() || !shouldEncrypt && enc.isEncrypted();
         var scopeTargetChange = !targetScope.equals(currentScope);
         var valueChange = !getValue().equals(newValue);
@@ -93,11 +93,15 @@ public class DataStoreEntryNode<T> {
             return this;
         }
 
-        var currentScope = entry.getAccessScope();
-        var targetScope = DataStoreAccessScope.getTargetScope(currentScope);
+        var targetScope = DataStoreAccessScope.getTargetScope(newValue instanceof AccessScopeStore s ? s.getAccessScope() : DataStoreAccessScope.encryption());
+        if (!targetScope.isAccessible()) {
+            return this;
+        }
 
-        var shouldEncrypt = (encryptIfRestricted && targetScope.isAccessSubRestricted())
-                || AppPrefs.get().encryptAllVaultData().get();
+        var currentScope = enc.getSecret() != null ? enc.getSecret().getScope() : targetScope;
+
+        var shouldEncrypt = entry.canEncrypt() &&
+                ((encryptIfRestricted && targetScope.isAccessSubRestricted()) || AppPrefs.get().encryptAllVaultData().get());
         var encryptionChange = shouldEncrypt && !enc.isEncrypted() || !shouldEncrypt && enc.isEncrypted();
         var scopeTargetChange = !targetScope.equals(currentScope);
         var valueChange = !getValue().equals(newValue);
@@ -114,15 +118,13 @@ public class DataStoreEntryNode<T> {
             return null;
         }
 
-        if (newValue.equals(enc.getValue())) {
+        var newEnc = enc.with(newValue);
+        if (newEnc == enc) {
             return this;
         }
 
-        return new DataStoreEntryNode<>(
-                isEncrypted()
-                        ? EncryptedValue.of(newValue, enc.getSecret().getScope())
-                        : EncryptedValue.ofRaw(newValue),
-                false);
+        var jsonUnchanged = enc.getValueJson().equals(newEnc.getValueJson());
+        return new DataStoreEntryNode<>(newEnc, jsonUnchanged);
     }
 
     @Override
@@ -145,6 +147,10 @@ public class DataStoreEntryNode<T> {
     public String getWriteString() {
         written = true;
         return JacksonMapper.getDefault().writeValueAsString(enc);
+    }
+
+    public EncryptedValue<T> getEncryptedValue() {
+        return enc;
     }
 
     public T getValue() {
