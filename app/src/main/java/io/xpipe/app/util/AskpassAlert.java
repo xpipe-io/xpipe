@@ -34,9 +34,9 @@ public class AskpassAlert {
         }
 
         var lines = prompt.lines().count();
-        if (lines > 10) {
-            prompt = String.join("\n", prompt.lines().toList().subList(0, 10)) + "\n...";
-            lines = 11;
+        if (lines > 13) {
+            prompt = String.join("\n", prompt.lines().toList().subList(0, 13)) + "\n...";
+            lines = 14;
         }
 
         var prop = new SimpleObjectProperty<>(secretValue);
