@@ -450,7 +450,7 @@ public final class AppPrefs {
     final BooleanProperty disableApiAuthentication =
             mapLocal(new GlobalBooleanProperty(false), "disableApiAuthentication", Boolean.class, false);
     final BooleanProperty allowExternalApiRequests =
-            mapLocal(new GlobalBooleanProperty(false), "allowExternalApiRequests", Boolean.class, false);
+            mapLocal(new GlobalBooleanProperty(false), "allowExternalApiRequests", Boolean.class, true);
 
     @Getter
     private final List<AppPrefsCategory> categories = List.of(

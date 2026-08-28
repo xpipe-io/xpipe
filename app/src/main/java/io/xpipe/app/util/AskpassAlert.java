@@ -33,14 +33,28 @@ public class AskpassAlert {
             prompt = prompt.substring(0, prompt.length() - 1);
         }
 
+        var lines = prompt.lines().count();
+        if (lines > 10) {
+            prompt = String.join("\n", prompt.lines().toList().subList(0, 10)) + "\n...";
+            lines = 11;
+        }
+
         var prop = new SimpleObjectProperty<>(secretValue);
+
         var finalPrompt = prompt;
+        var finalLines = lines;
+
         var r = AppSideWindow.showBlockingAlert(alert -> {
                     alert.initModality(Modality.NONE);
                     alert.setTitle(AppI18n.get("askpassAlertTitle"));
                     alert.setHeaderText(finalPrompt);
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
                     alert.getButtonTypes().setAll(ButtonType.OK);
+
+                    if (finalLines > 3) {
+                        // Title bar + button bar + padding + text field + separator + lines
+                        alert.setHeight(30 + 50 + 40 + 40 + 20 + (finalLines * 28));
+                    }
 
                     // Link to help page for double prompt
                     if (SecretManager.disableCachingForPrompt(finalPrompt)) {

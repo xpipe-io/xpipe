@@ -213,7 +213,6 @@ public final class McpTools {
                 .tool(tool)
                 .callHandler(McpToolHandler.of((req) -> {
                     var system = req.getStringArgument("system");
-                    var recursive = req.getOptionalBooleanArgument("recursive").orElse(false);
                     var shellStore = req.getShellStoreRef(system, false);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
                     var fs = new ShellFileSystem(shellSession.getControl());
@@ -223,7 +222,7 @@ public final class McpTools {
                         throw new BeaconClientException("Directory " + path + " does not exist");
                     }
 
-                    try (var stream = recursive ? fs.listFilesRecursively(fs, path).stream() : fs.listFiles(fs, path)) {
+                    try (var stream = fs.listFiles(fs, path)) {
                         var list = stream.toList();
                         var builder = McpSchema.CallToolResult.builder();
                         for (FileEntry e : list) {
@@ -243,6 +242,7 @@ public final class McpTools {
                     var system = req.getStringArgument("system");
                     var pattern = req.getStringArgument("name");
                     var shellStore = req.getShellStoreRef(system, false);
+                    var recursive = req.getOptionalBooleanArgument("recursive").orElse(false);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
                     var path = req.getFilePath(shellSession.getControl(), "path");
                     var fs = new ShellFileSystem(shellSession.getControl());
@@ -252,7 +252,7 @@ public final class McpTools {
                     }
 
                     var regex = Pattern.compile(DataStorageQuery.toRegex(pattern));
-                    try (var stream = fs.listFiles(fs, path)) {
+                    try (var stream = recursive ? fs.listFilesRecursively(fs, path).stream() : fs.listFiles(fs, path)) {
                         var list = stream.toList();
                         var builder = McpSchema.CallToolResult.builder();
                         list.stream()
