@@ -184,7 +184,7 @@ public class StoreEntryWrapper {
             }
         }
         orderIndex.setValue(entry.getOrderIndex());
-        color.setValue(entry.getColor());
+        color.setValue(DataStorage.get().getEffectiveColor(entry));
         notes.setValue(entry.getNotes());
         template.setValue(entry.isTemplate());
         iconFile.setValue(entry.getEffectiveIconFile());

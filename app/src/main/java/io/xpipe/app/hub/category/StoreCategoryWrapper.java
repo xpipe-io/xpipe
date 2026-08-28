@@ -10,6 +10,7 @@ import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
+import io.xpipe.app.storage.DataStoreCategoryConfig;
 import io.xpipe.app.storage.DataStoreColor;
 
 import javafx.application.Platform;
@@ -160,6 +161,11 @@ public class StoreCategoryWrapper {
 
     public void toggleExpanded() {
         this.expanded.set(!expanded.getValue());
+    }
+
+    public void updateConfig(DataStoreCategoryConfig config) {
+        DataStorage.get().updateCategoryConfig(getCategory(), config);
+        StoreViewState.get().updateWrappers();
     }
 
     public synchronized void update() {

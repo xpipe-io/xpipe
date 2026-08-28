@@ -486,7 +486,7 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
         var none = new MenuItem();
         none.textProperty().bind(AppI18n.observable("none"));
         none.setOnAction(event -> {
-            category.getCategory().setConfig(category.getCategory().getConfig().withColor(null));
+            category.updateConfig(category.getCategory().getConfig().withColor(null));
             event.consume();
         });
         none.setGraphic(DataStoreColor.createDisplayGraphic(null));
@@ -495,8 +495,7 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
             MenuItem m = new MenuItem();
             m.textProperty().bind(AppI18n.observable(dataStoreColor.getId()));
             m.setOnAction(event -> {
-                category.getCategory()
-                        .setConfig(category.getCategory().getConfig().withColor(dataStoreColor));
+                category.updateConfig(category.getCategory().getConfig().withColor(dataStoreColor));
                 event.consume();
             });
             m.setGraphic(DataStoreColor.createDisplayGraphic(dataStoreColor));

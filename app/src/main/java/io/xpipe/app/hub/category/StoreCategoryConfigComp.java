@@ -39,7 +39,7 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
                 AppI18n.observable("categoryConfigTitle", wrapper.getName().getValue()), comp, null);
         modal.addButton(ModalButton.cancel());
         modal.addButton(ModalButton.ok(() -> {
-            DataStorage.get().updateCategoryConfig(wrapper.getCategory(), config.getValue());
+            wrapper.updateConfig(config.getValue());
         }));
         modal.show();
     }

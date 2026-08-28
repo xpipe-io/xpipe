@@ -456,8 +456,8 @@ public final class AppPrefs {
     private final List<AppPrefsCategory> categories = List.of(
             new AboutCategory(),
             new PersonalizationCategory(),
-            new VaultAccessCategory(),
             new SyncCategory(),
+            new VaultAccessCategory(),
             new PasswordManagerCategory(),
             new TerminalCategory(),
             new EditorCategory(),
@@ -897,6 +897,10 @@ public final class AppPrefs {
                 allowExternalApiRequests.set(true);
                 apiKey.setValue(env);
             }
+        }
+
+        if (AppDistributionType.get() == AppDistributionType.WEBTOP) {
+            startupBehaviour.set(StartupBehaviour.GUI);
         }
 
         PrefsProvider.getAll().forEach(prov -> prov.fixLocalValues());
