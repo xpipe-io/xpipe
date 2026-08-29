@@ -5,6 +5,8 @@ import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.util.OsType;
+import io.xpipe.app.webtop.WebtopApp;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
@@ -17,6 +19,26 @@ import java.util.List;
 @Jacksonized
 @JsonTypeName("tmux")
 public class TmuxTerminalMultiplexer implements TerminalMultiplexer {
+
+    @Override
+    public boolean requiresUnixEnvironment() {
+        return true;
+    }
+
+    @Override
+    public boolean isSupported() throws Exception {
+        if (OsType.ofLocal() == OsType.WINDOWS) {
+            var p = TerminalProxyManager.getProxy();
+            return p.isPresent() && p.get().view().findProgram("tmux").isPresent();
+        } else {
+            return LocalShell.getShell().view().findProgram("tmux").isPresent();
+        }
+    }
+
+    @Override
+    public WebtopApp getRequiredWebtopApp() {
+        return WebtopApp.TMUX;
+    }
 
     @Override
     public boolean supportsSplitView() {

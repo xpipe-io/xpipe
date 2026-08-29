@@ -1,9 +1,11 @@
 package io.xpipe.ext.system.podman;
 
-import io.xpipe.app.ext.*;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.process.ShellControlFunction;
+import io.xpipe.app.process.ShellControlParentStoreFunction;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.*;
 import io.xpipe.app.util.LicenseRequiredException;
 import io.xpipe.app.util.Validators;
 import io.xpipe.ext.base.service.AbstractServiceStore;
@@ -136,7 +138,9 @@ public class PodmanContainerStore
             @Override
             public ShellControl control(ShellControl parent) throws Exception {
                 refreshContainerState(getCmd().getStore().getHost().getStore().getOrStartSession());
-                var pc = new PodmanCommandView(parent).container().exec(containerName, getState().getEffectiveDialect());
+                var pc = new PodmanCommandView(parent)
+                        .container()
+                        .exec(containerName, getState().getEffectiveDialect());
                 pc.withSourceStore(PodmanContainerStore.this);
                 pc.withShellStateInit(PodmanContainerStore.this);
                 pc.onInit(sc -> {

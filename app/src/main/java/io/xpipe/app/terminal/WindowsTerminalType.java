@@ -9,17 +9,14 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.JacksonMapper;
 import io.xpipe.app.util.NativeWinWindowControl;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.JacksonMapper;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.JsonNodeFactory;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerminalType {
@@ -108,13 +105,14 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         return TerminalDockMode.BORDERLESS;
     }
 
-    default void checkProfile() throws IOException {
-        // Update old configs
-        var before =
-                LocalDate.of(2026, 2, 8).atStartOfDay(ZoneId.systemDefault()).toInstant();
-        var outdated = AppCache.getModifiedTime("wtProfileSet")
-                .map(instant -> instant.isBefore(before))
-                .orElse(false);
+    default void checkProfile() {
+        // Update old configs. Change this condition to force an upgrade of older config files
+        var outdated = false;
+
+        //        AppCache.getModifiedTime("wtProfileSet")
+        //                .map(instant -> instant.isBefore(LocalDate.of(2026, 2, 8)
+        //                        .atStartOfDay(ZoneId.systemDefault()).toInstant()))
+        //                .orElse(false);
 
         var profileSet = AppCache.getBoolean("wtProfileSet", false);
         if (profileSet && !outdated) {
@@ -135,7 +133,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         for (int i = 0; i < profiles.size(); i++) {
             var profile = profiles.get(i);
             var profileId = profile.get("guid");
-            if (profileId != null && profileId.asText().equals(uuid)) {
+            if (profileId != null && profileId.asString().equals(uuid)) {
                 profiles.remove(i);
                 break;
             }
@@ -143,7 +141,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
 
         var newProfile = JsonNodeFactory.instance.objectNode();
         newProfile.put("guid", uuid);
-        newProfile.put("hidden", true);
+        newProfile.put("hidden", false);
         newProfile.put("name", "XPipe");
         newProfile.put("closeOnExit", "always");
         newProfile.put("suppressApplicationTitle", true);

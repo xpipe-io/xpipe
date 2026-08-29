@@ -77,7 +77,6 @@ public class LinksCategory extends AppPrefsCategory {
                                 })
                                 .maxWidth(2000),
                         null)
-                .addComp(RegionBuilder.vspacer(40))
                 .buildComp();
     }
 
@@ -93,6 +92,6 @@ public class LinksCategory extends AppPrefsCategory {
 
     @Override
     protected BaseRegionBuilder<?, ?> create() {
-        return createLinks().style("information").style("about-tab").apply(struc -> struc.setPrefWidth(600));
+        return createLinks().apply(struc -> struc.setPrefWidth(600));
     }
 }

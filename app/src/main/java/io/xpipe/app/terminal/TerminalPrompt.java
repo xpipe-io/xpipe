@@ -7,7 +7,7 @@ import io.xpipe.app.process.ShellTemp;
 import io.xpipe.app.process.ShellTerminalInitCommand;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FilePath;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -28,7 +28,7 @@ public interface TerminalPrompt {
     String getDocsLink();
 
     default FilePath getConfigurationDirectory(ShellControl sc) throws Exception {
-        var d = ShellTemp.createUserSpecificTempDataDirectory(sc, "prompt").join(getId());
+        var d = ShellTemp.createUserSpecificTempDataDirectory(sc, null).join(getId());
         sc.view().mkdir(d);
         return d;
     }
@@ -41,7 +41,7 @@ public interface TerminalPrompt {
 
     String getId();
 
-    default boolean installIfNeeded(ShellControl sc) throws Exception {
+    default boolean installIfNeeded(ShellControl sc) {
         try {
             if (!checkIfInstalled(sc)) {
                 checkCanInstall(sc);

@@ -5,9 +5,10 @@ import io.xpipe.app.comp.RegionDescriptor;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.FileEntry;
-import io.xpipe.app.ext.FileInfo;
-import io.xpipe.app.ext.FileKind;
+import io.xpipe.app.core.AppSizeBreakpoints;
+import io.xpipe.app.fs.FileEntry;
+import io.xpipe.app.fs.FileInfo;
+import io.xpipe.app.fs.FileKind;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.*;
 
@@ -42,7 +43,6 @@ public final class BrowserFileListComp extends SimpleRegionBuilder {
     private static final PseudoClass EMPTY = PseudoClass.getPseudoClass("empty");
     private static final PseudoClass FILE = PseudoClass.getPseudoClass("file");
     private static final PseudoClass FOLDER = PseudoClass.getPseudoClass("folder");
-    private static final PseudoClass DRAG = PseudoClass.getPseudoClass("drag");
     private static final PseudoClass DRAG_OVER = PseudoClass.getPseudoClass("drag-over");
     private static final PseudoClass DRAG_INTO_CURRENT = PseudoClass.getPseudoClass("drag-into-current");
 
@@ -193,7 +193,7 @@ public final class BrowserFileListComp extends SimpleRegionBuilder {
             TableColumn<BrowserEntry, String> sizeCol) {
         table.widthProperty().subscribe((newValue) -> {
             if (fileList.getFileSystemModel().getFileSystem().supportsOwnerColumn()) {
-                ownerCol.setVisible(newValue.doubleValue() > 1000);
+                ownerCol.setVisible(!AppSizeBreakpoints.compactMode().get());
             }
 
             if (fileList.getFileSystemModel().getFileSystem().supportsModeColumn()) {
@@ -483,7 +483,6 @@ public final class BrowserFileListComp extends SimpleRegionBuilder {
             });
 
             row.itemProperty().addListener((observable, oldValue, newValue) -> {
-                row.pseudoClassStateChanged(DRAG, false);
                 row.pseudoClassStateChanged(DRAG_OVER, false);
             });
 

@@ -1,8 +1,6 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.StreamCharset;
 
 import lombok.Value;
 
@@ -72,7 +70,9 @@ public class RdpConfig {
     }
 
     public Optional<TypedValue> get(String key) {
-        var found = content.entrySet().stream().filter(e -> e.getKey().equalsIgnoreCase(key)).findFirst();
+        var found = content.entrySet().stream()
+                .filter(e -> e.getKey().equalsIgnoreCase(key))
+                .findFirst();
         return found.map(Map.Entry::getValue);
     }
 
@@ -80,9 +80,5 @@ public class RdpConfig {
     public static class TypedValue {
         String type;
         String value;
-
-        public static TypedValue string(String value) {
-            return new TypedValue("s", value);
-        }
     }
 }

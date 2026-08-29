@@ -19,7 +19,7 @@
       "found": {
         "type": "array",
         "description": "The found list of systems",
-        "properties": {
+        "items": {
           "type": "object",
           "properties": {
             "name": {

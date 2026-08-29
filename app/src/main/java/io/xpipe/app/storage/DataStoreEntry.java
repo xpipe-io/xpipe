@@ -1,48 +1,39 @@
 package io.xpipe.app.storage;
 
-import io.xpipe.app.ext.*;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.store.*;
+import io.xpipe.app.util.JacksonMapper;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.apache.commons.io.FileUtils;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
+import java.time.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Getter
-public class DataStoreEntry extends StorageElement {
+public class DataStoreEntry extends DataStorageElement {
 
     Map<String, Object> storeCache = Collections.synchronizedMap(new HashMap<>());
     AtomicInteger busyCounter = new AtomicInteger();
 
     @NonFinal
     Validity validity;
-
-    @NonFinal
-    @Setter
-    DataStorageNode storeNode;
-
-    @Getter
-    @NonFinal
-    DataStore store;
 
     @Getter
     @NonFinal
@@ -62,18 +53,12 @@ public class DataStoreEntry extends StorageElement {
     Set<DataStoreEntry> childrenCache = null;
 
     @NonFinal
-    String notes;
-
-    @NonFinal
-    String lastWrittenNotes;
-
-    @NonFinal
     @Getter
     DataStoreColor color;
 
     @NonFinal
     @Getter
-    boolean freeze;
+    boolean template;
 
     @NonFinal
     @Getter
@@ -81,48 +66,59 @@ public class DataStoreEntry extends StorageElement {
 
     @Getter
     @NonFinal
-    int orderIndex;
-
-    @Getter
-    @NonFinal
     UUID breakOutCategory;
 
     List<String> tags;
+
+    @NonFinal
+    DataStoreEntryNode<DataStore> storeNode;
+
+    @NonFinal
+    DataStoreEntryNode<JsonNode> stateNode;
+
+    @NonFinal
+    DataStoreEntryNode<JsonNode> entryNode;
+
+    @NonFinal
+    DataStoreEntryNode<String> notesNode;
 
     private DataStoreEntry(
             Path directory,
             UUID uuid,
             UUID categoryUuid,
             String name,
+            Instant created,
             Instant lastUsed,
             Instant lastModified,
-            DataStore store,
-            DataStorageNode storeNode,
             boolean dirty,
             Validity validity,
             JsonNode storePersistentState,
             boolean expanded,
             DataStoreColor color,
-            String notes,
             String icon,
-            boolean freeze,
+            double orderIndex,
+            boolean template,
             boolean pinToTop,
-            int orderIndex,
             UUID breakOutCategory,
-            List<String> tags) {
-        super(directory, uuid, name, lastUsed, lastModified, expanded, dirty, icon);
+            List<String> tags,
+            DataStoreEntryNode<DataStore> storeNode,
+            DataStoreEntryNode<JsonNode> stateNode,
+            DataStoreEntryNode<JsonNode> entryNode,
+            DataStoreEntryNode<String> notesNode) {
+        super(directory, uuid, name, created, lastUsed, lastModified, expanded, dirty, icon, orderIndex);
         this.color = color;
         this.categoryUuid = categoryUuid;
-        this.store = store;
         this.storeNode = storeNode;
-        this.provider =
-                store != null ? DataStoreProviders.byStoreIfPresent(store).orElse(null) : null;
+        this.stateNode = stateNode;
+        this.entryNode = entryNode;
+        this.notesNode = notesNode;
+        this.provider = storeNode != null && storeNode.isAccessible()
+                ? DataStoreProvider.byStoreIfPresent(storeNode.getValue()).orElse(null)
+                : null;
         this.validity = this.provider != null ? validity : Validity.LOAD_FAILED;
         this.storePersistentStateNode = storePersistentState;
-        this.notes = notes;
-        this.freeze = freeze;
+        this.template = template;
         this.pinToTop = pinToTop;
-        this.orderIndex = orderIndex;
         this.breakOutCategory = breakOutCategory;
         this.tags = tags;
     }
@@ -152,20 +148,22 @@ public class DataStoreEntry extends StorageElement {
                 UUID.randomUUID().toString(),
                 Instant.now(),
                 Instant.now(),
-                store,
-                DataStorageNode.fail(),
+                Instant.now(),
                 false,
                 Validity.COMPLETE,
                 null,
                 false,
                 null,
                 null,
-                null,
+                0.0,
                 false,
                 false,
-                0,
                 null,
-                new ArrayList<>());
+                new ArrayList<>(),
+                DataStoreEntryNode.of(store),
+                null,
+                null,
+                null);
     }
 
     public static DataStoreEntry createNew(@NonNull NameableStore store) {
@@ -185,32 +183,33 @@ public class DataStoreEntry extends StorageElement {
             throw new IllegalArgumentException("Name is empty");
         }
 
-        var storeNode = DataStorageNode.ofNewStore(store);
-        var storeFromNode = storeNode.parseStore();
-        var validity = storeFromNode == null
-                ? Validity.LOAD_FAILED
-                : store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE;
+        var storeNode = DataStoreEntryNode.of(store);
+        var validity =
+                store == null ? Validity.LOAD_FAILED : store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE;
+        var now = Instant.now();
         var entry = new DataStoreEntry(
                 null,
                 uuid,
                 categoryUuid,
                 name.strip(),
-                Instant.now(),
-                Instant.now(),
-                storeFromNode,
-                storeNode,
+                now,
+                now,
+                now,
                 true,
                 validity,
                 null,
                 false,
                 null,
                 null,
-                null,
+                0.0,
                 false,
                 false,
-                0,
                 null,
-                new ArrayList<>());
+                new ArrayList<>(),
+                storeNode,
+                null,
+                null,
+                null);
         return entry;
     }
 
@@ -226,47 +225,47 @@ public class DataStoreEntry extends StorageElement {
             return Optional.empty();
         }
 
-        if (!Files.exists(stateFile)) {
-            stateFile = entryFile;
+        DataStoreEntryNode<JsonNode> entryNode = DataStoreEntryNode.parse(entryFile, JsonNode.class);
+        if (entryNode == null) {
+            return Optional.empty();
         }
 
-        var json = mapper.readTree(entryFile.toFile());
-        var stateJson = mapper.readTree(stateFile.toFile());
-        var uuid = UUID.fromString(json.required("uuid").textValue());
-        var categoryUuid = Optional.ofNullable(json.get("categoryUuid"))
-                .map(jsonNode -> UUID.fromString(jsonNode.textValue()))
+        if (!entryNode.isAccessible()) {
+            return Optional.empty();
+        }
+
+        var entryJson = entryNode.getValue();
+        var uuid = UUID.fromString(entryJson.required("uuid").stringValue());
+        var categoryUuid = Optional.ofNullable(entryJson.get("categoryUuid"))
+                .map(jsonNode -> UUID.fromString(jsonNode.stringValue()))
                 .orElse(DataStorage.DEFAULT_CATEGORY_UUID);
-        var breakOutCategory = Optional.ofNullable(json.get("breakOutCategoryUuid"))
+        var breakOutCategory = Optional.ofNullable(entryJson.get("breakOutCategoryUuid"))
                 .filter(jsonNode -> !jsonNode.isNull())
-                .map(jsonNode -> UUID.fromString(jsonNode.asText()))
+                .map(jsonNode -> UUID.fromString(jsonNode.asString()))
                 .orElse(null);
-        var name = json.required("name").textValue().strip();
+        var name = entryJson.required("name").stringValue().strip();
 
         // Fix for legacy issue where entries could have empty names
         if (name.isBlank()) {
             return Optional.empty();
         }
 
-        var color = Optional.ofNullable(json.get("color"))
+        var color = Optional.ofNullable(entryJson.get("color"))
                 .map(node -> {
-                    try {
-                        return mapper.treeToValue(node, DataStoreColor.class);
-                    } catch (JsonProcessingException e) {
-                        return null;
-                    }
+                    return mapper.treeToValue(node, DataStoreColor.class);
                 })
                 .orElse(null);
-        var freeze = Optional.ofNullable(json.get("freeze"))
+        var template = Optional.ofNullable(entryJson.get("template"))
                 .map(jsonNode -> jsonNode.booleanValue())
                 .orElse(false);
-        var pinToTop = Optional.ofNullable(json.get("pinToTop"))
+        var pinToTop = Optional.ofNullable(entryJson.get("pinToTop"))
                 .map(jsonNode -> jsonNode.booleanValue())
                 .orElse(false);
-        var tags = Optional.ofNullable(json.get("tags"))
+        var tags = Optional.ofNullable(entryJson.get("tags"))
                 .map(jsonNode -> {
                     List<String> l = new ArrayList<>();
                     for (JsonNode node : jsonNode) {
-                        var tag = node.asText();
+                        var tag = node.asString();
                         if (!tag.isBlank()) {
                             l.add(tag);
                         }
@@ -275,86 +274,86 @@ public class DataStoreEntry extends StorageElement {
                 })
                 .orElse(new ArrayList<>());
 
-        var iconNode = json.get("icon");
-        String icon = iconNode != null && !iconNode.isNull() ? iconNode.asText() : null;
-
-        // Legacy compat for old icons
-        if (icon != null && !icon.contains("/")) {
-            icon = "selfhst/" + icon;
+        var iconNode = entryJson.get("icon");
+        String icon = iconNode != null && !iconNode.isNull() ? iconNode.asString() : null;
+        double orderIndex = Optional.ofNullable(entryJson.get("orderIndex"))
+                .map(jsonNode -> jsonNode.doubleValue())
+                .orElse(0.0);
+        if (orderIndex < 0.0) {
+            orderIndex = 0.0;
         }
 
+        DataStoreEntryNode<JsonNode> stateNode = DataStoreEntryNode.parse(stateFile, JsonNode.class);
+        if (stateNode != null && !stateNode.isAccessible()) {
+            stateNode = null;
+        }
+
+        var stateJson = stateNode != null ? stateNode.getValue() : JsonNodeFactory.instance.nullNode();
         var persistentState = stateJson.get("persistentState");
-        var orderIndex = Optional.ofNullable(json.get("orderIndex"))
-                .map(jsonNode -> jsonNode.intValue())
-                .orElse(0);
         var lastUsed = Optional.ofNullable(stateJson.get("lastUsed"))
-                .map(jsonNode -> jsonNode.textValue())
+                .map(jsonNode -> jsonNode.stringValue())
                 .map(Instant::parse)
                 .orElse(Instant.EPOCH);
         var lastModified = Optional.ofNullable(stateJson.get("lastModified"))
-                .map(jsonNode -> jsonNode.textValue())
+                .map(jsonNode -> jsonNode.stringValue())
                 .map(Instant::parse)
                 .orElse(Instant.EPOCH);
         var expanded = Optional.ofNullable(stateJson.get("expanded"))
                 .map(jsonNode -> jsonNode.booleanValue())
                 .orElse(true);
 
+        var created = Optional.ofNullable(entryJson.get("created"))
+                .map(jsonNode -> jsonNode.stringValue())
+                .map(Instant::parse)
+                .orElse(lastModified);
+
         if (color == null) {
             color = Optional.ofNullable(stateJson.get("color"))
                     .map(node -> {
-                        try {
-                            return mapper.treeToValue(node, DataStoreColor.class);
-                        } catch (JsonProcessingException e) {
-                            return null;
-                        }
+                        return mapper.treeToValue(node, DataStoreColor.class);
                     })
                     .orElse(null);
         }
 
-        String notes = null;
+        DataStoreEntryNode<String> notesNode = null;
         if (Files.exists(normalNotesFile)) {
-            notes = Files.readString(normalNotesFile);
+            notesNode = DataStoreEntryNode.ofWritten(Files.readString(normalNotesFile));
+        } else if (Files.exists(encryptedNotesFile)) {
+            notesNode = DataStoreEntryNode.parse(encryptedNotesFile, String.class);
         }
-        if (Files.exists(encryptedNotesFile)) {
-            var node = DataStorageNode.readPossiblyEncryptedNode(mapper.readTree(encryptedNotesFile.toFile()));
-            var mdNode = node.getContentNode().get("markdown");
-            notes = mdNode != null ? mdNode.asText() : null;
+        if (notesNode != null
+                && notesNode.isAccessible()
+                && notesNode.getValue().isBlank()) {
+            notesNode = null;
         }
-        if (notes != null && notes.isBlank()) {
-            notes = null;
-        }
-
-        DataStorageNode node;
-        try {
-            var fileNode = mapper.readTree(storeFile.toFile());
-            node = DataStorageNode.readPossiblyEncryptedNode(fileNode);
-        } catch (JacksonException ex) {
-            ErrorEventFactory.fromThrowable(ex).omit().expected().handle();
-            node = DataStorageNode.fail();
+        if (notesNode != null && !notesNode.isAccessible()) {
+            notesNode = null;
         }
 
-        var store = node.parseStore();
+        DataStoreEntryNode<DataStore> storeNode = DataStoreEntryNode.parse(storeFile, DataStore.class);
         return Optional.of(new DataStoreEntry(
                 dir,
                 uuid,
                 categoryUuid,
                 name,
+                created,
                 lastUsed,
                 lastModified,
-                store,
-                node,
                 false,
-                store == null ? Validity.LOAD_FAILED : Validity.INCOMPLETE,
+                storeNode == null ? Validity.LOAD_FAILED : Validity.INCOMPLETE,
                 persistentState,
                 expanded,
                 color,
-                notes,
                 icon,
-                freeze,
-                pinToTop,
                 orderIndex,
+                template,
+                pinToTop,
                 breakOutCategory,
-                tags));
+                tags,
+                storeNode,
+                stateNode,
+                entryNode,
+                notesNode));
     }
 
     public String getEffectiveIconFile() {
@@ -372,6 +371,14 @@ public class DataStoreEntry extends StorageElement {
         } else {
             return "error.png";
         }
+    }
+
+    public DataStore getStore() {
+        return storeNode != null && storeNode.isAccessible() ? storeNode.getValue() : null;
+    }
+
+    public String getNotes() {
+        return notesNode != null && notesNode.isAccessible() ? notesNode.getValue() : null;
     }
 
     public void setColor(DataStoreColor newColor) {
@@ -392,13 +399,14 @@ public class DataStoreEntry extends StorageElement {
                 || !Objects.equals(getEffectiveIconFile(), other.getEffectiveIconFile());
     }
 
-    public boolean isPerUserStore() {
-        var perUser = false;
+    public DataStoreAccessScope getAccessScope() {
         try {
-            perUser = store instanceof UserScopeStore s && s.isPerUser();
+            if (getStore() instanceof AccessScopeStore s) {
+                return s.getAccessScope();
+            }
         } catch (Exception ignored) {
         }
-        return perUser;
+        return DataStoreAccessScope.encryption();
     }
 
     public void incrementBusyCounter() {
@@ -429,7 +437,7 @@ public class DataStoreEntry extends StorageElement {
     @SneakyThrows
     @SuppressWarnings("unchecked")
     public <T extends DataStoreState> T getStorePersistentState() {
-        if (!(store instanceof StatefulDataStore<?> sds)) {
+        if (!(getStore() instanceof StatefulDataStore<?> sds)) {
             return null;
         }
 
@@ -463,14 +471,6 @@ public class DataStoreEntry extends StorageElement {
     public void setBreakOutCategory(DataStoreCategory category) {
         var changed = !Objects.equals(breakOutCategory, category != null ? category.getUuid() : null);
         this.breakOutCategory = category != null ? category.getUuid() : null;
-        if (changed) {
-            notifyUpdate(false, true);
-        }
-    }
-
-    public void setOrderIndex(int orderIndex) {
-        var changed = this.orderIndex != orderIndex;
-        this.orderIndex = orderIndex;
         if (changed) {
             notifyUpdate(false, true);
         }
@@ -524,6 +524,13 @@ public class DataStoreEntry extends StorageElement {
                 .toArray(Path[]::new);
     }
 
+    public boolean isAccessible() {
+        return (storeNode == null || storeNode.isAccessible())
+                && (entryNode == null || entryNode.isAccessible())
+                && (stateNode == null || stateNode.isAccessible())
+                && (notesNode == null || notesNode.isAccessible());
+    }
+
     public void writeDataToDisk() throws Exception {
         if (!dirty) {
             return;
@@ -536,70 +543,72 @@ public class DataStoreEntry extends StorageElement {
 
         ObjectMapper mapper = JacksonMapper.getDefault();
 
-        ObjectNode obj = JsonNodeFactory.instance.objectNode();
-        obj.put("uuid", uuid.toString());
-        obj.put("name", name);
-        obj.put("categoryUuid", categoryUuid.toString());
-        obj.put("breakOutCategoryUuid", breakOutCategory != null ? breakOutCategory.toString() : null);
-        obj.set("color", mapper.valueToTree(color));
-        obj.set("icon", mapper.valueToTree(icon));
-        obj.put("freeze", freeze);
-        obj.put("pinToTop", pinToTop);
-        obj.put("orderIndex", orderIndex);
+        ObjectNode entryNode = JsonNodeFactory.instance.objectNode();
+        entryNode.put("uuid", uuid.toString());
+        entryNode.put("name", name);
+        entryNode.put("categoryUuid", categoryUuid.toString());
+        entryNode.put("breakOutCategoryUuid", breakOutCategory != null ? breakOutCategory.toString() : null);
+        entryNode.set("color", mapper.valueToTree(color));
+        entryNode.set("icon", mapper.valueToTree(icon));
+        entryNode.put("template", template);
+        entryNode.put("pinToTop", pinToTop);
+        entryNode.put("orderIndex", orderIndex);
+        entryNode.put("created", created.toString());
 
-        var tagsArray = obj.putArray("tags");
+        var tagsArray = entryNode.putArray("tags");
         for (String tag : tags) {
             tagsArray.add(tag);
         }
 
-        ObjectNode stateObj = JsonNodeFactory.instance.objectNode();
-        stateObj.put("lastUsed", lastUsed.toString());
-        stateObj.put("lastModified", lastModified.toString());
-        stateObj.set("persistentState", storePersistentStateNode);
-        stateObj.put("expanded", expanded);
-
-        var entryString = mapper.writeValueAsString(obj);
-        var stateString = mapper.writeValueAsString(stateObj);
-        var storeString = mapper.writeValueAsString(DataStorageNode.encryptNodeIfNeeded(storeNode));
+        ObjectNode stateNode = JsonNodeFactory.instance.objectNode();
+        stateNode.put("lastUsed", lastUsed.toString());
+        stateNode.put("lastModified", lastModified.toString());
+        stateNode.set("persistentState", storePersistentStateNode);
+        stateNode.put("expanded", expanded);
 
         FileUtils.forceMkdir(directory.toFile());
-        Files.writeString(directory.resolve("state.json"), stateString);
-        Files.writeString(directory.resolve("entry.json"), entryString);
-        Files.writeString(directory.resolve("store.json"), storeString);
 
-        var encryptNotes = storeNode.isEncrypted();
-        var normalNotesFile = directory.resolve("notes.md");
-        var encryptedNotesFile = directory.resolve("notes.json");
-        if (Files.exists(normalNotesFile) && (notes == null || encryptNotes)) {
-            Files.delete(normalNotesFile);
+        this.stateNode = this.stateNode != null
+                ? this.stateNode.prepareForWrite(this, false, stateNode)
+                : DataStoreEntryNode.of(stateNode);
+        if (this.stateNode.requiresWrite()) {
+            Files.writeString(directory.resolve("state.json"), this.stateNode.getWriteString());
         }
-        if (Files.exists(encryptedNotesFile) && (notes == null || !encryptNotes)) {
-            Files.delete(encryptedNotesFile);
+
+        this.entryNode = this.entryNode != null
+                ? this.entryNode.prepareForWrite(this, false, entryNode)
+                : DataStoreEntryNode.of(entryNode);
+        if (this.entryNode.requiresWrite()) {
+            Files.writeString(directory.resolve("entry.json"), this.entryNode.getWriteString());
         }
-        if (notes != null && encryptNotes) {
-            var notesNode = JsonNodeFactory.instance.objectNode();
-            notesNode.put("markdown", notes);
-            var storageNode = DataStorageNode.encryptNodeIfNeeded(new DataStorageNode(
-                    notesNode, storeNode.isPerUser(), storeNode.isReadableForUser(), storeNode.isEncrypted()));
-            var string = mapper.writeValueAsString(storageNode);
-            Files.writeString(encryptedNotesFile, string);
-        } else if (notes != null) {
-            Files.writeString(normalNotesFile, notes);
+
+        this.notesNode = this.notesNode != null ? this.notesNode.prepareForWrite(this, false, getNotes()) : null;
+        if (this.notesNode != null && this.notesNode.requiresWrite()) {
+            var normalNotesFile = directory.resolve("notes.md");
+            var encryptedNotesFile = directory.resolve("notes.json");
+            Files.deleteIfExists(normalNotesFile);
+            Files.deleteIfExists(encryptedNotesFile);
+            var file = this.notesNode.isEncrypted() ? encryptedNotesFile : normalNotesFile;
+            Files.writeString(file, this.notesNode.getWriteString());
         }
-        lastWrittenNotes = notes;
+
+        this.storeNode = this.storeNode.prepareForWrite(this, true, getStore());
+        if (this.storeNode.requiresWrite()) {
+            Files.writeString(directory.resolve("store.json"), this.storeNode.getWriteString());
+        }
     }
 
     public void setNotes(String newNotes) {
-        var changed = !Objects.equals(notes, newNotes);
-        this.notes = newNotes;
+        var changed = !Objects.equals(getNotes(), newNotes);
         if (changed) {
+            this.notesNode = DataStoreEntryNode.of(newNotes);
             notifyUpdate(false, true);
         }
     }
 
-    public void setFreeze(boolean newValue) {
-        var changed = freeze != newValue;
-        this.freeze = newValue;
+    public void setTemplate(boolean newValue) {
+        var changed = template != newValue;
+        this.template = newValue;
         if (changed) {
             notifyUpdate(false, true);
         }
@@ -621,13 +630,14 @@ public class DataStoreEntry extends StorageElement {
     public void applyChanges(DataStoreEntry e) {
         name = e.getName();
         storeNode = e.storeNode;
-        store = e.store;
         validity = e.validity;
         provider = e.provider;
         childrenCache = null;
         storeCache.clear();
         storeCache.putAll(e.storeCache);
-        validity = store == null ? Validity.LOAD_FAILED : store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE;
+        validity = getStore() == null
+                ? Validity.LOAD_FAILED
+                : getStore().isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE;
         storePersistentState = e.storePersistentState;
         storePersistentStateNode = e.storePersistentStateNode;
         icon = e.icon;
@@ -636,40 +646,25 @@ public class DataStoreEntry extends StorageElement {
     }
 
     void setStoreInternal(DataStore store, boolean updateTime) {
-        var changed = !Objects.equals(this.store, store);
+        var changed = !Objects.equals(getStore(), store);
         if (!changed) {
             return;
         }
 
-        if (!storeNode.hasAccess()) {
+        if (!storeNode.isAccessible()) {
             return;
         }
 
-        this.store = store;
-        this.storeNode = DataStorageNode.ofNewStore(store);
-        this.provider = DataStoreProviders.byStore(store);
-        this.validity = provider != null
-                ? (store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE)
-                : Validity.LOAD_FAILED;
+        this.storeNode = DataStoreEntryNode.of(store);
+        this.provider = DataStoreProvider.byStore(store);
+        this.validity =
+                store != null ? (store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE) : Validity.LOAD_FAILED;
         if (updateTime) {
             lastModified = Instant.now();
         }
         childrenCache = null;
         dirty = true;
         notifyUpdate(false, updateTime);
-    }
-
-    public void reassignStoreNode() {
-        if (!storeNode.hasAccess()) {
-            return;
-        }
-
-        DataStorageNode newNode = DataStorageNode.ofNewStore(store);
-        var changed = !Objects.equals(this.storeNode.getContentNode(), newNode.getContentNode()) || this.storeNode.isEncrypted() != newNode.isEncrypted();
-        if (changed) {
-            this.storeNode = newNode;
-            dirty = true;
-        }
     }
 
     public void validate() {
@@ -681,18 +676,42 @@ public class DataStoreEntry extends StorageElement {
     }
 
     public void validateOrThrow() throws Throwable {
-        if (store == null) {
+        if (getStore() == null) {
             return;
         }
 
         try {
             incrementBusyCounter();
-            store.checkComplete();
-            if ((store instanceof ValidatableStore l)) {
+            getStore().checkComplete();
+            if ((getStore() instanceof ValidatableStore l)) {
                 l.validate();
             }
         } finally {
             decrementBusyCounter();
+        }
+    }
+
+    public void refreshStoreEncryption() {
+        if (storeNode == null) {
+            return;
+        }
+
+        var newStore = getStore() instanceof EncryptionStore s ? s.withUpdatedPrincipals() : getStore();
+        var changedStore = !Objects.equals(getStore(), newStore);
+        if (changedStore) {
+            // This will take care of the encryption change for the node
+            // we don't have to do this further down below
+            storeNode = DataStoreEntryNode.of(newStore);
+            dirty = true;
+            notifyUpdate(false, false);
+            return;
+        }
+
+        var newNode = storeNode.withUpdatedEncryption(this, true);
+        if (!newNode.equals(storeNode)) {
+            storeNode = newNode;
+            dirty = true;
+            notifyUpdate(false, false);
         }
     }
 
@@ -703,17 +722,25 @@ public class DataStoreEntry extends StorageElement {
 
         DataStore newStore;
         try {
-            newStore = storeNode.parseStore();
-            // Check whether we have a provider as well
-            DataStoreProviders.byStore(newStore);
+            newStore = storeNode.reparseValue();
+
+            // Update any outdated principals for the store
+            if (newStore instanceof EncryptionStore s) {
+                newStore = s.withUpdatedPrincipals();
+            }
+
+            if (newStore != null) {
+                // Check whether we have a provider as well
+                DataStoreProvider.byStore(newStore);
+            }
         } catch (Throwable e) {
             ErrorEventFactory.fromThrowable(e).handle();
             newStore = null;
         }
 
         if (newStore == null) {
-            var changed = store != null;
-            store = null;
+            var changed = getStore() != null;
+            storeNode = null;
             provider = null;
             validity = Validity.LOAD_FAILED;
             if (changed) {
@@ -725,10 +752,11 @@ public class DataStoreEntry extends StorageElement {
         try {
             var newComplete = newStore.isComplete();
             if (!newComplete) {
-                var changed = !Objects.equals(store, newStore) || validity != Validity.INCOMPLETE;
+                var changed = !Objects.equals(getStore(), newStore) || validity != Validity.INCOMPLETE;
                 validity = Validity.INCOMPLETE;
-                store = newStore;
-                provider = DataStoreProviders.byStore(store);
+                storeNode = storeNode.with(newStore);
+                dirty = storeNode.requiresWrite();
+                provider = DataStoreProvider.byStore(getStore());
                 if (changed) {
                     notifyUpdate(false, false);
                 }
@@ -739,17 +767,21 @@ public class DataStoreEntry extends StorageElement {
             return;
         }
 
-        var newPerUser = false;
+        DataStoreAccessScope newAccessScope = null;
         try {
-            newPerUser = newStore instanceof UserScopeStore u && u.isPerUser();
+            if (newStore instanceof AccessScopeStore u) {
+                newAccessScope = u.getAccessScope();
+            }
         } catch (Exception ignored) {
         }
-        var storeChanged = !Objects.equals(store, newStore);
+        var storeChanged = !Objects.equals(getStore(), newStore);
         if (storeChanged) {
-            store = newStore;
-            provider = DataStoreProviders.byStore(store);
+            storeNode = storeNode.with(newStore);
+            provider = DataStoreProvider.byStore(getStore());
+            dirty = storeNode.requiresWrite();
         }
-        var changed = storeChanged || validity != Validity.COMPLETE || isPerUserStore() != newPerUser;
+        var changed =
+                storeChanged || validity != Validity.COMPLETE || !Objects.equals(getAccessScope(), newAccessScope);
         validity = Validity.COMPLETE;
         if (changed) {
             notifyUpdate(false, false);
@@ -757,7 +789,7 @@ public class DataStoreEntry extends StorageElement {
     }
 
     public void finalizeEntry() {
-        if (store instanceof ExpandedLifecycleStore lifecycleStore) {
+        if (getStore() instanceof ExpandedLifecycleStore lifecycleStore) {
             try {
                 incrementBusyCounter();
                 notifyUpdate(false, false);
@@ -772,7 +804,7 @@ public class DataStoreEntry extends StorageElement {
     }
 
     public boolean finalizeEntryAsync() {
-        if (store instanceof ExpandedLifecycleStore) {
+        if (getStore() instanceof ExpandedLifecycleStore) {
             ThreadHelper.runAsync(() -> {
                 finalizeEntry();
             });

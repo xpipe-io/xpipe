@@ -6,7 +6,7 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
-import io.xpipe.app.ext.FileEntry;
+import io.xpipe.app.fs.FileEntry;
 
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;

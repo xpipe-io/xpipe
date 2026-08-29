@@ -3,7 +3,7 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.RegionStructure;
 import io.xpipe.app.comp.RegionStructureBuilder;
 import io.xpipe.app.platform.PlatformThread;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.property.Property;
@@ -86,6 +86,7 @@ public class LazyTextFieldComp extends RegionStructureBuilder<StackPane, LazyTex
         r.getStyleClass().add("lazy-text-field-comp");
 
         var sizeLabel = new Label();
+        sizeLabel.setMinWidth(50);
         sizeLabel.maxWidthProperty().bind(sizeLabel.prefWidthProperty());
         sizeLabel.textProperty().bind(currentValue);
         sizeLabel.setVisible(false);

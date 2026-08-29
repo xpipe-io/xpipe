@@ -1,8 +1,8 @@
-.scroll-bar {
-    -fx-opacity: 1.0;
+.scroll-bar .thumb {
+    -fx-opacity: 0.5;
 }
 
-.scroll-bar .thumb {
+.combo-box .scroll-bar .thumb {
     -fx-opacity: 0.5;
 }
 
@@ -12,6 +12,10 @@
     -fx-max-width: 7px;
     -fx-padding: 1;
     -fx-background-color: transparent;
+}
+
+.scroll-bar:hidden .thumb {
+    -fx-opacity: 0;
 }
 
 .scroll-bar:horizontal {
@@ -31,4 +35,17 @@
 
 .scroll-pane .corner {
     -fx-background-insets: 0;
+}
+
+/**
+This will change the min height of scrollbars due to
+the calculation of the default scrollbar skin.
+
+Without this, the min height will be too small
+ */
+.root .scroll-bar:vertical >.decrement-button >.decrement-arrow {
+    -fx-padding: 0 3 0 4;
+}
+.root .scroll-bar:vertical >.increment-button >.increment-arrow {
+    -fx-padding: 0 3 0 4;
 }

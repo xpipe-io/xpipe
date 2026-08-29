@@ -2,9 +2,8 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.process.ShellDialects;
-import io.xpipe.core.OsType;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
@@ -61,7 +60,8 @@ public class Deobfuscator {
 
         // We probably can't run .bat scripts in this case
         if (OsType.ofLocal() == OsType.WINDOWS
-                && ProcessControlProvider.get().getEffectiveLocalDialect() != ShellDialects.CMD) {
+                && ProcModuleProvider.get() != null
+                && ProcModuleProvider.get().getEffectiveLocalDialect() != ShellDialects.CMD) {
             return false;
         }
 

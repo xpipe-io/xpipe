@@ -4,13 +4,10 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.Checkable;
 
 import javafx.beans.binding.StringBinding;
-import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyListProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
-
-import net.synedra.validatorfx.ValidationResult;
 
 import java.util.function.Predicate;
 
@@ -112,12 +109,12 @@ public interface Validator {
      *
      * @return The Validation result property.
      */
-    ReadOnlyObjectProperty<ValidationResult> validationResultProperty();
+    ObservableValue<ValidationResult> validationResultProperty();
 
     /**
      * A read-only boolean property indicating whether any of the checks of this validator emitted an error.
      */
-    ReadOnlyBooleanProperty containsErrorsProperty();
+    ObservableBooleanValue containsErrorsProperty();
 
     boolean containsErrors();
 

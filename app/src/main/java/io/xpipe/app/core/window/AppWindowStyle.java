@@ -4,7 +4,7 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -31,20 +31,9 @@ public class AppWindowStyle {
         scene.fillProperty()
                 .bind(Bindings.createObjectBinding(
                         () -> {
-                            return AppPrefs.get() != null
-                                            && AppPrefs.get().theme().getValue().isDark()
-                                    ? Color.BLACK
-                                    : Color.WHITE;
+                            return AppPrefs.get().theme().getValue().isDark() ? Color.BLACK : Color.WHITE;
                         },
                         AppPrefs.get().theme()));
-    }
-
-    public static void addMaximizedPseudoClass(Stage stage) {
-        stage.getScene().rootProperty().subscribe(root -> {
-            stage.maximizedProperty().subscribe(v -> {
-                root.pseudoClassStateChanged(PseudoClass.getPseudoClass("maximized"), v);
-            });
-        });
     }
 
     public static void addFontSize(Scene scene) {
@@ -123,7 +112,6 @@ public class AppWindowStyle {
                 event.consume();
             }
         });
-        TrackEvent.debug("Set stylesheet reload listener");
     }
 
     public static void addClickShield(Stage stage) {

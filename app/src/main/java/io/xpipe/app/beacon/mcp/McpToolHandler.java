@@ -1,13 +1,13 @@
 package io.xpipe.app.beacon.mcp;
 
-import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.beacon.BeaconClientException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageQuery;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.beacon.BeaconClientException;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.store.ShellStore;
+import io.xpipe.app.util.FilePath;
 
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
@@ -81,6 +81,10 @@ public interface McpToolHandler
         }
 
         public String getStringArgument(String key) throws BeaconClientException {
+            if (request.arguments() == null) {
+                throw new BeaconClientException("Missing argument for key " + key);
+            }
+
             var o = request.arguments().get(key);
             if (o == null) {
                 throw new BeaconClientException("Missing argument for key " + key);

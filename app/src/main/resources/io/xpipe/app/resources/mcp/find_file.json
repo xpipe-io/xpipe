@@ -1,6 +1,6 @@
 {
   "name": "find_file",
-  "description": "Finds files in a directory",
+  "description": "Finds files in a directory, also supports recursion",
   "inputSchema": {
     "type": "object",
     "properties": {

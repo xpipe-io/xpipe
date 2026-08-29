@@ -1,5 +1,31 @@
+.prefs-box-pane {
+    -fx-padding: 0.2em 0 0.5em 0;
+}
+
 .prefs-box {
-    -fx-padding: 0 40 0 80;
+    -fx-spacing: 0.5em;
+}
+
+.prefs .prefs-container {
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: -1em 1.5em 1.5em 1.5em;
+    -fx-border-width: 1;
+    -fx-border-color: -color-border-default;
+    -fx-background-color: -color-bg-default-transparent;
+}
+
+.root:dark .prefs .prefs-container {
+    -fx-background-color: derive(-color-bg-default-transparent, 8%)
+}
+
+.root:nord .prefs .prefs-container {
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+
+.prefs .prefs-container.about-tab {
+    -fx-padding: 1.5em 1.5em 1.5em 1.5em;
 }
 
 .prefs-container .options-comp .name {
@@ -47,9 +73,15 @@
 .prefs .sidebar {
     -fx-spacing: 0;
     -fx-padding: 0.2em 0 0 0;
-    -fx-border-width: 1;
     -fx-border-radius: 4;
     -fx-background-radius: 4;
+    -fx-border-width: 1;
+    -fx-border-color: -color-border-default;
+    -fx-background-color: -color-bg-default-transparent;
+}
+
+.root:dark .prefs .sidebar {
+    -fx-background-color: derive(-color-bg-default-transparent, 8%)
 }
 
 .root:nord .prefs .sidebar {
@@ -85,7 +117,7 @@
     -fx-effect: NONE;
 }
 
-
-.root:seamless-frame .prefs .scroll-bar:vertical {
-    -fx-padding: 9 1 5 1;
+.prefs .split-pane-divider {
+    -fx-padding: 0 2 0 3;
+    -fx-background-color: transparent;
 }

@@ -6,7 +6,7 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.process.ShellTerminalInitCommand;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FilePath;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -66,7 +66,7 @@ public abstract class ConfigFileTerminalPrompt implements TerminalPrompt {
                 var s = shellControl
                         .getShellDialect()
                         .addToPathVariableCommand(
-                                List.of(getBinaryDirectory(shellControl).toString()), false);
+                                List.of(getBinaryDirectory(shellControl).toString()), true);
                 return Optional.of(s + "\n"
                         + setupTerminalCommand(shellControl, configFile).toString());
             }

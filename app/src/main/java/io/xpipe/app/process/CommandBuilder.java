@@ -1,9 +1,9 @@
 package io.xpipe.app.process;
 
-import io.xpipe.core.FailableConsumer;
-import io.xpipe.core.FailableFunction;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.FailableConsumer;
+import io.xpipe.app.util.FailableFunction;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.OsType;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,5 +1,7 @@
 package io.xpipe.app.issue;
 
+import io.xpipe.app.util.Deobfuscator;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
@@ -12,6 +14,17 @@ import java.util.stream.Collectors;
 @Builder
 @Getter
 public class TrackEvent {
+
+    public static TrackEvent fromErrorEvent(ErrorEvent ee) {
+        var te = TrackEvent.builder();
+        var prefix = ee.getDescription() != null ? ee.getDescription() + ":\n" : "";
+        var suffix = ee.getThrowable() != null ? Deobfuscator.deobfuscateToString(ee.getThrowable()) : "";
+        te.message(prefix + suffix);
+        te.type("error");
+        te.tag("omitted", ee.isOmitted());
+        te.tag("terminal", ee.isTerminal());
+        return te.build();
+    }
 
     private final Instant instant = Instant.now();
     private String type;
@@ -79,11 +92,7 @@ public class TrackEvent {
             for (var e : tags.entrySet()) {
                 var valueString = e.getValue() != null ? e.getValue().toString() : "null";
                 var value = valueString.contains("\n")
-                        ? "\n"
-                                + (valueString
-                                        .lines()
-                                        .map(line -> "    | " + line)
-                                        .collect(Collectors.joining("\n")))
+                        ? "\n" + (valueString.lines().map(line -> "    " + line).collect(Collectors.joining("\n")))
                         : valueString;
                 s.append("    ").append(e.getKey()).append("=").append(value).append("\n");
             }

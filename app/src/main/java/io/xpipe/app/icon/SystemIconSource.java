@@ -1,11 +1,11 @@
 package io.xpipe.app.icon;
 
-import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.ext.ValidationException;
+import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.util.DesktopHelper;
+import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.Hyperlinks;
+import io.xpipe.app.util.ValidationException;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.FilePath;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -109,9 +109,9 @@ public interface SystemIconSource {
         public void refresh() throws Exception {
             var dir = SystemIconManager.getPoolPath().resolve(id);
             if (!Files.exists(dir)) {
-                ProcessControlProvider.get().cloneRepository(remote, dir);
+                ProcModuleProvider.get().cloneRepositoryShallow(remote, dir);
             } else {
-                ProcessControlProvider.get().pullRepository(dir);
+                ProcModuleProvider.get().pullRepository(dir);
             }
         }
 

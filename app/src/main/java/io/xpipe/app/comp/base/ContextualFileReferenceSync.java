@@ -5,6 +5,7 @@ import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorageSyncHandler;
+import io.xpipe.app.storage.DataStoreAccessScope;
 import io.xpipe.app.util.AsktextAlert;
 
 import lombok.AccessLevel;
@@ -24,7 +25,8 @@ import java.util.function.UnaryOperator;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ContextualFileReferenceSync {
 
-    public static ContextualFileReferenceSync of(Path dir, Function<Path, String> fileName, Supplier<Boolean> perUser) {
+    public static ContextualFileReferenceSync of(
+            Path dir, Function<Path, String> fileName, Supplier<DataStoreAccessScope> scope) {
         return new ContextualFileReferenceSync(
                 dir,
                 path -> {
@@ -84,12 +86,12 @@ public class ContextualFileReferenceSync {
                         return target;
                     }
                 },
-                perUser);
+                scope);
     }
 
     Path targetDir;
     UnaryOperator<Path> targetLocation;
-    Supplier<Boolean> perUser;
+    Supplier<DataStoreAccessScope> scope;
 
     public List<ContextualFileReferenceChoiceComp.PreviousFileReference> getExistingFiles() {
         var files = new ArrayList<ContextualFileReferenceChoiceComp.PreviousFileReference>();

@@ -1,10 +1,10 @@
-.root:dark .color-box.gray {
+.root:dark .color-box {
     -fx-background-color: -color-foreground-base;
     -fx-fill: -color-foreground-base;
     -fx-border-color: -color-border-default;
 }
 
-.root:light .color-box.gray {
+.root:light .color-box {
     -fx-background-color: -color-foreground-base;
     -fx-fill: -color-foreground-base;
     -fx-border-color: derive(-color-border-default, -10%);
@@ -14,6 +14,19 @@
     -fx-border-color: -color-border-default;
 }
 
+.root:pretty:dark .color-box.gray {
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, derive(-color-bg-default, 10%) 40%, derive(-color-bg-default, 6%) 50%, derive(-color-bg-default, 10%) 100%);
+    -fx-border-color: -color-border-default;
+}
+
+.root:pretty:light .color-box.gray {
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, derive(-color-bg-default, -8%) 40%, derive(-color-bg-default, -3%) 50%, derive(-color-bg-default, -8%) 100%);
+    -fx-border-color: derive(-color-border-default, -10%);
+}
+
+.color-box.gray > .separator .line {
+    -fx-border-color: -color-border-default;
+}
 
 .root:pretty:light .color-box.blue {
     -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, rgb(170, 130, 250, 0.05) 40%, rgb(87, 57, 200, 0.05) 50%, rgb(167, 137, 250, 0.05) 100%);

@@ -2,7 +2,7 @@ package io.xpipe.app.core.check;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.LocalExec;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 public class AppPathCorruptCheck {
 

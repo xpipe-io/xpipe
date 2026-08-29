@@ -3,13 +3,8 @@ package io.xpipe.app.platform;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanWrapper;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-
-import net.synedra.validatorfx.ValidationMessage;
-import net.synedra.validatorfx.ValidationResult;
+import javafx.beans.value.ObservableBooleanValue;
+import javafx.beans.value.ObservableValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,21 +13,9 @@ import java.util.stream.Collectors;
 public class ChainedValidator implements Validator {
 
     private final List<Validator> validators;
-    private final ReadOnlyObjectWrapper<ValidationResult> validationResultProperty =
-            new ReadOnlyObjectWrapper<>(new ValidationResult());
-    private final ReadOnlyBooleanWrapper containsErrorsProperty = new ReadOnlyBooleanWrapper();
 
     public ChainedValidator(List<Validator> validators) {
         this.validators = validators;
-        validators.forEach(v -> {
-            v.containsErrorsProperty().addListener((c, o, n) -> {
-                containsErrorsProperty.set(containsErrors());
-            });
-
-            v.validationResultProperty().addListener((c, o, n) -> {
-                validationResultProperty.set(getValidationResult());
-            });
-        });
     }
 
     @Override
@@ -58,18 +41,46 @@ public class ChainedValidator implements Validator {
         }
 
         var r = new ValidationResult();
-        r.addAll(list);
+        r.add(list);
         return r;
     }
 
     @Override
-    public ReadOnlyObjectProperty<ValidationResult> validationResultProperty() {
-        return validationResultProperty;
+    public ObservableValue<ValidationResult> validationResultProperty() {
+        var list = new ArrayList<ObservableValue<ValidationResult>>();
+        for (var val : validators) {
+            list.add(val.validationResultProperty());
+        }
+        return Bindings.createObjectBinding(
+                () -> {
+                    for (var r : list) {
+                        var val = r.getValue();
+                        if (!val.getMessages().isEmpty()) {
+                            return val;
+                        }
+                    }
+                    return new ValidationResult();
+                },
+                list.toArray(Observable[]::new));
     }
 
     @Override
-    public ReadOnlyBooleanProperty containsErrorsProperty() {
-        return containsErrorsProperty;
+    public ObservableBooleanValue containsErrorsProperty() {
+        var list = new ArrayList<ObservableBooleanValue>();
+        for (var val : validators) {
+            list.add(val.containsErrorsProperty());
+        }
+        return Bindings.createBooleanBinding(
+                () -> {
+                    for (var r : list) {
+                        var val = r.getValue();
+                        if (val) {
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+                list.toArray(Observable[]::new));
     }
 
     @Override

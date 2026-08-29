@@ -6,7 +6,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.LicenseProvider;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.stage.Stage;
 
@@ -37,10 +37,13 @@ public class AppGuiMode extends AppOperationMode {
                     .toList()
                     .forEach(w -> w.hide());
 
-            // If we are in an externally started shutdown hook, don't close the windows until the platform exits
-            // That way, it is kept open to block for shutdowns on Windows systems
-            if (OsType.ofLocal() != OsType.WINDOWS || !AppOperationMode.isInShutdownHook()) {
+            // When changing between modes, close window instantly
+            // Otherwise, the background mode shutdown closes this
+            if (!AppOperationMode.isInShutdown()) {
                 AppMainWindow.get().hide();
+            } else {
+                // Show teardown screen
+                AppMainWindow.resetContent();
             }
         });
     }

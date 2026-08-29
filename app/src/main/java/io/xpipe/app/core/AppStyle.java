@@ -2,10 +2,13 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.platform.Listeners;
 import io.xpipe.app.prefs.AppPrefs;
 
 import javafx.application.Platform;
+import javafx.css.PseudoClass;
 import javafx.scene.Scene;
+import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Styles;
 
@@ -181,8 +184,16 @@ public class AppStyle {
                 add(scene, THEME_PREFERENCES_STYLESHEET_CONTENTS.get(t));
             }
         }
-        TrackEvent.debug("Added stylesheets for scene");
 
         scenes.put(scene, null);
+    }
+
+    public static void addSizePseudoClasses(Region r) {
+        Listeners.listenWeak(r, AppSizeBreakpoints.compactMode(), (region, v) -> {
+            region.pseudoClassStateChanged(PseudoClass.getPseudoClass("compact"), v);
+        });
+        Listeners.listenWeak(r, AppSizeBreakpoints.compactMode(), (region, v) -> {
+            region.pseudoClassStateChanged(PseudoClass.getPseudoClass("compact"), v);
+        });
     }
 }

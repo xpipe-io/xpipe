@@ -5,7 +5,7 @@ import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FilePath;
 
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;

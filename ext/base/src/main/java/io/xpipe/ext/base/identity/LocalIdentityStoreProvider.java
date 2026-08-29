@@ -1,17 +1,13 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.cred.NoIdentityStrategy;
-import io.xpipe.app.cred.SshIdentityStrategyChoiceConfig;
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.GuiDialog;
-import io.xpipe.app.hub.comp.StoreCreationModel;
+import io.xpipe.app.hub.creation.StoreCreationModel;
+import io.xpipe.app.identity.NoIdentityStrategy;
+import io.xpipe.app.identity.SshIdentityStrategyChoiceConfig;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
-import io.xpipe.app.secret.EncryptedValue;
-import io.xpipe.app.secret.SecretNoneStrategy;
-import io.xpipe.app.secret.SecretRetrievalStrategy;
-import io.xpipe.app.secret.SecretStrategyChoiceConfig;
+import io.xpipe.app.secret.*;
 import io.xpipe.app.storage.*;
+import io.xpipe.app.store.DataStore;
 import io.xpipe.app.util.*;
 
 import javafx.beans.property.Property;
@@ -40,9 +36,10 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
         var pass = new SimpleObjectProperty<>(st.getPassword());
         var identity = new SimpleObjectProperty<>(st.getSshIdentity());
 
+        var current = DataStoreAccessScope.encryption();
         var sshIdentityChoiceConfig = SshIdentityStrategyChoiceConfig.builder()
                 .allowKeyFileSync(false)
-                .perUserKeyFileCheck(() -> false)
+                .scopeCheck(() -> current)
                 .build();
 
         var passwordChoice = OptionsChoiceBuilder.builder()
@@ -70,13 +67,13 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                                     .username(user.get())
                                     .password(
                                             st.getEncryptedPassword() != null
-                                                    ? st.getEncryptedPassword().withValue(pass.get())
-                                                    : EncryptedValue.of(pass.get()))
+                                                    ? st.getEncryptedPassword().with(pass.get())
+                                                    : EncryptedValue.of(pass.get(), current))
                                     .sshIdentity(
                                             st.getEncryptedSshIdentity() != null
                                                     ? st.getEncryptedSshIdentity()
-                                                            .withValue(identity.get())
-                                                    : EncryptedValue.of(identity.get()))
+                                                            .with(identity.get())
+                                                    : EncryptedValue.of(identity.get(), current))
                                     .build();
                         },
                         store)
@@ -85,9 +82,10 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
 
     @Override
     public DataStore defaultStore(DataStoreCategory category) {
+        var current = DataStoreAccessScope.encryption();
         return LocalIdentityStore.builder()
-                .password(EncryptedValue.of(new SecretNoneStrategy()))
-                .sshIdentity(EncryptedValue.of(new NoIdentityStrategy()))
+                .password(EncryptedValue.of(new SecretNoneStrategy(), current))
+                .sshIdentity(EncryptedValue.of(new NoIdentityStrategy(), current))
                 .build();
     }
 

@@ -1,7 +1,10 @@
 package io.xpipe.ext.base.host;
 
-import io.xpipe.app.ext.*;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStore;
+import io.xpipe.app.store.DataStoreDependencies;
+import io.xpipe.app.store.NetworkTunnelStore;
+import io.xpipe.app.util.HostAddress;
 import io.xpipe.app.util.Validators;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -17,7 +20,7 @@ import java.util.List;
 @SuperBuilder
 @Jacksonized
 @JsonTypeName("abstractHost")
-public class AbstractHostStore implements DataStore, HostAddressStore, HostAddressGatewayStore {
+public class AbstractHostStore implements DataStore, io.xpipe.app.store.HostAddressStore, HostAddressGatewayStore {
 
     String host;
     DataStoreEntryRef<NetworkTunnelStore> gateway;

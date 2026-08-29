@@ -1,12 +1,13 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
+import io.xpipe.app.prefs.PrefsChoiceValue;
 import io.xpipe.app.process.*;
 import io.xpipe.app.update.AppDistributionType;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
+import io.xpipe.app.webtop.WebtopApp;
 
 import lombok.Getter;
 
@@ -531,8 +532,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     List<ExternalTerminalType> ALL = getTypes(OsType.ofLocal(), true);
     List<ExternalTerminalType> ALL_ON_ALL_PLATFORMS = getTypes(null, true);
 
-    static ExternalTerminalType determineFallbackTerminalToOpen(ExternalTerminalType type) {
-        if (type != null
+    static ExternalTerminalType determineFallbackTerminalToOpen(ExternalTerminalType type, boolean force) {
+        if (!force
+                && type != null
                 && type != XSHELL
                 && type != MOBAXTERM
                 && type != SECURECRT
@@ -618,6 +620,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     TerminalOpenFormat getOpenFormat();
 
     default String getWebsite() {
+        return null;
+    }
+
+    default WebtopApp getRequiredWebtopApp() {
         return null;
     }
 

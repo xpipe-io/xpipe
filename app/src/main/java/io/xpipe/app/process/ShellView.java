@@ -1,10 +1,10 @@
 package io.xpipe.app.process;
 
+import io.xpipe.app.util.FailableSupplier;
+import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.GroupFile;
+import io.xpipe.app.util.OsType;
 import io.xpipe.app.util.PasswdFile;
-import io.xpipe.core.FailableSupplier;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -182,6 +182,24 @@ public class ShellView {
         return user;
     }
 
+    public OptionalInt uid() throws Exception {
+        if (shellControl.getOsType() == OsType.WINDOWS) {
+            return OptionalInt.empty();
+        }
+
+        var read = shellControl.command("id -u").readStdoutIfPossible();
+        return read.isPresent() ? OptionalInt.of(Integer.parseInt(read.get())) : OptionalInt.empty();
+    }
+
+    public OptionalInt gid() throws Exception {
+        if (shellControl.getOsType() == OsType.WINDOWS) {
+            return OptionalInt.empty();
+        }
+
+        var read = shellControl.command("id -g").readStdoutIfPossible();
+        return read.isPresent() ? OptionalInt.of(Integer.parseInt(read.get())) : OptionalInt.empty();
+    }
+
     public boolean isRoot() throws Exception {
         if (shellControl.getOsType() == OsType.WINDOWS) {
             return false;
@@ -203,8 +221,9 @@ public class ShellView {
     }
 
     public void transferLocalFile(Path localPath, FilePath target) throws Exception {
+        long size = Files.size(localPath);
         try (var in = Files.newInputStream(localPath)) {
-            writeStreamFile(target, in, in.available());
+            writeStreamFile(target, in, size);
         }
     }
 

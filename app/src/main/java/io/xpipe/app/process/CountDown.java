@@ -8,6 +8,7 @@ public class CountDown {
     private volatile long lastMillis = -1;
     private volatile long millisecondsLeft;
 
+    @Getter
     @Setter
     private volatile boolean active;
 

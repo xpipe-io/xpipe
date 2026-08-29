@@ -6,11 +6,11 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.FileKind;
+import io.xpipe.app.fs.FileKind;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.OsType;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.OsType;
 
 import javafx.beans.value.ObservableValue;
 import javafx.scene.input.KeyCode;
@@ -48,10 +48,10 @@ public class EditFileMenuProvider implements BrowserMenuLeafProvider {
     @Override
     public KeyCombination getShortcut() {
         return switch (OsType.ofLocal()) {
-            case OsType.Linux linux -> new KeyCodeCombination(KeyCode.ENTER, KeyCombination.SHORTCUT_DOWN);
-            case OsType.MacOs macOs ->
+            case OsType.Linux ignored -> new KeyCodeCombination(KeyCode.ENTER, KeyCombination.SHORTCUT_DOWN);
+            case OsType.MacOs ignored ->
                 new KeyCodeCombination(KeyCode.DOWN, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN);
-            case OsType.Windows windows -> new KeyCodeCombination(KeyCode.ENTER, KeyCombination.SHORTCUT_DOWN);
+            case OsType.Windows ignored -> new KeyCodeCombination(KeyCode.ENTER, KeyCombination.SHORTCUT_DOWN);
         };
     }
 

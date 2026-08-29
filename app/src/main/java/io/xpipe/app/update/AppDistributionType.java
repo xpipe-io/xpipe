@@ -5,8 +5,8 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.util.LocalExec;
+import io.xpipe.app.util.OsType;
 import io.xpipe.app.util.Translatable;
-import io.xpipe.core.OsType;
 
 import javafx.beans.value.ObservableValue;
 
@@ -58,7 +58,15 @@ public enum AppDistributionType implements Translatable {
                 "if [ \"$?\" != 0 ]; then echo \"Update failed ...\"; read key; fi",
                 AppRestart.getTerminalRestartCommand()));
     }),
-    WEBTOP("webtop", true, () -> new WebtopUpdater()),
+    WEBTOP("webtop", true, () -> {
+        var pkg = AppNames.ofCurrent().getKebapName();
+        return new CommandUpdater(ShellScript.lines(
+                "echo \"+ sudo apt update && sudo apt install -y " + pkg + "\"",
+                "sudo apt update",
+                "sudo apt install -y " + pkg,
+                "if [ \"$?\" != 0 ]; then echo \"Update failed ...\"; read key; fi",
+                AppRestart.getTerminalRestartCommand()));
+    }),
     CHOCO("choco", true, () -> new ChocoUpdater()),
     WINGET("winget", true, () -> new WingetUpdater()),
     SCOOP("scoop", false, () -> new PortableUpdater(true));
@@ -86,7 +94,11 @@ public enum AppDistributionType implements Translatable {
         }
 
         if (!AppProperties.get().isImage()) {
-            type = DEVELOPMENT;
+            // Simulate webtop dist even in dev mode when possible
+            var webtop = OsType.ofLocal() == OsType.LINUX
+                    && (Files.isDirectory(Path.of("/kclient"))
+                            || Files.isRegularFile(Path.of("/defaults/startwm_wayland.sh")));
+            type = webtop ? WEBTOP : DEVELOPMENT;
             return;
         }
 
@@ -197,7 +209,9 @@ public enum AppDistributionType implements Translatable {
             }
         }
 
-        if (OsType.ofLocal() == OsType.LINUX && Files.isDirectory(Path.of("/kclient"))) {
+        if (OsType.ofLocal() == OsType.LINUX
+                && (Files.isDirectory(Path.of("/kclient"))
+                        || Files.isRegularFile(Path.of("/defaults/startwm_wayland.sh")))) {
             return WEBTOP;
         }
 

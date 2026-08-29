@@ -5,7 +5,8 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.IntFieldComp;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.core.OsType;
+import io.xpipe.app.update.AppDistributionType;
+import io.xpipe.app.util.OsType;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Slider;
@@ -41,15 +42,14 @@ public class DisplayCategory extends AppPrefsCategory {
                                 }),
                                 prefs.uiScale)
                         .hide(new SimpleBooleanProperty(OsType.ofLocal() == OsType.MACOS))
-                        .pref(prefs.performanceMode)
-                        .addToggle(prefs.performanceMode)
                         .pref(prefs.useSystemFont)
                         .addToggle(prefs.useSystemFont)
                         .pref(prefs.censorMode)
                         .addToggle(prefs.censorMode)
                         .pref(prefs.limitedTouchscreenMode)
                         .addToggle(prefs.limitedTouchscreenMode)
-                        .hide(OsType.ofLocal() != OsType.LINUX))
+                        .hide(OsType.ofLocal() != OsType.LINUX
+                                || AppDistributionType.get() == AppDistributionType.WEBTOP))
                 .title("windowOptions")
                 .sub(new OptionsBuilder()
                         .pref(prefs.windowOpacity)

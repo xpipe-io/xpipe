@@ -14,7 +14,6 @@ import io.xpipe.app.update.AppDistributionType;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.geometry.Insets;
 
 import atlantafx.base.theme.Styles;
 
@@ -36,12 +35,7 @@ public class AboutCategory extends AppPrefsCategory {
     protected BaseRegionBuilder<?, ?> create() {
         var props = createProperties();
         var update = new UpdateCheckComp().prefWidth(600);
-        return new VerticalComp(List.of(
-                        props,
-                        RegionBuilder.vspacer(1),
-                        update,
-                        RegionBuilder.vspacer(5),
-                        RegionBuilder.hseparator().padding(Insets.EMPTY).maxWidth(600)))
+        return new VerticalComp(List.of(props, RegionBuilder.vspacer(1), update, RegionBuilder.vspacer(5)))
                 .apply(s -> s.setFillWidth(true))
                 .apply(struc -> struc.setSpacing(12))
                 .style("information")
@@ -60,7 +54,6 @@ public class AboutCategory extends AppPrefsCategory {
         title.style(Styles.TEXT_BOLD);
 
         var section = new OptionsBuilder()
-                .addComp(RegionBuilder.vspacer(40))
                 .addComp(title, null)
                 .addComp(RegionBuilder.vspacer(10))
                 .name("build")
@@ -79,7 +72,8 @@ public class AboutCategory extends AppPrefsCategory {
                                         + " "
                                         + System.getProperty("java.vm.version"))
                                 .describe(d ->
-                                        d.focusTraversal(RegionDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)),
+                                        d.focusTraversal(RegionDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY))
+                                .minWidth(0),
                         null)
                 .buildComp();
         return section.style("properties-comp");

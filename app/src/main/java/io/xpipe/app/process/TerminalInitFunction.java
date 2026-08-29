@@ -1,6 +1,6 @@
 package io.xpipe.app.process;
 
-import io.xpipe.core.FailableFunction;
+import io.xpipe.app.util.FailableFunction;
 
 public interface TerminalInitFunction {
 

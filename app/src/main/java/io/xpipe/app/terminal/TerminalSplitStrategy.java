@@ -1,7 +1,7 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.PrefsChoiceValue;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableObjectValue;

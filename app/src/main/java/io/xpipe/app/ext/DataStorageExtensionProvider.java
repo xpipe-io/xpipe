@@ -1,7 +1,5 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.core.ModuleLayerLoader;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -26,6 +24,11 @@ public abstract class DataStorageExtensionProvider {
                     .sorted(Comparator.comparing(
                             scanProvider -> scanProvider.getClass().getName()))
                     .collect(Collectors.toList());
+        }
+
+        @Override
+        public boolean initForCli() {
+            return false;
         }
     }
 }

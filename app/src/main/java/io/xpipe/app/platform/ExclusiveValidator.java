@@ -3,21 +3,17 @@ package io.xpipe.app.platform;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 
-import net.synedra.validatorfx.ValidationResult;
-
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.*;
 
 public final class ExclusiveValidator<T> implements Validator {
 
-    private final Map<T, ? extends Validator> validators;
+    private final SequencedMap<T, ? extends Validator> validators;
     private final ObservableValue<T> obs;
 
-    public ExclusiveValidator(Map<T, ? extends Validator> validators, ObservableValue<T> obs) {
+    public ExclusiveValidator(SequencedMap<T, ? extends Validator> validators, ObservableValue<T> obs) {
         this.validators = validators;
         this.obs = obs;
     }
@@ -47,13 +43,43 @@ public final class ExclusiveValidator<T> implements Validator {
     }
 
     @Override
-    public ReadOnlyObjectProperty<ValidationResult> validationResultProperty() {
-        return get().validationResultProperty();
+    public ObservableValue<ValidationResult> validationResultProperty() {
+        var bindingMap = new LinkedHashMap<T, ObservableValue<ValidationResult>>();
+        validators.forEach((k, v) -> {
+            bindingMap.put(k, v.validationResultProperty());
+        });
+
+        var list = new ArrayList<Observable>();
+        list.addAll(bindingMap.values());
+        list.add(obs);
+        Observable[] observables = list.toArray(Observable[]::new);
+
+        return Bindings.createObjectBinding(
+                () -> {
+                    var v = bindingMap.get(obs.getValue());
+                    return v != null ? v.getValue() : null;
+                },
+                observables);
     }
 
     @Override
-    public ReadOnlyBooleanProperty containsErrorsProperty() {
-        return get().containsErrorsProperty();
+    public ObservableBooleanValue containsErrorsProperty() {
+        var bindingMap = new LinkedHashMap<T, ObservableBooleanValue>();
+        validators.forEach((k, v) -> {
+            bindingMap.put(k, v.containsErrorsProperty());
+        });
+
+        var list = new ArrayList<Observable>();
+        list.addAll(bindingMap.values());
+        list.add(obs);
+        Observable[] observables = list.toArray(Observable[]::new);
+
+        return Bindings.createBooleanBinding(
+                () -> {
+                    var v = bindingMap.get(obs.getValue());
+                    return v != null ? v.getValue() : null;
+                },
+                observables);
     }
 
     @Override
@@ -73,13 +99,20 @@ public final class ExclusiveValidator<T> implements Validator {
 
     @Override
     public StringBinding createStringBinding(String prefix, String separator) {
-        var list = new ArrayList<Observable>(
-                validators.values().stream().map(Validator::createStringBinding).toList());
+        var bindingMap = new LinkedHashMap<T, ObservableValue<String>>();
+        validators.forEach((k, v) -> {
+            bindingMap.put(k, v.createStringBinding());
+        });
+
+        var list = new ArrayList<Observable>();
+        list.addAll(bindingMap.values());
         list.add(obs);
         Observable[] observables = list.toArray(Observable[]::new);
+
         return Bindings.createStringBinding(
                 () -> {
-                    return get().createStringBinding(prefix, separator).get();
+                    var v = bindingMap.get(obs.getValue());
+                    return v != null ? v.getValue() : null;
                 },
                 observables);
     }

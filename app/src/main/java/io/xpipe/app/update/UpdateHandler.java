@@ -42,12 +42,14 @@ public abstract class UpdateHandler {
         var hasUpdated = performedUpdate != null;
         event("Was updated is " + hasUpdated);
         if (hasUpdated) {
-            AppCache.clear("performedUpdate");
             updateSucceeded = AppProperties.get().getVersion().equals(performedUpdate.getNewVersion());
-            AppCache.clear("preparedUpdate");
+            AppCache.clear("performedUpdate");
+            if (updateSucceeded) {
+                AppCache.clear("preparedUpdate");
+            }
             event("Found information about recent update");
         } else {
-            updateSucceeded = false;
+            updateSucceeded = true;
         }
 
         preparedUpdate.setValue(AppCache.getNonNull("preparedUpdate", PreparedUpdate.class, () -> null));

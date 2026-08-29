@@ -1,1 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32"><defs><clipPath id="a"><path d="M7.055,16.241c3.415-10.22,14.759-9.473,17.924,0l.1,5.893a15.562,15.562,0,0,0-9.036,7.246A17.641,17.641,0,0,0,7.03,22.346Z" style="fill:none"/></clipPath></defs><title>file_type_rego</title><path d="M7.03,16.241l2.6-4.559c-2.418-.312-2.606-3.431-.8-9.062C3.809,8.853,2.42,10.228,7.03,16.241Z" style="fill:#bfbfbf;fill-rule:evenodd"/><path d="M24.97,16.241l-2.595-4.559c2.418-.312,2.606-3.431.8-9.062C28.191,8.853,29.58,10.228,24.97,16.241Z" style="fill:#bfbfbf;fill-rule:evenodd"/><path d="M7.055,16.241c3.415-10.22,14.759-9.473,17.924,0l.1,5.893a15.562,15.562,0,0,0-9.036,7.246A17.641,17.641,0,0,0,7.03,22.346Z" style="fill:none"/><g style="clip-path:url(#a)"><rect x="16.053" y="7.962" width="9.549" height="21.899" style="fill:#536367"/><rect x="5.322" y="7.962" width="10.732" height="21.899" style="fill:#78929a"/></g><circle cx="16.04" cy="16.241" r="1.166" style="fill:#fff"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    <defs>
+        <clipPath id="a">
+            <path d="M7.055 16.241c3.415-10.22 14.759-9.473 17.924 0l.1 5.893a15.56 15.56 0 0 0-9.036 7.246 17.64 17.64 0 0 0-9.013-7.034Z" style="fill:none"/>
+        </clipPath>
+    </defs>
+    <title>file_type_rego</title>
+    <path d="m7.03 16.241 2.6-4.559c-2.418-.312-2.606-3.431-.8-9.062-5.021 6.233-6.41 7.608-1.8 13.621m17.94 0-2.595-4.559c2.418-.312 2.606-3.431.8-9.062 5.016 6.233 6.405 7.608 1.795 13.621" style="fill:#bfbfbf;fill-rule:evenodd"/>
+    <path d="M7.055 16.241c3.415-10.22 14.759-9.473 17.924 0l.1 5.893a15.56 15.56 0 0 0-9.036 7.246 17.64 17.64 0 0 0-9.013-7.034Z" style="fill:none"/>
+    <g style="clip-path:url(#a)">
+        <path d="M16.053 7.962h9.549v21.899h-9.549z" style="fill:#536367"/>
+        <path d="M5.322 7.962h10.732v21.899H5.322z" style="fill:#78929a"/>
+    </g>
+    <circle cx="16.04" cy="16.241" r="1.166" style="fill:#fff"/>
+</svg>

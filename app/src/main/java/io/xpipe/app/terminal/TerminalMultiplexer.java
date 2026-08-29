@@ -5,7 +5,8 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.update.AppDistributionType;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
+import io.xpipe.app.webtop.WebtopApp;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -47,6 +48,12 @@ public interface TerminalMultiplexer {
 
         return null;
     }
+
+    boolean requiresUnixEnvironment();
+
+    boolean isSupported() throws Exception;
+
+    WebtopApp getRequiredWebtopApp();
 
     boolean supportsSplitView();
 

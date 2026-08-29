@@ -1,32 +1,37 @@
 package io.xpipe.app.beacon.mcp;
 
 import io.xpipe.app.beacon.AppBeaconServer;
+import io.xpipe.app.beacon.BeaconClientException;
+import io.xpipe.app.beacon.BeaconInterface;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.ext.*;
-import io.xpipe.app.hub.comp.StoreEntryWrapper;
-import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.fs.FileEntry;
+import io.xpipe.app.fs.FileInfo;
+import io.xpipe.app.fs.ShellFileSystem;
+import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageQuery;
+import io.xpipe.app.store.SingletonSessionStore;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.CommandDialog;
+import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.HttpHelper;
-import io.xpipe.beacon.BeaconClientException;
-import io.xpipe.beacon.BeaconInterface;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.JacksonMapper;
+import io.xpipe.app.util.JacksonMapper;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import io.modelcontextprotocol.json.jackson2.JacksonMcpJsonMapper;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.modelcontextprotocol.json.jackson3.JacksonMcpJsonMapper;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.JsonNodeFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -148,15 +153,20 @@ public final class McpTools {
                         var r = ConnectionResource.builder()
                                 .name(e.getName())
                                 .path(DataStorage.get().getStorePath(e).toString())
-                                .information(info)
+                                .information(info != null ? info.toJoinedString() : null)
                                 .notes(e.getNotes())
                                 .build();
                         list.add(r);
                     }
 
+                    JsonMapper mapper = JacksonMapper.getDefault()
+                            .rebuild()
+                            .changeDefaultPropertyInclusion(
+                                    value -> value.withValueInclusion(JsonInclude.Include.NON_NULL))
+                            .build();
                     var json = JsonNodeFactory.instance.arrayNode();
                     for (var e : list) {
-                        json.add(JacksonMapper.getDefault().valueToTree(e));
+                        json.add(mapper.valueToTree(e));
                     }
 
                     var object = JsonNodeFactory.instance.objectNode();
@@ -180,7 +190,7 @@ public final class McpTools {
                     var shellStore = req.getShellStoreRef(system, false);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
                     var path = req.getFilePath(shellSession.getControl(), "path");
-                    var fs = new ConnectionFileSystem(shellSession.getControl());
+                    var fs = new ShellFileSystem(shellSession.getControl());
 
                     if (!fs.fileExists(path)) {
                         throw new BeaconClientException("File " + path + " does not exist");
@@ -203,17 +213,16 @@ public final class McpTools {
                 .tool(tool)
                 .callHandler(McpToolHandler.of((req) -> {
                     var system = req.getStringArgument("system");
-                    var recursive = req.getOptionalBooleanArgument("recursive").orElse(false);
                     var shellStore = req.getShellStoreRef(system, false);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
-                    var fs = new ConnectionFileSystem(shellSession.getControl());
+                    var fs = new ShellFileSystem(shellSession.getControl());
                     var path = req.getFilePath(shellSession.getControl(), "path");
 
                     if (!fs.directoryExists(path)) {
                         throw new BeaconClientException("Directory " + path + " does not exist");
                     }
 
-                    try (var stream = recursive ? fs.listFilesRecursively(fs, path).stream() : fs.listFiles(fs, path)) {
+                    try (var stream = fs.listFiles(fs, path)) {
                         var list = stream.toList();
                         var builder = McpSchema.CallToolResult.builder();
                         for (FileEntry e : list) {
@@ -233,16 +242,17 @@ public final class McpTools {
                     var system = req.getStringArgument("system");
                     var pattern = req.getStringArgument("name");
                     var shellStore = req.getShellStoreRef(system, false);
+                    var recursive = req.getOptionalBooleanArgument("recursive").orElse(false);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
                     var path = req.getFilePath(shellSession.getControl(), "path");
-                    var fs = new ConnectionFileSystem(shellSession.getControl());
+                    var fs = new ShellFileSystem(shellSession.getControl());
 
                     if (!fs.directoryExists(path)) {
                         throw new BeaconClientException("Directory " + path + " does not exist");
                     }
 
                     var regex = Pattern.compile(DataStorageQuery.toRegex(pattern));
-                    try (var stream = fs.listFiles(fs, path)) {
+                    try (var stream = recursive ? fs.listFilesRecursively(fs, path).stream() : fs.listFiles(fs, path)) {
                         var list = stream.toList();
                         var builder = McpSchema.CallToolResult.builder();
                         list.stream()
@@ -267,7 +277,7 @@ public final class McpTools {
                     var shellStore = req.getShellStoreRef(system, false);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
                     var path = req.getFilePath(shellSession.getControl(), "path");
-                    var fs = new ConnectionFileSystem(shellSession.getControl());
+                    var fs = new ShellFileSystem(shellSession.getControl());
 
                     if (!fs.fileExists(path) && !fs.directoryExists(path)) {
                         throw new BeaconClientException("Path " + path + " does not exist");
@@ -309,7 +319,7 @@ public final class McpTools {
                     var shellStore = req.getShellStoreRef(system, true);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
                     var path = req.getFilePath(shellSession.getControl(), "path");
-                    var fs = new ConnectionFileSystem(shellSession.getControl());
+                    var fs = new ShellFileSystem(shellSession.getControl());
 
                     if (fs.fileExists(path)) {
                         throw new BeaconClientException("File " + path + " does already exist");
@@ -342,7 +352,7 @@ public final class McpTools {
                     var shellStore = req.getShellStoreRef(system, true);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
                     var path = req.getFilePath(shellSession.getControl(), "path");
-                    var fs = new ConnectionFileSystem(shellSession.getControl());
+                    var fs = new ShellFileSystem(shellSession.getControl());
 
                     var b = content.getBytes(StandardCharsets.UTF_8);
                     try (var out = fs.openOutput(path, b.length)) {
@@ -365,7 +375,7 @@ public final class McpTools {
                     var shellStore = req.getShellStoreRef(system, true);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
                     var path = req.getFilePath(shellSession.getControl(), "path");
-                    var fs = new ConnectionFileSystem(shellSession.getControl());
+                    var fs = new ShellFileSystem(shellSession.getControl());
 
                     if (fs.fileExists(path)) {
                         throw new BeaconClientException("Directory " + path + " does already exist");
@@ -390,7 +400,7 @@ public final class McpTools {
                     var shellStore = req.getShellStoreRef(system, true);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
 
-                    var r = ProcessControlProvider.get().executeMcpCommand(shellSession.getControl(), command);
+                    var r = ProcModuleProvider.get().executeMcpCommand(shellSession.getControl(), command);
                     return r;
                 }))
                 .build();

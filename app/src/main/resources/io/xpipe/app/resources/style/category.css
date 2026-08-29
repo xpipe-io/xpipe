@@ -3,8 +3,16 @@
     -fx-background-radius: 4px;
     -fx-border-radius: 4px;
     -fx-border-width: 0;
-    -fx-padding: 1 0 1 2;
+    -fx-padding: 1 10 1 2;
     -fx-background-insets: 0;
+}
+
+.category-button .drag-into-indicator {
+    -fx-padding: 0 6 0 0;
+}
+
+.category-button .drag-into-indicator:hover .ikonli-font-icon {
+    -fx-icon-color: -color-accent-emphasis;
 }
 
 .root:nord .category-button {
@@ -17,13 +25,28 @@
     -fx-background-color: transparent;
 }
 
-.category-button:hover, .root:key-navigation .category-button:focused {
-    -fx-background-color: -color-bg-default-transparent;
+.root .category .category-button:hover, .root:key-navigation .category-button:focused {
+    -fx-background-color: -color-accent-muted, -color-bg-default;
+    -fx-background-insets: 0, 1;
 }
 
-.category:selected .category-button {
-    -fx-background-color: -color-border-muted, -color-bg-default;
+.category:flat:selected .category-button {
+    -fx-background-color: -color-border-default, -color-bg-default;
     -fx-background-insets: 0, 1;
+}
+
+.root:light .category:recursive:selected {
+    -fx-background-color: derive(-color-border-default, -20%), derive(-color-bg-default, 10%);
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+}
+
+.root:dark .category:recursive:selected {
+    -fx-background-color: -color-border-default, -color-bg-default;
+    -fx-background-insets: 0, 1;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
 }
 
 .category .count {

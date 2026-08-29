@@ -1,16 +1,18 @@
 package io.xpipe.ext.base.script;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.*;
 import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.*;
+import io.xpipe.app.util.ValidationException;
 import io.xpipe.app.util.Validators;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Singular;
+import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -28,8 +30,6 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
 
     @Singular
     List<DataStoreEntryRef<ScriptStore>> scripts;
-
-    String description;
 
     ScriptTextSource textSource;
     boolean initScript;
@@ -61,7 +61,7 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
         return getShellDialect() == null || getShellDialect().isCompatibleTo(dialect);
     }
 
-    public String assembleScriptCall(ShellControl shellControl, boolean args) {
+    private String assembleScript(ShellControl shellControl, boolean args) {
         if (isCompatible(shellControl)) {
             var raw = getTextSource().getText().withoutShebang().getValue();
             if (raw.isBlank()) {
@@ -81,6 +81,7 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
         return null;
     }
 
+    @SneakyThrows
     public ShellScript assembleScriptChain(ShellControl shellControl, boolean args) {
         var all = queryFlattenedScripts();
 
@@ -89,7 +90,7 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
         }
 
         var r = all.stream()
-                .map(ref -> ref.getStore().assembleScriptCall(shellControl, args))
+                .map(ref -> ref.getStore().assembleScript(shellControl, args))
                 .filter(s -> s != null)
                 .toList();
         if (r.isEmpty()) {

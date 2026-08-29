@@ -1,0 +1,39 @@
+package io.xpipe.app.hub.category;
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
+import io.xpipe.app.comp.base.ScrollComp;
+import io.xpipe.app.core.AppFontSizes;
+import io.xpipe.app.util.OsType;
+
+import javafx.beans.binding.Bindings;
+import javafx.scene.layout.Region;
+
+public class StoreCategoryListComp extends SimpleRegionBuilder {
+
+    private final StoreCategoryWrapper root;
+
+    public StoreCategoryListComp(StoreCategoryWrapper root) {
+        this.root = root;
+    }
+
+    @Override
+    protected Region createSimple() {
+        var sp = new ScrollComp(new StoreCategoryComp(root));
+        sp.style("store-category-bar");
+        sp.apply(struc -> {
+            Region content = (Region) struc.getContent();
+            struc.setFitToWidth(true);
+            if (OsType.ofLocal() == OsType.MACOS) {
+                AppFontSizes.lg(struc);
+            }
+            struc.minHeightProperty()
+                    .bind(Bindings.createDoubleBinding(
+                            () -> {
+                                var h = content.getHeight();
+                                return Math.min(150, h + 2);
+                            },
+                            content.heightProperty()));
+        });
+        return sp.build();
+    }
+}

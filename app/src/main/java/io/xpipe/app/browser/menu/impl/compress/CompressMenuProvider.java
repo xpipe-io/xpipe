@@ -6,9 +6,9 @@ import io.xpipe.app.browser.menu.*;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.FileKind;
+import io.xpipe.app.fs.FileKind;
 import io.xpipe.app.platform.LabelGraphic;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -109,7 +109,8 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
 
         @Override
         public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            var name = new SimpleStringProperty(entries.size() == 1 ? entries.getFirst().getFileName() + "." + getExtension() : null);
+            var name = new SimpleStringProperty(
+                    entries.size() == 1 ? entries.getFirst().getFileName() + "." + getExtension() : null);
             var modal = ModalOverlay.of(
                     "archiveName",
                     RegionBuilder.of(() -> {
@@ -201,7 +202,8 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
 
         @Override
         public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            return entries.stream().allMatch(browserEntry -> browserEntry.getRawFileEntry().getKind() == FileKind.FILE);
+            return entries.stream()
+                    .allMatch(browserEntry -> browserEntry.getRawFileEntry().getKind() == FileKind.FILE);
         }
 
         @Override

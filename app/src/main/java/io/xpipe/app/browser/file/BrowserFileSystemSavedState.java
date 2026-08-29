@@ -1,29 +1,28 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.GlobalTimer;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.JacksonMapper;
+import io.xpipe.app.util.JacksonMapper;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JavaType;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.deser.std.StdDeserializer;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.ser.std.StdSerializer;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -59,8 +58,8 @@ public class BrowserFileSystemSavedState {
     }
 
     static BrowserFileSystemSavedState loadForStore(BrowserFileSystemTabModel model) {
-        var state = AppCache.getNonNull(
-                "fs-state-" + model.getEntry().get().getUuid(), BrowserFileSystemSavedState.class, () -> {
+        var state = AppCache.getNonNullMapEntry(
+                "fs-state", model.getEntry().get().getUuid().toString(), BrowserFileSystemSavedState.class, () -> {
                     return new BrowserFileSystemSavedState();
                 });
         state.setModel(model);
@@ -72,7 +71,7 @@ public class BrowserFileSystemSavedState {
             return;
         }
 
-        AppCache.update("fs-state-" + model.getEntry().get().getUuid(), this);
+        AppCache.updateMapEntry("fs-state", model.getEntry().get().getUuid().toString(), this);
     }
 
     public void cd(FilePath dir) {
@@ -126,8 +125,7 @@ public class BrowserFileSystemSavedState {
         }
 
         @Override
-        public void serialize(BrowserFileSystemSavedState value, JsonGenerator gen, SerializerProvider provider)
-                throws IOException {
+        public void serialize(BrowserFileSystemSavedState value, JsonGenerator gen, SerializationContext context) {
             var node = JsonNodeFactory.instance.objectNode();
             node.set("recentDirectories", JacksonMapper.getDefault().valueToTree(value.getRecentDirectories()));
             gen.writeTree(node);

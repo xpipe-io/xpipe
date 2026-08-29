@@ -1,14 +1,23 @@
 package io.xpipe.ext.base.desktop;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
-import io.xpipe.app.comp.BaseRegionBuilder;
-import io.xpipe.app.ext.*;
-import io.xpipe.app.hub.comp.*;
+import io.xpipe.app.hub.creation.StoreChoiceComp;
+import io.xpipe.app.hub.creation.StoreCreationModel;
+import io.xpipe.app.hub.entry.StoreEntryBadge;
+import io.xpipe.app.hub.entry.StoreEntryInformation;
+import io.xpipe.app.hub.list.StoreViewState;
+import io.xpipe.app.hub.section.StoreSection;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStore;
+import io.xpipe.app.store.DataStoreCreationCategory;
+import io.xpipe.app.store.DataStoreProvider;
+import io.xpipe.app.store.DataStoreUsageCategory;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.core.FailableRunnable;
+import io.xpipe.app.util.FailableRunnable;
+import io.xpipe.app.util.GuiDialog;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -54,9 +63,9 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
+    public DataStoreEntryRef<?> getDisplayParent(DataStoreEntry store) {
         DesktopApplicationStore s = store.getStore().asNeeded();
-        return s.getDesktop().get();
+        return s.getDesktop();
     }
 
     @Override
@@ -121,13 +130,9 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public BaseRegionBuilder<?, ?> stateDisplay(StoreSection section) {
-        return new SystemStateComp(SystemStateComp.State.SUCCESS);
-    }
-
-    @Override
-    public String summaryString(StoreEntryWrapper wrapper) {
-        var st = (DesktopApplicationStore) wrapper.getEntry().getStore();
-        return st.getPath() + (st.getArguments() != null ? " " + st.getArguments() : "");
+    public StoreEntryInformation buildInformation(StoreSection section) {
+        var st = (DesktopApplicationStore) section.getEntry().getStore();
+        return StoreEntryInformation.of(
+                StoreEntryBadge.ofCommand(st.getPath() + (st.getArguments() != null ? " " + st.getArguments() : "")));
     }
 }

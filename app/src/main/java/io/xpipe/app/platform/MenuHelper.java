@@ -83,6 +83,16 @@ public class MenuHelper {
         return i;
     }
 
+    public static void show(ContextMenu contextMenu, Node ref, Side side) {
+        if (!contextMenu.isShowing()) {
+            // Prevent NPE in show()
+            if (contextMenu.getScene() == null || ref == null || ref.getScene() == null) {
+                return;
+            }
+            contextMenu.show(ref, side, 0, 0);
+        }
+    }
+
     public static void toggleMenuShow(ContextMenu contextMenu, Node ref, Side side) {
         if (!contextMenu.isShowing()) {
             // Prevent NPE in show()

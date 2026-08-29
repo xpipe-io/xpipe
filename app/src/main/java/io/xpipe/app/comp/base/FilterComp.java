@@ -4,7 +4,7 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.RegionDescriptor;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppOpenArguments;
-import io.xpipe.app.hub.comp.StoreFilter;
+import io.xpipe.app.hub.list.StoreFilter;
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.application.Platform;

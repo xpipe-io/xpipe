@@ -1,13 +1,13 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.ext.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.*;
 import io.xpipe.app.util.HostHelper;
 import io.xpipe.app.util.LicenseProvider;
+import io.xpipe.app.util.ValidationException;
 import io.xpipe.app.util.Validators;
 import io.xpipe.ext.base.host.HostAddressGatewayStore;
-import io.xpipe.ext.base.host.HostAddressStore;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,7 +16,6 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 @SuperBuilder(toBuilder = true)
 @Getter
@@ -49,7 +48,7 @@ public abstract class AbstractServiceStore
     @Override
     public void checkComplete() throws Throwable {
         // We do not require the host to be complete
-        if (getHost() != null) {
+        if (getHost() != null && !(getHost().asNeeded().getStore() instanceof LocalStore)) {
             Validators.isType(getHost(), HostAddressStore.class);
         }
         Validators.nonNull(remotePort);
@@ -110,6 +109,10 @@ public abstract class AbstractServiceStore
             return false;
         }
 
+        if (getHost().asNeeded().getStore() instanceof LocalStore) {
+            return false;
+        }
+
         if (!getHost().getStore().isComplete()) {
             return false;
         }
@@ -146,6 +149,10 @@ public abstract class AbstractServiceStore
         }
 
         if (getHost() != null) {
+            if (getHost().asNeeded().getStore() instanceof LocalStore) {
+                return null;
+            }
+
             if (!getHost().getStore().isComplete()) {
                 return null;
             }

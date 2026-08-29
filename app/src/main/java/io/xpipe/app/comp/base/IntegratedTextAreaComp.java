@@ -2,11 +2,11 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.RegionStructure;
 import io.xpipe.app.comp.RegionStructureBuilder;
-import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.ext.StatefulDataStore;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.process.SystemState;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.ShellStore;
+import io.xpipe.app.store.StatefulDataStore;
 import io.xpipe.app.util.FileOpener;
 
 import javafx.application.Platform;
@@ -123,9 +123,7 @@ public class IntegratedTextAreaComp extends RegionStructureBuilder<AnchorPane, I
         AnchorPane.setLeftAnchor(textAreaStruc.get(), 0.0);
         AnchorPane.setRightAnchor(textAreaStruc.get(), 0.0);
 
-        if (fitHeight) {
-            pane.maxHeightProperty().bind(textAreaStruc.get().heightProperty());
-        } else {
+        if (!fitHeight) {
             textAreaStruc.getTextArea().prefHeightProperty().bind(pane.heightProperty());
         }
 
@@ -138,6 +136,10 @@ public class IntegratedTextAreaComp extends RegionStructureBuilder<AnchorPane, I
             AnchorPane.setTopAnchor(copyButton, visible ? 14 : 4.0);
             AnchorPane.setRightAnchor(copyButton, visible ? 14 : 4.0);
         });
+        if (fitHeight) {
+            tas.setFitToHeight(true);
+            tas.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        }
 
         return new Structure(pane, ta);
     }

@@ -1,14 +1,21 @@
 package io.xpipe.app.action;
 
+import io.xpipe.app.ext.ModuleLayerLoader;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.core.ModuleLayerLoader;
 
 import java.util.*;
 
 public interface ActionProvider {
 
     List<ActionProvider> ALL = new ArrayList<>();
+
+    static ActionProvider byId(String id) {
+        return ALL.stream()
+                .filter(p -> p.getId() != null && p.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No action provider found for ID " + id));
+    }
 
     static void initProviders() {
         TrackEvent.trace("Starting action provider initialization");
@@ -58,6 +65,11 @@ public interface ActionProvider {
                     .sorted(Comparator.comparing(p -> p.type().getModule().getName()))
                     .map(p -> p.get())
                     .toList());
+        }
+
+        @Override
+        public boolean initForCli() {
+            return false;
         }
     }
 }

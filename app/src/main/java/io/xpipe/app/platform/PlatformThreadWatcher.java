@@ -64,59 +64,64 @@ public class PlatformThreadWatcher {
         });
     }
 
-    @SuppressWarnings("unchecked")
     private static void watchPlatformThreadChanges(Node node) {
         watchGraph(node, c -> {
-            c.sceneProperty().subscribe((oldScene, newScene) -> {
-                var add = oldScene == null && newScene != null;
-                var remove = oldScene != null && newScene == null;
-                if (!add && !remove) {
+            changeState(c, c.getScene() != null);
+            c.sceneProperty().addListener((observable, oldValue, newValue) -> {
+                if (oldValue != null && newValue != null) {
                     return;
                 }
 
-                if (add && !nodes.add(c)) {
-                    return;
-                }
-
-                if (remove) {
-                    nodes.remove(c);
-                }
-
-                if (c instanceof Parent p) {
-                    if (add) {
-                        p.getChildrenUnmodifiable().addListener(listListener);
-                    } else {
-                        p.getChildrenUnmodifiable().removeListener(listListener);
-                    }
-                }
-
-                if (add) {
-                    c.visibleProperty().addListener(listener);
-                    c.boundsInParentProperty().addListener(listener);
-                    c.managedProperty().addListener(listener);
-                    c.opacityProperty().addListener(listener);
-                    c.accessibleHelpProperty().addListener(listener);
-                    c.accessibleTextProperty().addListener(listener);
-
-                    if (c instanceof Labeled l) {
-                        l.textProperty().addListener(listener);
-                        l.graphicProperty().addListener(listener);
-                    }
-                } else {
-                    c.visibleProperty().removeListener(listener);
-                    c.boundsInParentProperty().removeListener(listener);
-                    c.managedProperty().removeListener(listener);
-                    c.opacityProperty().removeListener(listener);
-                    c.accessibleHelpProperty().removeListener(listener);
-                    c.accessibleTextProperty().removeListener(listener);
-
-                    if (c instanceof Labeled l) {
-                        l.textProperty().removeListener(listener);
-                        l.graphicProperty().removeListener(listener);
-                    }
-                }
+                changeState(c, newValue != null);
             });
         });
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void changeState(Node c, boolean add) {
+        if (add && !nodes.add(c)) {
+            return;
+        }
+
+        if (!add) {
+            nodes.remove(c);
+        }
+
+        if (c instanceof Parent p) {
+            if (add) {
+                p.getChildrenUnmodifiable().addListener(listListener);
+            } else {
+                p.getChildrenUnmodifiable().removeListener(listListener);
+            }
+        }
+
+        if (add) {
+            c.disableProperty().addListener(listener);
+            c.visibleProperty().addListener(listener);
+            c.boundsInParentProperty().addListener(listener);
+            c.managedProperty().addListener(listener);
+            c.opacityProperty().addListener(listener);
+            c.accessibleHelpProperty().addListener(listener);
+            c.accessibleTextProperty().addListener(listener);
+
+            if (c instanceof Labeled l) {
+                l.textProperty().addListener(listener);
+                l.graphicProperty().addListener(listener);
+            }
+        } else {
+            c.disableProperty().removeListener(listener);
+            c.visibleProperty().removeListener(listener);
+            c.boundsInParentProperty().removeListener(listener);
+            c.managedProperty().removeListener(listener);
+            c.opacityProperty().removeListener(listener);
+            c.accessibleHelpProperty().removeListener(listener);
+            c.accessibleTextProperty().removeListener(listener);
+
+            if (c instanceof Labeled l) {
+                l.textProperty().removeListener(listener);
+                l.graphicProperty().removeListener(listener);
+            }
+        }
     }
 
     private static void watchGraph(Node node, Consumer<Node> callback) {

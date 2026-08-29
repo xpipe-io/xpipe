@@ -1,6 +1,6 @@
 package io.xpipe.app.core;
 
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -130,12 +130,12 @@ public abstract class AppInstallation {
             }
             return getInstallationBasePathForJavaExecutable(path);
         } else {
-            var dir = getInstallationBasePathForDaemonExecutable(path);
+            var dir = getInstallationBasePathForLauncherExecutable(path);
             return toRealPathIfPossible(dir);
         }
     }
 
-    private static Path getInstallationBasePathForDaemonExecutable(Path executable) {
+    private static Path getInstallationBasePathForLauncherExecutable(Path executable) {
         // Resolve root path of installation relative to executable in a JPackage installation
         return switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> {
@@ -145,6 +145,14 @@ public abstract class AppInstallation {
                 yield executable.getParent().getParent().getParent();
             }
             case OsType.Windows ignored -> {
+                // Check for linked CLI executable on Windows
+                if (AppProperties.get().isCli()) {
+                    var parent = executable.getParent();
+                    if (parent.getFileName().toString().equals("bin")) {
+                        yield parent.getParent();
+                    }
+                }
+
                 yield executable.getParent();
             }
         };
@@ -193,9 +201,9 @@ public abstract class AppInstallation {
 
     public abstract Path getDaemonExecutablePath();
 
-    public abstract Path getExtensionsPath();
-
     public abstract Path getLogoPath();
+
+    public abstract Path getRuntimePath();
 
     public static class Windows extends AppInstallation {
 
@@ -204,7 +212,8 @@ public abstract class AppInstallation {
         }
 
         public boolean isSystemWide() {
-            return !getBaseInstallationPath().startsWith(AppSystemInfo.ofWindows().getUserHome());
+            return !getBaseInstallationPath()
+                    .startsWith(AppSystemInfo.ofWindows().getUserHome());
         }
 
         @Override
@@ -214,13 +223,13 @@ public abstract class AppInstallation {
         }
 
         @Override
-        public Path getLangPath() {
-            return getBaseInstallationPath().resolve("lang");
+        public Path getCliExecutablePath() {
+            return getBaseInstallationPath().resolve("xpipe.exe");
         }
 
         @Override
-        public Path getCliExecutablePath() {
-            return getBaseInstallationPath().resolve("bin", "xpipe.exe");
+        public Path getLangPath() {
+            return getBaseInstallationPath().resolve("lang");
         }
 
         @Override
@@ -229,13 +238,13 @@ public abstract class AppInstallation {
         }
 
         @Override
-        public Path getExtensionsPath() {
-            return getBaseInstallationPath().resolve("extensions");
+        public Path getLogoPath() {
+            return getBaseInstallationPath().resolve("logo.ico");
         }
 
         @Override
-        public Path getLogoPath() {
-            return getBaseInstallationPath().resolve("logo.ico");
+        public Path getRuntimePath() {
+            return getBaseInstallationPath().resolve("runtime");
         }
     }
 
@@ -266,14 +275,14 @@ public abstract class AppInstallation {
         }
 
         @Override
-        public Path getDaemonDebugScriptPath() {
-            return getBaseInstallationPath()
-                    .resolve("scripts", AppNames.ofCurrent().getExecutableName() + "_debug.sh");
+        public Path getRuntimePath() {
+            return getBaseInstallationPath().resolve("lib", "runtime");
         }
 
         @Override
-        public Path getLangPath() {
-            return getBaseInstallationPath().resolve("lang");
+        public Path getDaemonDebugScriptPath() {
+            return getBaseInstallationPath()
+                    .resolve("scripts", AppNames.ofCurrent().getExecutableName() + "_debug.sh");
         }
 
         @Override
@@ -282,13 +291,13 @@ public abstract class AppInstallation {
         }
 
         @Override
-        public Path getDaemonExecutablePath() {
-            return getBaseInstallationPath().resolve("bin", AppNames.ofCurrent().getExecutableName());
+        public Path getLangPath() {
+            return getBaseInstallationPath().resolve("lang");
         }
 
         @Override
-        public Path getExtensionsPath() {
-            return getBaseInstallationPath().resolve("extensions");
+        public Path getDaemonExecutablePath() {
+            return getBaseInstallationPath().resolve("bin", AppNames.ofCurrent().getExecutableName());
         }
 
         @Override
@@ -323,6 +332,11 @@ public abstract class AppInstallation {
         }
 
         @Override
+        public Path getRuntimePath() {
+            return getBaseInstallationPath().resolve("Contents", "runtime", "Contents", "Home");
+        }
+
+        @Override
         public Path getDaemonDebugScriptPath() {
             return getBaseInstallationPath()
                     .resolve(
@@ -330,6 +344,11 @@ public abstract class AppInstallation {
                             "Resources",
                             "scripts",
                             AppNames.ofCurrent().getExecutableName() + "_debug.sh");
+        }
+
+        @Override
+        public Path getCliExecutablePath() {
+            return getBaseInstallationPath().resolve("Contents", "MacOS", "xpipe");
         }
 
         @Override
@@ -342,19 +361,9 @@ public abstract class AppInstallation {
         }
 
         @Override
-        public Path getCliExecutablePath() {
-            return getBaseInstallationPath().resolve("Contents", "MacOS", "xpipe");
-        }
-
-        @Override
         public Path getDaemonExecutablePath() {
             return getBaseInstallationPath()
                     .resolve("Contents", "MacOS", AppNames.ofCurrent().getExecutableName());
-        }
-
-        @Override
-        public Path getExtensionsPath() {
-            return getBaseInstallationPath().resolve("Contents", "Resources", "extensions");
         }
 
         @Override

@@ -1,9 +1,12 @@
 package io.xpipe.app.core.mode;
 
-import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppDebugModeCheck;
 import io.xpipe.app.core.window.AppMainWindow;
+import io.xpipe.app.ext.CliProvider;
+import io.xpipe.app.ext.ExtensionException;
+import io.xpipe.app.ext.ModuleLayerLoader;
+import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.app.platform.PlatformState;
@@ -15,8 +18,6 @@ import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
-import io.xpipe.core.FailableRunnable;
-import io.xpipe.core.XPipeDaemonMode;
 
 import javafx.application.Platform;
 
@@ -67,52 +68,71 @@ public abstract class AppOperationMode {
 
     private static void setup(String[] args) {
         try {
-            // Only for handling SIGTERM
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                externalShutdown();
-            }));
+            // Ugly, but we haven't initialized anything yet
+            if (Boolean.getBoolean("io.xpipe.app.isDaemon")) {
+                // Only for handling SIGTERM
+                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                    externalShutdown();
+                }));
 
-            // Handle uncaught exceptions
-            Thread.setDefaultUncaughtExceptionHandler((thread, ex) -> {
-                // It seems like a few exceptions are thrown in the quantum renderer
-                // when in shutdown. We can ignore these
-                if (AppOperationMode.isInShutdown()
-                        && Platform.isFxApplicationThread()
-                        && ex instanceof NullPointerException) {
-                    return;
+                // Handle uncaught exceptions
+                Thread.setDefaultUncaughtExceptionHandler((thread, ex) -> {
+                    // It seems like a few exceptions are thrown in the quantum renderer
+                    // when in shutdown. We can ignore these
+                    if (AppOperationMode.isInShutdown()
+                            && Platform.isFxApplicationThread()
+                            && ex instanceof NullPointerException) {
+                        return;
+                    }
+
+                    // It seems like a few exceptions are thrown in the quantum renderer
+                    // when the screen configuration changes
+                    if (Platform.isFxApplicationThread()
+                            && ex instanceof IllegalArgumentException
+                            && ex.getStackTrace()[0].toString().contains("Rectangle2D")) {
+                        return;
+                    }
+
+                    // Some random AWT errors are thrown sometimes
+                    if (ex instanceof AWTError) {
+                        return;
+                    }
+
+                    // Handle any startup uncaught errors
+                    if (AppOperationMode.isInStartup() && thread.threadId() == 1) {
+                        ex.printStackTrace();
+                        AppOperationMode.halt(1);
+                    }
+
+                    if (ex instanceof OutOfMemoryError) {
+                        ex.printStackTrace();
+                        AppOperationMode.halt(1);
+                    }
+
+                    ErrorEventFactory.fromThrowable(ex).unhandled(true).build().handle();
+                });
+            }
+
+            AppProperties.init(args);
+
+            if (AppProperties.get().isCli()) {
+                ModuleLayerLoader.loadAll(ModuleLayer.boot(), throwable -> throwable.printStackTrace());
+                var cli = CliProvider.get();
+                if (cli == null) {
+                    throw ExtensionException.corrupt("Missing cli module");
                 }
-
-                // It seems like a few exceptions are thrown in the quantum renderer
-                // when the screen configuration changes
-                if (Platform.isFxApplicationThread()
-                        && ex instanceof IllegalArgumentException
-                        && ex.getStackTrace()[0].toString().contains("Rectangle2D")) {
-                    return;
+                var r = cli.execute(
+                        AppProperties.get().getArguments().getRawArgs().toArray(String[]::new));
+                if (AppProperties.get().isAotTrainMode()) {
+                    r = 0;
                 }
-
-                // Some random AWT errors are thrown sometimes
-                if (ex instanceof AWTError) {
-                    return;
-                }
-
-                // Handle any startup uncaught errors
-                if (AppOperationMode.isInStartup() && thread.threadId() == 1) {
-                    ex.printStackTrace();
-                    AppOperationMode.halt(1);
-                }
-
-                if (ex instanceof OutOfMemoryError) {
-                    ex.printStackTrace();
-                    AppOperationMode.halt(1);
-                }
-
-                ErrorEventFactory.fromThrowable(ex).unhandled(true).build().handle();
-            });
+                halt(r);
+                return;
+            }
 
             TrackEvent.info("Initial setup");
             AppMainWindow.loadingText("initializingApp");
             GlobalTimer.init();
-            AppProperties.init(args);
             PlatformThreadWatcher.init();
             AppLogs.init();
             AppDebugModeCheck.printIfNeeded();
@@ -127,6 +147,7 @@ public abstract class AppOperationMode {
             ThreadHelper.runAsync(() -> {
                 PlatformInit.init(true);
                 AppMainWindow.init(AppOperationMode.getStartupMode() == XPipeDaemonMode.GUI);
+                AppSizeBreakpoints.init();
             });
             TrackEvent.info("Finished initial setup");
         } catch (Throwable ex) {
@@ -184,6 +205,7 @@ public abstract class AppOperationMode {
                 DataStorage.get().generateCaches();
             });
             AppMainWindow.postInit();
+            ProcModuleProvider.get().postInitWebtopSetup();
         } catch (Throwable ex) {
             ErrorEventFactory.fromThrowable(ex).term().handle();
         }
@@ -227,10 +249,6 @@ public abstract class AppOperationMode {
         return true;
     }
 
-    public static void close() {
-        set(null);
-    }
-
     public static List<AppOperationMode> getAll() {
         return ALL;
     }
@@ -261,7 +279,7 @@ public abstract class AppOperationMode {
             // In case we perform any operations such as opening a terminal
             // give it some time to open while this process is still alive
             // Otherwise it might quit because the parent process is dead already
-            ThreadHelper.sleep(100);
+            ThreadHelper.sleep(500);
             AppOperationMode.halt(0);
         };
 
@@ -273,7 +291,6 @@ public abstract class AppOperationMode {
 
     public static void halt(int code) {
         synchronized (HALT_LOCK) {
-            TrackEvent.info("Halting now!");
             AppLogs.teardown();
             Runtime.getRuntime().halt(code);
         }

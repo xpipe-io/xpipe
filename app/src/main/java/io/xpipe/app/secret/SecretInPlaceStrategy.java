@@ -1,20 +1,21 @@
 package io.xpipe.app.secret;
 
 import io.xpipe.app.comp.base.SecretFieldComp;
-import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.util.ValidationException;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.InPlaceSecretValue;
 
 import javafx.beans.property.Property;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
 import java.time.Duration;
 import java.util.Arrays;
 
+@Jacksonized
 @JsonTypeName("inPlace")
 @Builder
 @Value

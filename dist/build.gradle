@@ -96,7 +96,6 @@ apply from: 'jpackage.gradle'
 if (fullVersion) {
     apply from: 'train.gradle'
     apply from: 'base_full.gradle'
-    apply from: 'cli.gradle'
     apply from: 'portable.gradle'
     apply from: 'proguard.gradle'
     apply from: 'github.gradle'

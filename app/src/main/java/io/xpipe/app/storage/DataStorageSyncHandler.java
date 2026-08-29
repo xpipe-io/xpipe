@@ -1,6 +1,6 @@
 package io.xpipe.app.storage;
 
-import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ProcModuleProvider;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.List;
 public interface DataStorageSyncHandler {
 
     static DataStorageSyncHandler getInstance() {
-        return (DataStorageSyncHandler) ProcessControlProvider.get().getStorageSyncHandler();
+        return (DataStorageSyncHandler) ProcModuleProvider.get().getStorageSyncHandler();
     }
 
     void pullManually();
@@ -49,5 +49,5 @@ public interface DataStorageSyncHandler {
 
     Path getDataFile(Path rel);
 
-    Path addDataFile(Path file, Path target, boolean perUser);
+    Path addDataFile(Path file, Path target, DataStoreAccessScope scope);
 }

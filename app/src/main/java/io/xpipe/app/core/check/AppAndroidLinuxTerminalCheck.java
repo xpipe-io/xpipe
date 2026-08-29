@@ -3,7 +3,7 @@ package io.xpipe.app.core.check;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.LocalExec;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 public class AppAndroidLinuxTerminalCheck {
 

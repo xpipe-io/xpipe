@@ -1,159 +1,258 @@
 package io.xpipe.app.storage;
 
-import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.secret.EncryptionToken;
-import io.xpipe.app.secret.PasswordLockSecretValue;
-import io.xpipe.app.secret.VaultKeySecretValue;
-import io.xpipe.core.EncryptedSecretValue;
-import io.xpipe.core.InPlaceSecretValue;
-import io.xpipe.core.JacksonMapper;
-import io.xpipe.core.SecretValue;
+import io.xpipe.app.secret.*;
+import io.xpipe.app.util.AesSecretValue;
+import io.xpipe.app.util.JacksonMapper;
+import io.xpipe.app.util.SecretValue;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
-import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
-@EqualsAndHashCode
-@ToString
 public class DataStorageSecret {
+
+    public static boolean matches(JsonNode node) {
+        return node.isObject() && node.has("secrets") && node.size() == 1;
+    }
+
+    @Value
+    private static class Entry {
+
+        EncryptionPrincipal principal;
+        String encrypted;
+        int iteration;
+        EncryptionToken token;
+    }
 
     private final InPlaceSecretValue secret;
 
-    @Getter
-    private JsonNode originalNode;
+    private final List<Entry> entries;
 
-    @Getter
-    private EncryptionToken encryptedToken;
-
-    public DataStorageSecret(EncryptionToken encryptedToken, JsonNode originalNode, InPlaceSecretValue secret) {
-        this.encryptedToken = encryptedToken;
-        this.originalNode = originalNode;
+    private DataStorageSecret(List<Entry> entries, InPlaceSecretValue secret) {
+        this.entries = Collections.unmodifiableList(entries);
         this.secret = secret;
     }
 
-    public static DataStorageSecret deserialize(JsonNode tree) throws IOException {
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof DataStorageSecret that)) {
+            return false;
+        }
+        return Objects.equals(secret, that.secret) && Objects.equals(entries, that.entries);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(secret, entries);
+    }
+
+    @Override
+    public String toString() {
+        return "<encrypted secret> {\n" + entries.stream().map(entry -> "  " + entry.getPrincipal().getName() +
+                ": " + entry.getIteration()).collect(Collectors.joining("\n")) + "}";
+    }
+
+    public int getMaxIteration() {
+        return entries.stream().mapToInt(Entry::getIteration).max().orElseThrow();
+    }
+
+    public Set<EncryptionPrincipal> getEncryptionPrincipals() {
+        return entries.stream().map(entry -> entry.getPrincipal()).collect(Collectors.toSet());
+    }
+
+    public DataStoreAccessScope getScope() {
+        return DataStoreAccessScope.of(getEncryptionPrincipals());
+    }
+
+    public boolean isAccessible() {
+        return secret != null;
+    }
+
+    public boolean matchesScope(DataStoreAccessScope scope) {
+        var hasAll = scope.getPrincipals().stream().allMatch(encryptionPrincipal -> entries.stream()
+                .anyMatch(entry -> entry.getPrincipal().equals(encryptionPrincipal)));
+        return hasAll && entries.size() == scope.getPrincipals().size();
+    }
+
+    public boolean supportsScope(DataStoreAccessScope scope) {
+        for (EncryptionPrincipal principal : scope.getPrincipals()) {
+            if (!principal.isAccessible()) {
+                var available = entries.stream().filter(entry -> entry.getPrincipal().equals(principal)).findFirst();
+                if (available.isEmpty()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public static DataStorageSecret deserialize(JsonNode tree) {
         if (!tree.isObject()) {
             return null;
         }
 
-        var legacy = JacksonMapper.getDefault().treeToValue(tree, EncryptedSecretValue.class);
-        if (legacy != null) {
-            // Don't cache legacy node
-            return new DataStorageSecret(EncryptionToken.ofVaultKey(), null, legacy.inPlace());
-        }
-
         var obj = (ObjectNode) tree;
-        if (!obj.has("secret")) {
+        var secretTree = obj.get("secrets");
+        if (secretTree == null || !secretTree.isArray()) {
             return null;
         }
 
-        var secretTree = obj.required("secret");
-        var secret = JacksonMapper.getDefault().treeToValue(secretTree, SecretValue.class);
-        if (secret == null) {
-            return null;
-        }
+        InPlaceSecretValue maxAccessibleSecret = null;
+        int maxAccessibleIteration = 0;
 
-        var hadLock = AppPrefs.get().getLockCrypt().get() != null
-                && !AppPrefs.get().getLockCrypt().get().isEmpty();
-        var tokenNode = obj.get("encryptedToken");
-        var token = tokenNode != null ? JacksonMapper.getDefault().treeToValue(tokenNode, EncryptionToken.class) : null;
-        if (token == null) {
-            var userToken = hadLock;
-            if (userToken && DataStorageUserHandler.getInstance().getActiveUser() == null) {
-                return null;
-            }
-            token = userToken ? EncryptionToken.ofUser() : EncryptionToken.ofVaultKey();
-        }
-
-        return new DataStorageSecret(token, secretTree, secret.inPlace());
-    }
-
-    public static DataStorageSecret ofCurrentSecret(SecretValue internalSecret) {
-        var handler = DataStorageUserHandler.getInstance();
-        return new DataStorageSecret(
-                handler.getActiveUser() != null ? EncryptionToken.ofUser() : EncryptionToken.ofVaultKey(),
-                null,
-                internalSecret.inPlace());
-    }
-
-    public static DataStorageSecret ofSecret(SecretValue internalSecret, EncryptionToken token) {
-        return new DataStorageSecret(token, null, internalSecret.inPlace());
-    }
-
-    public boolean requiresRewrite(boolean allowUserSecretKey) {
-        var isVault = encryptedToken.isVault();
-        var isUser = encryptedToken.isUser();
-        var userHandler = DataStorageUserHandler.getInstance();
-
-        // User key must have changed
-        if (!isUser && !isVault) {
-            // We have loaded a secret with a user key that does no longer exist
-            // This means that the user was deleted in this session
-            // Replace it with a vault key
-            if (userHandler.getActiveUser() == null) {
-                return true;
+        var entries = new ArrayList<Entry>();
+        var handler = DataStorageAccessHandler.getInstance();
+        for (JsonNode jsonNode : secretTree) {
+            var secretNode = jsonNode.get("secret");
+            var uuidNode = jsonNode.get("principal");
+            var iterationNode = jsonNode.get("iteration");
+            var tokenNode = jsonNode.get("token");
+            if (secretNode == null || uuidNode == null || iterationNode == null || tokenNode == null) {
+                continue;
             }
 
-            // Password was changed
-            return true;
+            var uuid = JacksonMapper.getDefault().treeToValue(uuidNode, UUID.class);
+            var iteration = iterationNode.intValue();
+            var token = JacksonMapper.getDefault().treeToValue(tokenNode, EncryptionToken.class);
+
+            var p = handler.getEncryptionPrincipal(uuid);
+            if (p.isEmpty()) {
+                continue;
+            }
+
+            var entry = new Entry(p.get(), secretNode.stringValue(), iteration, token);
+            if (!p.get().isAccessible()) {
+                entries.add(entry);
+            } else {
+                var tokenMatches = token.matches(p.get());
+                if (tokenMatches) {
+                    entries.add(entry);
+                    var secret = PrincipalSecretValue.builder()
+                            .principal(entry.getPrincipal().getUuid())
+                            .encryptedValue(entry.getEncrypted())
+                            .build();
+                    var secretValid = secret.getSecret().length != 0;
+                    if (secretValid) {
+                        if (iteration > maxAccessibleIteration) {
+                            maxAccessibleIteration = iteration;
+                            maxAccessibleSecret = secret.inPlace();
+                        }
+                    }
+                }
+            }
         }
 
-        var hasUserKey = userHandler.getActiveUser() != null;
-        // Switch from vault to user
-        if (hasUserKey && isVault && allowUserSecretKey) {
-            return true;
-        }
-        // Switch from user to vault
-        if (!hasUserKey && isUser) {
-            return true;
-        }
-
-        return false;
-    }
-
-    private void rewrite(boolean allowUserSecretKey) {
-        var handler = DataStorageUserHandler.getInstance();
-        if (handler != null && handler.getActiveUser() != null && allowUserSecretKey) {
-            var val = new PasswordLockSecretValue(getSecret());
-            originalNode = JacksonMapper.getDefault().valueToTree(val);
-            encryptedToken = EncryptionToken.ofUser();
-            return;
-        }
-
-        var val = new VaultKeySecretValue(getSecret());
-        originalNode = JacksonMapper.getDefault().valueToTree(val);
-        encryptedToken = EncryptionToken.ofVaultKey();
-    }
-
-    public JsonNode serialize(boolean allowUserSecretKey) {
-        if (secret == null) {
+        if (entries.isEmpty()) {
             return null;
         }
 
-        var mapper = JacksonMapper.getDefault();
-        var tree = JsonNodeFactory.instance.objectNode();
-
-        // Preserve same output if not changed
-        if (getOriginalNode() != null && !requiresRewrite(allowUserSecretKey)) {
-            tree.set("secret", getOriginalNode());
-            tree.set("encryptedToken", mapper.valueToTree(getEncryptedToken()));
-            return tree;
-        }
-
-        // Reencrypt
-        rewrite(allowUserSecretKey);
-        tree.set("secret", getOriginalNode());
-        tree.set("encryptedToken", mapper.valueToTree(getEncryptedToken()));
-        return tree;
+        return new DataStorageSecret(entries, maxAccessibleSecret);
     }
 
-    public char[] getSecret() {
-        return secret != null ? secret.getSecret() : new char[0];
+    public static DataStorageSecret of(SecretValue internalSecret, Set<EncryptionPrincipal> principals) {
+        for (EncryptionPrincipal principal : principals) {
+            if (!principal.isAccessible()) {
+                throw new IllegalArgumentException("Principal " + principal.getName() + " is not accessible");
+            }
+        }
+
+        var l = new ArrayList<Entry>();
+        for (EncryptionPrincipal principal : principals) {
+            var enc = AesSecretValue.encrypt(internalSecret.getSecret(), principal.getSecretKey());
+            l.add(new Entry(principal, enc.getEncryptedValue(), 1, EncryptionToken.of(principal)));
+        }
+        return new DataStorageSecret(l, internalSecret.inPlace());
+    }
+
+    public DataStorageSecret with(InPlaceSecretValue secret, DataStoreAccessScope scope) {
+        var secretEqual = Arrays.equals(secret.getSecret(), this.secret.getSecret());
+        if (secretEqual && getScope().equals(scope)) {
+            return this;
+        }
+
+        var iteration = getMaxIteration();
+        var l = new ArrayList<Entry>();
+        for (EncryptionPrincipal principal : scope.getPrincipals()) {
+            if (!principal.isAccessible()) {
+                var existing = entries.stream().filter(entry -> entry.getPrincipal().equals(principal)).findFirst();
+                if (existing.isPresent()) {
+                    l.add(existing.get());
+                }
+                continue;
+            }
+
+            var enc = AesSecretValue.encrypt(secret.getSecret(), principal.getSecretKey());
+            var existingEntry = entries.stream()
+                    .filter(entry -> entry.getPrincipal().equals(principal))
+                    .findFirst();
+            if (existingEntry.isPresent()) {
+                l.add(new Entry(
+                        principal,
+                        secretEqual ? existingEntry.get().getEncrypted() : enc.getEncryptedValue(),
+                        iteration + 1,
+                        existingEntry.get().getToken()));
+            } else {
+                l.add(new Entry(principal, enc.getEncryptedValue(), iteration + 1, EncryptionToken.of(principal)));
+            }
+        }
+
+        return new DataStorageSecret(l, secret);
+    }
+
+    public JsonNode serialize() {
+        var ar = JsonNodeFactory.instance.arrayNode();
+        for (var e : entries) {
+            var targetPrincipal = EncryptionPrincipal.getTargetPrincipal(e.getPrincipal());
+            var changedPrincipal = !targetPrincipal.equals(e.getPrincipal());
+            var token = changedPrincipal ? EncryptionToken.of(targetPrincipal) : e.getToken();
+            var secret = changedPrincipal
+                    ? AesSecretValue.encrypt(getInternalSecret().getSecret(), targetPrincipal.getSecretKey())
+                            .getEncryptedValue()
+                    : e.getEncrypted();
+
+            var node = JsonNodeFactory.instance.objectNode();
+            node.put("name", targetPrincipal.getName());
+            node.put("principal", targetPrincipal.getUuid().toString());
+            node.put("iteration", e.getIteration());
+            node.put("secret", secret);
+            node.set("token", JacksonMapper.getDefault().valueToTree(token));
+
+            ar.add(node);
+        }
+
+        var secretsNode = JsonNodeFactory.instance.objectNode();
+        secretsNode.set("secrets", ar);
+        return secretsNode;
+    }
+
+    public DataStorageSecret withUpdatedPrincipals() {
+        var newEntries = new ArrayList<Entry>();
+        for (var e : entries) {
+            Entry newEntry;
+            var targetPrincipal = EncryptionPrincipal.getTargetPrincipal(e.getPrincipal());
+            var updatePrincipal = isAccessible()
+                    && targetPrincipal.isAccessible()
+                    && (!targetPrincipal.equals(e.getPrincipal())
+                            || !e.getToken().matches(e.getPrincipal()));
+            if (updatePrincipal) {
+                var enc = AesSecretValue.encrypt(secret.getSecret(), targetPrincipal.getSecretKey());
+                var encToken = EncryptionToken.of(targetPrincipal);
+                newEntry = new Entry(targetPrincipal, enc.getEncryptedValue(), e.getIteration(), encToken);
+            } else {
+                newEntry = e;
+            }
+            newEntries.add(newEntry);
+        }
+
+        if (newEntries.equals(entries)) {
+            return this;
+        }
+
+        return new DataStorageSecret(newEntries, secret);
     }
 
     public InPlaceSecretValue getInternalSecret() {

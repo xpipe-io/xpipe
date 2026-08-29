@@ -1,12 +1,12 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.ext.StatefulDataStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.store.StatefulDataStore;
+import io.xpipe.app.util.FilePath;
 
 import lombok.SneakyThrows;
 
@@ -58,12 +58,12 @@ public class ScriptStoreSetup {
                         new ShellTerminalInitCommand() {
                             @Override
                             public Optional<String> terminalContent(ShellControl shellControl) {
-                                var assembled = s.getStore().assembleScriptCall(shellControl, false);
+                                var assembled = s.getStore().assembleScriptChain(shellControl, false);
                                 if (assembled == null) {
                                     return Optional.empty();
                                 }
 
-                                return Optional.of(assembled);
+                                return Optional.ofNullable(assembled.getValue());
                             }
 
                             @Override

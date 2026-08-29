@@ -1,7 +1,7 @@
 package io.xpipe.app.core.check;
 
 import io.xpipe.app.core.AppNames;
-import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -18,10 +18,10 @@ import java.util.Optional;
 public abstract class AppShellChecker {
 
     public void check() throws Exception {
-        var isDefaultShell = ProcessControlProvider.get()
+        var isDefaultShell = ProcModuleProvider.get()
                 .getAvailableLocalDialects()
                 .getFirst()
-                .equals(ProcessControlProvider.get().getEffectiveLocalDialect());
+                .equals(ProcModuleProvider.get().getEffectiveLocalDialect());
         if (isDefaultShell && fallBackInstantly()) {
             toggleFallback();
         }
@@ -46,7 +46,7 @@ public abstract class AppShellChecker {
 
         var msg = formatMessage(originalErr.get().getMessage());
         var fallBack = new SimpleBooleanProperty();
-        var newDialect = ProcessControlProvider.get().getNextFallbackDialect();
+        var newDialect = ProcModuleProvider.get().getNextFallbackDialect();
         var switchAction = createFallbackAction(fallBack, newDialect);
         ErrorEventFactory.fromThrowable(new IllegalStateException(msg))
                 .customAction(switchAction)
@@ -102,10 +102,10 @@ public abstract class AppShellChecker {
     }
 
     private String formatMessage(String output) {
-        var isDefaultShell = ProcessControlProvider.get()
+        var isDefaultShell = ProcModuleProvider.get()
                 .getAvailableLocalDialects()
                 .getFirst()
-                .equals(ProcessControlProvider.get().getEffectiveLocalDialect());
+                .equals(ProcModuleProvider.get().getEffectiveLocalDialect());
         var fallback = isDefaultShell
                 ? AppNames.ofCurrent().getName() + " will now attempt to fall back to another shell."
                 : "";
@@ -124,7 +124,7 @@ public abstract class AppShellChecker {
 
     private void toggleFallback() throws Exception {
         LocalShell.reset(true);
-        ProcessControlProvider.get().toggleFallbackShell();
+        ProcModuleProvider.get().toggleFallbackShell();
         LocalShell.init();
     }
 

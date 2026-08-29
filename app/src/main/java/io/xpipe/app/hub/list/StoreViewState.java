@@ -1,0 +1,801 @@
+package io.xpipe.app.hub.list;
+
+import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppSizeBreakpoints;
+import io.xpipe.app.core.mode.AppOperationMode;
+import io.xpipe.app.hub.category.StoreCategoryDrag;
+import io.xpipe.app.hub.category.StoreCategoryDragComp;
+import io.xpipe.app.hub.category.StoreCategoryWrapper;
+import io.xpipe.app.hub.entry.StoreEntryWrapper;
+import io.xpipe.app.hub.section.StoreSection;
+import io.xpipe.app.hub.section.StoreSectionSelector;
+import io.xpipe.app.hub.section.StoreSectionSortMode;
+import io.xpipe.app.hub.section.StoreSectionState;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.DerivedObservableList;
+import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStorageListener;
+import io.xpipe.app.storage.DataStoreCategory;
+import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.store.DataStoreUsageCategory;
+import io.xpipe.app.util.GlobalTimer;
+
+import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
+import javafx.beans.value.ObservableIntegerValue;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.Region;
+
+import lombok.Getter;
+import org.int4.fx.values.util.Trigger;
+
+import java.time.Duration;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+public class StoreViewState {
+
+    private static StoreViewState INSTANCE;
+
+    private static final DataFormat SECTION_DRAG_DATA_FORMAT = new DataFormat("application/xpipe-section-drag");
+
+    @Getter
+    private final DerivedObservableList<StoreEntryWrapper> allEntries =
+            DerivedObservableList.synchronizedArrayList(true);
+
+    @Getter
+    private final DerivedObservableList<StoreCategoryWrapper> categories =
+            DerivedObservableList.synchronizedArrayList(true);
+
+    @Getter
+    private final Trigger<Void> entriesListVisibilityTrigger = Trigger.of();
+
+    @Getter
+    private final Trigger<Void> entriesListRefreshTrigger = Trigger.of();
+
+    @Getter
+    private final Property<StoreCategoryWrapper> activeCategory = new SimpleObjectProperty<>();
+
+    @Getter
+    private final Property<StoreSectionSortMode> sortMode = new SimpleObjectProperty<>();
+
+    @Getter
+    private final BooleanProperty batchMode = new SimpleBooleanProperty(false);
+
+    @Getter
+    private final DerivedObservableList<StoreEntryWrapper> batchModeSelection =
+            DerivedObservableList.synchronizedArrayList(true);
+
+    private final Set<StoreEntryWrapper> batchModeSelectionSet = new HashSet<>();
+
+    @Getter
+    private final Property<StoreSectionDrag> sectionDragOperation = new SimpleObjectProperty<>();
+
+    @Getter
+    private final ObjectProperty<StoreCategoryDrag> categoryDragOperation = new SimpleObjectProperty<>();
+
+    @Getter
+    private final DerivedObservableList<StoreEntryWrapper> effectiveBatchModeSelection =
+            batchModeSelection.filtered(storeEntryWrapper -> {
+                if (storeEntryWrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP) {
+                    return false;
+                }
+
+                return true;
+            });
+
+    @Getter
+    private boolean initialized = false;
+
+    @Getter
+    private StoreSection currentTopLevelSection;
+
+    private StoreViewState() {
+        initContent();
+        addListeners();
+    }
+
+    public static void init() {
+        if (INSTANCE != null) {
+            return;
+        }
+
+        INSTANCE = new StoreViewState();
+        INSTANCE.initSortMode();
+        INSTANCE.updateWrappers();
+        INSTANCE.initSections();
+        INSTANCE.updateWrappers();
+        INSTANCE.initFilterListener();
+        INSTANCE.initBatchListeners();
+        INSTANCE.initialized = true;
+    }
+
+    public static void reset() {
+        if (INSTANCE == null) {
+            return;
+        }
+
+        var active = INSTANCE.activeCategory.getValue().getCategory();
+        if (active != null) {
+            AppCache.update("selectedCategory", active.getUuid());
+        }
+
+        var globalMode = INSTANCE.sortMode.getValue();
+        if (globalMode != null) {
+            AppCache.update("sortMode", globalMode.getId());
+        }
+
+        INSTANCE = null;
+    }
+
+    public static StoreViewState get() {
+        return INSTANCE;
+    }
+
+    public List<String> getAllAvailableTags() {
+        var l = new LinkedHashSet<String>();
+        for (StoreEntryWrapper storeEntryWrapper : getAllEntries().getList()) {
+            l.addAll(storeEntryWrapper.getTags());
+        }
+        return l.stream().sorted().toList();
+    }
+
+    public Comparator<StoreSection> createEffectiveSortMode(
+            Comparator<StoreSection> customComparator, int updateIndex) {
+        var global = sortMode.getValue();
+        var globalIndex = global != null
+                && (global.equals(StoreSectionSortMode.INDEX_DESC) || global.equals(StoreSectionSortMode.INDEX_ASC));
+        var tie = customComparator != null
+                ? customComparator
+                : !globalIndex
+                        ? StoreSectionSortMode.INDEX_DESC.comparator(updateIndex)
+                        : StoreSectionSortMode.DATE_DESC.comparator(updateIndex);
+        var fallback = Comparator.<StoreSection, String>comparing(
+                sec -> sec.getWrapper().getName().getValue());
+        var failed = Comparator.<StoreSection>comparingInt(value -> {
+            if (value.getWrapper().getValidity().getValue() == DataStoreEntry.Validity.LOAD_FAILED) {
+                return 1;
+            }
+
+            return 0;
+        });
+        return global != null
+                ? failed.thenComparing(global.comparator(updateIndex).thenComparing(tie))
+                        .thenComparing(fallback)
+                : failed.thenComparing(tie).thenComparing(fallback);
+    }
+
+    public Dragboard startSectionDrag(StoreSection section, Region r) {
+        var dragTarget = new StoreSectionDrag.UndeterminedTarget();
+        var selection = new ArrayList<>(batchModeSelection.getList());
+        if (!selection.contains(section.getWrapper())) {
+            selection.add(section.getWrapper());
+        }
+        var drag = new StoreSectionDrag(selection, dragTarget);
+        this.sectionDragOperation.setValue(drag);
+
+        Dragboard db = r.startDragAndDrop(TransferMode.MOVE);
+        db.setContent(Map.of(SECTION_DRAG_DATA_FORMAT, "dummy"));
+
+        var image = StoreSectionDragComp.snapshot(selection);
+        db.setDragView(image, -20, -2);
+
+        return db;
+    }
+
+    public Dragboard startCategoryDrag(StoreCategoryWrapper category, Region r) {
+        var dragTarget = new StoreCategoryDrag.UndeterminedTarget();
+        var selection = new ArrayList<StoreCategoryWrapper>();
+        selection.add(category);
+
+        var drag = new StoreCategoryDrag(category, dragTarget);
+        this.categoryDragOperation.setValue(drag);
+
+        categories.getList().forEach(c -> c.update());
+
+        Dragboard db = r.startDragAndDrop(TransferMode.MOVE);
+        db.setContent(Map.of(SECTION_DRAG_DATA_FORMAT, "dummy"));
+
+        var image = StoreCategoryDragComp.snapshot(selection);
+        db.setDragView(image, -20, -2);
+
+        return db;
+    }
+
+    public void setSectionDragTarget(StoreSectionDrag.Target target) {
+        var newOp = sectionDragOperation.getValue().withTarget(target);
+        this.sectionDragOperation.setValue(newOp);
+    }
+
+    public void setCategoryDragTarget(StoreCategoryDrag.Target target) {
+        var newOp = categoryDragOperation.getValue().withTarget(target);
+        this.categoryDragOperation.setValue(newOp);
+    }
+
+    public void stopSectionDrag() {
+        this.sectionDragOperation.setValue(null);
+    }
+
+    public void stopCategoryDrag() {
+        this.categoryDragOperation.setValue(null);
+
+        categories.getList().forEach(c -> c.update());
+    }
+
+    public ObservableIntegerValue entriesCount(Predicate<StoreEntryWrapper> filter, ObservableValue<?>... observables) {
+        return Bindings.size(allEntries
+                .filtered(
+                        storeEntryWrapper -> {
+                            if (!storeEntryWrapper.includeInConnectionCount()) {
+                                return false;
+                            }
+
+                            return filter.test(storeEntryWrapper);
+                        },
+                        observables)
+                .getList());
+    }
+
+    public boolean isBatchModeSelected(StoreEntryWrapper entry) {
+        return batchModeSelectionSet.contains(entry);
+    }
+
+    public void refreshActiveCategory() {
+        if (!initialized) {
+            return;
+        }
+
+        if (getActiveCategory().getValue().isHierarchyExpanded()) {
+            return;
+        }
+
+        StoreCategoryWrapper current = getActiveCategory().getValue();
+        while ((current = current.getParent()) != null) {
+            if (current.getParent() == null || current.getParent().getExpanded().get()) {
+                activeCategory.setValue(current);
+                break;
+            }
+        }
+    }
+
+    public void selectBatchMode(StoreSection section) {
+        var wrapper = section.getWrapper();
+        if (wrapper != null && wrapper.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
+            return;
+        }
+        if (wrapper != null && !batchModeSelectionSet.contains(wrapper)) {
+            batchModeSelection.getList().add(wrapper);
+        }
+        if (wrapper == null || wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP) {
+            var c = section.getShownChildren().getList();
+            for (StoreSection storeSection : c) {
+                selectBatchMode(storeSection);
+            }
+        }
+    }
+
+    public void unselectBatchMode(StoreSection section) {
+        var wrapper = section.getWrapper();
+        if (wrapper != null && wrapper.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
+            return;
+        }
+        if (wrapper != null) {
+            batchModeSelection.getList().remove(wrapper);
+        }
+        if (wrapper == null || wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP) {
+            section.getShownChildren().getList().forEach(c -> unselectBatchMode(c));
+        }
+    }
+
+    private void initSortMode() {
+        String global = AppCache.getNonNull("sortMode", String.class, () -> null);
+        var globalMode = global != null ? StoreSectionSortMode.fromId(global).orElse(null) : null;
+        sortMode.setValue(globalMode != null ? globalMode : StoreSectionSortMode.INDEX_DESC);
+    }
+
+    public void updateWrappers() {
+        categories.getList().forEach(c -> c.update());
+        allEntries.getList().forEach(e -> e.update());
+    }
+
+    private void initSections() {
+        var selector = new StoreSectionSelector() {
+
+            @Override
+            public boolean excludeNonShown() {
+                return true;
+            }
+
+            @Override
+            public boolean matches(StoreEntryWrapper wrapper) {
+                return true;
+            }
+        };
+        try {
+            var sectionState = new StoreSectionState(
+                    allEntries.getList(),
+                    entriesListRefreshTrigger,
+                    entriesListVisibilityTrigger,
+                    StoreFilterState.get().getEffectiveFilter(),
+                    selector,
+                    activeCategory,
+                    batchModeSelection.getList(),
+                    sortMode,
+                    sectionDragOperation,
+                    new ReadOnlyBooleanWrapper(true));
+            currentTopLevelSection = sectionState.getRootSection();
+        } catch (Exception exception) {
+            var sectionState = new StoreSectionState(
+                    FXCollections.observableArrayList(),
+                    Trigger.of(),
+                    Trigger.of(),
+                    new ReadOnlyObjectWrapper<>(),
+                    selector,
+                    activeCategory,
+                    FXCollections.emptyObservableList(),
+                    new SimpleObjectProperty<>(),
+                    new SimpleObjectProperty<>(),
+                    new ReadOnlyBooleanWrapper(true));
+            currentTopLevelSection = sectionState.getRootSection();
+            ErrorEventFactory.fromThrowable(exception).handle();
+        }
+    }
+
+    private void initFilterListener() {
+        StoreFilterState.get().getEffectiveFilter().addListener((observable, oldValue, newValue) -> {
+            onFilterUpdate(newValue);
+        });
+    }
+
+    private void onFilterUpdate(StoreFilter newValue) {
+        var all = getActiveCategory().getValue().getRoot();
+        categories.getList().forEach(e -> {
+            e.update();
+        });
+        var matchingCats = categories.getList().stream()
+                .filter(storeCategoryWrapper -> storeCategoryWrapper.getRoot().equals(all))
+                .filter(storeCategoryWrapper -> storeCategoryWrapper.getDirectContainedEntries().getList().stream()
+                        .anyMatch(wrapper -> wrapper.matchesFilter(newValue)))
+                .toList();
+        if (matchingCats.size() == 1) {
+            var onlyMatch = matchingCats.getFirst();
+            selectCategoryIntoViewIfNeeded(onlyMatch);
+        }
+    }
+
+    public void selectCategoryIntoViewIfNeeded(StoreCategoryWrapper category) {
+        StoreCategoryWrapper matchingParent = category;
+        while ((matchingParent = matchingParent.getParent()) != null) {
+            if (matchingParent.equals(activeCategory.getValue())) {
+                break;
+            }
+        }
+
+        if (matchingParent == null) {
+            PlatformThread.runLaterIfNeeded(() -> {
+                activeCategory.setValue(category);
+            });
+        }
+    }
+
+    private void initBatchListeners() {
+        batchModeSelection.getList().addListener((ListChangeListener<? super StoreEntryWrapper>) c -> {
+            if (c.getList().isEmpty()) {
+                batchModeSelectionSet.clear();
+                return;
+            }
+
+            while (c.next()) {
+                if (c.wasAdded()) {
+                    batchModeSelectionSet.addAll(c.getAddedSubList());
+                } else if (c.wasRemoved()) {
+                    c.getRemoved().forEach(batchModeSelectionSet::remove);
+                }
+            }
+        });
+
+        allEntries.getList().addListener((ListChangeListener<? super StoreEntryWrapper>) c -> {
+            batchModeSelection.getList().retainAll(c.getList());
+        });
+
+        batchMode.addListener((observable, oldValue, newValue) -> {
+            batchModeSelection.getList().clear();
+        });
+
+        sortMode.addListener((observable, oldValue, newValue) -> {
+            batchModeSelection.getList().clear();
+        });
+    }
+
+    private void initContent() {
+        allEntries
+                .getList()
+                .setAll(FXCollections.observableArrayList(DataStorage.get().getStoreEntries().stream()
+                        .map(StoreEntryWrapper::new)
+                        .toList()));
+        categories
+                .getList()
+                .setAll(FXCollections.observableArrayList(DataStorage.get().getStoreCategories().stream()
+                        .map(StoreCategoryWrapper::new)
+                        .toList()));
+
+        var selected = AppCache.getNonNull("selectedCategory", UUID.class, () -> DataStorage.DEFAULT_CATEGORY_UUID);
+        activeCategory.setValue(categories.getList().stream()
+                .filter(storeCategoryWrapper ->
+                        storeCategoryWrapper.getCategory().getUuid().equals(selected))
+                .findFirst()
+                .orElse(categories.getList().stream()
+                        .filter(storeCategoryWrapper ->
+                                storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.DEFAULT_CATEGORY_UUID))
+                        .findFirst()
+                        .orElseThrow()));
+        DataStorage.get().setSelectedCategory(activeCategory.getValue().getCategory());
+
+        activeCategory.addListener((observable, oldValue, newValue) -> {
+            DataStorage.get().setSelectedCategory(newValue.getCategory());
+            batchModeSelection.getList().clear();
+            batchModeSelectionSet.clear();
+
+            Platform.runLater(() -> {
+                updateWrappers();
+            });
+        });
+    }
+
+    public void triggerStoreListVisibilityUpdate() {
+        if (AppOperationMode.isInStartup() || AppOperationMode.isInShutdown()) {
+            return;
+        }
+
+        PlatformThread.runLaterIfNeeded(() -> {
+            entriesListVisibilityTrigger.fire(null);
+        });
+    }
+
+    public void triggerStoreListUpdate() {
+        if (AppOperationMode.isInStartup() || AppOperationMode.isInShutdown()) {
+            return;
+        }
+
+        PlatformThread.runLaterIfNeeded(() -> {
+            entriesListRefreshTrigger.fire(null);
+        });
+    }
+
+    public void createNewCategory(StoreCategoryWrapper parent) {
+        var cat = DataStoreCategory.createNew(parent.getCategory().getUuid(), AppI18n.get("newCategory"));
+        DataStorage.get().addStoreCategory(cat);
+        // Ugly solution to ensure that the category is added to the scene
+        GlobalTimer.delay(
+                () -> {
+                    var wrapper = getCategoryWrapper(cat);
+                    Platform.runLater(() -> {
+                        wrapper.getRenameTrigger().fire(null);
+                    });
+                },
+                Duration.ofMillis(500));
+    }
+
+    private void addListeners() {
+        if (AppPrefs.get() != null) {
+            AppPrefs.get().condenseConnectionDisplay().addListener((observable, oldValue, newValue) -> {
+                Platform.runLater(() -> {
+                    synchronized (this) {
+                        var l = new ArrayList<>(allEntries.getList());
+                        allEntries.getList().clear();
+                        allEntries.getList().setAll(l);
+                    }
+                });
+            });
+        }
+
+        AppI18n.activeLanguage().addListener((observable, oldValue, newValue) -> {
+            updateWrappers();
+        });
+
+        AppSizeBreakpoints.compactMode().addListener((observable, oldValue, newValue) -> {
+            updateWrappers();
+        });
+
+        getActiveCategory().addListener((observable, oldValue, newValue) -> {
+            refreshActiveCategory();
+        });
+
+        // Watch out for synchronizing all calls to the entries and categories list!
+        DataStorage.get().addListener(new DataStorageListener() {
+
+            @Override
+            public void onStoreListUpdate() {
+                Platform.runLater(() -> {
+                    triggerStoreListUpdate();
+                });
+            }
+
+            @Override
+            public void onStoreAdd(DataStoreEntry... entry) {
+                Platform.runLater(() -> {
+                    // Some entries might already be removed again
+                    var wrappers = Arrays.stream(entry)
+                            .map(StoreEntryWrapper::new)
+                            .filter(storeEntryWrapper ->
+                                    DataStorage.get().getStoreEntries().contains(storeEntryWrapper.getEntry()))
+                            .toList();
+                    wrappers.forEach(StoreEntryWrapper::update);
+
+                    // Don't update anything if we have already reset
+                    if (INSTANCE == null) {
+                        return;
+                    }
+
+                    synchronized (this) {
+                        allEntries.getList().addAll(wrappers);
+                    }
+                    synchronized (this) {
+                        categories.getList().stream()
+                                .filter(storeCategoryWrapper -> allEntries.getList().stream()
+                                        .anyMatch(storeEntryWrapper -> storeEntryWrapper
+                                                .getEntry()
+                                                .getCategoryUuid()
+                                                .equals(storeCategoryWrapper
+                                                        .getCategory()
+                                                        .getUuid())))
+                                .forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
+                    }
+                    wrappers.forEach(storeEntryWrapper -> storeEntryWrapper.update());
+                });
+            }
+
+            @Override
+            public void onStoreRemove(DataStoreEntry... entry) {
+                var a = Arrays.stream(entry).collect(Collectors.toSet());
+                List<StoreEntryWrapper> l;
+                synchronized (this) {
+                    l = allEntries.getList().stream()
+                            .filter(storeEntryWrapper -> a.contains(storeEntryWrapper.getEntry()))
+                            .toList();
+                }
+                Platform.runLater(() -> {
+                    // Don't update anything if we have already reset
+                    if (INSTANCE == null) {
+                        return;
+                    }
+
+                    synchronized (this) {
+                        allEntries.getList().removeAll(l);
+                    }
+                    categories.getList().forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
+                });
+            }
+
+            @Override
+            public void onCategoryAdd(DataStoreCategory category) {
+                var l = new StoreCategoryWrapper(category);
+                Platform.runLater(() -> {
+                    // Don't update anything if we have already reset
+                    if (INSTANCE == null) {
+                        return;
+                    }
+
+                    l.update();
+                    synchronized (this) {
+                        categories.getList().add(l);
+                    }
+                    l.update();
+                });
+            }
+
+            @Override
+            public void onCategoryRemove(DataStoreCategory category) {
+                Optional<StoreCategoryWrapper> found;
+                synchronized (this) {
+                    found = categories.getList().stream()
+                            .filter(storeCategoryWrapper ->
+                                    storeCategoryWrapper.getCategory().equals(category))
+                            .findFirst();
+                }
+                if (found.isEmpty()) {
+                    return;
+                }
+
+                Platform.runLater(() -> {
+                    // Don't update anything if we have already reset
+                    if (INSTANCE == null) {
+                        return;
+                    }
+
+                    if (found.get().equals(activeCategory.getValue())) {
+                        activeCategory.setValue(found.get().getParent());
+                    }
+
+                    synchronized (this) {
+                        categories.getList().remove(found.get());
+                    }
+                    var p = found.get().getParent();
+                    if (p != null) {
+                        p.update();
+                    }
+                });
+            }
+
+            @Override
+            public void onEntryCategoryChange() {
+                Platform.runLater(() -> {
+                    synchronized (this) {
+                        categories.getList().forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
+                    }
+                });
+            }
+        });
+    }
+
+    public Optional<StoreSection> getSectionForWrapper(StoreEntryWrapper wrapper) {
+        if (currentTopLevelSection == null) {
+            return Optional.empty();
+        }
+
+        StoreSection current = getCurrentTopLevelSection();
+        while (true) {
+            var child = current.getAllChildren().getList().stream()
+                    .filter(section -> section.getWrapper().equals(wrapper))
+                    .findFirst();
+            if (child.isPresent()) {
+                return child;
+            }
+
+            var traverse = current.getAllChildren().getList().stream()
+                    .filter(section -> section.anyMatches(w -> w.equals(wrapper)))
+                    .findFirst();
+            if (traverse.isPresent()) {
+                current = traverse.get();
+            } else {
+                return Optional.empty();
+            }
+        }
+    }
+
+    public Optional<StoreSection> getParentSectionForWrapper(StoreEntryWrapper wrapper) {
+        StoreSection current = getCurrentTopLevelSection();
+        while (true) {
+            var child = current.getAllChildren().getList().stream()
+                    .filter(section -> section.getWrapper().equals(wrapper))
+                    .findFirst();
+            if (child.isPresent()) {
+                return Optional.of(current);
+            }
+
+            var traverse = current.getAllChildren().getList().stream()
+                    .filter(section -> section.anyMatches(w -> w.equals(wrapper)))
+                    .findFirst();
+            if (traverse.isPresent()) {
+                current = traverse.get();
+            } else {
+                return Optional.empty();
+            }
+        }
+    }
+
+    public DerivedObservableList<StoreCategoryWrapper> getSortedCategories(
+            StoreCategoryWrapper root, boolean requireExpanded) {
+        Comparator<StoreCategoryWrapper> comparator = new Comparator<>() {
+            @Override
+            public int compare(StoreCategoryWrapper o1, StoreCategoryWrapper o2) {
+                var o1Root = o1.getRoot();
+                var o2Root = o2.getRoot();
+                if (o1Root.equals(getAllConnectionsCategory()) && !o1Root.equals(o2Root)) {
+                    return -1;
+                }
+                if (o2Root.equals(getAllConnectionsCategory()) && !o1Root.equals(o2Root)) {
+                    return 1;
+                }
+
+                var p1 = o1.getParent();
+                var p2 = o2.getParent();
+                if (p1 == null && p2 == null) {
+                    return 0;
+                }
+
+                if (p1 == null) {
+                    return -1;
+                }
+
+                if (p2 == null) {
+                    return 1;
+                }
+
+                if (o1.getDepth() > o2.getDepth()) {
+                    if (p1 == o2) {
+                        return 1;
+                    }
+
+                    return compare(p1, o2);
+                }
+
+                if (o1.getDepth() < o2.getDepth()) {
+                    if (p2 == o1) {
+                        return -1;
+                    }
+
+                    return compare(o1, p2);
+                }
+
+                var parent = compare(p1, p2);
+                if (parent != 0) {
+                    return parent;
+                }
+
+                return o1.nameProperty()
+                        .getValue()
+                        .compareToIgnoreCase(o2.nameProperty().getValue());
+            }
+        };
+        return categories
+                .filtered(cat -> root == null || cat.getRoot().equals(root))
+                .filtered(storeCategoryWrapper -> !requireExpanded || storeCategoryWrapper.isHierarchyExpanded())
+                .sorted(comparator);
+    }
+
+    public StoreCategoryWrapper getAllConnectionsCategory() {
+        return categories.getList().stream()
+                .filter(storeCategoryWrapper ->
+                        storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.ALL_CONNECTIONS_CATEGORY_UUID))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    public StoreCategoryWrapper getAllScriptsCategory() {
+        return categories.getList().stream()
+                .filter(storeCategoryWrapper ->
+                        storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    public StoreCategoryWrapper getCustomScriptsCategory() {
+        return categories.getList().stream()
+                .filter(storeCategoryWrapper ->
+                        storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.CUSTOM_SCRIPTS_CATEGORY_UUID))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    public StoreCategoryWrapper getScriptSourcesCategory() {
+        return categories.getList().stream()
+                .filter(storeCategoryWrapper ->
+                        storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    public StoreCategoryWrapper getAllIdentitiesCategory() {
+        return categories.getList().stream()
+                .filter(storeCategoryWrapper ->
+                        storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.ALL_IDENTITIES_CATEGORY_UUID))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    public StoreEntryWrapper getEntryWrapper(DataStoreEntry entry) {
+        return allEntries.getList().stream()
+                .filter(storeCategoryWrapper -> storeCategoryWrapper.getEntry().equals(entry))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    public StoreCategoryWrapper getCategoryWrapper(DataStoreCategory entry) {
+        return categories.getList().stream()
+                .filter(storeCategoryWrapper ->
+                        storeCategoryWrapper.getCategory().equals(entry))
+                .findFirst()
+                .orElseThrow();
+    }
+}

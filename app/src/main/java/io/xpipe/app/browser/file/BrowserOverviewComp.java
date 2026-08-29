@@ -5,11 +5,11 @@ import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.SimpleTitledPaneComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.FileEntry;
+import io.xpipe.app.fs.FileEntry;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.DerivedObservableList;
+import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FilePath;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

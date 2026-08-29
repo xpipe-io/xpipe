@@ -3,15 +3,15 @@ package io.xpipe.ext.base.script;
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.ext.ValidationException;
+import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.ContextualFileReference;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.UuidHelper;
+import io.xpipe.app.util.ValidationException;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.UuidHelper;
 
 import javafx.beans.property.*;
 
@@ -23,10 +23,7 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +73,11 @@ public interface ScriptCollectionSource {
         public void checkComplete() throws ValidationException {
             Validators.nonNull(path);
             // Check if path is invalid
-            path.toLocalAbsoluteFilePath().asLocalPath();
+            try {
+                path.toLocalAbsoluteFilePath().asLocalPath();
+            } catch (InvalidPathException e) {
+                throw new ValidationException(e.getMessage());
+            }
         }
 
         @Override
@@ -138,9 +139,9 @@ public interface ScriptCollectionSource {
         @Override
         public void prepare() throws Exception {
             if (Files.exists(getLocalPath())) {
-                ProcessControlProvider.get().pullRepository(getLocalPath());
+                ProcModuleProvider.get().pullRepository(getLocalPath());
             } else {
-                ProcessControlProvider.get().cloneRepository(url, getLocalPath());
+                ProcModuleProvider.get().cloneRepositoryShallow(url, getLocalPath());
             }
         }
 

@@ -6,15 +6,17 @@ import io.xpipe.app.comp.base.PrettyImageHelper;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 
-import lombok.EqualsAndHashCode;
+import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.javafx.StackedFontIcon;
 
+import java.util.List;
 import java.util.function.Supplier;
 
-public abstract class LabelGraphic {
+public interface LabelGraphic {
 
-    public static LabelGraphic none() {
+    static LabelGraphic none() {
         return new LabelGraphic() {
 
             @Override
@@ -24,25 +26,50 @@ public abstract class LabelGraphic {
         };
     }
 
-    public abstract Node createGraphicNode();
+    Node createGraphicNode();
 
     @Value
-    @EqualsAndHashCode(callSuper = true)
-    public static class IconGraphic extends LabelGraphic {
+    @AllArgsConstructor
+    class IconGraphic implements LabelGraphic {
 
         String icon;
+        String styleClass;
+
+        public IconGraphic(String icon) {
+            this.icon = icon;
+            this.styleClass = null;
+        }
 
         @Override
-        public Node createGraphicNode() {
+        public FontIcon createGraphicNode() {
             var fi = new FontIcon(icon);
             fi.getStyleClass().add("graphic");
+            if (styleClass != null) {
+                fi.getStyleClass().add(styleClass);
+            }
             return fi;
         }
     }
 
     @Value
-    @EqualsAndHashCode(callSuper = true)
-    public static class ImageGraphic extends LabelGraphic {
+    @AllArgsConstructor
+    class IconStackGraphic implements LabelGraphic {
+
+        List<IconGraphic> icons;
+
+        @Override
+        public Node createGraphicNode() {
+            var fi = new StackedFontIcon();
+            fi.getChildren()
+                    .addAll(icons.stream()
+                            .map(iconGraphic -> iconGraphic.createGraphicNode())
+                            .toList());
+            return fi;
+        }
+    }
+
+    @Value
+    class ImageGraphic implements LabelGraphic {
 
         String file;
         int size;
@@ -56,8 +83,7 @@ public abstract class LabelGraphic {
     }
 
     @Value
-    @EqualsAndHashCode(callSuper = true)
-    public static class CompGraphic extends LabelGraphic {
+    class CompGraphic implements LabelGraphic {
 
         BaseRegionBuilder<?, ?> comp;
 
@@ -68,8 +94,7 @@ public abstract class LabelGraphic {
     }
 
     @Value
-    @EqualsAndHashCode(callSuper = true)
-    public static class NodeGraphic extends LabelGraphic {
+    class NodeGraphic implements LabelGraphic {
 
         Supplier<Node> node;
 

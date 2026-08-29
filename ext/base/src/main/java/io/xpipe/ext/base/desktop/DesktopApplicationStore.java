@@ -1,9 +1,9 @@
 package io.xpipe.ext.base.desktop;
 
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.DataStoreDependencies;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStore;
+import io.xpipe.app.store.DataStoreDependencies;
 import io.xpipe.app.util.Validators;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;

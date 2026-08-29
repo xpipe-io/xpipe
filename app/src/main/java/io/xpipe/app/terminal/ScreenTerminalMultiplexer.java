@@ -1,6 +1,8 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.process.*;
+import io.xpipe.app.util.OsType;
+import io.xpipe.app.webtop.WebtopApp;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
@@ -12,6 +14,26 @@ import java.util.ArrayList;
 @Jacksonized
 @JsonTypeName("screen")
 public class ScreenTerminalMultiplexer implements TerminalMultiplexer {
+
+    @Override
+    public boolean requiresUnixEnvironment() {
+        return true;
+    }
+
+    @Override
+    public boolean isSupported() throws Exception {
+        if (OsType.ofLocal() == OsType.WINDOWS) {
+            var p = TerminalProxyManager.getProxy();
+            return p.isPresent() && p.get().view().findProgram("screen").isPresent();
+        } else {
+            return LocalShell.getShell().view().findProgram("screen").isPresent();
+        }
+    }
+
+    @Override
+    public WebtopApp getRequiredWebtopApp() {
+        return null;
+    }
 
     @Override
     public boolean supportsSplitView() {

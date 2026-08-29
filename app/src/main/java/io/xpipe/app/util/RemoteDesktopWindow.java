@@ -10,7 +10,6 @@ import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
@@ -18,13 +17,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import javafx.stage.WindowEvent;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -124,7 +121,6 @@ public class RemoteDesktopWindow {
         AppWindowStyle.addIcons(stage);
         AppWindowStyle.addStylesheets(stage.getScene());
         AppWindowStyle.addClickShield(stage);
-        AppWindowStyle.addMaximizedPseudoClass(stage);
         AppWindowStyle.addFontSize(scene);
         AppWindowStyle.addNavigationPseudoClasses(scene);
         AppTheme.initThemeHandlers(stage);
@@ -186,8 +182,10 @@ public class RemoteDesktopWindow {
     }
 
     public void select(RemoteDesktopDockEntry entry) {
-        model.select(entry);
-        selected.set(entry);
+        ThreadHelper.runFailableAsync(() -> {
+            model.select(entry);
+            selected.set(entry);
+        });
     }
 
     public void close(RemoteDesktopDockEntry entry, boolean closeWindowIfNeeded) {
@@ -287,7 +285,7 @@ public class RemoteDesktopWindow {
                 () -> {
                     var selected = this.selected.get();
                     if (selected == null) {
-                        return "Remote Desktop Dock";
+                        return "XPipe - Remote Desktop Connection";
                     }
 
                     var name = selected.getName();

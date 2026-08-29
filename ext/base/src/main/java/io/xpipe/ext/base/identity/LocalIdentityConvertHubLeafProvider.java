@@ -28,7 +28,7 @@ public class LocalIdentityConvertHubLeafProvider implements HubLeafProvider<Loca
 
     @Override
     public boolean isApplicable(DataStoreEntryRef<LocalIdentityStore> o) {
-        return DataStorage.get().supportsSync();
+        return DataStorage.get().syncEnabled() && !MultiIdentityStore.isExclusivelyHeld(o.asNeeded());
     }
 
     @Override

@@ -4,20 +4,20 @@ import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.util.GlobalTimer;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.skin.ScrollPaneSkin;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
@@ -43,6 +43,9 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
 
     @Setter
     private boolean visibilityControl = false;
+
+    @Setter
+    private boolean fixScrollReset = false;
 
     public ListBoxViewComp(
             ObservableList<T> shown,
@@ -86,19 +89,14 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
 
         if (scrollBar) {
             scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-            scroll.skinProperty().subscribe(newValue -> {
-                if (newValue != null) {
-                    ScrollBar bar = (ScrollBar) scroll.lookup(".scroll-bar:vertical");
-                    bar.opacityProperty()
-                            .bind(Bindings.createDoubleBinding(
-                                    () -> {
-                                        var v = bar.getVisibleAmount();
-                                        // Check for rounding and accuracy issues
-                                        // It might not be exactly equal to 1.0
-                                        return v < 0.99 ? 1.0 : 0.0;
-                                    },
-                                    bar.visibleAmountProperty()));
-                }
+
+            scroll.setSkin(new ScrollPaneSkin(scroll));
+            ScrollBar bar = (ScrollBar) scroll.lookup(".scroll-bar:vertical");
+            bar.visibleAmountProperty().subscribe(v -> {
+                // Check for rounding and accuracy issues
+                // It might not be exactly equal to 1.0
+                var notNeeded = v.doubleValue() > 0.99;
+                bar.pseudoClassStateChanged(PseudoClass.getPseudoClass("hidden"), notNeeded);
             });
         } else {
             scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -140,17 +138,20 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
             }
         };
 
-        scroll.vvalueProperty().addListener((observable, oldValue, newValue) -> {
-            // Fix scrollbar resetting on fast scroll
-            // If one node within has focus and moves out of focus fast,
-            // the scrollbar will try to focus another one and move it into view
-            // This can result in flicker when scrolling fast enough
-            var hasWindowFocus = scroll.getScene().getWindow().isFocused();
-            if (scroll.isFocusWithin() || !hasWindowFocus) {
-                scroll.requestFocus();
-            }
-            dirty.set(true);
-        });
+        if (fixScrollReset) {
+            scroll.vvalueProperty().addListener((observable, oldValue, newValue) -> {
+                // Fix scrollbar resetting on fast scroll
+                // If one node within has focus and moves out of focus fast,
+                // the scrollbar will try to focus another one and move it into view
+                // This can result in flicker when scrolling fast enough
+                var hasWindowFocus = scroll.getScene().getWindow().isFocused();
+                if (scroll.isFocusWithin() || !hasWindowFocus) {
+                    scroll.requestFocus();
+                }
+                dirty.set(true);
+            });
+        }
+
         scroll.heightProperty().addListener((observable, oldValue, newValue) -> {
             dirty.set(true);
         });
@@ -171,14 +172,13 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
                     Duration.ofMillis(50));
         });
         shown.addListener((ListChangeListener<? super T>) (change) -> {
+            dirty.set(true);
             Platform.runLater(() -> {
                 dirty.set(true);
             });
         });
         scroll.sceneProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                dirty.set(true);
-            }
+            dirty.set(true);
         });
 
         // We can't directly listen to any parent element changing visibility, so this is a compromise
@@ -190,40 +190,6 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
         BrowserFullSessionModel.DEFAULT.getSelectedEntry().addListener((observable, oldValue, newValue) -> {
             dirty.set(true);
         });
-        if (StoreViewState.get() != null) {
-            StoreViewState.get().getGlobalSortMode().addListener((observable, oldValue, newValue) -> {
-                // This is very ugly, but it just takes multiple iterations for the order to apply
-                Platform.runLater(() -> {
-                    Platform.runLater(() -> {
-                        Platform.runLater(() -> {
-                            dirty.set(true);
-                        });
-                    });
-                });
-            });
-
-            StoreViewState.get().getTieSortMode().addListener((observable, oldValue, newValue) -> {
-                // This is very ugly, but it just takes multiple iterations for the order to apply
-                Platform.runLater(() -> {
-                    Platform.runLater(() -> {
-                        Platform.runLater(() -> {
-                            dirty.set(true);
-                        });
-                    });
-                });
-            });
-
-            StoreViewState.get().getEntriesListUpdateObservable().addListener((observable, oldValue, newValue) -> {
-                // This is very ugly, but it just takes multiple iterations for the order to apply
-                Platform.runLater(() -> {
-                    Platform.runLater(() -> {
-                        Platform.runLater(() -> {
-                            dirty.set(true);
-                        });
-                    });
-                });
-            });
-        }
 
         vbox.sceneProperty().addListener((observable, oldValue, newValue) -> {
             dirty.set(true);
@@ -236,9 +202,25 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
 
             Node c = vbox;
             do {
-                c.boundsInParentProperty().addListener((change, oldBounds, newBounds) -> {
+                var minY = new SimpleDoubleProperty();
+                var maxY = new SimpleDoubleProperty();
+
+                c.boundsInParentProperty().subscribe(v -> {
+                    if (Math.abs(minY.get() - v.getMinY()) > 5.0) {
+                        minY.set(v.getMinY());
+                    }
+                    if (Math.abs(maxY.get() - v.getMaxY()) > 5.0) {
+                        maxY.set(v.getMaxY());
+                    }
+                });
+
+                minY.addListener((observable1, oldValue1, newValue1) -> {
                     dirty.set(true);
                 });
+                maxY.addListener((observable1, oldValue1, newValue1) -> {
+                    dirty.set(true);
+                });
+
                 // Don't listen to root node changes, we don't need that
             } while ((c = c.getParent()) != null && c.getParent() != null);
 
@@ -291,11 +273,11 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
             }
         }
 
-        if (pane.getScene().getHeight() > 200) {
+        if (pane.getScene().getHeight() > 300) {
             var sceneNodeBounds = node.localToScene(node.getBoundsInLocal());
             // Add some margin to preload
-            if (sceneNodeBounds.getMaxY() < -250
-                    || sceneNodeBounds.getMinY() > pane.getScene().getHeight() + 250) {
+            if (sceneNodeBounds.getMaxY() < -300
+                    || sceneNodeBounds.getMinY() > pane.getScene().getHeight() + 300) {
                 return false;
             }
         }
@@ -325,9 +307,9 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
             }
         }
 
-        //        if (count > 10) {
-        //            System.out.println("Visible: " + count);
-        //        }
+        //                if (count > 0) {
+        //                    System.out.println("Visible: " + count);
+        //                }
     }
 
     private void refresh(VBox vbox, List<? extends T> shown, List<? extends T> all, Map<T, Region> cache) {

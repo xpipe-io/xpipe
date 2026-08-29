@@ -1,8 +1,8 @@
 package io.xpipe.ext.system.incus;
 
-import io.xpipe.app.ext.*;
 import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.*;
 import io.xpipe.app.util.Validators;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -24,6 +24,11 @@ public class IncusInstallStore
         implements FixedHierarchyStore, StatefulDataStore<IncusInstallStore.State>, SelfReferentialStore {
 
     DataStoreEntryRef<ShellStore> host;
+
+    @Override
+    public void enableShowAll() {
+        setState(getState().toBuilder().showNonRunning(true).build());
+    }
 
     public IncusInstallStore(DataStoreEntryRef<ShellStore> host) {
         this.host = host;

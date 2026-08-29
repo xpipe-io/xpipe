@@ -1,8 +1,8 @@
-# Konfiguracja Termius
+# Konfiguracja Termiusa
 
-Aby używać Termius jako terminala, możesz podłączyć go do mostka SSH XPipe. Może to działać automatycznie po dodaniu klucza lokalnego mostu ssh do Termius.
+Żeby używać Termiusa jako terminala, możesz podłączyć go do mostka SSH XPipe. Działa to automatycznie, gdy tylko dodasz lokalny klucz SSH mostka do Termiusa.
 
-Jedyne, co musisz zrobić ręcznie, to najpierw dodać plik klucza prywatnego `%s` do Termius:
+Jedyne, co musisz zrobić ręcznie, to najpierw dodać plik klucza prywatnego `%s` do Termiusa:
 
 ```
 %s

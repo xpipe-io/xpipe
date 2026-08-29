@@ -1,7 +1,7 @@
 package io.xpipe.app.test;
 
 import io.xpipe.app.core.mode.AppOperationMode;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;

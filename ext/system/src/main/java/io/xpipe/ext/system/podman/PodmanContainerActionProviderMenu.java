@@ -5,9 +5,6 @@ import io.xpipe.app.hub.action.HubBranchProvider;
 import io.xpipe.app.hub.action.HubMenuItemProvider;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.ext.base.store.StoreRestartActionProvider;
-import io.xpipe.ext.base.store.StoreStartActionProvider;
-import io.xpipe.ext.base.store.StoreStopActionProvider;
 
 import javafx.beans.value.ObservableValue;
 
@@ -38,9 +35,6 @@ public class PodmanContainerActionProviderMenu implements HubBranchProvider<Podm
     @Override
     public List<HubMenuItemProvider<?>> getChildren(DataStoreEntryRef<PodmanContainerStore> store) {
         return List.of(
-                new StoreStartActionProvider(),
-                new StoreStopActionProvider(),
-                new StoreRestartActionProvider(),
                 new PodmanContainerUnitFileEditActionProvider(),
                 new PodmanContainerInspectActionProvider(),
                 new PodmanContainerLogsActionProvider(),

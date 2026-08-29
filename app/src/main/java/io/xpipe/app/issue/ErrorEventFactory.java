@@ -1,10 +1,14 @@
 package io.xpipe.app.issue;
 
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.process.ProcessOutputException;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.AccessDeniedException;
+import java.nio.file.FileSystemException;
+import java.nio.file.InvalidPathException;
 import java.nio.file.NoSuchFileException;
 import java.util.*;
 
@@ -57,8 +61,32 @@ public class ErrorEventFactory {
         EVENT_BASES.put(event.getThrowable(), event);
     }
 
-    private static synchronized ErrorEvent.ErrorEventBuilder retrieveBuilder(Throwable t) {
-        var b = EVENT_BASES.remove(t);
+    public static String formatThrowableMessage(Throwable t) {
+        if (t instanceof AccessDeniedException ade) {
+            return "Access is denied: " + ade.getMessage();
+        }
+
+        if (t instanceof NoSuchFileException nsfe) {
+            return "No such file: " + nsfe.getMessage();
+        }
+
+        if (t instanceof InvalidPathException ipe) {
+            return "Invalid file path: " + ipe.getMessage();
+        }
+
+        if (t instanceof InvocationTargetException ite && ite.getCause() != null && ite.getCause() != t) {
+            return formatThrowableMessage(ite.getCause());
+        }
+
+        if (t.getMessage() == null) {
+            return AppI18n.get("errorTypeOccurred", t.getClass().getSimpleName());
+        }
+
+        return t.getMessage();
+    }
+
+    private static synchronized ErrorEvent.ErrorEventBuilder retrieveBuilder(Throwable t)     {
+         var b = EVENT_BASES.remove(t);
         if (b == null) {
             b = ErrorEvent.builder().throwable(t);
         }
@@ -99,13 +127,15 @@ public class ErrorEventFactory {
             b.expected();
         }
 
-        if (t instanceof AccessDeniedException ade) {
-            b.description("Access is denied: " + ade.getMessage());
+        if (t instanceof FileSystemException) {
             b.expected();
         }
 
-        if (t instanceof NoSuchFileException nsfe) {
-            b.description("No such file: " + nsfe.getMessage());
+        if (t instanceof AccessDeniedException) {
+            b.expected();
+        }
+
+        if (t instanceof NoSuchFileException) {
             b.expected();
         }
 

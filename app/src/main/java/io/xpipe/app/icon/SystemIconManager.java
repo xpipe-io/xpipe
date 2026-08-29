@@ -1,11 +1,11 @@
 package io.xpipe.app.icon;
 
 import io.xpipe.app.core.*;
-import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.util.ValidationException;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,7 +41,6 @@ public class SystemIconManager {
                 .id("custom")
                 .build());
         // For chinese users, GitHub link might be unreliable
-        // So use an alternative chinese mirror they can use
         all.add(SystemIconSource.GitRepository.builder()
                 .remote("https://github.com/selfhst/icons")
                 .id("selfhst")
@@ -213,12 +212,6 @@ public class SystemIconManager {
         SystemIconCache.rebuildCache(LOADED_SOURCES, sourceHash);
         cacheSourceHash = sourceHash;
         reloadImages();
-    }
-
-    public static synchronized void reloadSourceHashes() throws Exception {
-        Files.createDirectories(DIRECTORY);
-        reloadSources();
-        sourceHash = calculateSourceHash();
     }
 
     public static synchronized void loadAllAvailableIconImages() {

@@ -1,9 +1,11 @@
 package io.xpipe.ext.system.incus;
 
-import io.xpipe.app.ext.*;
 import io.xpipe.app.process.BaseElevationHandler;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.process.ShellControlFunction;
+import io.xpipe.app.process.ShellControlParentStoreFunction;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.*;
 import io.xpipe.app.util.*;
 import io.xpipe.ext.base.host.HostAddressGatewayStore;
 import io.xpipe.ext.base.identity.IdentityValue;
@@ -37,13 +39,18 @@ public class IncusContainerStore
                 StoppableStore,
                 PauseableStore,
                 NameableStore,
-                HostAddressGatewayStore {
+                HostAddressGatewayStore,
+                   EncryptionStore{
 
     DataStoreEntryRef<IncusInstallStore> install;
     String projectName;
     String containerName;
     IdentityValue identity;
 
+    @Override
+    public DataStore withUpdatedPrincipals() {
+        return toBuilder().identity(identity != null ? identity.withUpdatedPrincipals() : null).build();
+    }
     public IncusCommandView.Project view() throws Exception {
         return view(getInstall().getStore().getHost().getStore().getOrStartSession());
     }

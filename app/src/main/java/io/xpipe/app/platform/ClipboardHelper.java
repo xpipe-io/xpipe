@@ -4,7 +4,7 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.core.SecretValue;
+import io.xpipe.app.util.SecretValue;
 
 import javafx.animation.PauseTransition;
 import javafx.scene.input.Clipboard;

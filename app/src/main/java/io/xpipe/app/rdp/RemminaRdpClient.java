@@ -1,15 +1,18 @@
 package io.xpipe.app.rdp;
 
+import io.xpipe.app.comp.base.TextAreaComp;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.*;
+
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleStringProperty;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
-
-import java.util.*;
 
 @JsonTypeName("remmina")
 @Value
@@ -17,45 +20,48 @@ import java.util.*;
 @Builder
 public class RemminaRdpClient implements ExternalApplicationType.LinuxApplication, ExternalRdpClient {
 
-    private List<String> toStrip() {
-        return List.of("auto connect", "password 51", "prompt for credentials", "smart sizing");
-    }
+    String options;
 
-    private boolean containsOnlyRecognizedOptions(RdpLaunchConfig configuration) {
-        var l = new HashSet<>(configuration.getConfig().getContent().keySet());
-        toStrip().forEach(l::remove);
-        return l.size() == 2 && l.contains("username") && l.contains("full address");
+    @SuppressWarnings("unused")
+    static OptionsBuilder createOptions(Property<RemminaRdpClient> property) {
+        var options = new SimpleStringProperty(property.getValue().getOptions());
+
+        return new OptionsBuilder()
+                .nameAndDescription("remminaRdpArguments")
+                .documentationLink("https://gitlab.com/Remmina/Remmina/-/wikis/Remmina-Config-File-Options")
+                .addComp(
+                        new TextAreaComp(options)
+                                .applyStructure(structure -> {
+                                    structure.getTextArea().setPromptText("""
+                            websockets=1
+                            timeout=1000
+                            restricted-admin=1
+                            """);
+                                })
+                                .maxWidth(600),
+                        options)
+                .bind(() -> RemminaRdpClient.builder().options(options.get()).build(), property);
     }
 
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
         // Remmina does not support RemoteApps
         if (configuration.isRemoteApp()) {
-            var freerdp = new FreeRdpClient();
+            var freerdp = new FreeRdpClient(null);
             if (freerdp.isAvailable()) {
                 freerdp.launch(configuration);
                 return;
             }
         }
 
-        if (containsOnlyRecognizedOptions(configuration)) {
-            var encrypted = RemminaHelper.encryptPassword(configuration.getPassword());
-            if (encrypted.isPresent()) {
-                var file = RemminaHelper.writeRemminaRdpConfigFile(configuration, encrypted.get());
-                launch(CommandBuilder.of().add("-c").addFile(file.toString()));
-                return;
-            }
-        }
-
-        RdpConfig c = configuration.getConfig();
-        var file = writeRdpConfigFile(configuration.getTitle(), c);
-        launch(CommandBuilder.of().add("-c").addFile(file.toString()));
+        var file = RemminaHelper.writeRemminaRdpConfigFile(configuration, options);
         LocalFileTracker.deleteOnExit(file);
+        launch(CommandBuilder.of().add("-c").addFile(file.toString()));
     }
 
     @Override
-    public boolean supportsPasswordPassing(RdpLaunchConfig config) {
-        return config.isRemoteApp() || containsOnlyRecognizedOptions(config);
+    public boolean supportsPasswordPassing() {
+        return true;
     }
 
     @Override

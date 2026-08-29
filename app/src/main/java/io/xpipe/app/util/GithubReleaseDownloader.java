@@ -3,7 +3,6 @@ package io.xpipe.app.util;
 import io.xpipe.app.core.AppLocalTemp;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
-import io.xpipe.core.JacksonMapper;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
@@ -57,9 +56,9 @@ public class GithubReleaseDownloader {
         var latest = json.get(0);
         var assets = latest.required("assets");
         for (var asset : assets) {
-            var name = asset.required("name").asText();
+            var name = asset.required("name").asString();
             if (filter.test(name)) {
-                var url = asset.required("browser_download_url").asText();
+                var url = asset.required("browser_download_url").asString();
                 return url;
             }
         }

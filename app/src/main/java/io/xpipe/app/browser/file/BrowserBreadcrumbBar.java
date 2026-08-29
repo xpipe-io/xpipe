@@ -3,9 +3,9 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
+import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FilePath;
 
 import javafx.application.Platform;
 import javafx.css.PseudoClass;

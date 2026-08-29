@@ -1,8 +1,8 @@
 package io.xpipe.app.browser.icon;
 
 import io.xpipe.app.core.AppResources;
-import io.xpipe.app.ext.FileEntry;
-import io.xpipe.app.ext.FileKind;
+import io.xpipe.app.fs.FileEntry;
+import io.xpipe.app.fs.FileKind;
 
 import lombok.Getter;
 

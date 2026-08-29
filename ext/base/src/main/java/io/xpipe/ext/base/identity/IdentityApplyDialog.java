@@ -7,10 +7,8 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.DataStoreCreationCategory;
-import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.hub.comp.StoreChoiceComp;
-import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.hub.creation.StoreChoiceComp;
+import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -20,11 +18,13 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStoreCreationCategory;
+import io.xpipe.app.store.ShellStore;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.DocumentationLink;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.OsType;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -415,7 +415,7 @@ public class IdentityApplyDialog {
                         }
 
                         return DataStorage.get().getStoreEntryDisplayName(entry) + " -> "
-                                + IdentitySummary.createSummary(identity.getStore());
+                                + identity.getStore().toSummary();
                     }
                 };
         var systemChoiceBusy = new LoadingOverlayComp(systemChoice, busy, false);

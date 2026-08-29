@@ -1,8 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
     <title>file_type_shell</title>
-    <path d="M29.4,27.6H2.5V4.5H29.4Zm-25.9-1H28.4V5.5H3.5Z" style="fill:#d9b400"/>
-    <polygon points="6.077 19.316 5.522 18.484 10.366 15.255 5.479 11.184 6.12 10.416 12.035 15.344 6.077 19.316"
-             style="fill:#d9b400"/>
-    <rect x="12.7" y="18.2" width="7.8" height="1" style="fill:#d9b400"/>
-    <rect x="2.5" y="5.5" width="26.9" height="1.9" style="fill:#d9b400"/>
+    <path d="M29.4 27.6H2.5V4.5h26.9Zm-25.9-1h24.9V5.5H3.5Z" style="fill:#d9b400"/>
+    <path d="m6.077 19.316-.555-.832 4.844-3.229-4.887-4.071.641-.768 5.915 4.928zM12.7 18.2h7.8v1h-7.8zM2.5 5.5h26.9v1.9H2.5z" style="fill:#d9b400"/>
 </svg>

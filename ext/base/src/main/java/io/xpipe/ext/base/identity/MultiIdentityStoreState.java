@@ -1,7 +1,7 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.ext.DataStoreState;
 import io.xpipe.app.process.ShellStoreState;
+import io.xpipe.app.store.DataStoreState;
 
 import lombok.EqualsAndHashCode;
 import lombok.Value;

@@ -74,7 +74,7 @@ public class AppPrefsSidebarComp extends SimpleRegionBuilder {
         restartButton.padding(new Insets(6, 10, 6, 6));
 
         var vbox = new VerticalComp(List.of(new ScrollComp(categoryButtons), RegionBuilder.vspacer(), restartButton));
-        vbox.style("sidebar").style("color-box").style("gray");
+        vbox.style("sidebar");
 
         return vbox.build();
     }

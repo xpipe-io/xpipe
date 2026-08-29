@@ -103,7 +103,7 @@ public class BrowserFileListFilterComp extends RegionStructureBuilder<HBox, Brow
         text.setPrefWidth(0);
         text.setFocusTraversable(false);
         button.getStyleClass().add(Styles.FLAT);
-        button.disableProperty().bind(model.getInOverview());
+        button.disableProperty().bind(PlatformThread.sync(model.getInOverview()));
         expanded.addListener((observable, oldValue, val) -> {
             if (val) {
                 text.setPrefWidth(250);

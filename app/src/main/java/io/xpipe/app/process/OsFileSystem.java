@@ -1,7 +1,7 @@
 package io.xpipe.app.process;
 
-import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.OsType;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;

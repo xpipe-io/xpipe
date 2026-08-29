@@ -36,3 +36,15 @@
 .sidebar-comp .icon-button-comp .vbox {
     -fx-spacing: 0.5em;
 }
+
+.sidebar-comp .sidebar-button:hover .indicator {
+    -fx-background-radius: 8;
+    -fx-background-insets: 17 1 15 2;
+    -fx-background-color: -color-accent-emphasis;
+}
+
+.sidebar-comp .sidebar-button:selected .indicator {
+    -fx-background-radius: 8;
+    -fx-background-insets: 17 1 15 2;
+    -fx-background-color: -color-accent-fg;
+}

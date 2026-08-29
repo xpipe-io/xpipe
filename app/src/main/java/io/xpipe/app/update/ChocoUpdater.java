@@ -11,7 +11,6 @@ import io.xpipe.app.process.*;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.Hyperlinks;
 
-import java.nio.file.Files;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -97,7 +96,7 @@ public class ChocoUpdater extends UpdateHandler {
         if (chocoRelease.isEmpty()
                 || (!chocoRelease.get().equals(rel.getTag())
                         && !chocoRelease.get().equals(rel.getTag() + ".0"))) {
-            rel = AppRelease.of(AppProperties.get().getVersion());
+            rel = AppRelease.ofInstaller(AppProperties.get().getVersion());
         }
 
         var isUpdate = isUpdate(rel.getTag());

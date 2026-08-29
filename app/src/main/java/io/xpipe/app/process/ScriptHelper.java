@@ -1,7 +1,7 @@
 package io.xpipe.app.process;
 
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FilePath;
 
 import lombok.SneakyThrows;
 

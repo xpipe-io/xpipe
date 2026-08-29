@@ -7,11 +7,9 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.*;
-import io.xpipe.core.JacksonMapper;
-import io.xpipe.core.OsType;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.apache.commons.io.FileUtils;
+import tools.jackson.databind.node.JsonNodeFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -23,9 +21,8 @@ import java.time.Duration;
 
 public class AppDownloads {
 
-    public static Path downloadInstaller(String version) throws Exception {
+    public static Path downloadArtifact(AppRelease release) throws Exception {
         try {
-            var release = AppRelease.of(version);
             var builder = HttpRequest.newBuilder();
             var httpRequest = builder.uri(URI.create(release.getUrl())).GET().build();
             var client = HttpHelper.client();
@@ -35,7 +32,7 @@ public class AppDownloads {
             var downloadFile = AppCache.getBasePath().resolve(release.getFile());
             Files.write(downloadFile, response.body());
             TrackEvent.withInfo("Downloaded asset")
-                    .tag("version", version)
+                    .tag("version", release.getTag())
                     .tag("url", release.getUrl())
                     .tag("size", FileUtils.byteCountToDisplaySize(response.body().length))
                     .tag("target", downloadFile)
@@ -63,7 +60,7 @@ public class AppDownloads {
             var response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
             HttpHelper.checkOrThrow(response);
             var json = JacksonMapper.getDefault().readTree(response.body());
-            var changelog = json.required("changelog").asText();
+            var changelog = json.required("changelog").asString();
             return changelog;
         } catch (IOException ex) {
             // All sorts of things can go wrong when downloading, this is expected
@@ -106,7 +103,7 @@ public class AppDownloads {
             }
 
             var json = JacksonMapper.getDefault().readTree(response.body());
-            var ver = json.required("version").asText();
+            var ver = json.required("version").asString();
             var ptbAvailable = json.get("ptbAvailable");
             if (ptbAvailable != null) {
                 var b = ptbAvailable.asBoolean();
@@ -118,7 +115,7 @@ public class AppDownloads {
                             Duration.ofSeconds(20));
                 }
             }
-            return AppRelease.of(ver);
+            return AppRelease.ofInstaller(ver);
         } catch (Exception e) {
             throw ErrorEventFactory.expected(e);
         }

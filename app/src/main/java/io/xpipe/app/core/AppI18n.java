@@ -53,7 +53,7 @@ public class AppI18n {
     }
 
     public static ObservableValue<String> observable(ObservableValue<String> s, Object... vars) {
-        return BindingsHelper.flatMap(s, v -> INSTANCE.observableImpl(v, vars));
+        return BindingsHelper.flatMap(s, v -> v != null ? INSTANCE.observableImpl(v, vars) : null);
     }
 
     public static String get(String s, Object... vars) {

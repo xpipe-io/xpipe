@@ -1,23 +1,24 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.comp.BaseRegionBuilder;
-import io.xpipe.app.comp.base.CheckBoxComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.*;
-import io.xpipe.app.hub.comp.*;
+import io.xpipe.app.hub.creation.StoreCreationModel;
+import io.xpipe.app.hub.entry.*;
+import io.xpipe.app.hub.list.StoreListChoiceComp;
+import io.xpipe.app.hub.list.StoreViewState;
+import io.xpipe.app.hub.section.StoreSection;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.platform.Validator;
 import io.xpipe.app.process.OsFileSystem;
+import io.xpipe.app.process.ShellDialectIcons;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.store.*;
 import io.xpipe.app.util.*;
-import io.xpipe.core.OsType;
 
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 
 import lombok.SneakyThrows;
@@ -43,15 +44,22 @@ public class ScriptStoreProvider implements DataStoreProvider {
             enabled.set(s.isEnabled());
         });
 
-        var checkbox = new CheckBoxComp(enabled, null, null);
-        checkbox.describe(d -> d.nameKey("toggleEnabled"));
-        enabled.addListener((observable, oldValue, newValue) -> {
-            ScriptStore st = sec.getWrapper().getEntry().getStore().asNeeded();
-            var state = st.getState().toBuilder().enabled(newValue).build();
-            st.setState(state);
-        });
+        var toggle = StoreToggleComp.<StatefulDataStore<EnabledStoreState>>enableToggle(
+                null, sec, enabled, (s, aBoolean) -> {
+                    var state = s.getState().toBuilder().enabled(aBoolean).build();
+                    s.setState(state);
+                });
+        toggle.describe(d -> d.nameKey("toggleEnabled"));
 
-        return StoreEntryComp.create(sec, checkbox, preferLarge);
+        //        var checkbox = new CheckBoxComp(enabled, null, null);
+        //        checkbox.describe(d -> d.nameKey("toggleEnabled"));
+        //        enabled.addListener((observable, oldValue, newValue) -> {
+        //            ScriptStore st = sec.getWrapper().getEntry().getStore().asNeeded();
+        //            var state = st.getState().toBuilder().enabled(newValue).build();
+        //            st.setState(state);
+        //        });
+
+        return StoreEntryComp.create(sec, toggle, preferLarge);
     }
 
     @Override
@@ -62,11 +70,6 @@ public class ScriptStoreProvider implements DataStoreProvider {
     @Override
     public boolean shouldShowScan() {
         return false;
-    }
-
-    @Override
-    public BaseRegionBuilder<?, ?> stateDisplay(StoreSection section) {
-        return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
     }
 
     @Override
@@ -152,15 +155,13 @@ public class ScriptStoreProvider implements DataStoreProvider {
                                         scriptStore -> !scriptStore.get().equals(model.getExistingEntry())
                                                 && !others.contains(scriptStore),
                                         StoreViewState.get().getAllScriptsCategory(),
-                                        DataStoreCreationCategory.SCRIPT,
-                                        null),
+                                        DataStoreCreationCategory.SCRIPT),
                                 others)
                         .bind(
                                 () -> {
                                     return ScriptStore.builder()
                                             .textSource(textSource.get())
                                             .scripts(new ArrayList<>(others.get()))
-                                            .description(st.getDescription())
                                             .initScript(selectedExecTypes.contains(0))
                                             .runnableScript(selectedExecTypes.contains(1))
                                             .fileScript(selectedExecTypes.contains(2))
@@ -184,8 +185,8 @@ public class ScriptStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public ObservableValue<String> informationString(StoreSection section) {
-        ScriptStore st = section.getWrapper().getEntry().getStore().asNeeded();
+    public StoreEntryInformation buildInformation(StoreSection section) {
+        ScriptStore st = section.getEntry().getStore().asNeeded();
         var init = st.isInitScript() ? AppI18n.get("init") : null;
         var file = st.isFileScript() ? AppI18n.get("fileBrowser") : null;
         var shell = st.isShellScript() ? AppI18n.get("shell") : null;
@@ -193,9 +194,13 @@ public class ScriptStoreProvider implements DataStoreProvider {
                 ? getShellSessionScriptName(section.getWrapper()).orElse(null)
                 : null;
         var runnable = st.isRunnableScript() ? AppI18n.get("hub") : null;
-        return new ReadOnlyObjectWrapper<>(
-                new StoreStateFormat(List.of(), st.getTextSource().toSummary(), shell, init, file, runnable, name)
-                        .format());
+        return StoreEntryInformation.of(
+                StoreEntryBadge.ofFile(st.getTextSource().toLocationSummary()),
+                StoreEntryBadge.ofSetting(shell),
+                StoreEntryBadge.ofSetting(init),
+                StoreEntryBadge.ofSetting(file),
+                StoreEntryBadge.ofSetting(runnable),
+                StoreEntryBadge.ofFile(name));
     }
 
     private Optional<String> getShellSessionScriptName(StoreEntryWrapper wrapper) {

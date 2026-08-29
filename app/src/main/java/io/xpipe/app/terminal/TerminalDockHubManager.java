@@ -13,13 +13,14 @@ import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.NativeWinWindowControl;
+import io.xpipe.app.util.OsType;
 import io.xpipe.app.util.Rect;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.input.KeyCode;
@@ -93,9 +94,7 @@ public class TerminalDockHubManager {
         }
 
         INSTANCE.addLayoutListeners();
-        INSTANCE.addDialogListeners();
-
-        TerminalView.get().addListener(INSTANCE.createListener());
+        INSTANCE.addStateListeners();
 
         GlobalTimer.scheduleUntil(Duration.ofMillis(500), false, () -> {
             INSTANCE.refreshDockStatus();
@@ -139,7 +138,7 @@ public class TerminalDockHubManager {
             AppI18n.observable(
                     "toggleTerminalDock",
                     new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN).getDisplayText()),
-            new LabelGraphic.NodeGraphic(() -> {
+            new ReadOnlyObjectWrapper<>(new LabelGraphic.NodeGraphic(() -> {
                 var inner = new FontIcon();
                 inner.iconCodeProperty()
                         .bind(PlatformThread.sync(Bindings.createObjectBinding(
@@ -152,9 +151,9 @@ public class TerminalDockHubManager {
                                 minimized,
                                 showing)));
                 inner.getStyleClass().add("graphic");
-                inner.getStyleClass().add("terminal-dock-button");
+                inner.getStyleClass().add("accent-icon");
                 return inner;
-            }),
+            })),
             () -> {
                 refreshDockStatus();
 
@@ -188,47 +187,26 @@ public class TerminalDockHubManager {
             },
             true);
 
-    private void addDialogListeners() {
+    private void addStateListeners() {
         var wasShowing = new SimpleBooleanProperty();
         var wasAttached = new SimpleBooleanProperty();
         AppDialog.getModalOverlays().addListener((ListChangeListener<? super ModalOverlay>) c -> {
-            if (c.getList().isEmpty()) {
-                if (wasShowing.get()) {
-                    showDock();
-                }
-                if (wasAttached.get()) {
-                    attach();
-                }
-            } else {
-                wasAttached.set(!minimized.get() && !detached.get() && showing.get());
-                wasShowing.set(showing.get());
-                hideDock();
-            }
-        });
-    }
-
-    private void addLayoutListeners() {
-        var wasShowing = new SimpleBooleanProperty();
-        var wasAttached = new SimpleBooleanProperty();
-        AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
             ThreadHelper.runAsync(() -> {
-                if (AppLayoutModel.get().getEntries().indexOf(newValue) == 0) {
+                if (c.getList().isEmpty()) {
                     if (wasShowing.get()) {
                         showDock();
                     }
                     if (wasAttached.get()) {
                         attach();
                     }
-                } else if (AppLayoutModel.get().getEntries().indexOf(oldValue) == 0) {
+                } else {
                     wasAttached.set(!minimized.get() && !detached.get() && showing.get());
                     wasShowing.set(showing.get());
                     hideDock();
                 }
             });
         });
-    }
 
-    private TerminalView.Listener createListener() {
         var listener = new TerminalView.Listener() {
             @Override
             public void onSessionOpened(TerminalView.ShellSession session) {
@@ -254,6 +232,12 @@ public class TerminalDockHubManager {
                     ThreadHelper.runAsync(() -> {
                         dockModel.trackTerminal(t, dock);
                         dockModel.closeOtherTerminals(session.getRequest());
+
+                        if (!AppDialog.getModalOverlays().isEmpty()) {
+                            hideDock();
+                            wasAttached.set(true);
+                            wasShowing.set(true);
+                        }
                     });
                 });
             }
@@ -273,7 +257,28 @@ public class TerminalDockHubManager {
                 refreshDockStatus();
             }
         };
-        return listener;
+        TerminalView.get().addListener(listener);
+    }
+
+    private void addLayoutListeners() {
+        var wasShowing = new SimpleBooleanProperty();
+        var wasAttached = new SimpleBooleanProperty();
+        AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
+            ThreadHelper.runAsync(() -> {
+                if (AppLayoutModel.get().getEntries().indexOf(newValue) == 0) {
+                    if (wasShowing.get()) {
+                        showDock();
+                    }
+                    if (wasAttached.get()) {
+                        attach();
+                    }
+                } else if (AppLayoutModel.get().getEntries().indexOf(oldValue) == 0) {
+                    wasAttached.set(!minimized.get() && !detached.get() && showing.get());
+                    wasShowing.set(showing.get());
+                    hideDock();
+                }
+            });
+        });
     }
 
     public void refreshDockStatus() {

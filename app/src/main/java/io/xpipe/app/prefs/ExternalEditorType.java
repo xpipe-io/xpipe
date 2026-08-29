@@ -1,13 +1,13 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.core.AppSystemInfo;
-import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.FlatpakCache;
+import io.xpipe.app.util.OsType;
 import io.xpipe.app.util.WindowsRegistry;
-import io.xpipe.core.OsType;
+import io.xpipe.app.webtop.WebtopApp;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -63,9 +63,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     return perUser;
                 }
 
-                var perMachine = AppSystemInfo.ofWindows()
-                        .getProgramFiles()
-                        .resolve("VSCodium");
+                var perMachine = AppSystemInfo.ofWindows().getProgramFiles().resolve("VSCodium");
                 return perMachine;
             },
             "VSCodium.exe");
@@ -82,9 +80,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     return perUser;
                 }
 
-                var perMachine = AppSystemInfo.ofWindows()
-                        .getProgramFiles()
-                        .resolve("Antigravity");
+                var perMachine = AppSystemInfo.ofWindows().getProgramFiles().resolve("Antigravity");
                 return perMachine;
             },
             "Antigravity.exe");
@@ -101,9 +97,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     return perUser;
                 }
 
-                var perMachine = AppSystemInfo.ofWindows()
-                        .getProgramFiles()
-                        .resolve("cursor");
+                var perMachine = AppSystemInfo.ofWindows().getProgramFiles().resolve("cursor");
                 return perMachine;
             },
             "Cursor.exe");
@@ -120,9 +114,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     return perUser;
                 }
 
-                var perMachine = AppSystemInfo.ofWindows()
-                        .getProgramFiles()
-                        .resolve("Void");
+                var perMachine = AppSystemInfo.ofWindows().getProgramFiles().resolve("Void");
                 return perMachine;
             },
             "Void.exe");
@@ -139,9 +131,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     return perUser;
                 }
 
-                var perMachine = AppSystemInfo.ofWindows()
-                        .getProgramFiles()
-                        .resolve("Windsurf");
+                var perMachine = AppSystemInfo.ofWindows().getProgramFiles().resolve("Windsurf");
                 return perMachine;
             },
             "Windsurf.exe");
@@ -158,9 +148,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     return perUser;
                 }
 
-                var perMachine = AppSystemInfo.ofWindows()
-                        .getProgramFiles()
-                        .resolve("Kiro");
+                var perMachine = AppSystemInfo.ofWindows().getProgramFiles().resolve("Kiro");
                 return perMachine;
             },
             "Kiro.exe");
@@ -212,9 +200,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     return perUser;
                 }
 
-                var perMachine = AppSystemInfo.ofWindows()
-                        .getProgramFiles()
-                        .resolve("Trae");
+                var perMachine = AppSystemInfo.ofWindows().getProgramFiles().resolve("Trae");
                 return perMachine;
             },
             "Trae.exe");
@@ -231,9 +217,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     return perUser;
                 }
 
-                var perMachine = AppSystemInfo.ofWindows()
-                        .getProgramFiles()
-                        .resolve("Microsoft VS Code");
+                var perMachine = AppSystemInfo.ofWindows().getProgramFiles().resolve("Microsoft VS Code");
                 return perMachine;
             },
             "Code.exe");
@@ -250,9 +234,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     return perUser;
                 }
 
-                var perMachine = AppSystemInfo.ofWindows()
-                        .getProgramFiles()
-                        .resolve("Microsoft VS Code Insiders");
+                var perMachine = AppSystemInfo.ofWindows().getProgramFiles().resolve("Microsoft VS Code Insiders");
                 return perMachine;
             },
             "Code - Insiders.exe");
@@ -296,6 +278,12 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     LinuxType VSCODE_LINUX =
             new LinuxType("app.vscode", "code", "https://code.visualstudio.com/", "com.visualstudio.code") {
+
+                @Override
+                public WebtopApp getRequiredWebtopApp() {
+                    return WebtopApp.VSCODE;
+                }
+
                 @Override
                 public void launch(Path file) throws Exception {
                     var exec = CommandSupport.isInLocalPath(getExecutable())
@@ -426,7 +414,13 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     ExternalEditorType ZED_MACOS = new MacOsEditor("app.zed", "Zed", "https://zed.dev/");
 
-    LinuxType VSCODIUM_LINUX = new LinuxType("app.vscodium", "codium", "https://vscodium.com/", "com.vscodium.codium");
+    LinuxType VSCODIUM_LINUX = new LinuxType("app.vscodium", "codium", "https://vscodium.com/", "com.vscodium.codium") {
+
+        @Override
+        public WebtopApp getRequiredWebtopApp() {
+            return WebtopApp.VSCODIUM;
+        }
+    };
 
     LinuxType ANTIGRAVITY_LINUX = new LinuxType("app.antigravity", "antigravity", "https://antigravity.google/", null);
 
@@ -628,6 +622,10 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     String getWebsite();
 
     void launch(Path file) throws Exception;
+
+    default WebtopApp getRequiredWebtopApp() {
+        return null;
+    }
 
     interface WindowsType extends ExternalApplicationType.WindowsType, ExternalEditorType {
 

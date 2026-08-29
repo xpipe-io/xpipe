@@ -1,6 +1,6 @@
 package io.xpipe.app.process;
 
-import io.xpipe.core.ModuleLayerLoader;
+import io.xpipe.app.ext.ModuleLayerLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +26,7 @@ public class ShellDialects {
     public static ShellDialect XONSH;
 
     public static ShellDialect DISABLED_INTERACTION;
+    public static ShellDialect JUNOS_OS;
     public static ShellDialect CISCO_IOS;
     public static ShellDialect CISCO_IOS_XE;
     public static ShellDialect CISCO_NXOS;
@@ -71,9 +72,7 @@ public class ShellDialects {
 
         @Override
         public void init(ModuleLayer layer) {
-            var services = layer != null
-                    ? ServiceLoader.load(layer, ShellDialect.class)
-                    : ServiceLoader.load(ShellDialect.class);
+            var services = ServiceLoader.load(layer, ShellDialect.class);
             services.stream().forEach(moduleLayerLoaderProvider -> {
                 ALL.add(moduleLayerLoaderProvider.get());
             });
@@ -97,6 +96,7 @@ public class ShellDialects {
             NUSHELL = byId("nushell");
             XONSH = byId("xonsh");
             DISABLED_INTERACTION = byId("disabledInteraction");
+            JUNOS_OS = byId("junosOs");
             CISCO_IOS = byId("ciscoIos");
             CISCO_IOS_XE = byId("ciscoIosXe");
             CISCO_NXOS = byId("ciscoNxOs");
@@ -107,6 +107,11 @@ public class ShellDialects {
             OVH_BASTION = byId("ovhBastion");
             HETZNER_BOX = byId("hetznerBox");
             SFTP = byId("sftp");
+        }
+
+        @Override
+        public boolean initForCli() {
+            return false;
         }
     }
 }

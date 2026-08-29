@@ -2,15 +2,13 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
-import io.xpipe.app.cred.CustomAgentStrategy;
-import io.xpipe.app.cred.SshAgentTestComp;
+import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleObjectProperty;
 
 import java.util.List;
 
@@ -38,9 +36,6 @@ public class SshCategory extends AppPrefsCategory {
                 .pref(prefs.useExternalNetcatForProxies)
                 .addToggle(prefs.useExternalNetcatForProxies));
 
-        var agentTest = new SshAgentTestComp(
-                () -> {},
-                new SimpleObjectProperty<>(CustomAgentStrategy.builder().build()));
         if (OsType.ofLocal() != OsType.WINDOWS) {
             var choice = new ContextualFileReferenceChoiceComp(
                     new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()),
@@ -54,7 +49,7 @@ public class SshCategory extends AppPrefsCategory {
             options.sub(new OptionsBuilder()
                     .nameAndDescription("sshAgentSocket")
                     .addComp(choice, prefs.sshAgentSocket)
-                    .addComp(agentTest));
+                    .addComp(ProcModuleProvider.get().createCustomSshAgentTest()));
         }
         return options.buildComp();
     }

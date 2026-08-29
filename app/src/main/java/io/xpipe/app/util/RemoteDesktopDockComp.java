@@ -127,8 +127,6 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
             var b = new Button(null, hbox);
             if (entry.getColor() != null) {
                 b.getStyleClass().add(entry.getColor().getId());
-            } else {
-                b.getStyleClass().add("gray");
             }
             b.getStyleClass().add("color-box");
             b.getStyleClass().add("tab-button");

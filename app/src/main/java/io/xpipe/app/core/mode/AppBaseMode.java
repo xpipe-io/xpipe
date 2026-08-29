@@ -13,30 +13,34 @@ import io.xpipe.app.core.check.*;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.core.window.AppWindowTitle;
-import io.xpipe.app.ext.DataStoreProviders;
-import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.ext.StartOnInitStore;
-import io.xpipe.app.hub.comp.StoreFilterState;
-import io.xpipe.app.hub.comp.StoreQuickConnect;
-import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.ext.ProcModuleProvider;
+import io.xpipe.app.hub.creation.StoreQuickConnect;
+import io.xpipe.app.hub.list.StoreFilterState;
+import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.app.platform.PlatformState;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.WorkspaceManager;
 import io.xpipe.app.process.LocalShell;
-import io.xpipe.app.pwman.KeePassXcPasswordManager;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStorageMigratedDialog;
 import io.xpipe.app.storage.DataStorageSyncHandler;
+import io.xpipe.app.store.StartOnInitStore;
 import io.xpipe.app.terminal.TerminalDockHubManager;
 import io.xpipe.app.terminal.TerminalLauncherManager;
 import io.xpipe.app.terminal.TerminalView;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.update.UpdateAvailableDialog;
 import io.xpipe.app.update.UpdateChangelogDialog;
 import io.xpipe.app.update.UpdateNagDialog;
 import io.xpipe.app.util.*;
-import io.xpipe.core.XPipeDaemonMode;
+import io.xpipe.app.webtop.WebtopAppListManager;
+import io.xpipe.app.webtop.WebtopDisplayScale;
+import io.xpipe.app.webtop.WebtopMode;
+import io.xpipe.app.webtop.WebtopPreconfiguredDialog;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -88,7 +92,9 @@ public class AppBaseMode extends AppOperationMode {
         // You can still update manually in the about tab
         if (AppPrefs.get().automaticallyUpdate().get()
                 || AppPrefs.get().checkForSecurityUpdates().get()) {
-            UpdateAvailableDialog.showIfNeeded(true);
+            if (AppDistributionType.get().getUpdateHandler().isUpdateSucceeded()) {
+                UpdateAvailableDialog.showIfNeeded(true);
+            }
         } else {
             UpdateNagDialog.showAndWaitIfNeeded();
         }
@@ -131,13 +137,13 @@ public class AppBaseMode extends AppOperationMode {
                     syncPrefsLoaded.countDown();
                     AppMainWindow.loadingText("loadingConnections");
                     DataStorage.init();
-                    AppPrefs.initStorage();
                     storageLoaded.countDown();
                     AppMcpServer.init();
                     iconsInit.await();
                     StoreFilterState.init();
                     StoreViewState.init();
                     StoreQuickConnect.init();
+                    WebtopAppListManager.init();
                     AppMainWindow.loadingText("loadingSettings");
                     TrackEvent.info("Connection storage initialization thread completed");
                 },
@@ -187,10 +193,14 @@ public class AppBaseMode extends AppOperationMode {
         // AppGreetingsDialog.showAndWaitIfNeeded();
         TrackEvent.info("Waiting for startup dialogs to close");
         AppDialog.waitForAllDialogsClose();
+        DataStorageMigratedDialog.showIfNeeded();
         UpdateChangelogDialog.showIfNeeded();
 
+        WebtopMode.init();
+        WebtopPreconfiguredDialog.showIfNeeded();
+        WebtopDisplayScale.init();
+
         ActionProvider.initProviders();
-        DataStoreProviders.init();
         StartOnInitStore.init();
 
         AppConfigurationDialog.showIfNeeded();
@@ -216,15 +226,21 @@ public class AppBaseMode extends AppOperationMode {
         BrowserFullSessionModel.DEFAULT.reset();
         LocalShell.reset(false);
         BrowserLocalFileSystem.reset();
-        ProcessControlProvider.get().reset();
+        ProcModuleProvider.get().reset();
         AppBeaconServer.reset();
-        KeePassXcPasswordManager.reset();
+
+        if (AppMainWindow.get() != null) {
+            AppMainWindow.get().hide();
+        }
+        if (AppTray.get() != null) {
+            PlatformThread.runLaterIfNeededBlocking(() -> AppTray.get().hide());
+        }
+
         StoreViewState.reset();
         StoreFilterState.reset();
         AppLayoutModel.reset();
         AppTheme.reset();
         PlatformState.teardown();
-        DataStoreProviders.reset();
         AppResources.reset();
         AppExtensionManager.reset();
         AppDataLock.unlock();

@@ -1,11 +1,12 @@
 package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.core.window.AppMainWindow;
-import io.xpipe.app.ext.DataStoreCreationCategory;
-import io.xpipe.app.hub.comp.StoreCreationDialog;
+import io.xpipe.app.hub.creation.StoreCreationDialog;
 import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreAccessScope;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStoreCreationCategory;
 
 import javafx.application.Platform;
 import javafx.scene.control.Button;
@@ -22,9 +23,8 @@ public class IdentityConvert {
         var st = ref.getStore();
         var synced = SyncedIdentityStore.builder()
                 .username(st.getUsername().get())
-                .password(EncryptedValue.VaultKey.of(st.getPassword()))
-                .sshIdentity(EncryptedValue.VaultKey.of(st.getSshIdentity()))
-                .perUser(false)
+                .password(EncryptedValue.of(st.getPassword(), DataStoreAccessScope.encryption()))
+                .sshIdentity(EncryptedValue.of(st.getSshIdentity(), DataStoreAccessScope.encryption()))
                 .build();
         StoreCreationDialog.showEdit(ref.get(), synced, true, selectCategory, updated -> {
             if (updated.getStore() instanceof SyncedIdentityStore) {
@@ -54,7 +54,7 @@ public class IdentityConvert {
 
         var synced = MultiIdentityStore.builder()
                 .identities(List.of(ref.getRef().get().getUuid()))
-                .perUser(val.isPerUser())
+                .accessScope(val.getScope())
                 .build();
         StoreCreationDialog.showCreation(
                 ref.getRef().get().getName() + "-multi",

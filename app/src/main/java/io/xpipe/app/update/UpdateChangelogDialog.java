@@ -12,7 +12,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import java.nio.file.Files;
 
@@ -24,11 +24,24 @@ public class UpdateChangelogDialog {
         var update = AppDistributionType.get().getUpdateHandler().getPerformedUpdate();
         if (update != null && !AppDistributionType.get().getUpdateHandler().isUpdateSucceeded()) {
             ErrorEvent.ErrorEventBuilder eventBuilder = ErrorEventFactory.fromMessage(AppI18n.get("updateFail"))
-                    .documentationLink(DocumentationLink.UPDATE_FAIL)
-                    .customAction(ErrorAction.translated("updateFailAction", () -> {
-                        Hyperlinks.open(Hyperlinks.GITHUB_LATEST);
+                    .documentationLink(DocumentationLink.UPDATE_FAIL);
+
+            if (OsType.ofLocal() == OsType.WINDOWS
+                    && AppDistributionType.get().getUpdateHandler() instanceof GitHubUpdater gh) {
+                var preparedUpdate = gh.getPreparedUpdate().getValue();
+                if (preparedUpdate != null) {
+                    eventBuilder.customAction(ErrorAction.translated("updateReinstallAction", () -> {
+                        gh.reinstallUpdateMsi(preparedUpdate);
                         return true;
                     }));
+                }
+            }
+
+            eventBuilder.customAction(ErrorAction.translated("updateFailAction", () -> {
+                Hyperlinks.open(Hyperlinks.GITHUB_LATEST);
+                return true;
+            }));
+
             if (OsType.ofLocal() == OsType.WINDOWS) {
                 var installerLog =
                         AppLogs.get().getSessionLogsDirectory().getParent().resolve("installer.log");
