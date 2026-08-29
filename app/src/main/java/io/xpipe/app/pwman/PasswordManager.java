@@ -106,6 +106,17 @@ public interface PasswordManager {
         String customReadableName;
         String key;
         ListEntryType type;
+        String internalId;
+
+        public ListEntry(String customReadableName, String key, ListEntryType type) {
+            this.customReadableName = customReadableName;
+            this.key = key;
+            this.type = type;
+        }
+
+        public boolean matches(String filter) {
+            return (customReadableName != null && customReadableName.toLowerCase().contains(filter.toLowerCase())) || key.toLowerCase().contains(filter.toLowerCase());
+        }
     }
 
     @Getter

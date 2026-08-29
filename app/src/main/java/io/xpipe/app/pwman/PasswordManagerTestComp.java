@@ -6,6 +6,7 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
@@ -13,9 +14,8 @@ import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -89,14 +89,19 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
                 struc.setDisable(true);
                 ThreadHelper.runFailableAsync(() -> {
                     var list = PasswordManagerKeyList.queryList(false);
+                    var all = FXCollections.observableList(list);
+                    var shown = FXCollections.<PasswordManager.ListEntry>observableArrayList();
+                    shown.addAll(list);
+
                     Platform.runLater(() -> {
                         struc.setDisable(false);
 
                         var popover = new Popover();
                         popover.setArrowLocation(Popover.ArrowLocation.TOP_CENTER);
 
-                        if (list != null && list.size() > 0) {
+                        if ( list.size() > 0) {
                             var content = new VBox();
+                            content.setSpacing(6);
                             content.setPadding(new Insets(10));
                             content.setFillWidth(true);
 
@@ -124,32 +129,40 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
 
                             content.getChildren().add(headerBar);
 
-                            var entries = new VBox();
-                            entries.setFillWidth(true);
-                            for (var entry : list) {
+                            var box = new ListBoxViewComp<>(shown, all, entry -> {
                                 var buttonName = (entry.getCustomReadableName() != null
-                                                ? entry.getCustomReadableName() + " - "
-                                                : "")
+                                        ? entry.getCustomReadableName() + " - "
+                                        : "")
                                         + entry.getKey();
-                                var entryButton = new Button(buttonName);
-                                entryButton.setMaxWidth(400);
-                                entryButton.getStyleClass().add(Styles.FLAT);
-                                entryButton.setOnAction(e -> {
+                                var entryButton = new ButtonComp(new ReadOnlyObjectWrapper<>(buttonName), () -> {
                                     popover.hide();
                                     value.setValue(entry.getKey());
-                                    e.consume();
                                 });
-                                entryButton.setMinWidth(400);
-                                entryButton.setAlignment(Pos.CENTER_LEFT);
-                                entryButton.setMnemonicParsing(false);
-                                entries.getChildren().add(entryButton);
-                            }
+                                entryButton.maxWidth(400);
+                                entryButton.style(Styles.FLAT);
+                                entryButton.apply(button -> button.setMnemonicParsing(false));
+                                entryButton.apply(button -> button.setAlignment(Pos.CENTER_LEFT));
+                                return entryButton;
+                            }, true);
+                            box.setVisibilityControl(true);
+                            box.setFixScrollReset(true);
+                            box.prefWidth(400);
+                            box.prefHeight(300);
+                            content.getChildren().add(box.build());
 
-                            var sp = new ScrollPane(entries);
-                            sp.setFitToWidth(true);
-                            sp.setMaxHeight(350);
-                            sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-                            content.getChildren().add(sp);
+                            var filterString = new SimpleObjectProperty<String>();
+                            var footer = new TextFieldComp(filterString);
+                            footer.apply(textField -> textField.promptTextProperty().bind(AppI18n.observable("searchFilter")));
+                            content.getChildren().add(footer.build());
+                            filterString.addListener((observable, oldValue, newValue) -> {
+                               if (newValue != null) {
+                                   var filtered = list.stream().filter(listEntry -> listEntry.matches(newValue)).toList();
+                                   DerivedObservableList.wrap(shown, true).setContent(filtered);
+                               } else {
+                                   DerivedObservableList.wrap(shown, true).setContent(all);
+                               }
+                            });
+
                             popover.setContentNode(content);
                         } else {
                             var content = new Label(AppI18n.get("passwordManagerNoKeys"));

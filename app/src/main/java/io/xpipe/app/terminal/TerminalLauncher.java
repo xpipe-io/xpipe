@@ -103,7 +103,7 @@ public class TerminalLauncher {
             var script = constructTerminalInitScript(
                     sc.getShellDialect(),
                     sc,
-                    WorkingDirectoryFunction.none(),
+                    WorkingDirectoryFunction.fixed(sc.view().userHome()),
                     List.of(),
                     List.of(command.apply(sc).toString()),
                     new TerminalInitScriptConfig(
