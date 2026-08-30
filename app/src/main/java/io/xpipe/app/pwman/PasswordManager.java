@@ -103,19 +103,17 @@ public interface PasswordManager {
     @AllArgsConstructor
     class ListEntry {
 
-        String customReadableName;
+        String title;
         String key;
-        ListEntryType type;
         String internalId;
-
-        public ListEntry(String customReadableName, String key, ListEntryType type) {
-            this.customReadableName = customReadableName;
-            this.key = key;
-            this.type = type;
-        }
+        ListEntryType type;
+        List<String> urls;
 
         public boolean matches(String filter) {
-            return (customReadableName != null && customReadableName.toLowerCase().contains(filter.toLowerCase())) || key.toLowerCase().contains(filter.toLowerCase());
+            return title.toLowerCase().contains(filter.toLowerCase()) ||
+                    key.toLowerCase().contains(filter.toLowerCase()) ||
+                    urls.stream().anyMatch(url -> url.toLowerCase().contains(filter.toLowerCase())) ||
+                    (internalId != null && internalId.equalsIgnoreCase(filter));
         }
     }
 
