@@ -895,7 +895,6 @@ public final class AppPrefs {
             if (env != null && !env.isEmpty() && "true".equalsIgnoreCase(env)) {
                 enableHttpApi.set(true);
                 allowExternalApiRequests.set(true);
-                apiKey.setValue(env);
             }
         }
 
