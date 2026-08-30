@@ -28,34 +28,12 @@ public interface EncryptionPrincipal {
             public SecretKey getSecretKey() {
                 throw new UnsupportedOperationException();
             }
+
+            @Override
+            public boolean isSubRestricted() {
+                return true;
+            }
         };
-    }
-
-    static EncryptionPrincipal getTargetPrincipal(EncryptionPrincipal principal) {
-        if (!principal.isAccessible()) {
-            return principal;
-        }
-
-        var handler = DataStorageAccessHandler.getInstance();
-        var vaultPrincipal = handler.getFallbackPrincipal();
-        var encryptPrincipal = handler.getEncryptAllPrincipal();
-
-        var isVault = vaultPrincipal.equals(principal);
-        var valid = handler.getAllEncryptionPrincipals().contains(principal);
-
-        // We have a valid non-vault principal, we can keep that
-        if (!isVault && valid) {
-            return principal;
-        }
-
-        // A used principal got deleted, reencrypt with encryption key
-        if (!valid) {
-            return encryptPrincipal;
-        }
-
-        // We are using a vault key and have a custom encryption key
-        // available, so use that one instead
-        return encryptPrincipal;
     }
 
     UUID getUuid();
@@ -65,4 +43,6 @@ public interface EncryptionPrincipal {
     boolean isAccessible();
 
     SecretKey getSecretKey();
+
+    boolean isSubRestricted();
 }

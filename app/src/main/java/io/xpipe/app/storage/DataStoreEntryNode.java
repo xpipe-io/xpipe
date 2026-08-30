@@ -2,8 +2,6 @@ package io.xpipe.app.storage;
 
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.secret.EncryptedValue;
-import io.xpipe.app.store.AccessScopeStore;
-import io.xpipe.app.store.EncryptionStore;
 import io.xpipe.app.util.JacksonMapper;
 
 import tools.jackson.databind.type.TypeFactory;
@@ -56,7 +54,7 @@ public class DataStoreEntryNode<T> {
         }
 
         var targetScope = DataStoreAccessScope.getTargetScope(entry.getAccessScope());
-        if (!targetScope.isAccessible()) {
+        if (!targetScope.isAnyAccessible()) {
             return this;
         }
 
@@ -64,7 +62,7 @@ public class DataStoreEntryNode<T> {
 
         var shouldEncrypt = (encryptIfRestricted && targetScope.isAccessSubRestricted()) || AppPrefs.get().encryptAllVaultData().get();
         if (shouldEncrypt) {
-            var supported = enc.supportsScope(targetScope);
+            var supported = enc.supportsScopeEncryption(targetScope);
             if (!supported) {
                 shouldEncrypt = false;
             }
@@ -74,8 +72,7 @@ public class DataStoreEntryNode<T> {
         var scopeTargetChange = !targetScope.equals(currentScope);
         var valueChange = !getValue().equals(newValue);
         if (encryptionChange || valueChange || scopeTargetChange) {
-            return new DataStoreEntryNode<>(
-                    shouldEncrypt ? enc.with(newValue, targetScope) : EncryptedValue.ofRaw(newValue), false);
+            return new DataStoreEntryNode<>(enc.with(newValue, shouldEncrypt ? targetScope : null), false);
         } else {
             return this;
         }

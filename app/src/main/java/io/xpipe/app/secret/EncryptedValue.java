@@ -32,8 +32,12 @@ public class EncryptedValue<T> {
         return secret == null;
     }
 
-    public boolean supportsScope(DataStoreAccessScope scope) {
-        return secret == null || secret.supportsScope(scope);
+    public boolean supportsScopeEncryption(DataStoreAccessScope scope) {
+        if (secret == null) {
+            return scope.isAllAccessible();
+        } else {
+            return secret.supportsScopeEncryption(scope);
+        }
     }
 
     @SneakyThrows
@@ -63,31 +67,7 @@ public class EncryptedValue<T> {
     }
 
     public EncryptedValue<T> withUpdatedPrincipals() {
-        if (secret != null && !secret.isAccessible()) {
-            return this;
-        }
-
-        var newValueJson = JacksonMapper.getDefault().valueToTree(value);
-
-        if (secret == null) {
-            if (newValueJson.equals(this.valueJson)) {
-                return this;
-            } else {
-                return new EncryptedValue<>(newValueJson, value, null);
-            }
-        }
-
-        if (newValueJson.equals(this.valueJson)) {
-            var newSecret = this.secret.withUpdatedPrincipals();
-            if (newSecret.equals(this.secret)) {
-                return this;
-            }
-        }
-
-        var s = newValueJson.toPrettyString();
-        var updatedSecret = secret.withUpdatedPrincipals();
-        var newSecret = updatedSecret.with(new InPlaceSecretValue(s.toCharArray()), updatedSecret.getScope());
-        return new EncryptedValue<>(newValueJson, value, newSecret);
+        return with(value, isEncrypted() ? DataStoreAccessScope.getTargetScope(getSecret().getScope()) : null);
     }
 
     public EncryptedValue<T> with(T value, DataStoreAccessScope scope) {
@@ -95,7 +75,7 @@ public class EncryptedValue<T> {
             return null;
         }
 
-        var encryptionUnchanged = (secret == null && scope == null) || (secret != null && scope != null && secret.matchesScope(scope));
+        var encryptionUnchanged = (secret == null && scope == null) || (secret != null && scope != null && secret.getScope().equals(scope));
 
         var newValueJson = JacksonMapper.getDefault().valueToTree(value);
 
@@ -112,7 +92,9 @@ public class EncryptedValue<T> {
         }
 
         var s = newValueJson.toPrettyString();
-        var newSecret = secret != null ? secret.with(new InPlaceSecretValue(s.toCharArray()), scope) : null;
+        var newSecret = secret != null ?
+                secret.with(new InPlaceSecretValue(s.toCharArray()), scope) :
+                DataStorageSecret.of(new InPlaceSecretValue(s.toCharArray()), scope.getPrincipals());
         return new EncryptedValue<>(newValueJson, value, newSecret);
     }
 
@@ -127,7 +109,7 @@ public class EncryptedValue<T> {
     }
 
     public boolean isAccessible() {
-        return !isEncrypted() || secret.isAccessible();
+        return !isEncrypted() || secret.isAnyAccessible();
     }
 
     @Override

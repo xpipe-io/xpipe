@@ -579,7 +579,7 @@ public class StandardStorage extends DataStorage {
 
             // We can read the data as it is not encrypted
             // but the scope is still not available to us
-            if (!current.getAccessScope().isAccessible()) {
+            if (!current.getAccessScope().isAnyAccessible()) {
                 return true;
             }
 
