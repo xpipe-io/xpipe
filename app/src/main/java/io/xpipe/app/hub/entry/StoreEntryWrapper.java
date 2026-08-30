@@ -17,6 +17,8 @@ import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.Listeners;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.DataStorageAccessType;
+import io.xpipe.app.secret.DataStorageAccessHandler;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.store.DataStore;
 import io.xpipe.app.store.FixedHierarchyStore;
@@ -200,7 +202,8 @@ public class StoreEntryWrapper {
                 .findFirst()
                 .orElse(StoreViewState.get().getAllConnectionsCategory());
         category.setValue(newCat);
-        accessScopeRestricted.setValue(entry.getAccessScope().isAccessSubRestricted());
+        accessScopeRestricted.setValue(DataStorageAccessHandler.getInstance().getType() == DataStorageAccessType.ROLE &&
+                entry.getAccessScope().isAccessSubRestricted());
         pinToTop.setValue(entry.isPinToTop());
 
         var orderedTags = entry.getTags().stream().sorted().toList();

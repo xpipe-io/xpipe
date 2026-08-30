@@ -696,21 +696,10 @@ public class DataStoreEntry extends DataStorageElement {
             return;
         }
 
-        var newStore = getStore() instanceof EncryptionStore s ? s.withUpdatedPrincipals() : getStore();
-        var changedStore = !Objects.equals(getStore(), newStore);
-        if (changedStore) {
-            // This will take care of the encryption change for the node
-            // we don't have to do this further down below
-            storeNode = DataStoreEntryNode.of(newStore);
-            dirty = true;
-            notifyUpdate(false, false);
-            return;
-        }
-
-        var newNode = storeNode.withUpdatedEncryption(this, true);
+        var newNode = storeNode.prepareForWrite(this, true, getStore() instanceof EncryptionStore s ? s.withUpdatedPrincipals() : getStore());
         if (!newNode.equals(storeNode)) {
             storeNode = newNode;
-            dirty = true;
+            dirty = newNode.requiresWrite();
             notifyUpdate(false, false);
         }
     }
