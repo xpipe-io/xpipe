@@ -186,49 +186,8 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
         }
 
         logger.debug("Handling GET request for session: {}", sessionId);
-
-        McpTransportContext transportContext = this.contextExtractor.extract(exchange);
-
-        try {
-            exchange.getResponseHeaders().add("Content-Type", TEXT_EVENT_STREAM);
-            exchange.getResponseHeaders().add("Content-Encoding", UTF_8);
-            exchange.getResponseHeaders().add("Cache-Control", "no-cache");
-            exchange.getResponseHeaders().add("Connection", "keep-alive");
-            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-            exchange.sendResponseHeaders(200, 0);
-
-            var writer = new PrintWriter(exchange.getResponseBody());
-            HttpServletStreamableMcpSessionTransport sessionTransport =
-                    new HttpServletStreamableMcpSessionTransport(sessionId, exchange, writer);
-
-            // Check if this is a replay request
-            if (exchange.getRequestHeaders().getFirst(HttpHeaders.LAST_EVENT_ID) != null) {
-                String lastId = exchange.getRequestHeaders().getFirst(HttpHeaders.LAST_EVENT_ID);
-
-                try {
-                    session.replay(lastId)
-                            .contextWrite(ctx -> ctx.put(McpTransportContext.KEY, transportContext))
-                            .toIterable()
-                            .forEach(message -> {
-                                try {
-                                    sessionTransport
-                                            .sendMessage(message)
-                                            .contextWrite(ctx -> ctx.put(McpTransportContext.KEY, transportContext))
-                                            .block();
-                                } catch (Exception e) {
-                                    logger.error("Failed to replay message: {}", e.getMessage());
-                                    exchange.close();
-                                }
-                            });
-                } catch (Exception e) {
-                    logger.error("Failed to replay messages: {}", e.getMessage());
-                    exchange.close();
-                }
-            }
-        } catch (Exception e) {
-            logger.error("Failed to handle GET request for session {}: {}", sessionId, e.getMessage());
-            sendError(exchange, 500, null);
-        }
+        // We don't support SSE
+        sendError(exchange, 404, null);
     }
 
     public void sendError(HttpExchange exchange, int code, String message) throws IOException {
@@ -286,6 +245,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
             var log = AppProperties.get().isPrintBeaconMessages();
             if (log) {
                 TrackEvent.withTrace("Received MCP request")
+                        .tag("request", "POST")
                         .tag("data", JacksonMapper.getDefault().readTree(body).toPrettyString())
                         .handle();
             }
@@ -386,6 +346,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                 if (log) {
                     TrackEvent.withTrace("Sending MCP response")
                             .tag("id", sessionId)
+                            .tag("request", "POST")
                             .tag("data", "<empty>")
                             .handle();
                 }
@@ -397,6 +358,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                 if (log) {
                     TrackEvent.withTrace("Sending MCP response")
                             .tag("id", sessionId)
+                            .tag("request", "POST")
                             .tag("data", "<empty>")
                             .handle();
                 }
@@ -459,8 +421,15 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
     }
 
     protected void doDelete(HttpExchange exchange) throws IOException {
-
         String requestURI = exchange.getRequestURI().toString();
+        var log = AppProperties.get().isPrintBeaconMessages();
+        if (log) {
+            TrackEvent.withTrace("Received MCP request")
+                    .tag("request", "DELETE")
+                    .tag("data", "<empty>")
+                    .handle();
+        }
+
         if (!requestURI.endsWith(mcpEndpoint)) {
             sendError(exchange, 404, null);
             return;
@@ -502,10 +471,10 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                     .block();
             this.sessions.remove(sessionId);
             exchange.sendResponseHeaders(200, -1);
-            var log = AppProperties.get().isPrintBeaconMessages();
             if (log) {
                 TrackEvent.withTrace("Sending MCP response")
                         .tag("id", sessionId)
+                        .tag("request", "DELETE")
                         .tag("data", "<empty>")
                         .handle();
             }
@@ -593,7 +562,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                     var clientDisconnected = "Client disconnected".equals(e.getMessage());
                     if (!clientDisconnected) {
                         logger.error("Failed to send message to session {}: {}", this.sessionId, e.getMessage());
-                        HttpStreamableServerTransportProvider.this.sessions.remove(this.sessionId);
+                        // HttpStreamableServerTransportProvider.this.sessions.remove(this.sessionId);
                         exchange.close();
                     }
                 } finally {

@@ -26,6 +26,7 @@ import lombok.SneakyThrows;
 
 import java.awt.*;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class AppOperationMode {
@@ -95,6 +96,19 @@ public abstract class AppOperationMode {
 
                     // Some random AWT errors are thrown sometimes
                     if (ex instanceof AWTError) {
+                        return;
+                    }
+
+                    // There are some accessibility exceptions on macOS, nothing we can do about that
+                    // See https://bugs.openjdk.org/browse/JDK-8235989
+                    if (Platform.isFxApplicationThread()
+                            && ex instanceof StringIndexOutOfBoundsException
+                            && ex.getStackTrace() != null
+                            && Arrays.toString(ex.getStackTrace()).contains("MacAccessible")) {
+                        ErrorEventFactory.fromThrowable(ex)
+                                .expected()
+                                .omit()
+                                .handle();
                         return;
                     }
 

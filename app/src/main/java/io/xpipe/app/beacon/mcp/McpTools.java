@@ -1,8 +1,7 @@
 package io.xpipe.app.beacon.mcp;
 
-import io.xpipe.app.beacon.AppBeaconServer;
-import io.xpipe.app.beacon.BeaconClientException;
-import io.xpipe.app.beacon.BeaconInterface;
+import io.xpipe.app.beacon.*;
+import io.xpipe.app.beacon.api.HandshakeExchange;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.ext.*;
@@ -89,12 +88,33 @@ public final class McpTools {
                         throw new BeaconClientException("No API endpoint found for path " + path);
                     }
 
+                    var handshakeRequest = HandshakeExchange.Request.builder()
+                            .client(BeaconClientInformation.Mcp.builder().build())
+                            .auth(BeaconAuthMethod.ApiKey.builder().key(AppPrefs.get().apiKey().get()).build())
+                            .build();
+                    var handshakeReq = HttpRequest.newBuilder()
+                            .uri(URI.create(
+                                    "http://localhost:" + AppBeaconServer.get().getPort() + "/handshake"))
+                            .POST(HttpRequest.BodyPublishers.ofString(JacksonMapper.getDefault().writeValueAsString(handshakeRequest)))
+                            .build();
+                    var handshakeRes = HttpHelper.client().send(handshakeReq, HttpResponse.BodyHandlers.ofString());
+                    var handshakeResJson = JacksonMapper.getDefault().readTree(handshakeRes.body());
+                    if (handshakeRes.statusCode() >= 400) {
+                        return McpSchema.CallToolResult.builder()
+                                .addTextContent(handshakeResJson.toPrettyString())
+                                .isError(true)
+                                .build();
+                    }
+
+                    var handshakeResObject = JacksonMapper.getDefault().treeToValue(handshakeResJson, HandshakeExchange.Response.class);
+                    var token = handshakeResObject.getSessionToken();
+
                     var httpReq = HttpRequest.newBuilder()
                             .uri(URI.create(
                                     "http://localhost:" + AppBeaconServer.get().getPort() + path))
                             .header(
                                     "Authorization",
-                                    "Bearer " + AppPrefs.get().apiKey().get())
+                                    "Bearer " + token)
                             .POST(HttpRequest.BodyPublishers.ofString(payloadJson.toPrettyString()))
                             .build();
                     var httpRes = HttpHelper.client().send(httpReq, HttpResponse.BodyHandlers.ofString());
@@ -425,8 +445,8 @@ public final class McpTools {
                                     .findModule(AppNames.extModuleName("base"))
                                     .orElseThrow(),
                             AppNames.extModuleName("base") + ".script.ScriptStore");
-                    var method = clazz.getDeclaredMethod("assembleScriptChain", ShellControl.class);
-                    var command = (String) method.invoke(script.getStore(), shellSession.getControl());
+                    var method = clazz.getDeclaredMethod("assembleScriptChain", ShellControl.class, boolean.class);
+                    var command = (String) method.invoke(script.getStore(), shellSession.getControl(), arguments != null);
                     var scriptFile = ScriptHelper.createExecScript(shellSession.getControl(), command);
                     var out = shellSession
                             .getControl()
@@ -434,7 +454,7 @@ public final class McpTools {
                                             .getControl()
                                             .getShellDialect()
                                             .runScriptCommand(shellSession.getControl(), scriptFile.toString())
-                                    + arguments)
+                                    + (arguments != null ? " " + arguments : ""))
                             .withWorkingDirectory(directory)
                             .readStdoutOrThrow();
                     var formatted = CommandDialog.formatOutput(out);

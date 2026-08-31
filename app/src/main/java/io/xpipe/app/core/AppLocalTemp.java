@@ -16,6 +16,11 @@ public class AppLocalTemp {
         // On Windows and macOS, we already have user specific temp directories
         // Even on macOS as root we will have a unique directory (in contrast to shell controls)
         if (OsType.ofLocal() == OsType.LINUX) {
+            if (Files.isSymbolicLink(temp)) {
+                ErrorEventFactory.fromThrowable(new IOException("Invalid file type for " + temp)).term().handle();
+                return null;
+            }
+
             try {
                 Files.createDirectories(temp);
                 // We did not set this in earlier versions. If we are running as a different user, it might fail
@@ -26,6 +31,11 @@ public class AppLocalTemp {
 
             var user = AppSystemInfo.ofCurrent().getUser();
             temp = temp.resolve(user);
+
+            if (Files.isSymbolicLink(temp)) {
+                ErrorEventFactory.fromThrowable(new IOException("Invalid file type for " + temp)).term().handle();
+                return null;
+            }
 
             try {
                 Files.createDirectories(temp);

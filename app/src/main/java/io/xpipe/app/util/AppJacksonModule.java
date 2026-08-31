@@ -53,7 +53,8 @@ public class AppJacksonModule extends SimpleModule {
         registerSubtypes(
                 new NamedType(BeaconClientInformation.Api.class),
                 new NamedType(BeaconClientInformation.Cli.class),
-                new NamedType(BeaconClientInformation.Daemon.class));
+                new NamedType(BeaconClientInformation.Daemon.class),
+                new NamedType(BeaconClientInformation.Mcp.class));
         registerSubtypes(new NamedType(BeaconAuthMethod.Local.class), new NamedType(BeaconAuthMethod.ApiKey.class));
 
         registerSubtypes(InPlaceSecretValue.class);

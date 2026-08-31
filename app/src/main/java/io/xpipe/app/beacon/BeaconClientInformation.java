@@ -13,7 +13,7 @@ public abstract class BeaconClientInformation {
 
     public abstract String toDisplayString();
 
-    @JsonTypeName("Cli")
+    @JsonTypeName("cli")
     @Value
     @Builder
     @Jacksonized
@@ -26,7 +26,7 @@ public abstract class BeaconClientInformation {
         }
     }
 
-    @JsonTypeName("Daemon")
+    @JsonTypeName("daemon")
     @Value
     @Builder
     @Jacksonized
@@ -39,7 +39,7 @@ public abstract class BeaconClientInformation {
         }
     }
 
-    @JsonTypeName("Api")
+    @JsonTypeName("api")
     @Value
     @Builder
     @Jacksonized
@@ -52,6 +52,19 @@ public abstract class BeaconClientInformation {
         @Override
         public String toDisplayString() {
             return name;
+        }
+    }
+
+    @JsonTypeName("mcp")
+    @Value
+    @Builder
+    @Jacksonized
+    @EqualsAndHashCode(callSuper = false)
+    public static class Mcp extends BeaconClientInformation {
+
+        @Override
+        public String toDisplayString() {
+            return "XPipe MCP";
         }
     }
 }

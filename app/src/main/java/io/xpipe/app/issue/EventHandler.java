@@ -22,8 +22,9 @@ public class EventHandler {
     }
 
     public void handle(ErrorEvent ee) {
+        // Check the property manually to handle cases where AppProperties init fails
         if ((AppProperties.get() != null && AppProperties.get().isAotTrainMode())
-                || (AppProperties.get() != null && AppProperties.get().isCli())) {
+                || Boolean.getBoolean("io.xpipe.app.isCli")) {
             new LogErrorHandler().handle(ee);
             if (ee.isTerminal()) {
                 AppOperationMode.halt(1);
