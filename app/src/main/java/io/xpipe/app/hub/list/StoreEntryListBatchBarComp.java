@@ -17,6 +17,7 @@ import io.xpipe.app.store.DataStore;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -57,8 +58,46 @@ public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
         l.apply(struc -> {
             struc.setAlignment(Pos.CENTER);
         });
-        var actions = new HorizontalComp(createActions());
+
+        var actionsEmpty = new SimpleBooleanProperty();
+        var actionsIncompatible = new SimpleBooleanProperty();
+        var actionsList = DerivedObservableList.<BaseRegionBuilder<?, ?>>arrayList(true);
+        StoreViewState.get().getBatchModeSelection().getList().addListener((ListChangeListener<
+                ? super StoreEntryWrapper>)
+                c -> {
+                    actionsList.getList().clear();
+                    var providers = getCompatibleActionProviders();
+                    for (var p : providers) {
+                        actionsList.getList().add(buildButton(p));
+                    }
+
+                    if (c.getList().size() > 0) {
+                        var clazz = c.getList().getFirst().getStore().getValue().getClass();
+                        var same = c.getList().stream().allMatch(wrapper ->
+                                wrapper.getEntry().getStore().getClass().equals(clazz));
+                        actionsIncompatible.set(providers.isEmpty() && !same);
+                        actionsEmpty.set(providers.isEmpty() && same);
+                    } else {
+                        actionsIncompatible.set(false);
+                        actionsEmpty.set(true);
+                    }
+
+                    if (c.getList().size() > 0) {
+                        actionsList.getList().add(RegionBuilder.vseparator());
+                    }
+                    actionsList.getList().add(RegionBuilder.hspacer());
+                    if (c.getList().size() > 0) {
+                        actionsList.getList().add(RegionBuilder.vseparator());
+                        actionsList.getList().add(buildDeleteButton());
+                    }
+                });
+        var actions = new HorizontalComp(actionsList.getList());
         actions.spacing(2);
+
+        var emptyIndicator = new LabelComp(Bindings.createStringBinding(() -> {
+            return actionsIncompatible.get() ? AppI18n.get("batchActionsIncompatible") : AppI18n.get("batchActionsEmpty");
+        }, actionsEmpty, actionsIncompatible, AppI18n.activeLanguage()));
+        emptyIndicator.show(actionsIncompatible.or(actionsEmpty));
 
         var close = new IconButtonComp("mdi2c-close", () -> {
             StoreViewState.get().getBatchMode().setValue(false);
@@ -89,6 +128,7 @@ public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
                 RegionBuilder.hspacer(12),
                 l,
                 RegionBuilder.hspacer(20),
+                emptyIndicator,
                 actions.hgrow(),
                 RegionBuilder.hspacer(20),
                 toggleExpand,
@@ -102,27 +142,6 @@ public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
         bar.style("bar");
         bar.style("store-entry-list-status-bar");
         return bar.build();
-    }
-
-    private ObservableList<BaseRegionBuilder<?, ?>> createActions() {
-        var actions = DerivedObservableList.<BaseRegionBuilder<?, ?>>arrayList(true);
-        StoreViewState.get().getBatchModeSelection().getList().addListener((ListChangeListener<
-                        ? super StoreEntryWrapper>)
-                c -> {
-                    actions.getList().clear();
-                    for (var p : getCompatibleActionProviders()) {
-                        actions.getList().add(buildButton(p));
-                    }
-                    if (c.getList().size() > 0) {
-                        actions.getList().add(RegionBuilder.vseparator());
-                    }
-                    actions.getList().add(RegionBuilder.hspacer());
-                    if (c.getList().size() > 0) {
-                        actions.getList().add(RegionBuilder.vseparator());
-                        actions.getList().add(buildDeleteButton());
-                    }
-                });
-        return actions.getList();
     }
 
     private List<ActionProvider> getCompatibleActionProviders() {

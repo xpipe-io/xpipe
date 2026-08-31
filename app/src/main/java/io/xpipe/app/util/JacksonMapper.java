@@ -54,7 +54,8 @@ public class JacksonMapper {
                 .enable(JsonReadFeature.ALLOW_JAVA_COMMENTS)
                 .enable(JsonReadFeature.ALLOW_YAML_COMMENTS)
                 .enable(JsonReadFeature.ALLOW_TRAILING_COMMA)
-                .enable(EnumFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL);
+                .enable(EnumFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL)
+                .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_VALUES);
 
         return builder.build();
     }

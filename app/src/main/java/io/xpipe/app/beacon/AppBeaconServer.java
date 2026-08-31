@@ -184,7 +184,7 @@ public class AppBeaconServer {
             if (!handleCorsHeaders(exchange)) {
                 var mcpServer = AppMcpServer.get();
                 if (mcpServer != null) {
-                    mcpServer.createHttpHandler().handle(exchange);
+                    mcpServer.getHttpHandler().handle(exchange);
                 }
             }
         });

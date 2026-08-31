@@ -32,6 +32,7 @@ public class AppMcpServer {
     McpSyncServer mcpSyncServer;
     HttpStreamableServerTransportProvider transportProvider;
     List<McpServerFeatures.SyncToolSpecification> tools;
+    HttpHandler httpHandler = createHttpHandler();
 
     public static AppMcpServer get() {
         return INSTANCE;
@@ -88,7 +89,7 @@ public class AppMcpServer {
         INSTANCE = null;
     }
 
-    public HttpHandler createHttpHandler() {
+    private HttpHandler createHttpHandler() {
         var showingError = new SimpleBooleanProperty();
         return new HttpHandler() {
 
