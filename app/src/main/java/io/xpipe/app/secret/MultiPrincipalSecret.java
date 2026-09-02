@@ -126,20 +126,22 @@ public class MultiPrincipalSecret {
             if (!p.get().isAccessible()) {
                 entries.add(entry);
             } else {
-                abc
                 var tokenMatches = token.matches(p.get());
-                if (tokenMatches) {
+                if (!tokenMatches) {
                     entries.add(entry);
-                    var secret = PrincipalSecretValue.builder()
-                            .principal(entry.getPrincipal().getUuid())
-                            .encryptedValue(entry.getEncrypted())
-                            .build();
-                    var secretValid = secret.getSecret().length != 0;
-                    if (secretValid) {
-                        if (iteration > maxAccessibleIteration) {
-                            maxAccessibleIteration = iteration;
-                            maxAccessibleSecret = secret.inPlace();
-                        }
+                    continue;
+                }
+
+                entries.add(entry);
+                var secret = PrincipalSecretValue.builder()
+                        .principal(entry.getPrincipal().getUuid())
+                        .encryptedValue(entry.getEncrypted())
+                        .build();
+                var secretValid = secret.getSecret().length != 0;
+                if (secretValid) {
+                    if (iteration > maxAccessibleIteration) {
+                        maxAccessibleIteration = iteration;
+                        maxAccessibleSecret = secret.inPlace();
                     }
                 }
             }
@@ -180,17 +182,24 @@ public class MultiPrincipalSecret {
         var iteration = getMaxIteration();
         var l = new ArrayList<Entry>();
         for (EncryptionPrincipal principal : scope.getPrincipals()) {
+            var existingEntry = entries.stream()
+                    .filter(entry -> entry.getPrincipal().equals(principal))
+                    .findFirst();
+
+            // Keep existing entry if possible if not accessible
             if (!principal.isAccessible()) {
-                var existing = entries.stream().filter(entry -> entry.getPrincipal().equals(principal)).findFirst();
-                if (existing.isPresent()) {
-                    l.add(existing.get());
+                if (existingEntry.isPresent()) {
+                    l.add(existingEntry.get());
                 }
                 continue;
             }
 
-            var existingEntry = entries.stream()
-                    .filter(entry -> entry.getPrincipal().equals(principal))
-                    .findFirst();
+            // Keep existing entry if the token does not match the principal
+            if (existingEntry.isPresent() && !existingEntry.get().getToken().matches(principal)) {
+                l.add(existingEntry.get());
+                continue;
+            }
+
             if (existingEntry.isPresent()) {
                 var principalUnchanged = existingEntry.get().getToken().matches(principal);
                 var keep = secretUnchanged && principalUnchanged;
