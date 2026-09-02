@@ -29,36 +29,6 @@ import java.util.Comparator;
 public class StoreCreationMenu {
 
     public static void addButtons(ObservableList<MenuItem> items, boolean allowSearch) {
-        if (allowSearch) {
-            var automatically = new MenuItem();
-            automatically.setGraphic(new FontIcon("mdi2e-eye-plus-outline"));
-            automatically.textProperty().bind(AppI18n.observable("addAutomatically"));
-            automatically.setOnAction(event -> {
-                ScanDialog.showSingleAsync(null);
-                event.consume();
-            });
-            items.add(automatically);
-            items.add(networkScanMenu());
-            items.add(new SeparatorMenuItem());
-
-            var disableSearch = Bindings.createBooleanBinding(
-                    () -> {
-                        var allCat = StoreViewState.get().getAllConnectionsCategory();
-                        var connections = StoreViewState.get().getAllEntries().getList().stream()
-                                .filter(wrapper -> allCat.equals(
-                                        wrapper.getCategory().getValue().getRoot()))
-                                .toList();
-                        return 1 == connections.size()
-                                && StoreViewState.get()
-                                        .getActiveCategory()
-                                        .getValue()
-                                        .getRoot()
-                                        .equals(allCat);
-                    },
-                    StoreViewState.get().getAllEntries().getList());
-            automatically.disableProperty().bind(disableSearch);
-        }
-
         items.add(categoryMenu("addHost", "mdi2h-home-plus", DataStoreCreationCategory.HOST));
 
         items.add(categoryMenu("addDesktop", "mdi2c-camera-plus", DataStoreCreationCategory.DESKTOP));
@@ -112,6 +82,38 @@ public class StoreCreationMenu {
         items.add(new SeparatorMenuItem());
 
         items.add(actionMenu);
+
+
+        if (allowSearch) {
+            var automatically = new MenuItem();
+            automatically.setGraphic(new FontIcon("mdi2e-eye-plus-outline"));
+            automatically.textProperty().bind(AppI18n.observable("addAutomatically"));
+            automatically.setOnAction(event -> {
+                ScanDialog.showSingleAsync(null);
+                event.consume();
+            });
+
+            var disableSearch = Bindings.createBooleanBinding(
+                    () -> {
+                        var allCat = StoreViewState.get().getAllConnectionsCategory();
+                        var connections = StoreViewState.get().getAllEntries().getList().stream()
+                                .filter(wrapper -> allCat.equals(
+                                        wrapper.getCategory().getValue().getRoot()))
+                                .toList();
+                        return 1 == connections.size()
+                                && StoreViewState.get()
+                                .getActiveCategory()
+                                .getValue()
+                                .getRoot()
+                                .equals(allCat);
+                    },
+                    StoreViewState.get().getAllEntries().getList());
+            automatically.disableProperty().bind(disableSearch);
+
+            items.add(new SeparatorMenuItem());
+            items.add(networkScanMenu());
+            items.add(automatically);
+        }
     }
 
     private static Menu categoryMenu(String name, String graphic, DataStoreCreationCategory... categories) {

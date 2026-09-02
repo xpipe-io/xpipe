@@ -116,6 +116,10 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     @Override
     public DataStoreEntryRef<?> getSyntheticParent(DataStoreEntry store) {
         AbstractServiceStore s = store.getStore().asNeeded();
+        if (s.getHost() == null) {
+            return null;
+        }
+
         return DataStorage.get()
                 .getOrCreateNewSyntheticEntry(
                         s.getHost().get(),

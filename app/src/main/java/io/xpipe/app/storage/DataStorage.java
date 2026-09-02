@@ -18,6 +18,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -289,7 +290,7 @@ public abstract class DataStorage {
         return Boolean.TRUE.equals(config.getSync());
     }
 
-    public boolean shouldSync(DataStoreEntry entry) {
+    public boolean shouldSync(DataStoreEntry entry, boolean wasSynced) {
         if (!shouldSync(DataStorage.get()
                 .getStoreCategoryIfPresent(entry.getCategoryUuid())
                 .orElseThrow())) {
@@ -299,8 +300,9 @@ public abstract class DataStorage {
         DataStoreEntry c = entry;
         do {
             // We can't check for sharing of failed entries
+            // Check if this entry was shared last time and was now made invalid
             if (c.getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
-                return false;
+                return wasSynced;
             }
 
             if (c.getStore() instanceof LocalStore && entry.getProvider().isSyncableFromLocalMachine()) {
@@ -319,15 +321,28 @@ public abstract class DataStorage {
     }
 
     public void refreshStoreEntries() {
-        storeEntries.keySet().forEach(dataStoreEntry -> {
+        storeEntriesSet.forEach(dataStoreEntry -> {
             dataStoreEntry.refreshStore();
         });
     }
 
-    public void refreshStoreEntriesEncryption() {
-        storeEntries.keySet().forEach(dataStoreEntry -> {
-            dataStoreEntry.refreshStoreEncryption();
-        });
+    public boolean refreshStoreEntriesEncryption() {
+        // Update principals of the stores
+        var change = storeEntriesSet.stream().map(dataStoreEntry -> {
+            return dataStoreEntry.refreshStoreEncryption();
+        }).anyMatch(b -> b);
+
+        while (true) {
+            // Update scope for dependent stores if needed, only possible after the first update has been done
+            var followUpChange = storeEntriesSet.stream().map(dataStoreEntry -> {
+                return dataStoreEntry.refreshStoreEncryption();
+            }).anyMatch(b -> b);
+            if (!followUpChange) {
+                break;
+            }
+        }
+
+        return change;
     }
 
     public void updateEntry(DataStoreEntry entry, DataStoreEntry newEntry) {

@@ -15,12 +15,12 @@
 }
 
 .root:pretty:dark .color-box.gray {
-    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, derive(-color-bg-default, 10%) 40%, derive(-color-bg-default, 6%) 50%, derive(-color-bg-default, 10%) 100%);
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, derive(-color-bg-default, 10%) 20%, derive(-color-bg-default, 7%) 50%, derive(-color-bg-default, 10%) 100%);
     -fx-border-color: -color-border-default;
 }
 
 .root:pretty:light .color-box.gray {
-    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, derive(-color-bg-default, -8%) 40%, derive(-color-bg-default, -3%) 50%, derive(-color-bg-default, -8%) 100%);
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, derive(-color-bg-default, -8%) 20%, derive(-color-bg-default, +2%) 50%, derive(-color-bg-default, -8%) 100%);
     -fx-border-color: derive(-color-border-default, -10%);
 }
 

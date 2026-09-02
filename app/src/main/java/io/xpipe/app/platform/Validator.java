@@ -1,6 +1,7 @@
 package io.xpipe.app.platform;
 
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.storage.DataStoreAccessScope;
 import io.xpipe.app.util.Checkable;
 
 import javafx.beans.binding.StringBinding;
@@ -19,7 +20,7 @@ public interface Validator {
                 .withMethod(c -> {
                     if (c.get("val") == null) {
                         c.error(AppI18n.get(
-                                "app.mustNotBeEmpty", name != null ? name.getValue() : AppI18n.get("value")));
+                                "mustNotBeEmpty", name != null ? name.getValue() : AppI18n.get("value")));
                     }
                 })
                 .immediate();
@@ -33,7 +34,7 @@ public interface Validator {
                 .withMethod(c -> {
                     if (Boolean.TRUE.equals(c.get("if")) && c.get("val") == null) {
                         c.error(AppI18n.get(
-                                "app.mustNotBeEmpty", name != null ? name.getValue() : AppI18n.get("value")));
+                                "mustNotBeEmpty", name != null ? name.getValue() : AppI18n.get("value")));
                     }
                 })
                 .immediate();
@@ -45,7 +46,19 @@ public interface Validator {
                 .withMethod(c -> {
                     if (((ObservableList<?>) c.get("val")).size() == 0) {
                         c.error(AppI18n.get(
-                                "app.mustNotBeEmpty", name != null ? name.getValue() : AppI18n.get("value")));
+                                "mustNotBeEmpty", name != null ? name.getValue() : AppI18n.get("value")));
+                    }
+                })
+                .immediate();
+    }
+
+    static Check scopeValid(Validator v, ObservableValue<DataStoreAccessScope> scope) {
+        return v.createCheck()
+                .dependsOn("val", scope)
+                .withMethod(c -> {
+                    var scopeValue = (DataStoreAccessScope) c.get("val");
+                    if (scopeValue != null && !scopeValue.isAnyAccessible()) {
+                        c.error(AppI18n.get("scopeMustBeAccessible"));
                     }
                 })
                 .immediate();

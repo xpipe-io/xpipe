@@ -119,10 +119,11 @@ public class AppBeaconServer {
         AppLocalTemp.getLocalTempDataDirectory();
 
         var id = UUID.randomUUID().toString();
-        Files.writeString(file, id);
+        Files.createFile(file);
         if (OsType.ofLocal() != OsType.WINDOWS) {
             Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("rw-rw----"));
         }
+        Files.writeString(file, id);
         localAuthSecret = id;
 
         var lockFile = AppProperties.get().getBeaconLockFile();
@@ -183,7 +184,7 @@ public class AppBeaconServer {
             if (!handleCorsHeaders(exchange)) {
                 var mcpServer = AppMcpServer.get();
                 if (mcpServer != null) {
-                    mcpServer.createHttpHandler().handle(exchange);
+                    mcpServer.getHttpHandler().handle(exchange);
                 }
             }
         });

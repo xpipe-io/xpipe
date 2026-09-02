@@ -96,7 +96,7 @@ public class StoreCreationDialog {
                 null,
                 selected != null ? selected.defaultStore(DataStorage.get().getSelectedCategory()) : null,
                 category,
-                dataStoreEntry -> {},
+                ignored -> {},
                 true);
     }
 

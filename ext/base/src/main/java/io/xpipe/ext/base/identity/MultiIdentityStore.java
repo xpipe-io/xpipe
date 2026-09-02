@@ -32,7 +32,7 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class MultiIdentityStore extends IdentityStore
-        implements StatefulDataStore<MultiIdentityStoreState>, AccessScopeStore, EncryptionStore {
+        implements StatefulDataStore<MultiIdentityStoreState> {
 
     public static boolean isExclusivelyHeld(DataStoreEntryRef<IdentityStore> ref) {
         return getExclusiveHolder(ref).isPresent();

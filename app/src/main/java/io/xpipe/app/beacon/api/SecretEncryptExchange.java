@@ -5,7 +5,7 @@ import io.xpipe.app.beacon.BeaconInterface;
 import io.xpipe.app.secret.DataStorageAccessHandler;
 import io.xpipe.app.secret.EncryptionPrincipal;
 import io.xpipe.app.secret.InPlaceSecretValue;
-import io.xpipe.app.storage.DataStorageSecret;
+import io.xpipe.app.secret.MultiPrincipalSecret;
 import io.xpipe.app.util.UuidHelper;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -64,7 +64,7 @@ public class SecretEncryptExchange extends BeaconInterface<SecretEncryptExchange
             resolvedPrincipals.add(DataStorageAccessHandler.getInstance().getEncryptAllPrincipal());
         }
 
-        var secret = DataStorageSecret.of(InPlaceSecretValue.of(msg.getValue()), resolvedPrincipals);
+        var secret = MultiPrincipalSecret.of(InPlaceSecretValue.of(msg.getValue()), resolvedPrincipals);
         return Response.builder().encrypted(secret.serialize()).build();
     }
 

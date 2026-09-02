@@ -26,6 +26,10 @@ public class FixedServiceStoreProvider extends AbstractServiceStoreProvider {
     @Override
     public DataStoreEntryRef<?> getSyntheticParent(DataStoreEntry store) {
         FixedServiceStore s = store.getStore().asNeeded();
+        if (s.getHost() == null) {
+            return null;
+        }
+
         return s.getDisplayParent() != null
                 ? DataStorage.get()
                         .getOrCreateNewSyntheticEntry(

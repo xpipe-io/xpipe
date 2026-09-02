@@ -105,6 +105,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 .nameAndDescription(roleBased ? "identityPerRole" : "identityPerRoleDisabled")
                 .addComp(new DataStoreAccessScopeComp(scope), scope)
                 .nonNull()
+                .check(validator -> Validator.scopeValid(validator, scope))
                 .bind(
                         () -> {
                             return SyncedIdentityStore.builder()
@@ -112,12 +113,12 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                                     .password(
                                             st.getEncryptedPassword() != null
                                                     ? st.getEncryptedPassword().with(pass.get(), scope.get())
-                                                    : EncryptedValue.of(pass.get(), scope.get()))
+                                                    : OptionalEncryptedValue.of(pass.get(), scope.get()))
                                     .sshIdentity(
                                             st.getEncryptedSshIdentity() != null
                                                     ? st.getEncryptedSshIdentity()
                                                             .with(identity.get(), scope.get())
-                                                    : EncryptedValue.of(identity.get(), scope.get()))
+                                                    : OptionalEncryptedValue.of(identity.get(), scope.get()))
                                     .accessScope(scope.get())
                                     .build();
                         },
@@ -128,7 +129,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
     @Override
     public String summaryString(StoreEntryWrapper wrapper) {
         if (!wrapper.getEntry().getAccessScope().isAccessSubRestricted()) {
-            return AppI18n.get("globalIdentity");
+            return super.summaryString(wrapper);
         }
 
         return (DataStorageAccessHandler.getInstance().getType() == DataStorageAccessType.ROLE
@@ -139,8 +140,8 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
     @Override
     public DataStore defaultStore(DataStoreCategory category) {
         return SyncedIdentityStore.builder()
-                .password(EncryptedValue.of(new SecretNoneStrategy(), DataStoreAccessScope.encryption()))
-                .sshIdentity(EncryptedValue.of(new NoIdentityStrategy(), DataStoreAccessScope.encryption()))
+                .password(OptionalEncryptedValue.of(new SecretNoneStrategy(), DataStoreAccessScope.encryption()))
+                .sshIdentity(OptionalEncryptedValue.of(new NoIdentityStrategy(), DataStoreAccessScope.encryption()))
                 .accessScope(DataStoreAccessScope.encryption())
                 .build();
     }

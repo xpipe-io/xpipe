@@ -45,16 +45,16 @@ public class Deobfuscator {
     }
 
     private static boolean canDeobfuscate() {
-        if (AppProperties.get().isDevelopmentEnvironment()) {
-            return false;
-        }
-
         if (!System.getenv().containsKey("XPIPE_MAPPING")) {
             return false;
         }
 
         var file = Path.of(System.getenv("XPIPE_MAPPING"));
         if (!Files.exists(file)) {
+            return false;
+        }
+
+        if (AppProperties.get() == null || AppProperties.get().isDevelopmentEnvironment()) {
             return false;
         }
 

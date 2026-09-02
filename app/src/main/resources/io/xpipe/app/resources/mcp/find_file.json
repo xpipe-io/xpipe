@@ -17,13 +17,14 @@
         "description": "Whether to traverse subdirectories recursively or not"
       },
       "name": {
-        "type": "boolean",
+        "type": "string",
         "description": "The name of the file. Supports globs"
       }
     },
     "required": [
       "system",
-      "path"
+      "path",
+      "name"
     ]
   },
   "annotations": {

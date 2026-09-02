@@ -77,7 +77,8 @@ public class AppBaseMode extends AppOperationMode {
         AppWindowsTempCheck.check();
         AppDirectoryPermissionsCheck.checkDirectory(AppSystemInfo.ofCurrent().getTemp());
         WindowsRegistry.init();
-        AppAvCheck.check();
+        // See whether AVs still flag the shell being opened
+        // AppAvCheck.check();
         AppJavaOptionsCheck.check();
         AppHardwareAccelerationDisableCheck.check();
         AppSid.init();

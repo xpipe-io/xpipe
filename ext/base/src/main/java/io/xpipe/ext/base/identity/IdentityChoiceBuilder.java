@@ -14,7 +14,7 @@ import io.xpipe.app.identity.SshIdentityStrategyChoiceConfig;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
-import io.xpipe.app.secret.EncryptedValue;
+import io.xpipe.app.secret.OptionalEncryptedValue;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.DataStorage;
@@ -236,9 +236,9 @@ public class IdentityChoiceBuilder {
                         return IdentityValue.Ref.builder().ref(ref.get()).build();
                     } else {
                         var u = user.get();
-                        var p = EncryptedValue.of(pass.get(), DataStoreAccessScope.encryption());
-                        EncryptedValue<SshIdentityStrategy> i = keyInput
-                                ? EncryptedValue.of(identityStrategy.get(), DataStoreAccessScope.encryption())
+                        var p = OptionalEncryptedValue.of(pass.get(), DataStoreAccessScope.encryption());
+                        OptionalEncryptedValue<SshIdentityStrategy> i = keyInput
+                                ? OptionalEncryptedValue.of(identityStrategy.get(), DataStoreAccessScope.encryption())
                                 : null;
                         if (u == null && p == null && i == null) {
                             return null;

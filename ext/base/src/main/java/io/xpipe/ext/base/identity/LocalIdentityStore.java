@@ -3,20 +3,17 @@ package io.xpipe.ext.base.identity;
 import io.xpipe.app.identity.NoIdentityStrategy;
 import io.xpipe.app.identity.SshIdentityStrategy;
 import io.xpipe.app.identity.UsernameStrategy;
-import io.xpipe.app.secret.EncryptedValue;
+import io.xpipe.app.secret.OptionalEncryptedValue;
 import io.xpipe.app.secret.SecretNoneStrategy;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStoreAccessScope;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.store.AccessScopeStore;
-import io.xpipe.app.store.DataStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.store.EncryptionStore;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import lombok.Value;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -29,11 +26,11 @@ import java.util.Objects;
 @Jacksonized
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString(callSuper = true)
-public class LocalIdentityStore extends IdentityStore implements AccessScopeStore, EncryptionStore {
+public class LocalIdentityStore extends IdentityStore {
 
     String username;
-    EncryptedValue<SecretRetrievalStrategy> password;
-    EncryptedValue<SshIdentityStrategy> sshIdentity;
+    OptionalEncryptedValue<SecretRetrievalStrategy> password;
+    OptionalEncryptedValue<SshIdentityStrategy> sshIdentity;
 
     @Override
     public boolean equals(Object o) {
@@ -100,11 +97,11 @@ public class LocalIdentityStore extends IdentityStore implements AccessScopeStor
         return inStorage ? getSelfEntry().getName() : null;
     }
 
-    EncryptedValue<SecretRetrievalStrategy> getEncryptedPassword() {
+    OptionalEncryptedValue<SecretRetrievalStrategy> getEncryptedPassword() {
         return password;
     }
 
-    EncryptedValue<SshIdentityStrategy> getEncryptedSshIdentity() {
+    OptionalEncryptedValue<SshIdentityStrategy> getEncryptedSshIdentity() {
         return sshIdentity;
     }
 

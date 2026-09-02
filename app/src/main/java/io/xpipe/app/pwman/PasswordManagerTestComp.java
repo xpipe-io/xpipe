@@ -6,6 +6,7 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
@@ -13,14 +14,11 @@ import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -59,7 +57,7 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
     @Override
     protected Region createSimple() {
         var prefs = AppPrefs.get();
-        var testPasswordManagerResult = new SimpleStringProperty();
+        var status = new SimpleStringProperty();
 
         var field = new TextFieldComp(value)
                 .apply(struc -> struc.promptTextProperty()
@@ -76,7 +74,7 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
         if (handleEnter) {
             field.apply(struc -> struc.setOnKeyPressed(event -> {
                 if (event.getCode() == KeyCode.ENTER) {
-                    testPasswordManager(value.getValue(), testPasswordManagerResult);
+                    testPasswordManager(value.getValue(), status);
                     event.consume();
                 }
             }));
@@ -87,16 +85,24 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
         listButton.apply(struc -> {
             struc.setOnAction(event -> {
                 struc.setDisable(true);
+                status.set("    " + AppI18n.get("querying"));
                 ThreadHelper.runFailableAsync(() -> {
                     var list = PasswordManagerKeyList.queryList(false);
+
                     Platform.runLater(() -> {
                         struc.setDisable(false);
+                        status.set(null);
 
                         var popover = new Popover();
                         popover.setArrowLocation(Popover.ArrowLocation.TOP_CENTER);
 
                         if (list != null && list.size() > 0) {
+                            var all = FXCollections.observableList(list);
+                            var shown = FXCollections.<PasswordManager.ListEntry>observableArrayList();
+                            shown.addAll(list);
+
                             var content = new VBox();
+                            content.setSpacing(6);
                             content.setPadding(new Insets(10));
                             content.setFillWidth(true);
 
@@ -124,33 +130,44 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
 
                             content.getChildren().add(headerBar);
 
-                            var entries = new VBox();
-                            entries.setFillWidth(true);
-                            for (var entry : list) {
-                                var buttonName = (entry.getCustomReadableName() != null
-                                                ? entry.getCustomReadableName() + " - "
-                                                : "")
-                                        + entry.getKey();
-                                var entryButton = new Button(buttonName);
-                                entryButton.setMaxWidth(400);
-                                entryButton.getStyleClass().add(Styles.FLAT);
-                                entryButton.setOnAction(e -> {
+                            var box = new ListBoxViewComp<>(shown, all, entry -> {
+                                var buttonName = entry.getTitle();
+                                var entryButton = new ButtonComp(new ReadOnlyObjectWrapper<>(buttonName), () -> {
                                     popover.hide();
                                     value.setValue(entry.getKey());
-                                    e.consume();
                                 });
-                                entryButton.setMinWidth(400);
-                                entryButton.setAlignment(Pos.CENTER_LEFT);
-                                entryButton.setMnemonicParsing(false);
-                                entries.getChildren().add(entryButton);
-                            }
+                                entryButton.maxWidth(400);
+                                entryButton.style(Styles.FLAT);
+                                entryButton.apply(button -> button.setMnemonicParsing(false));
+                                entryButton.apply(button -> button.setAlignment(Pos.CENTER_LEFT));
+                                return entryButton;
+                            }, true);
+                            box.setVisibilityControl(true);
+                            box.setFixScrollReset(true);
+                            box.prefWidth(400);
+                            box.prefHeight(300);
+                            content.getChildren().add(box.build());
 
-                            var sp = new ScrollPane(entries);
-                            sp.setFitToWidth(true);
-                            sp.setMaxHeight(350);
-                            sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-                            content.getChildren().add(sp);
+                            var filterString = new SimpleObjectProperty<String>();
+                            var footer = new TextFieldComp(filterString);
+                            footer.apply(textField -> textField.promptTextProperty().bind(AppI18n.observable("searchFilter")));
+                            content.getChildren().add(footer.build());
+                            filterString.addListener((observable, oldValue, newValue) -> {
+                               if (newValue != null) {
+                                   var filtered = list.stream().filter(listEntry -> listEntry.matches(newValue)).toList();
+                                   DerivedObservableList.wrap(shown, true).setContent(filtered);
+                               } else {
+                                   DerivedObservableList.wrap(shown, true).setContent(all);
+                               }
+                            });
+
                             popover.setContentNode(content);
+
+                            content.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                                if (newValue) {
+                                    content.getChildren().getLast().requestFocus();
+                                }
+                            });
                         } else {
                             var content = new Label(AppI18n.get("passwordManagerNoKeys"));
                             content.setPadding(new Insets(10));
@@ -182,13 +199,13 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
         fieldBox.setMainReference(field);
 
         var testButton = new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
-            testPasswordManager(value.getValue(), testPasswordManagerResult);
+            testPasswordManager(value.getValue(), status);
         });
         testButton.padding(new Insets(6, 9, 6, 9));
         testButton.disable(BindingsHelper.mapBoolean(value, v -> v == null));
 
         var testRow = new HorizontalComp(List.of(
-                        testButton, new LabelComp(testPasswordManagerResult).apply(struc -> struc.setOpacity(0.8))))
+                        testButton, new LabelComp(status).apply(struc -> struc.setOpacity(0.8))))
                 .apply(struc -> struc.setAlignment(Pos.CENTER_LEFT))
                 .apply(struc -> struc.setFillHeight(true));
 
@@ -202,7 +219,7 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
         return vbox.build();
     }
 
-    private void testPasswordManager(String key, StringProperty testPasswordManagerResult) {
+    private void testPasswordManager(String key, StringProperty status) {
         var currentIndex = counter.incrementAndGet();
         var prefs = AppPrefs.get();
         ThreadHelper.runFailableAsync(() -> {
@@ -211,19 +228,19 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
             }
 
             Platform.runLater(() -> {
-                testPasswordManagerResult.set("    " + AppI18n.get("querying"));
+                status.set("    " + AppI18n.get("querying"));
             });
 
             var r = prefs.passwordManager().getValue().query(key);
             if (r == null) {
                 Platform.runLater(() -> {
-                    testPasswordManagerResult.set("    " + AppI18n.get("queryFailed"));
+                    status.set("    " + AppI18n.get("queryFailed"));
                 });
                 GlobalTimer.delay(
                         () -> {
                             Platform.runLater(() -> {
                                 if (counter.get() == currentIndex) {
-                                    testPasswordManagerResult.set(null);
+                                    status.set(null);
                                 }
                             });
                         },
@@ -266,13 +283,13 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
 
             var formatted = String.join(" + ", elements);
             Platform.runLater(() -> {
-                testPasswordManagerResult.set("    " + AppI18n.get("retrievedPassword", formatted));
+                status.set("    " + AppI18n.get("retrievedPassword", formatted));
             });
             GlobalTimer.delay(
                     () -> {
                         Platform.runLater(() -> {
                             if (counter.get() == currentIndex) {
-                                testPasswordManagerResult.set(null);
+                                status.set(null);
                             }
                         });
                     },

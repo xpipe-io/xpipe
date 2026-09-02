@@ -12,6 +12,11 @@ import java.nio.file.Path;
 public class AppDirectoryPermissionsCheck {
 
     public static void checkDirectory(Path dataDirectory) {
+        // Only check this for the daemon to prevent issues with concurrent file creations
+        if (Boolean.getBoolean("io.xpipe.app.isCli")) {
+            return;
+        }
+
         try {
             var testDirectory = dataDirectory.resolve("permissions_check");
 

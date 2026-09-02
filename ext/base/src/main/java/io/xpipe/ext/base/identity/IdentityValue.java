@@ -2,7 +2,7 @@ package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.identity.NoIdentityStrategy;
 import io.xpipe.app.identity.SshIdentityStrategy;
-import io.xpipe.app.secret.EncryptedValue;
+import io.xpipe.app.secret.OptionalEncryptedValue;
 import io.xpipe.app.secret.SecretNoneStrategy;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.*;
@@ -62,8 +62,8 @@ public interface IdentityValue {
 
     static IdentityValue.InPlace none() {
         var s = LocalIdentityStore.builder()
-                .password(EncryptedValue.of(new SecretNoneStrategy(), DataStoreAccessScope.encryption()))
-                .sshIdentity(EncryptedValue.of(new NoIdentityStrategy(), DataStoreAccessScope.encryption()))
+                .password(OptionalEncryptedValue.of(new SecretNoneStrategy(), DataStoreAccessScope.encryption()))
+                .sshIdentity(OptionalEncryptedValue.of(new NoIdentityStrategy(), DataStoreAccessScope.encryption()))
                 .build();
         return of(s);
     }
@@ -79,9 +79,9 @@ public interface IdentityValue {
     static IdentityValue.InPlace of(String user, SecretRetrievalStrategy password, SshIdentityStrategy sshIdentity) {
         var s = LocalIdentityStore.builder()
                 .username(user)
-                .password(password != null ? EncryptedValue.of(password, DataStoreAccessScope.encryption()) : null)
+                .password(password != null ? OptionalEncryptedValue.of(password, DataStoreAccessScope.encryption()) : null)
                 .sshIdentity(
-                        sshIdentity != null ? EncryptedValue.of(sshIdentity, DataStoreAccessScope.encryption()) : null)
+                        sshIdentity != null ? OptionalEncryptedValue.of(sshIdentity, DataStoreAccessScope.encryption()) : null)
                 .build();
         return of(s);
     }

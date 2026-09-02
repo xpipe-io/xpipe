@@ -400,12 +400,24 @@ public class DataStoreEntry extends DataStorageElement {
     }
 
     public DataStoreAccessScope getAccessScope() {
+        if (storeNode != null && !storeNode.isAccessible()) {
+            var enc = storeNode.getEncryptedValue();
+            var secret = enc.getSecret();
+            return secret != null ? secret.getScope() : DataStoreAccessScope.encryption();
+        }
+
         try {
             if (getStore() instanceof AccessScopeStore s) {
                 return s.getAccessScope();
             }
         } catch (Exception ignored) {
         }
+
+        var defParent = DataStorage.get().getDefaultDisplayParent(this);
+        if (defParent.isPresent()) {
+            return defParent.get().getAccessScope();
+        }
+
         return DataStoreAccessScope.encryption();
     }
 
@@ -691,9 +703,9 @@ public class DataStoreEntry extends DataStorageElement {
         }
     }
 
-    public void refreshStoreEncryption() {
+    public boolean refreshStoreEncryption() {
         if (storeNode == null) {
-            return;
+            return false;
         }
 
         var newNode = storeNode.prepareForWrite(this, true, getStore() instanceof EncryptionStore s ? s.withUpdatedPrincipals() : getStore());
@@ -701,6 +713,12 @@ public class DataStoreEntry extends DataStorageElement {
             storeNode = newNode;
             dirty = newNode.requiresWrite();
             notifyUpdate(false, false);
+            var valid = storeNode.getValue() != null;
+            validity = valid ? validity : Validity.LOAD_FAILED;
+            provider = valid ? provider : null;
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -711,7 +729,7 @@ public class DataStoreEntry extends DataStorageElement {
 
         DataStore newStore;
         try {
-            newStore = storeNode.reparseValue();
+            newStore = storeNode.reparseValue(DataStore.class);
 
             // Update any outdated principals for the store
             if (newStore instanceof EncryptionStore s) {
@@ -801,10 +819,6 @@ public class DataStoreEntry extends DataStorageElement {
         } else {
             return false;
         }
-    }
-
-    public boolean shouldSave() {
-        return getStore() != null;
     }
 
     @Getter

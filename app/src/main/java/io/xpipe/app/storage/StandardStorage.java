@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 public class StandardStorage extends DataStorage {
 
@@ -252,14 +253,15 @@ public class StandardStorage extends DataStorage {
             local.setColor(DataStoreColor.BLUE);
         }
 
+        // Reload stores, this time with all entry refs present
+        // These do however not have a completed validity yet
+        refreshStoreEntries();
+
         // Remove inaccessible entries early, as we don't depend on valid stores for the access scopes
         // This will remove all generally unavailable entries
         // However, specific ones that are inaccessible like role-based ones will stay and be removed later on
         filterInaccessibleEntries();
 
-        // Reload stores, this time with all entry refs present
-        // These do however not have a completed validity yet
-        refreshStoreEntries();
         // Bring entries into completed validity if possible
         // Needed for chained stores
         refreshStoreEntries();
@@ -306,6 +308,13 @@ public class StandardStorage extends DataStorage {
                     storeEntries.remove(e);
                     addStoreEntryIfNotPresent(e);
                 });
+
+        // Remove inaccessible entries later on
+        if (!initialLoad) {
+            storeEntriesInaccessible.keySet().forEach(e -> {
+                getListeners().forEach(storageListener -> storageListener.onStoreRemove(e));
+            });
+        }
 
         // Refresh validities after entries have potentially been removed
         refreshStoreEntries();
@@ -477,8 +486,7 @@ public class StandardStorage extends DataStorage {
             }
         });
 
-        storeEntriesSet.stream()
-                .filter(dataStoreEntry -> dataStoreEntry.shouldSave())
+        storeEntriesSet
                 .forEach(e -> {
                     try {
                         synchronized (dir) {

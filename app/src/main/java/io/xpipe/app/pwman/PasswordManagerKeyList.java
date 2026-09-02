@@ -18,6 +18,7 @@ public class PasswordManagerKeyList {
                 AppPrefs.get().passwordManager());
     }
 
+    private static Class<?> cachedPasswordManagerClass;
     private static List<PasswordManager.ListEntry> cached;
 
     public static synchronized List<PasswordManager.ListEntry> queryList(boolean refresh) {
@@ -25,13 +26,15 @@ public class PasswordManagerKeyList {
             return List.of();
         }
 
-        if (cached != null && !cached.isEmpty() && !refresh) {
+        var pwman = AppPrefs.get().passwordManager().getValue();
+
+        if (cached != null && !cached.isEmpty() && !refresh && pwman.getClass() == cachedPasswordManagerClass) {
             return cached;
         }
 
-        var pwman = AppPrefs.get().passwordManager().getValue();
         var l = pwman.listKeys();
         cached = l;
+        cachedPasswordManagerClass = pwman.getClass();
         return l;
     }
 }

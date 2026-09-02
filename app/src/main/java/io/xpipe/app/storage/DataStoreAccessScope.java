@@ -61,18 +61,18 @@ public class DataStoreAccessScope {
         var encryptPrincipal = handler.getEncryptAllPrincipal();
 
         var isVault = vaultPrincipal.equals(principal);
-        var valid = handler.getAllEncryptionPrincipals().contains(principal);
+        var exists = handler.getAllEncryptionPrincipals().contains(principal);
 
         // We have a valid non-vault principal, we can keep that
-        if (!isVault && valid) {
+        if (!isVault && exists) {
             return principal;
         }
 
         // A used principal got deleted, reencrypt with encryption key if we have no other access
         // or just remove the principal if we still have access
-        if (!valid) {
-            var hasOther = scope.getPrincipals().stream().anyMatch(p -> !p.equals(principal) && p.isAccessible() && p.isSubRestricted());
-            return hasOther ? null : encryptPrincipal;
+        if (!exists) {
+            var hasOtherSubs = scope.getPrincipals().stream().anyMatch(p -> !p.equals(principal) && p.isSubRestricted());
+            return hasOtherSubs ? null : encryptPrincipal;
         }
 
         // We are using a vault key and have a custom encryption key

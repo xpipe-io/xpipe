@@ -136,7 +136,7 @@ public class StoreCreationModel {
                                             .getUuid());
                     var entry = DataStoreEntry.createNew(
                             UUID.randomUUID(), targetCategory.getUuid(), "Temp", store.getValue());
-                    return DataStorage.get().shouldSync(entry);
+                    return DataStorage.get().shouldSync(entry, false);
                 },
                 store,
                 StoreViewState.get().getActiveCategory());

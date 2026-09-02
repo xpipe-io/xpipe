@@ -53,7 +53,8 @@ public class AppJacksonModule extends SimpleModule {
         registerSubtypes(
                 new NamedType(BeaconClientInformation.Api.class),
                 new NamedType(BeaconClientInformation.Cli.class),
-                new NamedType(BeaconClientInformation.Daemon.class));
+                new NamedType(BeaconClientInformation.Daemon.class),
+                new NamedType(BeaconClientInformation.Mcp.class));
         registerSubtypes(new NamedType(BeaconAuthMethod.Local.class), new NamedType(BeaconAuthMethod.ApiKey.class));
 
         registerSubtypes(InPlaceSecretValue.class);
@@ -82,8 +83,8 @@ public class AppJacksonModule extends SimpleModule {
         addSerializer(ExternalTerminalType.class, new ExternalTerminalTypeSerializer());
         addDeserializer(ExternalTerminalType.class, new ExternalTerminalTypeDeserializer());
 
-        addSerializer(EncryptedValue.class, new EncryptedValueSerializer());
-        addDeserializer(EncryptedValue.class, new EncryptedValueDeserializer<>());
+        addSerializer(OptionalEncryptedValue.class, new OptionalEncryptedValueSerializer());
+        addDeserializer(OptionalEncryptedValue.class, new OptionalEncryptedValueDeserializer<>());
 
         addSerializer(ShellDialect.class, new ShellDialectSerializer());
         addDeserializer(ShellDialect.class, new ShellDialectDeserializer());
@@ -409,10 +410,10 @@ public class AppJacksonModule extends SimpleModule {
     }
 
     @SuppressWarnings("all")
-    public static class EncryptedValueSerializer extends ValueSerializer<EncryptedValue> {
+    public static class OptionalEncryptedValueSerializer extends ValueSerializer<OptionalEncryptedValue> {
 
         @Override
-        public void serialize(EncryptedValue value, JsonGenerator jgen, SerializationContext context) {
+        public void serialize(OptionalEncryptedValue value, JsonGenerator jgen, SerializationContext context) {
             if (!value.isEncrypted()) {
                 jgen.writeTree(value.getValueJson());
                 return;
@@ -423,20 +424,20 @@ public class AppJacksonModule extends SimpleModule {
 
         @Override
         public void serializeWithType(
-                EncryptedValue value, JsonGenerator gen, SerializationContext context, TypeSerializer typeSer) {
+                OptionalEncryptedValue value, JsonGenerator gen, SerializationContext context, TypeSerializer typeSer) {
             serialize(value, gen, context);
         }
     }
 
     @SuppressWarnings("all")
-    public static class EncryptedValueDeserializer<T extends EncryptedValue<?>> extends ValueDeserializer<T> {
+    public static class OptionalEncryptedValueDeserializer<T extends OptionalEncryptedValue<?>> extends ValueDeserializer<T> {
 
         private Class<?> type;
 
         @Override
         @SuppressWarnings("unchecked")
         public ValueDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) {
-            var deserializer = new EncryptedValueDeserializer();
+            var deserializer = new OptionalEncryptedValueDeserializer();
             if (property == null && ctxt.getContextualType() == null) {
                 return deserializer;
             }
@@ -467,11 +468,11 @@ public class AppJacksonModule extends SimpleModule {
         }
 
         @SuppressWarnings("unchecked")
-        private EncryptedValue get(JsonParser p, Class<?> type) {
+        private OptionalEncryptedValue get(JsonParser p, Class<?> type) {
             JsonNode tree = JacksonMapper.getDefault().readTree(p);
-            var encrypted = DataStorageSecret.matches(tree);
+            var encrypted = MultiPrincipalSecret.matches(tree);
             if (encrypted) {
-                var storageSecret = DataStorageSecret.deserialize(tree);
+                var storageSecret = MultiPrincipalSecret.deserialize(tree);
                 if (storageSecret == null) {
                     return null;
                 }
@@ -481,10 +482,10 @@ public class AppJacksonModule extends SimpleModule {
                         ? JacksonMapper.getDefault().readTree(new CharArrayReader(secret.getSecret()))
                         : null;
                 var value = valueJson != null ? JacksonMapper.getDefault().treeToValue(valueJson, type) : null;
-                return new EncryptedValue(valueJson, value, storageSecret);
+                return new OptionalEncryptedValue(valueJson, value, storageSecret);
             } else {
                 var val = JacksonMapper.getDefault().treeToValue(tree, type);
-                return val != null ? new EncryptedValue(tree, val, null) : null;
+                return val != null ? new OptionalEncryptedValue(tree, val, null) : null;
             }
         }
     }
@@ -514,12 +515,13 @@ public class AppJacksonModule extends SimpleModule {
 
             var text = tree.stringValue();
             var id = UUID.fromString(text);
-            // Keep an invalid entry if it is per-user, meaning that it will get removed later on
+            // Keep an invalid entry if it is per-user
             var e = DataStorage.get()
                     .getStoreEntryIfPresent(id)
                     .filter(dataStoreEntry -> dataStoreEntry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED
                             || (dataStoreEntry.getStoreNode() != null
                                     && !dataStoreEntry.getStoreNode().isAccessible()))
+                    .or(() -> DataStorage.get().getInaccessibleEntry(id))
                     .orElse(null);
             if (e == null) {
                 return null;

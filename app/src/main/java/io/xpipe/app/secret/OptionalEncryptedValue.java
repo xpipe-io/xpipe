@@ -1,6 +1,5 @@
 package io.xpipe.app.secret;
 
-import io.xpipe.app.storage.DataStorageSecret;
 import io.xpipe.app.storage.DataStoreAccessScope;
 import io.xpipe.app.util.JacksonMapper;
 
@@ -10,15 +9,15 @@ import tools.jackson.databind.JsonNode;
 import java.util.Objects;
 
 @Getter
-public class EncryptedValue<T> {
+public class OptionalEncryptedValue<T> {
 
     private final JsonNode valueJson;
 
     private final T value;
 
-    private final DataStorageSecret secret;
+    private final MultiPrincipalSecret secret;
 
-    public EncryptedValue(JsonNode valueJson, T value, DataStorageSecret secret) {
+    public OptionalEncryptedValue(JsonNode valueJson, T value, MultiPrincipalSecret secret) {
         this.valueJson = valueJson;
         this.value = value;
         this.secret = secret;
@@ -41,16 +40,16 @@ public class EncryptedValue<T> {
     }
 
     @SneakyThrows
-    public static <T> EncryptedValue<T> ofRaw(T value) {
+    public static <T> OptionalEncryptedValue<T> ofRaw(T value) {
         if (value == null) {
             return null;
         }
 
-        return new EncryptedValue<>(JacksonMapper.getDefault().valueToTree(value), value, null);
+        return new OptionalEncryptedValue<>(JacksonMapper.getDefault().valueToTree(value), value, null);
     }
 
     @SneakyThrows
-    public static <T> EncryptedValue<T> of(T value, DataStoreAccessScope scope) {
+    public static <T> OptionalEncryptedValue<T> of(T value, DataStoreAccessScope scope) {
         if (value == null) {
             return null;
         }
@@ -58,24 +57,43 @@ public class EncryptedValue<T> {
         var valueNode = JacksonMapper.getDefault().valueToTree(value);
         var s = valueNode.toPrettyString();
         var secret = new InPlaceSecretValue(s.toCharArray());
-        var storageSecret = DataStorageSecret.of(secret, scope.getPrincipals());
-        return new EncryptedValue<>(valueNode, value, storageSecret);
+        var storageSecret = MultiPrincipalSecret.of(secret, scope.getPrincipals());
+        return new OptionalEncryptedValue<>(valueNode, value, storageSecret);
     }
 
-    public EncryptedValue<T> with(T value) {
+    public boolean isScopeValid() {
+        return secret == null || secret.isScopeValid();
+    }
+
+    public OptionalEncryptedValue<T> with(T value) {
         return with(value, secret != null ? secret.getScope() : null);
     }
 
-    public EncryptedValue<T> withUpdatedPrincipals() {
+    public OptionalEncryptedValue<T> withUpdatedPrincipals() {
         return with(value, isEncrypted() ? DataStoreAccessScope.getTargetScope(getSecret().getScope()) : null);
     }
 
-    public EncryptedValue<T> with(T value, DataStoreAccessScope scope) {
-        if (value == null) {
+    public OptionalEncryptedValue<T> with(T value, DataStoreAccessScope scope) {
+        if (value == null && scope == null) {
             return null;
         }
 
-        var encryptionUnchanged = (secret == null && scope == null) || (secret != null && scope != null && secret.getScope().equals(scope));
+        var encryptionUnchanged = (secret == null && scope == null) ||
+                (secret != null && scope != null && secret.getScope().equals(scope) && secret.isScopeValid());
+
+        // If we don't have a value, we can only restrict the scope further
+        if (value == null) {
+            if (isRaw()) {
+                throw new IllegalArgumentException("Unable to change scope from raw value with null value");
+            }
+
+            if (!encryptionUnchanged) {
+                var newSecret = secret.with(null, scope);
+                return new OptionalEncryptedValue<>(null, null, newSecret);
+            }
+
+            return this;
+        }
 
         var newValueJson = JacksonMapper.getDefault().valueToTree(value);
 
@@ -84,28 +102,23 @@ public class EncryptedValue<T> {
         }
 
         if (newValueJson.equals(this.valueJson) && encryptionUnchanged) {
-            return new EncryptedValue<>(newValueJson, value, secret);
+            return new OptionalEncryptedValue<>(newValueJson, value, secret);
         }
 
         if (scope == null) {
-            return new EncryptedValue<>(newValueJson, value, null);
+            return new OptionalEncryptedValue<>(newValueJson, value, null);
         }
 
         var s = newValueJson.toPrettyString();
         var newSecret = secret != null ?
                 secret.with(new InPlaceSecretValue(s.toCharArray()), scope) :
-                DataStorageSecret.of(new InPlaceSecretValue(s.toCharArray()), scope.getPrincipals());
-        return new EncryptedValue<>(newValueJson, value, newSecret);
+                MultiPrincipalSecret.of(new InPlaceSecretValue(s.toCharArray()), scope.getPrincipals());
+        var hasValue = newSecret.getInternalSecret() != null;
+        return new OptionalEncryptedValue<>(hasValue ? newValueJson : null, hasValue ? value : null, newSecret);
     }
 
-    @SuppressWarnings("unchecked")
-    public T reparseValue() {
-        if (getValue() == null) {
-            return null;
-        }
-
-        var c = getValue().getClass();
-        return (T) JacksonMapper.getDefault().treeToValue(valueJson, c);
+    public T reparseValue(Class<T> clazz) {
+        return JacksonMapper.getDefault().treeToValue(valueJson, clazz);
     }
 
     public boolean isAccessible() {
@@ -119,7 +132,7 @@ public class EncryptedValue<T> {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof EncryptedValue<?> that)) {
+        if (!(o instanceof OptionalEncryptedValue<?> that)) {
             return false;
         }
         return Objects.equals(value, that.value)

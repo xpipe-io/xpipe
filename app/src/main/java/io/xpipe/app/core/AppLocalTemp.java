@@ -1,12 +1,14 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.util.LinuxLibC;
 import io.xpipe.app.util.OsType;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Optional;
 
 public class AppLocalTemp {
 
@@ -18,18 +20,29 @@ public class AppLocalTemp {
         if (OsType.ofLocal() == OsType.LINUX) {
             try {
                 Files.createDirectories(temp);
-                // We did not set this in earlier versions. If we are running as a different user, it might fail
-                Files.setPosixFilePermissions(temp, PosixFilePermissions.fromString("rwxrwxrwx"));
-            } catch (Exception e) {
+                var lib = LinuxLibC.getLibrary();
+                if (lib.isPresent()) {
+                    lib.get().chmod(temp.toString(), 01777);
+                }
+            } catch (Throwable e) {
                 ErrorEventFactory.fromThrowable(e).omit().expected().handle();
+            }
+
+            if (Files.isSymbolicLink(temp)) {
+                ErrorEventFactory.fromThrowable(new IOException("Invalid file type for " + temp)).term().handle();
+                return null;
             }
 
             var user = AppSystemInfo.ofCurrent().getUser();
             temp = temp.resolve(user);
 
+            if (Files.isSymbolicLink(temp)) {
+                ErrorEventFactory.fromThrowable(new IOException("Invalid file type for " + temp)).term().handle();
+                return null;
+            }
+
             try {
                 Files.createDirectories(temp);
-                // We did not set this in earlier versions. If we are running as a different user, it might fail
                 Files.setPosixFilePermissions(temp, PosixFilePermissions.fromString("rwx------"));
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).omit().expected().handle();
