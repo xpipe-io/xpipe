@@ -43,7 +43,7 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
     private final AtomicInteger counter = new AtomicInteger(0);
 
     public PasswordManagerTestComp(boolean handleEnter) {
-        this(new SimpleStringProperty(), handleEnter, false, false);
+        this(new SimpleObjectProperty<>(), handleEnter, false, false);
     }
 
     public PasswordManagerTestComp(

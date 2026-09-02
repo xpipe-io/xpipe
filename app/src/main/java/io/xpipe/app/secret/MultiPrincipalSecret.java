@@ -85,6 +85,7 @@ public class MultiPrincipalSecret {
                 }
             }
         }
+
         return true;
     }
 
@@ -128,7 +129,6 @@ public class MultiPrincipalSecret {
             } else {
                 var tokenMatches = token.matches(p.get());
                 if (!tokenMatches) {
-                    entries.add(entry);
                     continue;
                 }
 
@@ -191,12 +191,6 @@ public class MultiPrincipalSecret {
                 if (existingEntry.isPresent()) {
                     l.add(existingEntry.get());
                 }
-                continue;
-            }
-
-            // Keep existing entry if the token does not match the principal
-            if (existingEntry.isPresent() && !existingEntry.get().getToken().matches(principal)) {
-                l.add(existingEntry.get());
                 continue;
             }
 

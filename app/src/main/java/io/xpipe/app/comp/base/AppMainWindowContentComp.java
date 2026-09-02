@@ -123,9 +123,16 @@ public class AppMainWindowContentComp extends SimpleRegionBuilder {
                         if (base == null) {
                             return null;
                         }
+
+                        var content = loaded.getValue();
+                        if (content != null) {
+                            return null;
+                        }
+
                         return base + " " + (".".repeat(loadingTextCounter.get()))
                                 + (" ".repeat(3 - loadingTextCounter.get()));
                     },
+                    loaded,
                     AppMainWindow.getLoadingText(),
                     loadingTextCounter);
             var text = new LabelComp(loadingTextAnimated);
