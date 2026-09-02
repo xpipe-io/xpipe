@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 public class StandardStorage extends DataStorage {
 
@@ -255,6 +256,12 @@ public class StandardStorage extends DataStorage {
         // Reload stores, this time with all entry refs present
         // These do however not have a completed validity yet
         refreshStoreEntries();
+
+        // Remove inaccessible entries early, as we don't depend on valid stores for the access scopes
+        // This will remove all generally unavailable entries
+        // However, specific ones that are inaccessible like role-based ones will stay and be removed later on
+        filterInaccessibleEntries();
+
         // Bring entries into completed validity if possible
         // Needed for chained stores
         refreshStoreEntries();
@@ -291,8 +298,8 @@ public class StandardStorage extends DataStorage {
         }
         orderCounter = (int) Math.ceil(maxOrderIndex + 1.0);
 
-        // Remove inaccessible entries only when everything is valid, so we can check the parent hierarchies
-        filterInaccessibleEntries(storeEntries.keySet());
+        // Remove inaccessible entries again when everything is valid, although normally this shouldn't change anything
+        filterInaccessibleEntries();
 
         // Only add new stores if really necessary
         laterAddedEntries.stream()
@@ -301,6 +308,13 @@ public class StandardStorage extends DataStorage {
                     storeEntries.remove(e);
                     addStoreEntryIfNotPresent(e);
                 });
+
+        // Remove inaccessible entries later on
+        if (!initialLoad) {
+            storeEntriesInaccessible.keySet().forEach(e -> {
+                getListeners().forEach(storageListener -> storageListener.onStoreRemove(e));
+            });
+        }
 
         // Refresh validities after entries have potentially been removed
         refreshStoreEntries();
@@ -472,8 +486,7 @@ public class StandardStorage extends DataStorage {
             }
         });
 
-        storeEntriesSet.stream()
-                .filter(dataStoreEntry -> dataStoreEntry.shouldSave())
+        storeEntriesSet
                 .forEach(e -> {
                     try {
                         synchronized (dir) {
@@ -556,11 +569,11 @@ public class StandardStorage extends DataStorage {
         return dataStorageSyncHandler.supportsSync();
     }
 
-    private void filterInaccessibleEntries(Collection<DataStoreEntry> entries) {
+    private void filterInaccessibleEntries() {
         var toRemove = getStoreEntries().stream()
                 .filter(dataStoreEntry -> shouldRemoveInaccessibleEntry(dataStoreEntry))
                 .toList();
-        toRemove.forEach(entries::remove);
+        toRemove.forEach(storeEntriesSet::remove);
         toRemove.forEach(entry -> storeEntriesInaccessible.put(entry, entry));
     }
 
@@ -574,7 +587,7 @@ public class StandardStorage extends DataStorage {
 
             // We can read the data as it is not encrypted
             // but the scope is still not available to us
-            if (!current.getAccessScope().isAccessible()) {
+            if (!current.getAccessScope().isAnyAccessible()) {
                 return true;
             }
 

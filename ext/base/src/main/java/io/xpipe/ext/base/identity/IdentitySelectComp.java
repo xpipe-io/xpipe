@@ -16,7 +16,7 @@ import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.DataStorageAccessType;
 import io.xpipe.app.secret.DataStorageAccessHandler;
-import io.xpipe.app.secret.EncryptedValue;
+import io.xpipe.app.secret.OptionalEncryptedValue;
 import io.xpipe.app.secret.SecretNoneStrategy;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStorage;
@@ -74,13 +74,13 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
                 .filter(s -> s != null)
                 .findFirst();
         if (synced.isPresent()) {
-            var pass = EncryptedValue.of(password.getValue(), DataStoreAccessScope.encryption());
+            var pass = OptionalEncryptedValue.of(password.getValue(), DataStoreAccessScope.encryption());
             if (pass == null) {
-                pass = EncryptedValue.of(new SecretNoneStrategy(), DataStoreAccessScope.encryption());
+                pass = OptionalEncryptedValue.of(new SecretNoneStrategy(), DataStoreAccessScope.encryption());
             }
-            var ssh = EncryptedValue.of(identityStrategy.getValue(), DataStoreAccessScope.encryption());
+            var ssh = OptionalEncryptedValue.of(identityStrategy.getValue(), DataStoreAccessScope.encryption());
             if (ssh == null) {
-                ssh = EncryptedValue.of(new NoIdentityStrategy(), DataStoreAccessScope.encryption());
+                ssh = OptionalEncryptedValue.of(new NoIdentityStrategy(), DataStoreAccessScope.encryption());
             }
             var id = SyncedIdentityStore.builder()
                     .username(inPlaceUser.getValue())
@@ -91,13 +91,13 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
             return;
         }
 
-        var pass = EncryptedValue.of(password.getValue(), DataStoreAccessScope.encryption());
+        var pass = OptionalEncryptedValue.of(password.getValue(), DataStoreAccessScope.encryption());
         if (pass == null) {
-            pass = EncryptedValue.of(new SecretNoneStrategy(), DataStoreAccessScope.encryption());
+            pass = OptionalEncryptedValue.of(new SecretNoneStrategy(), DataStoreAccessScope.encryption());
         }
-        var ssh = EncryptedValue.of(identityStrategy.getValue(), DataStoreAccessScope.encryption());
+        var ssh = OptionalEncryptedValue.of(identityStrategy.getValue(), DataStoreAccessScope.encryption());
         if (ssh == null) {
-            ssh = EncryptedValue.of(new NoIdentityStrategy(), DataStoreAccessScope.encryption());
+            ssh = OptionalEncryptedValue.of(new NoIdentityStrategy(), DataStoreAccessScope.encryption());
         }
         var id = LocalIdentityStore.builder()
                 .username(inPlaceUser.getValue())
@@ -183,7 +183,7 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
                                 ? (DataStorageAccessHandler.getInstance().getType() == DataStorageAccessType.ROLE
                                         ? AppI18n.get("roleIdentity")
                                         : AppI18n.get("userIdentity"))
-                                : AppI18n.get("globalIdentity");
+                                : AppI18n.get("syncedIdentity");
         return storeEntry.getName() + " (" + suffix + ")";
     }
 

@@ -68,12 +68,12 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                                     .password(
                                             st.getEncryptedPassword() != null
                                                     ? st.getEncryptedPassword().with(pass.get())
-                                                    : EncryptedValue.of(pass.get(), current))
+                                                    : OptionalEncryptedValue.of(pass.get(), current))
                                     .sshIdentity(
                                             st.getEncryptedSshIdentity() != null
                                                     ? st.getEncryptedSshIdentity()
                                                             .with(identity.get())
-                                                    : EncryptedValue.of(identity.get(), current))
+                                                    : OptionalEncryptedValue.of(identity.get(), current))
                                     .build();
                         },
                         store)
@@ -84,8 +84,8 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
     public DataStore defaultStore(DataStoreCategory category) {
         var current = DataStoreAccessScope.encryption();
         return LocalIdentityStore.builder()
-                .password(EncryptedValue.of(new SecretNoneStrategy(), current))
-                .sshIdentity(EncryptedValue.of(new NoIdentityStrategy(), current))
+                .password(OptionalEncryptedValue.of(new SecretNoneStrategy(), current))
+                .sshIdentity(OptionalEncryptedValue.of(new NoIdentityStrategy(), current))
                 .build();
     }
 

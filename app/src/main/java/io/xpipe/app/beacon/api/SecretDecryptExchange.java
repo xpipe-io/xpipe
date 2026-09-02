@@ -2,7 +2,7 @@ package io.xpipe.app.beacon.api;
 
 import io.xpipe.app.beacon.BeaconClientException;
 import io.xpipe.app.beacon.BeaconInterface;
-import io.xpipe.app.storage.DataStorageSecret;
+import io.xpipe.app.secret.MultiPrincipalSecret;
 
 import com.sun.net.httpserver.HttpExchange;
 import lombok.Builder;
@@ -20,7 +20,7 @@ public class SecretDecryptExchange extends BeaconInterface<SecretDecryptExchange
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws BeaconClientException {
-        var secret = DataStorageSecret.deserialize(msg.getEncrypted());
+        var secret = MultiPrincipalSecret.deserialize(msg.getEncrypted());
         if (secret == null || secret.getInternalSecret() == null) {
             throw new BeaconClientException("Unable to parse or decrypt secret");
         }

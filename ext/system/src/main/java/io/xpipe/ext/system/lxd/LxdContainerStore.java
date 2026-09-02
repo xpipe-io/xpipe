@@ -39,13 +39,18 @@ public class LxdContainerStore
                 StoppableStore,
                 PauseableStore,
                 NameableStore,
-                HostAddressGatewayStore {
+                HostAddressGatewayStore,
+                   EncryptionStore{
 
     DataStoreEntryRef<LxdCmdStore> cmd;
     String projectName;
     String containerName;
     IdentityValue identity;
 
+    @Override
+    public DataStore withUpdatedPrincipals() {
+        return toBuilder().identity(identity != null ? identity.withUpdatedPrincipals() : null).build();
+    }
     public LxdCommandView.Project view() throws Exception {
         return view(getCmd().getStore().getHost().getStore().getOrStartSession());
     }

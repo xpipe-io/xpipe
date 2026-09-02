@@ -4,7 +4,9 @@ import io.xpipe.app.identity.SshIdentityStrategy;
 import io.xpipe.app.identity.UsernameStrategy;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.AccessScopeStore;
 import io.xpipe.app.store.DataStore;
+import io.xpipe.app.store.EncryptionStore;
 import io.xpipe.app.store.SelfReferentialStore;
 import io.xpipe.app.util.ValidationException;
 
@@ -17,7 +19,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode
 @ToString
 @Getter
-public abstract class IdentityStore implements SelfReferentialStore, DataStore {
+public abstract class IdentityStore implements SelfReferentialStore, DataStore, AccessScopeStore, EncryptionStore {
 
     public abstract String toSummary();
 
@@ -36,6 +38,9 @@ public abstract class IdentityStore implements SelfReferentialStore, DataStore {
         }
         if (getSshIdentity() != null) {
             getSshIdentity().checkComplete();
+        }
+        if (!getAccessScope().isAnyAccessible()) {
+            throw new ValidationException("Identity access scope is not currently accessible");
         }
     }
 

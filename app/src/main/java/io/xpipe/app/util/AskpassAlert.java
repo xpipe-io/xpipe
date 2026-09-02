@@ -51,6 +51,9 @@ public class AskpassAlert {
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
                     alert.getButtonTypes().setAll(ButtonType.OK);
 
+                    ButtonBar buttonBar = (ButtonBar) alert.getDialogPane().lookup(".button-bar");
+                    buttonBar.setButtonOrder(ButtonBar.BUTTON_ORDER_NONE);
+
                     if (finalLines > 3) {
                         // Title bar + button bar + padding + text field + separator + lines
                         alert.setHeight(30 + 50 + 40 + 40 + 20 + (finalLines * 28));
@@ -59,7 +62,7 @@ public class AskpassAlert {
                     // Link to help page for double prompt
                     if (SecretManager.disableCachingForPrompt(finalPrompt)) {
                         var type = new ButtonType("Help", ButtonBar.ButtonData.HELP);
-                        alert.getButtonTypes().add(type);
+                        alert.getButtonTypes().addFirst(type);
                         var button = alert.getDialogPane().lookupButton(type);
                         button.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
                             DocumentationLink.DOUBLE_PROMPT.open();

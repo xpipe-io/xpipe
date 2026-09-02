@@ -2,7 +2,7 @@ package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.hub.creation.StoreCreationDialog;
-import io.xpipe.app.secret.EncryptedValue;
+import io.xpipe.app.secret.OptionalEncryptedValue;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreAccessScope;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -23,8 +23,8 @@ public class IdentityConvert {
         var st = ref.getStore();
         var synced = SyncedIdentityStore.builder()
                 .username(st.getUsername().get())
-                .password(EncryptedValue.of(st.getPassword(), DataStoreAccessScope.encryption()))
-                .sshIdentity(EncryptedValue.of(st.getSshIdentity(), DataStoreAccessScope.encryption()))
+                .password(OptionalEncryptedValue.of(st.getPassword(), DataStoreAccessScope.encryption()))
+                .sshIdentity(OptionalEncryptedValue.of(st.getSshIdentity(), DataStoreAccessScope.encryption()))
                 .build();
         StoreCreationDialog.showEdit(ref.get(), synced, true, selectCategory, updated -> {
             if (updated.getStore() instanceof SyncedIdentityStore) {

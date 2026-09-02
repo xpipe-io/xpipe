@@ -9,6 +9,7 @@ import io.xpipe.app.storage.DataStoreAccessScope;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.store.AccessScopeStore;
 import io.xpipe.app.store.DataStore;
+import io.xpipe.app.store.EncryptionStore;
 import io.xpipe.app.store.StatefulDataStore;
 import io.xpipe.app.util.ValidationException;
 import io.xpipe.app.util.Validators;
@@ -31,7 +32,7 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class MultiIdentityStore extends IdentityStore
-        implements StatefulDataStore<MultiIdentityStoreState>, AccessScopeStore {
+        implements StatefulDataStore<MultiIdentityStoreState> {
 
     public static boolean isExclusivelyHeld(DataStoreEntryRef<IdentityStore> ref) {
         return getExclusiveHolder(ref).isPresent();
@@ -52,6 +53,10 @@ public class MultiIdentityStore extends IdentityStore
     List<UUID> identities;
     Boolean exclusive;
     DataStoreAccessScope accessScope;
+
+    public DataStoreAccessScope getAccessScopeRaw() {
+        return accessScope;
+    }
 
     @Override
     public DataStoreAccessScope getAccessScope() {
@@ -163,7 +168,6 @@ public class MultiIdentityStore extends IdentityStore
 
     @Override
     public void checkComplete() throws ValidationException {
-        Validators.nonNull(accessScope);
         Validators.nonNull(getSelected().orElse(null));
     }
 
@@ -193,10 +197,15 @@ public class MultiIdentityStore extends IdentityStore
 
     @Override
     public DataStore withUpdatedPrincipals() {
+        var targetScope = DataStoreAccessScope.getTargetScope(accessScope);
+        if (targetScope != null && targetScope.equals(DataStoreAccessScope.vault())) {
+            targetScope = null;
+        }
+
         return MultiIdentityStore.builder()
                 .identities(identities)
                 .exclusive(exclusive)
-                .accessScope(accessScope != null ? DataStoreAccessScope.getTargetScope(accessScope) : null)
+                .accessScope(targetScope)
                 .build();
     }
 }

@@ -86,7 +86,7 @@ public class MultiIdentityStoreProvider extends IdentityStoreProvider {
             }
         }
         var exclusive = new SimpleObjectProperty<>(st.getExclusive());
-        var scope = new SimpleObjectProperty<>(st.getAccessScope());
+        var scope = new SimpleObjectProperty<>(st.getAccessScopeRaw());
 
         var listUpdate = new ObservableSubscriber();
         var selected = new SimpleObjectProperty<>(st.getSelected().orElse(null));

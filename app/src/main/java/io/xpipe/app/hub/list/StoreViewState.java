@@ -564,6 +564,11 @@ public class StoreViewState {
                             .filter(storeEntryWrapper -> a.contains(storeEntryWrapper.getEntry()))
                             .toList();
                 }
+
+                if (l.isEmpty()) {
+                    return;
+                }
+
                 Platform.runLater(() -> {
                     // Don't update anything if we have already reset
                     if (INSTANCE == null) {

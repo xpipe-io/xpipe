@@ -39,13 +39,18 @@ public class IncusContainerStore
                 StoppableStore,
                 PauseableStore,
                 NameableStore,
-                HostAddressGatewayStore {
+                HostAddressGatewayStore,
+                   EncryptionStore{
 
     DataStoreEntryRef<IncusInstallStore> install;
     String projectName;
     String containerName;
     IdentityValue identity;
 
+    @Override
+    public DataStore withUpdatedPrincipals() {
+        return toBuilder().identity(identity != null ? identity.withUpdatedPrincipals() : null).build();
+    }
     public IncusCommandView.Project view() throws Exception {
         return view(getInstall().getStore().getHost().getStore().getOrStartSession());
     }

@@ -331,13 +331,6 @@ public class DataStoreEntry extends DataStorageElement {
         }
 
         DataStoreEntryNode<DataStore> storeNode = DataStoreEntryNode.parse(storeFile, DataStore.class);
-
-        var store = storeNode != null ? storeNode.getValue() : null;
-        var dirty = checkNodeDirtyOnLoad(entryNode, false, store)
-                || checkNodeDirtyOnLoad(stateNode, false, store)
-                || checkNodeDirtyOnLoad(storeNode, true, store)
-                || checkNodeDirtyOnLoad(notesNode, false, store);
-
         return Optional.of(new DataStoreEntry(
                 dir,
                 uuid,
@@ -346,7 +339,7 @@ public class DataStoreEntry extends DataStorageElement {
                 created,
                 lastUsed,
                 lastModified,
-                dirty,
+                false,
                 storeNode == null ? Validity.LOAD_FAILED : Validity.INCOMPLETE,
                 persistentState,
                 expanded,
@@ -361,29 +354,6 @@ public class DataStoreEntry extends DataStorageElement {
                 stateNode,
                 entryNode,
                 notesNode));
-    }
-
-    private static boolean checkNodeDirtyOnLoad(
-            DataStoreEntryNode<?> node, boolean encryptIfRestricted, DataStore store) {
-        if (node == null || store == null) {
-            return false;
-        }
-
-        // Check whether we need to write the node due to external changes
-
-        var targetScope = DataStoreAccessScope.getTargetScope(store instanceof AccessScopeStore s ? s.getAccessScope() : DataStoreAccessScope.encryption());
-        if (!targetScope.isAccessible()) {
-            return false;
-        }
-
-        var currentScope = node.getEncryptedValue().getSecret() != null ? node.getEncryptedValue().getSecret().getScope() : targetScope;
-
-        var canEncrypt = !(store instanceof LocalStore);
-        var shouldEncrypt = canEncrypt && ((encryptIfRestricted && currentScope.isAccessSubRestricted())
-                || AppPrefs.get().encryptAllVaultData().get());
-        var encryptionChange = shouldEncrypt && !node.isEncrypted() || !shouldEncrypt && node.isEncrypted();
-        var scopeTargetChange = !targetScope.equals(currentScope);
-        return encryptionChange || scopeTargetChange;
     }
 
     public String getEffectiveIconFile() {
@@ -430,12 +400,24 @@ public class DataStoreEntry extends DataStorageElement {
     }
 
     public DataStoreAccessScope getAccessScope() {
+        if (storeNode != null && !storeNode.isAccessible()) {
+            var enc = storeNode.getEncryptedValue();
+            var secret = enc.getSecret();
+            return secret != null ? secret.getScope() : DataStoreAccessScope.encryption();
+        }
+
         try {
             if (getStore() instanceof AccessScopeStore s) {
                 return s.getAccessScope();
             }
         } catch (Exception ignored) {
         }
+
+        var defParent = DataStorage.get().getDefaultDisplayParent(this);
+        if (defParent.isPresent()) {
+            return defParent.get().getAccessScope();
+        }
+
         return DataStoreAccessScope.encryption();
     }
 
@@ -721,6 +703,25 @@ public class DataStoreEntry extends DataStorageElement {
         }
     }
 
+    public boolean refreshStoreEncryption() {
+        if (storeNode == null) {
+            return false;
+        }
+
+        var newNode = storeNode.prepareForWrite(this, true, getStore() instanceof EncryptionStore s ? s.withUpdatedPrincipals() : getStore());
+        if (!newNode.equals(storeNode)) {
+            storeNode = newNode;
+            dirty = newNode.requiresWrite();
+            notifyUpdate(false, false);
+            var valid = storeNode.getValue() != null;
+            validity = valid ? validity : Validity.LOAD_FAILED;
+            provider = valid ? provider : null;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public void refreshStore() {
         if (validity == Validity.LOAD_FAILED) {
             return;
@@ -728,10 +729,10 @@ public class DataStoreEntry extends DataStorageElement {
 
         DataStore newStore;
         try {
-            newStore = storeNode.reparseValue();
+            newStore = storeNode.reparseValue(DataStore.class);
 
             // Update any outdated principals for the store
-            if (newStore instanceof AccessScopeStore s) {
+            if (newStore instanceof EncryptionStore s) {
                 newStore = s.withUpdatedPrincipals();
             }
 
@@ -761,6 +762,7 @@ public class DataStoreEntry extends DataStorageElement {
                 var changed = !Objects.equals(getStore(), newStore) || validity != Validity.INCOMPLETE;
                 validity = Validity.INCOMPLETE;
                 storeNode = storeNode.with(newStore);
+                dirty = storeNode.requiresWrite();
                 provider = DataStoreProvider.byStore(getStore());
                 if (changed) {
                     notifyUpdate(false, false);
@@ -783,35 +785,12 @@ public class DataStoreEntry extends DataStorageElement {
         if (storeChanged) {
             storeNode = storeNode.with(newStore);
             provider = DataStoreProvider.byStore(getStore());
+            dirty = storeNode.requiresWrite();
         }
         var changed =
                 storeChanged || validity != Validity.COMPLETE || !Objects.equals(getAccessScope(), newAccessScope);
         validity = Validity.COMPLETE;
         if (changed) {
-            notifyUpdate(false, false);
-        }
-    }
-
-    public void refreshStoreEncryption() {
-        if (storeNode == null) {
-            return;
-        }
-
-        var newStore = getStore() instanceof AccessScopeStore s ? s.withUpdatedPrincipals() : getStore();
-        var changedStore = !Objects.equals(getStore(), newStore);
-        if (changedStore) {
-            // This will take care of the encryption change for the node
-            // we don't have to do this further down below
-            storeNode = DataStoreEntryNode.of(newStore);
-            dirty = true;
-            notifyUpdate(false, false);
-            return;
-        }
-
-        var newNode = storeNode.withUpdatedEncryption(this, true);
-        if (!newNode.equals(storeNode)) {
-            storeNode = newNode;
-            dirty = true;
             notifyUpdate(false, false);
         }
     }
@@ -840,10 +819,6 @@ public class DataStoreEntry extends DataStorageElement {
         } else {
             return false;
         }
-    }
-
-    public boolean shouldSave() {
-        return getStore() != null;
     }
 
     @Getter

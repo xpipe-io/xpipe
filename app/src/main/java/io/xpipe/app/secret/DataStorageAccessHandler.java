@@ -4,14 +4,24 @@ import io.xpipe.app.ext.AuthModuleProvider;
 import io.xpipe.app.prefs.DataStorageAccessType;
 
 import java.io.IOException;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public interface DataStorageAccessHandler {
 
     static DataStorageAccessHandler getInstance() {
         return AuthModuleProvider.get().getStorageAccessHandler();
+    }
+
+    default Set<EncryptionPrincipal> treeSet(Set<EncryptionPrincipal> set) {
+        var treeSet = new TreeSet<>(Comparator.comparing(EncryptionPrincipal::getUuid));
+        treeSet.addAll(set);
+        return treeSet;
+    }
+
+    default Set<EncryptionPrincipal> treeSet(EncryptionPrincipal... set) {
+        var treeSet = new TreeSet<>(Comparator.comparing(EncryptionPrincipal::getUuid));
+        treeSet.addAll(Arrays.asList(set));
+        return treeSet;
     }
 
     boolean init() throws IOException;
