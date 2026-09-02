@@ -126,6 +126,7 @@ public class MultiPrincipalSecret {
             if (!p.get().isAccessible()) {
                 entries.add(entry);
             } else {
+                abc
                 var tokenMatches = token.matches(p.get());
                 if (tokenMatches) {
                     entries.add(entry);
