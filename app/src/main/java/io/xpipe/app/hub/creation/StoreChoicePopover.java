@@ -165,7 +165,9 @@ public class StoreChoicePopover<T extends DataStore> {
                     ? new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2p-plus"), () -> {
                                 StoreCreationDialog.showCreation(
                                         null,
-                                        DataStoreProvider.byId(creationCategory.getDefaultProvider()).orElseThrow().defaultStore(DataStorage.get().getSelectedCategory()),
+                                        DataStoreProvider.byId(creationCategory.getDefaultProvider())
+                                                .orElseThrow()
+                                                .defaultStore(DataStorage.get().getSelectedCategory()),
                                         creationCategory,
                                         ignored -> {},
                                         false);

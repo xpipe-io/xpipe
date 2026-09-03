@@ -7,6 +7,8 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 
+import javafx.beans.property.SimpleBooleanProperty;
+
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import io.modelcontextprotocol.common.McpTransportContext;
@@ -15,7 +17,6 @@ import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.server.McpSyncServer;
 import io.modelcontextprotocol.spec.HttpHeaders;
 import io.modelcontextprotocol.spec.McpSchema;
-import javafx.beans.property.SimpleBooleanProperty;
 import lombok.SneakyThrows;
 import lombok.Value;
 import tools.jackson.databind.json.JsonMapper;
@@ -55,9 +56,8 @@ public class AppMcpServer {
 
         McpSyncServer syncServer = io.modelcontextprotocol.server.McpServer.sync(transportProvider)
                 .serverInfo(AppNames.ofCurrent().getName(), AppProperties.get().getVersion())
-                .capabilities(McpSchema.ServerCapabilities.builder()
-                        .tools(false)
-                        .build())
+                .capabilities(
+                        McpSchema.ServerCapabilities.builder().tools(false).build())
                 .instructions(effectivePrompt)
                 .build();
 
@@ -108,8 +108,10 @@ public class AppMcpServer {
                                 ThreadHelper.runAsync(() -> {
                                     try (var ignored = new BooleanScope(showingError).start()) {
                                         ErrorEventFactory.fromMessage(
-                                                "An external request was made to the XPipe MCP server, however the MCP server is not enabled in the" +
-                                                        " settings menu").expected().handle();
+                                                        "An external request was made to the XPipe MCP server, however the MCP server is not enabled in the"
+                                                                + " settings menu")
+                                                .expected()
+                                                .handle();
                                     }
                                 });
                             }
@@ -125,7 +127,9 @@ public class AppMcpServer {
                         if (!showingError.get()) {
                             ThreadHelper.runAsync(() -> {
                                 try (var ignored = new BooleanScope(showingError).start()) {
-                                    ErrorEventFactory.fromMessage(msg).expected().handle();
+                                    ErrorEventFactory.fromMessage(msg)
+                                            .expected()
+                                            .handle();
                                 }
                             });
                         }
@@ -141,9 +145,11 @@ public class AppMcpServer {
                                     ThreadHelper.runAsync(() -> {
                                         try (var ignored = new BooleanScope(showingError).start()) {
                                             ErrorEventFactory.fromMessage(
-                                                    "An external request was made to the XPipe MCP server without the header Authorization set. " +
-                                                            "Please configure your MCP client with the Bearer API token you can find the API " +
-                                                            "settings menu").expected().handle();
+                                                            "An external request was made to the XPipe MCP server without the header Authorization set. "
+                                                                    + "Please configure your MCP client with the Bearer API token you can find the API "
+                                                                    + "settings menu")
+                                                    .expected()
+                                                    .handle();
                                         }
                                     });
                                 }
@@ -159,7 +165,8 @@ public class AppMcpServer {
                                 if (!showingError.get()) {
                                     ThreadHelper.runAsync(() -> {
                                         try (var ignored = new BooleanScope(showingError).start()) {
-                                            ErrorEventFactory.fromMessage("The Authorization header sent by the MCP client is not correct")
+                                            ErrorEventFactory.fromMessage(
+                                                            "The Authorization header sent by the MCP client is not correct")
                                                     .expected()
                                                     .handle();
                                         }

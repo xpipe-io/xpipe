@@ -90,12 +90,15 @@ public final class McpTools {
 
                     var handshakeRequest = HandshakeExchange.Request.builder()
                             .client(BeaconClientInformation.Mcp.builder().build())
-                            .auth(BeaconAuthMethod.ApiKey.builder().key(AppPrefs.get().apiKey().get()).build())
+                            .auth(BeaconAuthMethod.ApiKey.builder()
+                                    .key(AppPrefs.get().apiKey().get())
+                                    .build())
                             .build();
                     var handshakeReq = HttpRequest.newBuilder()
                             .uri(URI.create(
                                     "http://localhost:" + AppBeaconServer.get().getPort() + "/handshake"))
-                            .POST(HttpRequest.BodyPublishers.ofString(JacksonMapper.getDefault().writeValueAsString(handshakeRequest)))
+                            .POST(HttpRequest.BodyPublishers.ofString(
+                                    JacksonMapper.getDefault().writeValueAsString(handshakeRequest)))
                             .build();
                     var handshakeRes = HttpHelper.client().send(handshakeReq, HttpResponse.BodyHandlers.ofString());
                     var handshakeResJson = JacksonMapper.getDefault().readTree(handshakeRes.body());
@@ -106,15 +109,14 @@ public final class McpTools {
                                 .build();
                     }
 
-                    var handshakeResObject = JacksonMapper.getDefault().treeToValue(handshakeResJson, HandshakeExchange.Response.class);
+                    var handshakeResObject =
+                            JacksonMapper.getDefault().treeToValue(handshakeResJson, HandshakeExchange.Response.class);
                     var token = handshakeResObject.getSessionToken();
 
                     var httpReq = HttpRequest.newBuilder()
                             .uri(URI.create(
                                     "http://localhost:" + AppBeaconServer.get().getPort() + path))
-                            .header(
-                                    "Authorization",
-                                    "Bearer " + token)
+                            .header("Authorization", "Bearer " + token)
                             .POST(HttpRequest.BodyPublishers.ofString(payloadJson.toPrettyString()))
                             .build();
                     var httpRes = HttpHelper.client().send(httpReq, HttpResponse.BodyHandlers.ofString());
@@ -446,7 +448,8 @@ public final class McpTools {
                                     .orElseThrow(),
                             AppNames.extModuleName("base") + ".script.ScriptStore");
                     var method = clazz.getDeclaredMethod("assembleScriptChain", ShellControl.class, boolean.class);
-                    var command = (String) method.invoke(script.getStore(), shellSession.getControl(), arguments != null);
+                    var command =
+                            (String) method.invoke(script.getStore(), shellSession.getControl(), arguments != null);
                     var scriptFile = ScriptHelper.createExecScript(shellSession.getControl(), command);
                     var out = shellSession
                             .getControl()

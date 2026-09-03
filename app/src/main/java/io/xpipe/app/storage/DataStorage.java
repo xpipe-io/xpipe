@@ -327,15 +327,19 @@ public abstract class DataStorage {
 
     public boolean refreshStoreEntriesEncryption() {
         // Update principals of the stores
-        var change = storeEntriesSet.stream().map(dataStoreEntry -> {
-            return dataStoreEntry.refreshStoreEncryption();
-        }).anyMatch(b -> b);
+        var change = storeEntriesSet.stream()
+                .map(dataStoreEntry -> {
+                    return dataStoreEntry.refreshStoreEncryption();
+                })
+                .anyMatch(b -> b);
 
         while (true) {
             // Update scope for dependent stores if needed, only possible after the first update has been done
-            var followUpChange = storeEntriesSet.stream().map(dataStoreEntry -> {
-                return dataStoreEntry.refreshStoreEncryption();
-            }).anyMatch(b -> b);
+            var followUpChange = storeEntriesSet.stream()
+                    .map(dataStoreEntry -> {
+                        return dataStoreEntry.refreshStoreEncryption();
+                    })
+                    .anyMatch(b -> b);
             if (!followUpChange) {
                 break;
             }

@@ -1,13 +1,11 @@
 package io.xpipe.app.issue;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.*;
-import io.xpipe.app.prefs.AppPrefs;
-
 import io.xpipe.app.util.Hyperlinks;
+
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.geometry.Orientation;
@@ -15,10 +13,9 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
-import atlantafx.base.controls.Popover;
 import atlantafx.base.controls.Spacer;
+import atlantafx.base.theme.Styles;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class UserReportComp extends ModalOverlayContentComp {

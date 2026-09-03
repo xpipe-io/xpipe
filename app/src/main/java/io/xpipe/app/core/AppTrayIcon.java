@@ -49,7 +49,11 @@ public class AppTrayIcon {
             var quit = new MenuItem(AppI18n.get("quit"));
             quit.addActionListener(e -> {
                 var closingMenu = new PopupMenu();
-                var mi = new MenuItem(AppI18n.get(DataStorage.get() != null && DataStorage.get().syncEnabled() ? "synchronizingChanges" : "savingChanges") + " ...");
+                var mi = new MenuItem(AppI18n.get(
+                                DataStorage.get() != null && DataStorage.get().syncEnabled()
+                                        ? "synchronizingChanges"
+                                        : "savingChanges")
+                        + " ...");
                 closingMenu.add(mi);
                 trayIcon.setPopupMenu(closingMenu);
 

@@ -52,7 +52,8 @@ public class DataStoreEntryNode<T> {
         var targetScope = DataStoreAccessScope.getTargetScope(entry.getAccessScope());
         var currentScope = enc.getSecret() != null ? enc.getSecret().getScope() : targetScope;
 
-        var shouldEncrypt = (encryptIfRestricted && targetScope.isAccessSubRestricted()) || AppPrefs.get().encryptAllVaultData().get();
+        var shouldEncrypt = (encryptIfRestricted && targetScope.isAccessSubRestricted())
+                || AppPrefs.get().encryptAllVaultData().get();
         if (shouldEncrypt) {
             var supported = enc.supportsScopeEncryption(targetScope);
             if (!supported) {
@@ -61,7 +62,7 @@ public class DataStoreEntryNode<T> {
         }
 
         var encryptionChange = shouldEncrypt && !enc.isEncrypted() || !shouldEncrypt && enc.isEncrypted();
-        var scopeTargetChange = !targetScope.equals(currentScope)|| !enc.isScopeValid();
+        var scopeTargetChange = !targetScope.equals(currentScope) || !enc.isScopeValid();
         var valueChange = !Objects.equals(getValue(), newValue);
         if (encryptionChange || valueChange || scopeTargetChange) {
             var newEnc = enc.with(newValue, shouldEncrypt ? targetScope : null);

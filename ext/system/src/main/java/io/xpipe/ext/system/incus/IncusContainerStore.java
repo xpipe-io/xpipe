@@ -40,7 +40,7 @@ public class IncusContainerStore
                 PauseableStore,
                 NameableStore,
                 HostAddressGatewayStore,
-                   EncryptionStore{
+                EncryptionStore {
 
     DataStoreEntryRef<IncusInstallStore> install;
     String projectName;
@@ -49,8 +49,11 @@ public class IncusContainerStore
 
     @Override
     public DataStore withUpdatedPrincipals() {
-        return toBuilder().identity(identity != null ? identity.withUpdatedPrincipals() : null).build();
+        return toBuilder()
+                .identity(identity != null ? identity.withUpdatedPrincipals() : null)
+                .build();
     }
+
     public IncusCommandView.Project view() throws Exception {
         return view(getInstall().getStore().getHost().getStore().getOrStartSession());
     }

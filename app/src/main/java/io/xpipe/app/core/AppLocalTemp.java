@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.util.Optional;
 
 public class AppLocalTemp {
 
@@ -29,7 +28,9 @@ public class AppLocalTemp {
             }
 
             if (Files.isSymbolicLink(temp)) {
-                ErrorEventFactory.fromThrowable(new IOException("Invalid file type for " + temp)).term().handle();
+                ErrorEventFactory.fromThrowable(new IOException("Invalid file type for " + temp))
+                        .term()
+                        .handle();
                 return null;
             }
 
@@ -37,7 +38,9 @@ public class AppLocalTemp {
             temp = temp.resolve(user);
 
             if (Files.isSymbolicLink(temp)) {
-                ErrorEventFactory.fromThrowable(new IOException("Invalid file type for " + temp)).term().handle();
+                ErrorEventFactory.fromThrowable(new IOException("Invalid file type for " + temp))
+                        .term()
+                        .handle();
                 return null;
             }
 

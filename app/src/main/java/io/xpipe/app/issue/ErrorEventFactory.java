@@ -90,8 +90,8 @@ public class ErrorEventFactory {
         return t.getMessage();
     }
 
-    private static synchronized ErrorEvent.ErrorEventBuilder retrieveBuilder(Throwable t)     {
-         var b = EVENT_BASES.remove(t);
+    private static synchronized ErrorEvent.ErrorEventBuilder retrieveBuilder(Throwable t) {
+        var b = EVENT_BASES.remove(t);
         if (b == null) {
             b = ErrorEvent.builder().throwable(t);
         }

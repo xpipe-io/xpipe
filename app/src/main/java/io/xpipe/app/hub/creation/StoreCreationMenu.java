@@ -83,7 +83,6 @@ public class StoreCreationMenu {
 
         items.add(actionMenu);
 
-
         if (allowSearch) {
             var automatically = new MenuItem();
             automatically.setGraphic(new FontIcon("mdi2e-eye-plus-outline"));
@@ -102,10 +101,10 @@ public class StoreCreationMenu {
                                 .toList();
                         return 1 == connections.size()
                                 && StoreViewState.get()
-                                .getActiveCategory()
-                                .getValue()
-                                .getRoot()
-                                .equals(allCat);
+                                        .getActiveCategory()
+                                        .getValue()
+                                        .getRoot()
+                                        .equals(allCat);
                     },
                     StoreViewState.get().getAllEntries().getList());
             automatically.disableProperty().bind(disableSearch);

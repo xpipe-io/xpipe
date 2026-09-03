@@ -1,7 +1,6 @@
 package io.xpipe.app.core.mode;
 
 import io.xpipe.app.core.AppTray;
-import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.app.platform.PlatformThread;

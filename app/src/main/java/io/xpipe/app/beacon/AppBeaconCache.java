@@ -1,6 +1,5 @@
 package io.xpipe.app.beacon;
 
-import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.store.ShellStore;
 

@@ -7,9 +7,7 @@ import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreAccessScope;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.store.AccessScopeStore;
 import io.xpipe.app.store.DataStore;
-import io.xpipe.app.store.EncryptionStore;
 import io.xpipe.app.store.StatefulDataStore;
 import io.xpipe.app.util.ValidationException;
 import io.xpipe.app.util.Validators;
@@ -31,8 +29,7 @@ import java.util.UUID;
 @Value
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class MultiIdentityStore extends IdentityStore
-        implements StatefulDataStore<MultiIdentityStoreState> {
+public class MultiIdentityStore extends IdentityStore implements StatefulDataStore<MultiIdentityStoreState> {
 
     public static boolean isExclusivelyHeld(DataStoreEntryRef<IdentityStore> ref) {
         return getExclusiveHolder(ref).isPresent();

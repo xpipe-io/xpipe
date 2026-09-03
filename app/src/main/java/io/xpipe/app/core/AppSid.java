@@ -5,7 +5,6 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.LinuxLibC;
 import io.xpipe.app.util.OsType;
 
-import com.sun.jna.Function;
 import lombok.Getter;
 
 import java.util.concurrent.TimeUnit;

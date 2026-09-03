@@ -9,9 +9,7 @@ import io.xpipe.app.secret.SecretNoneStrategy;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStoreAccessScope;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.store.AccessScopeStore;
 import io.xpipe.app.store.DataStore;
-import io.xpipe.app.store.EncryptionStore;
 import io.xpipe.app.util.ValidationException;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -41,10 +39,10 @@ public class SyncedIdentityStore extends IdentityStore {
         if (!(o instanceof SyncedIdentityStore that)) {
             return false;
         }
-        return Objects.equals(username, that.username) &&
-                Objects.equals(password, that.password) &&
-                Objects.equals(sshIdentity, that.sshIdentity) &&
-                Objects.equals(accessScope, that.accessScope);
+        return Objects.equals(username, that.username)
+                && Objects.equals(password, that.password)
+                && Objects.equals(sshIdentity, that.sshIdentity)
+                && Objects.equals(accessScope, that.accessScope);
     }
 
     @Override

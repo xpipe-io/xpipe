@@ -529,8 +529,11 @@ public class DataStoreEntry extends DataStorageElement {
 
     @Override
     public List<Path> getSyncableFiles() {
-        var list = List.of(directory.resolve("store.json"), directory.resolve("entry.json"),
-                directory.resolve("notes.md"), directory.resolve("notes.json"));
+        var list = List.of(
+                directory.resolve("store.json"),
+                directory.resolve("entry.json"),
+                directory.resolve("notes.md"),
+                directory.resolve("notes.json"));
         return list;
     }
 
@@ -599,7 +602,8 @@ public class DataStoreEntry extends DataStorageElement {
         this.notesNode = this.notesNode != null ? this.notesNode.prepareForWrite(this, true, getNotes()) : null;
         if (this.notesNode != null && this.notesNode.requiresWrite()) {
             var file = this.notesNode.isEncrypted() ? encryptedNotesFile : normalNotesFile;
-            Files.writeString(file, this.notesNode.isEncrypted() ? this.notesNode.getWriteString() : this.notesNode.getValue());
+            Files.writeString(
+                    file, this.notesNode.isEncrypted() ? this.notesNode.getWriteString() : this.notesNode.getValue());
         }
 
         this.storeNode = this.storeNode.prepareForWrite(this, true, getStore());
@@ -708,7 +712,8 @@ public class DataStoreEntry extends DataStorageElement {
             return false;
         }
 
-        var newNode = storeNode.prepareForWrite(this, true, getStore() instanceof EncryptionStore s ? s.withUpdatedPrincipals() : getStore());
+        var newNode = storeNode.prepareForWrite(
+                this, true, getStore() instanceof EncryptionStore s ? s.withUpdatedPrincipals() : getStore());
         if (!newNode.equals(storeNode)) {
             storeNode = newNode;
             dirty = newNode.requiresWrite();

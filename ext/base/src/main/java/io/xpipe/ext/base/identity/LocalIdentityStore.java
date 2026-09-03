@@ -8,10 +8,8 @@ import io.xpipe.app.secret.SecretNoneStrategy;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStoreAccessScope;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.store.AccessScopeStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.store.EncryptionStore;
 import lombok.AccessLevel;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
@@ -37,9 +35,9 @@ public class LocalIdentityStore extends IdentityStore {
         if (!(o instanceof LocalIdentityStore that)) {
             return false;
         }
-        return Objects.equals(username, that.username) &&
-                Objects.equals(password, that.password) &&
-                Objects.equals(sshIdentity, that.sshIdentity);
+        return Objects.equals(username, that.username)
+                && Objects.equals(password, that.password)
+                && Objects.equals(sshIdentity, that.sshIdentity);
     }
 
     @Override

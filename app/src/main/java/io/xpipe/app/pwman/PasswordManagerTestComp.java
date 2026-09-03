@@ -143,18 +143,23 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
 
                             content.getChildren().add(headerBar);
 
-                            var box = new ListBoxViewComp<>(shown, all, entry -> {
-                                var buttonName = entry.getTitle();
-                                var entryButton = new ButtonComp(new ReadOnlyObjectWrapper<>(buttonName), () -> {
-                                    popover.hide();
-                                    selectFromList(entry);
-                                });
-                                entryButton.maxWidth(400);
-                                entryButton.style(Styles.FLAT);
-                                entryButton.apply(button -> button.setMnemonicParsing(false));
-                                entryButton.apply(button -> button.setAlignment(Pos.CENTER_LEFT));
-                                return entryButton;
-                            }, true);
+                            var box = new ListBoxViewComp<>(
+                                    shown,
+                                    all,
+                                    entry -> {
+                                        var buttonName = entry.getTitle();
+                                        var entryButton =
+                                                new ButtonComp(new ReadOnlyObjectWrapper<>(buttonName), () -> {
+                                                    popover.hide();
+                                                    selectFromList(entry);
+                                                });
+                                        entryButton.maxWidth(400);
+                                        entryButton.style(Styles.FLAT);
+                                        entryButton.apply(button -> button.setMnemonicParsing(false));
+                                        entryButton.apply(button -> button.setAlignment(Pos.CENTER_LEFT));
+                                        return entryButton;
+                                    },
+                                    true);
                             box.setVisibilityControl(true);
                             box.setFixScrollReset(true);
                             box.prefWidth(400);
@@ -163,15 +168,18 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
 
                             var filterString = new SimpleObjectProperty<String>();
                             var footer = new TextFieldComp(filterString);
-                            footer.apply(textField -> textField.promptTextProperty().bind(AppI18n.observable("searchFilter")));
+                            footer.apply(textField ->
+                                    textField.promptTextProperty().bind(AppI18n.observable("searchFilter")));
                             content.getChildren().add(footer.build());
                             filterString.addListener((observable, oldValue, newValue) -> {
-                               if (newValue != null) {
-                                   var filtered = list.stream().filter(listEntry -> listEntry.matches(newValue)).toList();
-                                   DerivedObservableList.wrap(shown, true).setContent(filtered);
-                               } else {
-                                   DerivedObservableList.wrap(shown, true).setContent(all);
-                               }
+                                if (newValue != null) {
+                                    var filtered = list.stream()
+                                            .filter(listEntry -> listEntry.matches(newValue))
+                                            .toList();
+                                    DerivedObservableList.wrap(shown, true).setContent(filtered);
+                                } else {
+                                    DerivedObservableList.wrap(shown, true).setContent(all);
+                                }
                             });
 
                             popover.setContentNode(content);
@@ -217,8 +225,8 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
         testButton.padding(new Insets(6, 9, 6, 9));
         testButton.disable(BindingsHelper.mapBoolean(value, v -> v == null));
 
-        var testRow = new HorizontalComp(List.of(
-                        testButton, new LabelComp(status).apply(struc -> struc.setOpacity(0.8))))
+        var testRow = new HorizontalComp(
+                        List.of(testButton, new LabelComp(status).apply(struc -> struc.setOpacity(0.8))))
                 .apply(struc -> struc.setAlignment(Pos.CENTER_LEFT))
                 .apply(struc -> struc.setFillHeight(true));
 

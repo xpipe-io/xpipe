@@ -52,8 +52,11 @@ public class MultiPrincipalSecret {
 
     @Override
     public String toString() {
-        return "<encrypted secret> {\n" + entries.stream().map(entry -> "  " + entry.getPrincipal().getName() +
-                ": " + entry.getIteration()).collect(Collectors.joining("\n")) + "\n}";
+        return "<encrypted secret> {\n"
+                + entries.stream()
+                        .map(entry -> "  " + entry.getPrincipal().getName() + ": " + entry.getIteration())
+                        .collect(Collectors.joining("\n"))
+                + "\n}";
     }
 
     public int getMaxIteration() {
@@ -73,13 +76,17 @@ public class MultiPrincipalSecret {
     }
 
     public boolean isScopeValid() {
-        return entries.stream().allMatch(entry -> !entry.getPrincipal().isAccessible() || entry.getToken().matches(entry.getPrincipal()));
+        return entries.stream()
+                .allMatch(entry ->
+                        !entry.getPrincipal().isAccessible() || entry.getToken().matches(entry.getPrincipal()));
     }
 
     public boolean supportsScopeEncryption(DataStoreAccessScope scope) {
         for (EncryptionPrincipal principal : scope.getPrincipals()) {
             if (!principal.isAccessible()) {
-                var available = entries.stream().filter(entry -> entry.getPrincipal().equals(principal)).findFirst();
+                var available = entries.stream()
+                        .filter(entry -> entry.getPrincipal().equals(principal))
+                        .findFirst();
                 if (available.isEmpty()) {
                     return false;
                 }
@@ -204,7 +211,10 @@ public class MultiPrincipalSecret {
 
                 l.add(new Entry(
                         principal,
-                        keep ? existingEntry.get().getEncrypted() : AesSecretValue.encrypt(secret.getSecret(), principal.getSecretKey()).getEncryptedValue(),
+                        keep
+                                ? existingEntry.get().getEncrypted()
+                                : AesSecretValue.encrypt(secret.getSecret(), principal.getSecretKey())
+                                        .getEncryptedValue(),
                         keep ? iteration : iteration + 1,
                         keep ? existingEntry.get().getToken() : EncryptionToken.of(principal)));
             } else {

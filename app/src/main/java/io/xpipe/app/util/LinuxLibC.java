@@ -1,8 +1,9 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.issue.ErrorEventFactory;
+
 import com.sun.jna.Library;
 import com.sun.jna.Native;
-import io.xpipe.app.issue.ErrorEventFactory;
 
 import java.util.Optional;
 
@@ -23,7 +24,7 @@ public class LinuxLibC {
         try {
             LibC libc = Native.load("c", LibC.class);
             return Optional.of((library = libc));
-        }  catch (Throwable t) {
+        } catch (Throwable t) {
             ErrorEventFactory.fromThrowable(t).handle();
             loadingFailed = true;
             return Optional.empty();
@@ -37,4 +38,3 @@ public class LinuxLibC {
         int setsid();
     }
 }
-

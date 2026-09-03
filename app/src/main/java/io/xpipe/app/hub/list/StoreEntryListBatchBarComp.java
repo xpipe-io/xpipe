@@ -20,7 +20,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -63,7 +62,7 @@ public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
         var actionsIncompatible = new SimpleBooleanProperty();
         var actionsList = DerivedObservableList.<BaseRegionBuilder<?, ?>>arrayList(true);
         StoreViewState.get().getBatchModeSelection().getList().addListener((ListChangeListener<
-                ? super StoreEntryWrapper>)
+                        ? super StoreEntryWrapper>)
                 c -> {
                     actionsList.getList().clear();
                     var providers = getCompatibleActionProviders();
@@ -73,8 +72,9 @@ public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
 
                     if (c.getList().size() > 0) {
                         var clazz = c.getList().getFirst().getStore().getValue().getClass();
-                        var same = c.getList().stream().allMatch(wrapper ->
-                                wrapper.getEntry().getStore().getClass().equals(clazz));
+                        var same = c.getList().stream()
+                                .allMatch(wrapper ->
+                                        wrapper.getEntry().getStore().getClass().equals(clazz));
                         actionsIncompatible.set(providers.isEmpty() && !same);
                         actionsEmpty.set(providers.isEmpty() && same);
                     } else {
@@ -94,9 +94,15 @@ public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
         var actions = new HorizontalComp(actionsList.getList());
         actions.spacing(2);
 
-        var emptyIndicator = new LabelComp(Bindings.createStringBinding(() -> {
-            return actionsIncompatible.get() ? AppI18n.get("batchActionsIncompatible") : AppI18n.get("batchActionsEmpty");
-        }, actionsEmpty, actionsIncompatible, AppI18n.activeLanguage()));
+        var emptyIndicator = new LabelComp(Bindings.createStringBinding(
+                () -> {
+                    return actionsIncompatible.get()
+                            ? AppI18n.get("batchActionsIncompatible")
+                            : AppI18n.get("batchActionsEmpty");
+                },
+                actionsEmpty,
+                actionsIncompatible,
+                AppI18n.activeLanguage()));
         emptyIndicator.show(actionsIncompatible.or(actionsEmpty));
 
         var close = new IconButtonComp("mdi2c-close", () -> {

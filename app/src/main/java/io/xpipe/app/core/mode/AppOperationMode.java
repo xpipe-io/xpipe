@@ -105,10 +105,7 @@ public abstract class AppOperationMode {
                             && ex instanceof StringIndexOutOfBoundsException
                             && ex.getStackTrace() != null
                             && Arrays.toString(ex.getStackTrace()).contains("MacAccessible")) {
-                        ErrorEventFactory.fromThrowable(ex)
-                                .expected()
-                                .omit()
-                                .handle();
+                        ErrorEventFactory.fromThrowable(ex).expected().omit().handle();
                         return;
                     }
 

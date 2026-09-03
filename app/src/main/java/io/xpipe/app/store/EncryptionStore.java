@@ -1,6 +1,6 @@
 package io.xpipe.app.store;
 
-public interface EncryptionStore extends DataStore{
+public interface EncryptionStore extends DataStore {
 
     DataStore withUpdatedPrincipals();
 }

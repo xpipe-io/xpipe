@@ -7,7 +7,9 @@ import java.util.regex.Pattern;
 public class DataStorageQuery {
 
     public static List<DataStoreEntry> queryUserInput(String input) {
-        var connectionFilter = input != null && !input.isEmpty() && !input.equals("*") && !input.equals("**") ? "**" + input + "**" : "**";
+        var connectionFilter = input != null && !input.isEmpty() && !input.equals("*") && !input.equals("**")
+                ? "**" + input + "**"
+                : "**";
         var found = queryEntry("**", connectionFilter, "*");
         if (found.size() > 1) {
             var narrowPath = found.stream()

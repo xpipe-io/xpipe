@@ -7,8 +7,6 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.store.DataStore;
 import io.xpipe.app.util.ThreadHelper;
 
-import javafx.application.Platform;
-
 public abstract class InitHubLeafProvider<T extends DataStore, O> implements HubLeafProvider<T> {
 
     protected O available;

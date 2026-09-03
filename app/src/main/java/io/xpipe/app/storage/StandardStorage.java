@@ -488,25 +488,20 @@ public class StandardStorage extends DataStorage {
             }
         });
 
-        storeEntriesSet
-                .forEach(e -> {
-                    try {
-                        synchronized (dir) {
-                            var exists = Files.exists(e.getDirectory());
-                            var dirty = e.isDirty();
-                            e.writeDataToDisk();
-                            dataStorageSyncHandler.handleEntry(e, exists, dirty);
-                        }
-                    } catch (Exception ex) {
-                        // Data corruption and schema changes are expected
-                        exception.set(ex);
-                        ErrorEventFactory.fromThrowable(ex)
-                                .expected()
-                                .omit()
-                                .build()
-                                .handle();
-                    }
-                });
+        storeEntriesSet.forEach(e -> {
+            try {
+                synchronized (dir) {
+                    var exists = Files.exists(e.getDirectory());
+                    var dirty = e.isDirty();
+                    e.writeDataToDisk();
+                    dataStorageSyncHandler.handleEntry(e, exists, dirty);
+                }
+            } catch (Exception ex) {
+                // Data corruption and schema changes are expected
+                exception.set(ex);
+                ErrorEventFactory.fromThrowable(ex).expected().omit().build().handle();
+            }
+        });
 
         // Show one exception
         if (exception.get() != null) {

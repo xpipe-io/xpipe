@@ -70,7 +70,9 @@ public class OptionalEncryptedValue<T> {
     }
 
     public OptionalEncryptedValue<T> withUpdatedPrincipals() {
-        return with(value, isEncrypted() ? DataStoreAccessScope.getTargetScope(getSecret().getScope()) : null);
+        return with(
+                value,
+                isEncrypted() ? DataStoreAccessScope.getTargetScope(getSecret().getScope()) : null);
     }
 
     public OptionalEncryptedValue<T> with(T value, DataStoreAccessScope scope) {
@@ -78,8 +80,8 @@ public class OptionalEncryptedValue<T> {
             return null;
         }
 
-        var encryptionUnchanged = (secret == null && scope == null) ||
-                (secret != null && scope != null && secret.getScope().equals(scope) && secret.isScopeValid());
+        var encryptionUnchanged = (secret == null && scope == null)
+                || (secret != null && scope != null && secret.getScope().equals(scope) && secret.isScopeValid());
 
         // If we don't have a value, we can only restrict the scope further
         if (value == null) {
@@ -110,9 +112,9 @@ public class OptionalEncryptedValue<T> {
         }
 
         var s = newValueJson.toPrettyString();
-        var newSecret = secret != null ?
-                secret.with(new InPlaceSecretValue(s.toCharArray()), scope) :
-                MultiPrincipalSecret.of(new InPlaceSecretValue(s.toCharArray()), scope.getPrincipals());
+        var newSecret = secret != null
+                ? secret.with(new InPlaceSecretValue(s.toCharArray()), scope)
+                : MultiPrincipalSecret.of(new InPlaceSecretValue(s.toCharArray()), scope.getPrincipals());
         var hasValue = newSecret.getInternalSecret() != null;
         return new OptionalEncryptedValue<>(hasValue ? newValueJson : null, hasValue ? value : null, newSecret);
     }

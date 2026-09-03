@@ -153,8 +153,7 @@ public class AppLayoutModel {
 
     private void showPrefsRestartDialog() {
         if (!AppOperationMode.isInShutdown()) {
-            var modal = ModalOverlay.of(
-                    "prefsRestartTitle", AppDialog.dialogTextKey("prefsRestartContent"));
+            var modal = ModalOverlay.of("prefsRestartTitle", AppDialog.dialogTextKey("prefsRestartContent"));
             modal.addButton(ModalButton.cancel());
             modal.addButton(new ModalButton("restart", () -> AppRestart.restart(), true, true));
             modal.show();

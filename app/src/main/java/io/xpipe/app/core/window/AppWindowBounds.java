@@ -2,13 +2,9 @@ package io.xpipe.app.core.window;
 
 import io.xpipe.app.util.OsType;
 
-import javafx.geometry.Rectangle2D;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AppWindowBounds {

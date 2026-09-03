@@ -139,12 +139,7 @@ public class AppProperties {
                 .map(Boolean::parseBoolean)
                 .orElse(false);
         defaultReleaseDataDir = AppSystemInfo.ofCurrent().getUserHome().resolve(".xpipe");
-        defaultDataDir = AppSystemInfo.ofCurrent()
-                .getUserHome()
-                .resolve(
-                        isStaging()
-                                ? ".xpipe-ptb"
-                                : ".xpipe");
+        defaultDataDir = AppSystemInfo.ofCurrent().getUserHome().resolve(isStaging() ? ".xpipe-ptb" : ".xpipe");
         dataDir = Optional.ofNullable(System.getProperty(AppNames.propertyName("dataDir")))
                 .map(s -> {
                     var p = Path.of(s);

@@ -14,7 +14,8 @@ import java.util.List;
 
 @JsonTypeName("local")
 @Value
-public class LocalStore implements NetworkTunnelStore, ShellStore, StatefulDataStore<ShellStoreState>, AccessScopeStore {
+public class LocalStore
+        implements NetworkTunnelStore, ShellStore, StatefulDataStore<ShellStoreState>, AccessScopeStore {
 
     @Override
     public Class<ShellStoreState> getStateClass() {

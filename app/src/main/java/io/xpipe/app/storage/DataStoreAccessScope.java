@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @EqualsAndHashCode
@@ -71,7 +70,8 @@ public class DataStoreAccessScope {
         // A used principal got deleted, reencrypt with encryption key if we have no other access
         // or just remove the principal if we still have access
         if (!exists) {
-            var hasOtherSubs = scope.getPrincipals().stream().anyMatch(p -> !p.equals(principal) && p.isSubRestricted());
+            var hasOtherSubs =
+                    scope.getPrincipals().stream().anyMatch(p -> !p.equals(principal) && p.isSubRestricted());
             return hasOtherSubs ? null : encryptPrincipal;
         }
 

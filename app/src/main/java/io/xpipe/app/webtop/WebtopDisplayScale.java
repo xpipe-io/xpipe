@@ -1,7 +1,6 @@
 package io.xpipe.app.webtop;
 
 import io.xpipe.app.core.AppDisplayScale;
-import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;

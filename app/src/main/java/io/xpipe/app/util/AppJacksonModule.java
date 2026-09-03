@@ -430,7 +430,8 @@ public class AppJacksonModule extends SimpleModule {
     }
 
     @SuppressWarnings("all")
-    public static class OptionalEncryptedValueDeserializer<T extends OptionalEncryptedValue<?>> extends ValueDeserializer<T> {
+    public static class OptionalEncryptedValueDeserializer<T extends OptionalEncryptedValue<?>>
+            extends ValueDeserializer<T> {
 
         private Class<?> type;
 

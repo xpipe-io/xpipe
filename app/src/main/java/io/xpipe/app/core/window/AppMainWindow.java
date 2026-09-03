@@ -156,7 +156,10 @@ public class AppMainWindow {
 
     public static synchronized void resetContent() {
         PlatformThread.runLaterIfNeededBlocking(() -> {
-            loadingText.setValue(AppI18n.get(DataStorage.get() != null && DataStorage.get().syncEnabled() ? "synchronizingChanges" : "savingChanges"));
+            loadingText.setValue(AppI18n.get(
+                    DataStorage.get() != null && DataStorage.get().syncEnabled()
+                            ? "synchronizingChanges"
+                            : "savingChanges"));
             loadedContent.setValue(null);
         });
     }

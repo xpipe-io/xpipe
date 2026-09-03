@@ -249,17 +249,21 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
                     });
                     // Let largest button use its own pref size to always take the pref width, even if constrained
                     // and make users use max size
-                    node.minWidthProperty().bind(Bindings.createDoubleBinding(() -> {
-                        if (node.equals(maxNode.get())) {
-                            if (node.getWidth() <= 70) {
-                                return 70.0;
-                            } else {
-                                return Region.USE_PREF_SIZE;
-                            }
-                        } else {
-                            return max.get();
-                        }
-                    }, node.widthProperty(), max));
+                    node.minWidthProperty()
+                            .bind(Bindings.createDoubleBinding(
+                                    () -> {
+                                        if (node.equals(maxNode.get())) {
+                                            if (node.getWidth() <= 70) {
+                                                return 70.0;
+                                            } else {
+                                                return Region.USE_PREF_SIZE;
+                                            }
+                                        } else {
+                                            return max.get();
+                                        }
+                                    },
+                                    node.widthProperty(),
+                                    max));
                     node.prefHeightProperty().bind(buttonBar.heightProperty());
                 }
                 buttonBar.getChildren().add(node);

@@ -277,9 +277,11 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         button.style("user-icon");
         var identity = getWrapper().getEntry().getProvider() != null
                 && getWrapper().getEntry().getProvider().getCreationCategory() == DataStoreCreationCategory.IDENTITY;
-        var list = getWrapper().getEntry().getAccessScope().getPrincipals().stream().map(p -> "- " + p.getName())
+        var list = getWrapper().getEntry().getAccessScope().getPrincipals().stream()
+                .map(p -> "- " + p.getName())
                 .collect(Collectors.joining("\n"));
-        button.describe(d -> d.name(AppI18n.observable(identity ? "restrictedIdentity" : "restrictedConnection", list)));
+        button.describe(
+                d -> d.name(AppI18n.observable(identity ? "restrictedIdentity" : "restrictedConnection", list)));
         button.apply(struc -> {
             AppFontSizes.base(struc);
         });
