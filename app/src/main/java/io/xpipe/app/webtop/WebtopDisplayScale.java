@@ -39,7 +39,7 @@ public class WebtopDisplayScale {
                     initialScale = clamped;
                 } else if (!initialScale.equals(clamped)) {
                     AppPrefs.get().uiScale.setValue(clamped);
-                    AppRestart.restart();
+                    AppPrefs.get().getRequiresRestart().set(true);
                     return true;
                 }
 

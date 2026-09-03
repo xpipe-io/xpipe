@@ -132,7 +132,7 @@ public abstract class DataStorageElement {
 
     public abstract boolean isInStorage();
 
-    public abstract Path[] getShareableFiles();
+    public abstract List<Path> getSyncableFiles();
 
     public void notifyUpdate(boolean used, boolean modified) {
         if (used) {

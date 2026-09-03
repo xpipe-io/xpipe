@@ -57,7 +57,6 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                         grid.widthProperty()));
         var notes = new StoreNotesComp(getWrapper()).build();
         var templateIcon = createTemplateIcon().build();
-        var userIcon = createScopeIcon().build();
         var pinIcon = createPinIcon().build();
         var info = createInformation().build();
         var active = new StoreActiveComp(getWrapper()).build();
@@ -137,7 +136,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         nameBoxEntries.add(name);
         nameBoxEntries.add(new Spacer(2, Orientation.HORIZONTAL));
         nameBoxEntries.add(tags);
-        nameBoxEntries.addAll(List.of(index, active, templateIcon, userIcon, pinIcon, notes));
+        nameBoxEntries.addAll(List.of(index, active, templateIcon, pinIcon, notes));
         var nameBox = new HBox(nameBoxEntries.toArray(Node[]::new));
         nameBox.setSpacing(4);
         nameBox.setAlignment(Pos.CENTER_LEFT);

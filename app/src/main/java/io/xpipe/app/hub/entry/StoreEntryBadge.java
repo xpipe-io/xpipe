@@ -139,22 +139,6 @@ public interface StoreEntryBadge {
         return of("mdi2a-account", s);
     }
 
-    static StoreEntryBadge ofUsername(String s) {
-        if (s == null) {
-            return null;
-        }
-
-        return of("mdi2a-account", s).withCopyAction();
-    }
-
-    static StoreEntryBadge ofUsername(String display, String copy) {
-        if (display == null) {
-            return null;
-        }
-
-        return of("mdi2a-account", display).withCopyAction(copy);
-    }
-
     static StoreEntryBadge ofPassword(String s) {
         if (s == null) {
             return null;

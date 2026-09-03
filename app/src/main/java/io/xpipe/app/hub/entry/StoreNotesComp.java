@@ -19,7 +19,7 @@ public class StoreNotesComp extends RegionBuilder<Button> {
         var prop = new SimpleStringProperty(initial);
         var md = new MarkdownEditorComp(prop, "notes-" + wrapper.getName().getValue())
                 .prefWidth(700)
-                .prefHeight(800);
+                .maxHeight(800);
 
         var modal = ModalOverlay.of(new ReadOnlyStringWrapper(wrapper.getName().getValue()), md, null);
         if (wrapper.getNotes().getValue() != null) {
@@ -32,7 +32,6 @@ public class StoreNotesComp extends RegionBuilder<Button> {
                     true,
                     false));
         }
-        modal.addButton(new ModalButton("cancel", () -> {}, true, false));
         modal.addButton(new ModalButton(
                 "apply",
                 () -> {

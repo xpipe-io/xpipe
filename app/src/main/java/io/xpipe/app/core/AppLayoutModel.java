@@ -95,13 +95,7 @@ public class AppLayoutModel {
                 if (prefs != null && prefs.getRequiresRestart().get()) {
                     GlobalTimer.delay(
                             () -> {
-                                if (!AppOperationMode.isInShutdown()) {
-                                    var modal = ModalOverlay.of(
-                                            "prefsRestartTitle", AppDialog.dialogTextKey("prefsRestartContent"));
-                                    modal.addButton(ModalButton.cancel());
-                                    modal.addButton(new ModalButton("restart", () -> AppRestart.restart(), true, true));
-                                    modal.show();
-                                }
+                                showPrefsRestartDialog();
                             },
                             Duration.ofSeconds(1));
                     AppPrefs.get().getRequiresRestart().set(false);
@@ -117,6 +111,12 @@ public class AppLayoutModel {
                 if (svs != null) {
                     svs.triggerStoreListUpdate();
                 }
+            }
+        });
+
+        AppPrefs.get().getRequiresRestart().addListener((observable, oldValue, newValue) -> {
+            if (newValue && !entries.get(2).equals(selected.getValue())) {
+                showPrefsRestartDialog();
             }
         });
 
@@ -149,6 +149,16 @@ public class AppLayoutModel {
                 },
                 portraitExpanded,
                 AppSizeBreakpoints.compactMode()));
+    }
+
+    private void showPrefsRestartDialog() {
+        if (!AppOperationMode.isInShutdown()) {
+            var modal = ModalOverlay.of(
+                    "prefsRestartTitle", AppDialog.dialogTextKey("prefsRestartContent"));
+            modal.addButton(ModalButton.cancel());
+            modal.addButton(new ModalButton("restart", () -> AppRestart.restart(), true, true));
+            modal.show();
+        }
     }
 
     public static void reset() {

@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.*;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -262,8 +263,8 @@ public class DataStoreCategory extends DataStorageElement {
     }
 
     @Override
-    public Path[] getShareableFiles() {
-        return new Path[] {directory.resolve("category.json")};
+    public List<Path> getSyncableFiles() {
+        return List.of(directory.resolve("category.json"));
     }
 
     public void writeDataToDisk() throws Exception {

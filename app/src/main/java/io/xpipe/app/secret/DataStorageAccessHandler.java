@@ -32,6 +32,8 @@ public interface DataStorageAccessHandler {
 
     boolean isAccessRestricted();
 
+    boolean isAccessSubRestricted();
+
     boolean isAccessible();
 
     DataStorageAccessType getType();

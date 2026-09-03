@@ -43,7 +43,7 @@ public class StoreCreationModel {
     ObservableValue<DataStoreEntry> entry;
     BooleanProperty skippable = new SimpleBooleanProperty();
     BooleanProperty connectable = new SimpleBooleanProperty();
-    StringProperty name;
+    Property<String> name;
     DataStoreEntry existingEntry;
     List<DataStore> existingDependencies;
     boolean staticDisplay;

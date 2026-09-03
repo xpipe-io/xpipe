@@ -40,7 +40,7 @@ public class DataStoreAccessScopeComp extends SimpleRegionBuilder {
         var handler = DataStorageAccessHandler.getInstance();
         var auth = handler.getType();
 
-        if (auth != DataStorageAccessType.ROLE || !handler.isAccessible()) {
+        if (auth != DataStorageAccessType.ROLE || !handler.isAccessible() || !handler.isAccessSubRestricted()) {
             var l = new LabelComp(AppI18n.observable("unavailable"));
 
             var settings = new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {

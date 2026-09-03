@@ -74,6 +74,11 @@ public class ErrorEventFactory {
             return "Invalid file path: " + ipe.getMessage();
         }
 
+        if (t instanceof UnsatisfiedLinkError ule) {
+            // Don't include full PATH variable in message
+            return ule.getMessage().split(":")[0];
+        }
+
         if (t instanceof InvocationTargetException ite && ite.getCause() != null && ite.getCause() != t) {
             return formatThrowableMessage(ite.getCause());
         }

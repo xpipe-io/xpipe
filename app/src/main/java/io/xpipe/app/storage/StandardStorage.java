@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
 
 public class StandardStorage extends DataStorage {
 
@@ -104,7 +103,7 @@ public class StandardStorage extends DataStorage {
         }
 
         for (DataStoreCategory cat : new ArrayList<>(storeCategories)) {
-            if (Arrays.stream(cat.getShareableFiles()).noneMatch(Files::exists)) {
+            if (cat.getSyncableFiles().stream().noneMatch(Files::exists)) {
                 deleteStoreCategory(cat, false, false);
             }
         }
@@ -155,7 +154,7 @@ public class StandardStorage extends DataStorage {
             selectedCategory = getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).orElseThrow();
 
             for (DataStoreEntry entry : new ArrayList<>(getStoreEntries())) {
-                if (Arrays.stream(entry.getShareableFiles()).noneMatch(Files::exists)) {
+                if (entry.getSyncableFiles().stream().noneMatch(Files::exists)) {
                     deleteStoreEntry(entry);
                 }
             }

@@ -5,6 +5,7 @@ import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.LabelGraphic;
@@ -54,6 +55,10 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
         this.showSettings = showSettings;
     }
 
+    protected void selectFromList(PasswordManager.ListEntry entry) {
+        value.setValue(entry.getKey());
+    }
+
     @Override
     protected Region createSimple() {
         var prefs = AppPrefs.get();
@@ -87,7 +92,15 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
                 struc.setDisable(true);
                 status.set("    " + AppI18n.get("querying"));
                 ThreadHelper.runFailableAsync(() -> {
-                    var list = PasswordManagerKeyList.queryList(false);
+                    List<PasswordManager.ListEntry> list;
+                    try {
+                        list = PasswordManagerKeyList.queryList(false);
+                    } catch (Exception e) {
+                        struc.setDisable(false);
+                        status.set(null);
+                        ErrorEventFactory.fromThrowable(e).handle();
+                        return;
+                    }
 
                     Platform.runLater(() -> {
                         struc.setDisable(false);
@@ -134,7 +147,7 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
                                 var buttonName = entry.getTitle();
                                 var entryButton = new ButtonComp(new ReadOnlyObjectWrapper<>(buttonName), () -> {
                                     popover.hide();
-                                    value.setValue(entry.getKey());
+                                    selectFromList(entry);
                                 });
                                 entryButton.maxWidth(400);
                                 entryButton.style(Styles.FLAT);

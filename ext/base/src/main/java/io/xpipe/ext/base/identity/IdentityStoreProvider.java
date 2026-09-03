@@ -52,6 +52,6 @@ public abstract class IdentityStoreProvider implements DataStoreProvider {
         var password = st.getPassword() == null || st.getPassword() instanceof SecretNoneStrategy ? null : "Password";
         var key = st.getSshIdentity() == null || st.getSshIdentity() instanceof NoIdentityStrategy ? null : "Key";
         return StoreEntryInformation.of(
-                StoreEntryBadge.ofUsername(user), StoreEntryBadge.ofPassword(password), StoreEntryBadge.ofKey(key));
+                StoreEntryBadge.ofAuth(user), StoreEntryBadge.ofPassword(password), StoreEntryBadge.ofKey(key));
     }
 }

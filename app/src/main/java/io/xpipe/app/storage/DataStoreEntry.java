@@ -529,11 +529,10 @@ public class DataStoreEntry extends DataStorageElement {
     }
 
     @Override
-    public Path[] getShareableFiles() {
-        var notes = directory.resolve("notes.md");
-        var list = List.of(directory.resolve("store.json"), directory.resolve("entry.json"));
-        return Stream.concat(list.stream(), Files.exists(notes) ? Stream.of(notes) : Stream.of())
-                .toArray(Path[]::new);
+    public List<Path> getSyncableFiles() {
+        var list = List.of(directory.resolve("store.json"), directory.resolve("entry.json"),
+                directory.resolve("notes.md"), directory.resolve("notes.json"));
+        return list;
     }
 
     public boolean isAccessible() {
@@ -594,14 +593,14 @@ public class DataStoreEntry extends DataStorageElement {
             Files.writeString(directory.resolve("entry.json"), this.entryNode.getWriteString());
         }
 
+        var normalNotesFile = directory.resolve("notes.md");
+        var encryptedNotesFile = directory.resolve("notes.json");
+        Files.deleteIfExists(normalNotesFile);
+        Files.deleteIfExists(encryptedNotesFile);
         this.notesNode = this.notesNode != null ? this.notesNode.prepareForWrite(this, false, getNotes()) : null;
         if (this.notesNode != null && this.notesNode.requiresWrite()) {
-            var normalNotesFile = directory.resolve("notes.md");
-            var encryptedNotesFile = directory.resolve("notes.json");
-            Files.deleteIfExists(normalNotesFile);
-            Files.deleteIfExists(encryptedNotesFile);
             var file = this.notesNode.isEncrypted() ? encryptedNotesFile : normalNotesFile;
-            Files.writeString(file, this.notesNode.getWriteString());
+            Files.writeString(file, this.notesNode.isEncrypted() ? this.notesNode.getWriteString() : this.notesNode.getValue());
         }
 
         this.storeNode = this.storeNode.prepareForWrite(this, true, getStore());
