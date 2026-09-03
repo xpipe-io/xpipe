@@ -1,13 +1,16 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.cred.SshIdentityStrategy;
-import io.xpipe.app.cred.UsernameStrategy;
-import io.xpipe.app.ext.StatefulDataStore;
-import io.xpipe.app.ext.UserScopeStore;
+import io.xpipe.app.identity.SshIdentityStrategy;
+import io.xpipe.app.identity.UsernameStrategy;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreAccessScope;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStore;
+import io.xpipe.app.store.StatefulDataStore;
+import io.xpipe.app.util.ValidationException;
+import io.xpipe.app.util.Validators;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;
@@ -26,11 +29,47 @@ import java.util.UUID;
 @Value
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class MultiIdentityStore extends IdentityStore
-        implements StatefulDataStore<MultiIdentityStoreState>, UserScopeStore {
+public class MultiIdentityStore extends IdentityStore implements StatefulDataStore<MultiIdentityStoreState> {
+
+    public static boolean isExclusivelyHeld(DataStoreEntryRef<IdentityStore> ref) {
+        return getExclusiveHolder(ref).isPresent();
+    }
+
+    public static Optional<DataStoreEntryRef<MultiIdentityStore>> getExclusiveHolder(
+            DataStoreEntryRef<IdentityStore> ref) {
+        var exclusiveHolder = DataStorage.get().getStoreEntries().stream()
+                .filter(entry -> entry.getValidity().isUsable()
+                        && entry.getStore() instanceof MultiIdentityStore m
+                        && m.getExclusive() != null
+                        && m.getExclusive()
+                        && m.getAvailableIdentities().contains(ref))
+                .findFirst();
+        return exclusiveHolder.map(entry -> entry.ref());
+    }
 
     List<UUID> identities;
-    boolean perUser;
+    Boolean exclusive;
+    DataStoreAccessScope accessScope;
+
+    public DataStoreAccessScope getAccessScopeRaw() {
+        return accessScope;
+    }
+
+    @Override
+    public DataStoreAccessScope getAccessScope() {
+        return accessScope != null ? accessScope : DataStoreAccessScope.encryption();
+    }
+
+    @Override
+    public String toSummary() {
+        var selected = getSelected();
+        if (selected.isPresent()) {
+            return selected.get().getStore().toSummary() + " ["
+                    + selected.get().get().getName() + "]";
+        } else {
+            return "?";
+        }
+    }
 
     @Override
     public String getName() {
@@ -85,14 +124,53 @@ public class MultiIdentityStore extends IdentityStore
                 "No available identity for multi identity " + getSelfEntry().getName()));
     }
 
-    @Override
-    public List<DataStoreEntryRef<?>> getDependencies() {
-        return List.of();
+    public boolean hasNestedMultiIdentities() {
+        return getAvailableIdentities().stream().anyMatch(ref -> ref.getStore() instanceof MultiIdentityStore);
+    }
+
+    public boolean areAllIdentitiesAccessible() {
+        return getAvailableIdentities().size() == identities.size();
+    }
+
+    public boolean areAnyChildrenLocal() {
+        var childrenLocal = !getAvailableIdentities().isEmpty()
+                && getAvailableIdentities().stream().anyMatch(ref -> {
+                    return DataStorage.get().isInLocalIdentities(ref.get());
+                });
+        return childrenLocal;
+    }
+
+    public boolean areAllChildrenLocal() {
+        var childrenLocal = !getAvailableIdentities().isEmpty()
+                && getAvailableIdentities().stream().allMatch(ref -> {
+                    return DataStorage.get().isInLocalIdentities(ref.get());
+                });
+        return childrenLocal;
+    }
+
+    public boolean areAllChildrenSynced() {
+        var childrenSynced = !getAvailableIdentities().isEmpty()
+                && getAvailableIdentities().stream().allMatch(ref -> {
+                    return DataStorage.get().isInSyncedIdentities(ref.get());
+                });
+        return childrenSynced;
     }
 
     @Override
-    public void checkComplete() {
-        getSelectedOrThrow();
+    public List<DataStoreEntryRef<?>> getDependencies() {
+        return getAvailableIdentities().stream()
+                .<DataStoreEntryRef<?>>map(DataStoreEntryRef::asNeeded)
+                .toList();
+    }
+
+    @Override
+    public void checkComplete() throws ValidationException {
+        Validators.nonNull(getSelected().orElse(null));
+    }
+
+    @Override
+    public DataStoreEntryRef<IdentityStore> getCustomEditTarget() {
+        return getSelected().orElse(null);
     }
 
     public UsernameStrategy getUsername() {
@@ -112,5 +190,19 @@ public class MultiIdentityStore extends IdentityStore
     @Override
     public Class<MultiIdentityStoreState> getStateClass() {
         return MultiIdentityStoreState.class;
+    }
+
+    @Override
+    public DataStore withUpdatedPrincipals() {
+        var targetScope = DataStoreAccessScope.getTargetScope(accessScope);
+        if (targetScope != null && targetScope.equals(DataStoreAccessScope.vault())) {
+            targetScope = null;
+        }
+
+        return MultiIdentityStore.builder()
+                .identities(identities)
+                .exclusive(exclusive)
+                .accessScope(targetScope)
+                .build();
     }
 }

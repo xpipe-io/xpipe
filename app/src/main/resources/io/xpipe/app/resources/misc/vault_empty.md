@@ -2,7 +2,7 @@
 
 It works! The git remote push succeeded. However, no connections have been pushed to this git repository yet.
 
-## Adding connections to the repository
+### Adding connections to the repository
 
 By default, no connection categories are set to sync so that you have explicit control on what connections to commit.
 
@@ -13,6 +13,8 @@ Then, set the `Sync with git repository` value to `Yes` to sync the category and
 This will add all syncable connections in that category to the git repository.
 The sync settings for a category are inherited by default from its parent if not explicitly set.
 
-## Local connections are not synced
+### Local connections are not synced
 
-Any connection located under the local machine can not be shared as it refers to connections and data that are only available on the local system.
+Any connections located under the local machine are not synced as they are only available on the local system. You can sync any other types of remote connections like SSH connections.
+
+Some types of connection entries that are local by default, e.g. an SSH config file, can be configured to sync by syncing the underlying data, e.g. files, with this repository as well. You can find details for each type of connection entry at https://docs.xpipe.io/.

@@ -14,22 +14,20 @@ import io.xpipe.app.update.UpdateHandler;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.ThreadHelper;
 
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 
 import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 @AllArgsConstructor
 public class SideMenuBarComp extends RegionBuilder<VBox> {
@@ -113,28 +111,34 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
 
         var topQueueButtons = new VBox();
         var bottomQueueButtons = new VBox();
+
+        Consumer<List<? extends AppLayoutModel.QueueEntry>> update = (List<? extends AppLayoutModel.QueueEntry> l) -> {
+            topQueueButtons.getChildren().clear();
+            bottomQueueButtons.getChildren().clear();
+            for (int i = l.size() - 1; i >= 0; i--) {
+                var item = l.get(i);
+                var b = new IconButtonComp(item.getIcon(), null);
+                b.describe(d -> d.name(item.getName()));
+                b.apply(struc -> {
+                    struc.setOnAction(e -> {
+                        struc.setDisable(true);
+                        item.execute();
+                        struc.setDisable(false);
+                        e.consume();
+                    });
+                });
+                var stack = createStyle(null, b, !item.isTop());
+                (item.isTop() ? topQueueButtons : bottomQueueButtons)
+                        .getChildren()
+                        .add(stack.build());
+            }
+        };
+
+        update.accept(queueEntries);
         queueEntries.addListener((ListChangeListener<? super AppLayoutModel.QueueEntry>) c -> {
             var l = new ArrayList<>(c.getList());
             PlatformThread.runLaterIfNeeded(() -> {
-                topQueueButtons.getChildren().clear();
-                bottomQueueButtons.getChildren().clear();
-                for (int i = l.size() - 1; i >= 0; i--) {
-                    var item = l.get(i);
-                    var b = new IconButtonComp(item.getIcon(), null);
-                    b.describe(d -> d.name(item.getName()));
-                    b.apply(struc -> {
-                        struc.setOnAction(e -> {
-                            struc.setDisable(true);
-                            item.execute();
-                            struc.setDisable(false);
-                            e.consume();
-                        });
-                    });
-                    var stack = createStyle(null, b, !item.isTop());
-                    (item.isTop() ? topQueueButtons : bottomQueueButtons)
-                            .getChildren()
-                            .add(stack.build());
-                }
+                update.accept(l);
             });
         });
         vbox.getChildren().addFirst(topQueueButtons);
@@ -160,31 +164,6 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
             });
         });
 
-        var selectedBorder = Bindings.createObjectBinding(
-                () -> {
-                    var c = Platform.getPreferences()
-                            .getAccentColor()
-                            .desaturate()
-                            .desaturate();
-                    return new Background(new BackgroundFill(c, new CornerRadii(8), new Insets(17, 1, 15, 2)));
-                },
-                Platform.getPreferences().accentColorProperty());
-        var hoverBorder = Bindings.createObjectBinding(
-                () -> {
-                    var c = Platform.getPreferences()
-                            .getAccentColor()
-                            .darker()
-                            .desaturate()
-                            .desaturate();
-                    return new Background(new BackgroundFill(c, new CornerRadii(8), new Insets(17, 1, 15, 2)));
-                },
-                Platform.getPreferences().accentColorProperty());
-        var noneBorder = Bindings.createObjectBinding(
-                () -> {
-                    return Background.fill(Color.TRANSPARENT);
-                },
-                Platform.getPreferences().accentColorProperty());
-
         var indicator = RegionBuilder.empty().style("indicator");
         var stack = new StackComp(List.of(indicator, b)).apply(struc -> struc.setAlignment(Pos.CENTER_RIGHT));
         stack.apply(struc -> {
@@ -192,26 +171,12 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
             var buttonRegion = (Region) struc.getChildren().get(1);
             indicatorRegion.setMaxWidth(7);
             indicatorRegion.prefHeightProperty().bind(buttonRegion.heightProperty());
-            indicatorRegion
-                    .backgroundProperty()
-                    .bind(Bindings.createObjectBinding(
-                            () -> {
-                                if (struc.isHover()) {
-                                    return hoverBorder.get();
-                                }
-
-                                if (highlight || value.getValue().equals(e)) {
-                                    return selectedBorder.get();
-                                }
-
-                                return noneBorder.get();
-                            },
-                            struc.hoverProperty(),
-                            value,
-                            hoverBorder,
-                            selectedBorder,
-                            noneBorder));
+            value.subscribe(entry -> {
+                var s = entry == e || highlight;
+                struc.pseudoClassStateChanged(selected, s);
+            });
         });
+        stack.style("sidebar-button");
         return stack;
     }
 }

@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.store;
 
-import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.store.DataStore;
 
 public interface StartableStore extends DataStore {
 

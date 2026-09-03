@@ -104,6 +104,15 @@ public class ErrorEvent {
             }
         }
 
+        public ErrorEventBuilder description(String s) {
+            if (description != null) {
+                description = s + "\n\n" + description;
+            } else {
+                description = s;
+            }
+            return this;
+        }
+
         public ErrorEventBuilder documentationLink(DocumentationLink documentationLink) {
             return link(documentationLink.getLink());
         }

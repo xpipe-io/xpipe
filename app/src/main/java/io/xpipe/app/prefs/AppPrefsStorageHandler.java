@@ -1,19 +1,16 @@
 package io.xpipe.app.prefs;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.core.JacksonMapper;
+import io.xpipe.app.util.JacksonMapper;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
-import com.fasterxml.jackson.databind.util.TokenBuffer;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
+import tools.jackson.databind.JavaType;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.StringNode;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,45 +19,37 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.xpipe.app.ext.PrefsChoiceValue.getAll;
-import static io.xpipe.app.ext.PrefsChoiceValue.getSupported;
+import static io.xpipe.app.prefs.PrefsChoiceValue.getAll;
+import static io.xpipe.app.prefs.PrefsChoiceValue.getSupported;
 
 public class AppPrefsStorageHandler {
 
     private final Path file;
-    private ObjectNode content;
+    private ObjectNode content = JsonNodeFactory.instance.objectNode();
 
     public AppPrefsStorageHandler(Path file) {
         this.file = file;
     }
 
-    boolean isInitialized() {
-        return content != null;
-    }
-
     private JsonNode getContent(String key) {
-        loadIfNeeded();
         return content.get(key);
     }
 
-    private void loadIfNeeded() {
-        if (content == null) {
-            if (Files.exists(file)) {
-                try {
-                    var s = Files.readString(file);
-                    if (!s.isEmpty()) {
-                        var read = JacksonMapper.getDefault().readTree(s);
-                        if (read.isObject()) {
-                            content = (ObjectNode) read;
-                        }
+    public void load() {
+        if (Files.exists(file)) {
+            try {
+                var s = Files.readString(file);
+                if (!s.isEmpty()) {
+                    var read = JacksonMapper.getDefault().readTree(s);
+                    if (read.isObject()) {
+                        content = (ObjectNode) read;
                     }
-                } catch (IOException e) {
-                    ErrorEventFactory.fromThrowable(e).expected().handle();
                 }
-            }
-
-            if (content == null) {
-                content = JsonNodeFactory.instance.objectNode();
+            } catch (IOException e) {
+                ErrorEventFactory.fromThrowable(e)
+                        .expected()
+                        .description("Settings file " + file + " is corrupt")
+                        .handle();
             }
         }
     }
@@ -81,7 +70,7 @@ public class AppPrefsStorageHandler {
     @SneakyThrows
     public void updateObject(String key, Object object, JavaType type) {
         if (object instanceof PrefsChoiceValue prefsChoiceValue) {
-            setContent(key, new TextNode(prefsChoiceValue.getId()));
+            setContent(key, new StringNode(prefsChoiceValue.getId()));
             return;
         }
 
@@ -91,10 +80,7 @@ public class AppPrefsStorageHandler {
         }
 
         var mapper = JacksonMapper.getDefault();
-        TokenBuffer buf = new TokenBuffer(mapper, false);
-        mapper.writerFor(type).writeValue(buf, object);
-        var tree = mapper.readTree(buf.asParser());
-        setContent(key, (JsonNode) tree);
+        setContent(key, mapper.valueToTree(object));
     }
 
     @SuppressWarnings("unchecked")
@@ -117,7 +103,7 @@ public class AppPrefsStorageHandler {
             List<T> all = (List<T>) getAll(type.getRawClass());
             if (all != null) {
                 Class<PrefsChoiceValue> cast = (Class<PrefsChoiceValue>) type.getRawClass();
-                var in = tree.asText();
+                var in = tree.asString();
                 var found = all.stream()
                         .filter(t -> ((PrefsChoiceValue) t).getId().equalsIgnoreCase(in))
                         .findAny();

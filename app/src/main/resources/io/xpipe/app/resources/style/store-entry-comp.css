@@ -26,12 +26,7 @@
 }
 
 .store-list-comp.scroll-pane > .viewport .list-box-content {
-    -fx-spacing: 4;
-    -fx-padding: 4 0 4 0;
-}
-
-.store-list-comp.scroll-pane:dense > .viewport .list-box-content {
-    -fx-spacing: 2;
+    -fx-padding: 2 0 2 0;
 }
 
 .store-list-comp.scroll-pane  {
@@ -71,6 +66,14 @@
     -fx-icon-color: #5b2cffff;
 }
 
+.root:light .store-entry-grid .template-icon .ikonli-font-icon {
+    -fx-icon-color: #A66606CC;
+}
+
+.root:dark .store-entry-grid .template-icon .ikonli-font-icon {
+    -fx-icon-color: #E6A616CC;
+}
+
 .store-entry-grid .icon > .background {
     -fx-background-radius: 5px;
     -fx-background-color: -color-bg-overlay;
@@ -92,6 +95,19 @@
 
 .store-entry-grid.dense {
     -fx-padding: 0px 6px 0px 6px;
+}
+
+.drag-indicator {
+    -fx-min-height: 2;
+    -fx-pref-height: 2;
+    -fx-max-height: 2;
+    -fx-background-color: -color-accent-emphasis;
+}
+
+.drag-indicator:dense {
+    -fx-min-height: 1;
+    -fx-pref-height: 1;
+    -fx-max-height: 1;
 }
 
 /* Entry */
@@ -153,6 +169,11 @@
     -fx-padding: 5px 0 0 17px;
 }
 
+.store-entry-section-comp:portrait > .children-content {
+    -fx-padding: 5px 0 0 8;
+}
+
+
 .store-entry-section-comp > .separator .line {
     -fx-padding: 0;
     -fx-border-insets: 0px;
@@ -195,11 +216,15 @@
 }
 
 .store-entry-section-comp .list-box-view-comp .list-box-content {
-    -fx-spacing: 0.2em;
+    -fx-spacing: 0;
 }
 
 .root .store-entry-section-comp.color-box.vertical-comp:per-user {
     -fx-border-color: #5b2cffcc;
+}
+
+.root .store-entry-section-comp.color-box.vertical-comp:template {
+    -fx-border-color: #E6A616CC;
 }
 
 /* Light sub backgrounds */
@@ -246,5 +271,96 @@
     -fx-background-color: #2224;
 }
 
+.store-entry-tag {
+    -fx-border-width: 1;
+    -fx-border-color: -color-border-default;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-font-size: 0.8em;
+    -fx-padding: 0 4 0 4;
+}
 
+.store-entry-tag:hover {
+    -fx-background-color: -color-bg-default-transparent;
+}
 
+.root:nord .store-entry-tag {
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+
+/** Badges */
+
+.store-entry-badge {
+    -fx-border-width: 1;
+    -fx-border-color: -color-border-subtle;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 2 5 2 5;
+}
+
+.root:light .store-entry-badge {
+    -fx-background-color: derive(-color-bg-default-transparent, -5%);
+}
+
+.root:dark .store-entry-badge {
+    -fx-background-color: derive(-color-bg-default-transparent, 5%);
+}
+
+.store-entry-badge:focused {
+    -fx-background-color: -color-bg-default-transparent;
+    -fx-border-color: -color-accent-muted;
+}
+
+.store-entry-badge.no-action:hover {
+    -fx-border-color: -color-border-subtle;
+    -fx-background-color: -color-bg-default-transparent;
+}
+
+.store-entry-badge .stacked-ikonli-font-icon > .outer-icon {
+    -fx-icon-size: 26px;
+    -fx-opacity: 0.4;
+}
+
+.store-entry-badge .stacked-ikonli-font-icon > .inner-icon {
+    -fx-icon-size: 12px;
+}
+
+.store-entry-badge.failure-badge .ikonli-font-icon.outer-icon {
+    -fx-icon-color: -color-danger-emphasis;
+}
+
+.store-entry-badge.success-badge .ikonli-font-icon.outer-icon {
+    -fx-icon-color: -color-success-emphasis;
+}
+
+.store-entry-badge.indeterminant-badge .ikonli-font-icon.outer-icon {
+    -fx-icon-color: #6666DD;
+}
+
+.store-entry-badge.license-badge .ikonli-font-icon {
+    -fx-icon-color: -color-accent-emphasis;
+}
+
+.store-entry-badge:hover {
+    -fx-background-color: -color-bg-default-transparent;
+    -fx-border-color: -color-accent-muted;
+    -fx-cursor: hand;
+}
+
+.root:nord .store-entry-badge {
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+
+.store-entry-badge {
+    -fx-opacity: 0.75;
+}
+
+.store-entry-comp:hover .store-entry-badge.no-action, .store-entry-comp:hover .store-entry-badge.no-action, .store-entry-comp:hover .store-entry-badge:disabled {
+    -fx-opacity: 0.6;
+}
+
+.store-entry-comp:hover .store-entry-badge {
+    -fx-opacity: 1.0;
+}

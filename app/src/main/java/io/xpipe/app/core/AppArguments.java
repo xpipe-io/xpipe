@@ -2,7 +2,7 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.LogErrorHandler;
-import io.xpipe.core.XPipeDaemonMode;
+import io.xpipe.app.util.XPipeDaemonMode;
 
 import lombok.Value;
 import picocli.CommandLine;
@@ -18,15 +18,19 @@ import java.util.regex.Pattern;
 public class AppArguments {
 
     private static final Pattern PROPERTY_PATTERN = Pattern.compile("^-[DP](.+)=(.+)$");
+
     List<String> rawArgs;
     List<String> resolvedArgs;
-    List<String> openArgs;
+    List<String> daemonOpenArgs;
 
     public static AppArguments init(String[] args) {
         var rawArgs = Arrays.asList(args);
         var resolvedArgs = Arrays.asList(parseProperties(args));
-        var command = LauncherCommand.resolveLauncher(resolvedArgs.toArray(String[]::new));
-        return new AppArguments(rawArgs, resolvedArgs, command.inputs);
+        var isDaemon = Boolean.getBoolean("io.xpipe.app.isDaemon");
+        var openArgs = !isDaemon
+                ? List.<String>of()
+                : LauncherCommand.resolveLauncher(resolvedArgs.toArray(String[]::new)).inputs;
+        return new AppArguments(rawArgs, resolvedArgs, openArgs);
     }
 
     private static String[] parseProperties(String[] args) {
@@ -56,7 +60,7 @@ public class AppArguments {
     public static class LauncherCommand implements Callable<Integer> {
 
         @CommandLine.Parameters(paramLabel = "<input>")
-        final List<String> inputs = List.of();
+        List<String> inputs = List.of();
 
         public static LauncherCommand resolveLauncher(String[] args) {
             var cmd = new CommandLine(new LauncherCommand());

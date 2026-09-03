@@ -1,25 +1,63 @@
 package io.xpipe.app.issue;
 
-import java.util.ServiceLoader;
+import io.xpipe.app.core.AppLogs;
+import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.mode.AppOperationMode;
 
-public abstract class EventHandler {
+public class EventHandler {
 
-    private static EventHandler INSTANCE;
-
-    private static void init() {
-        if (INSTANCE == null) {
-            INSTANCE = ServiceLoader.load(EventHandler.class).findFirst().orElseThrow();
-        }
-    }
+    private static final EventHandler INSTANCE = new EventHandler();
 
     public static EventHandler get() {
-        init();
         return INSTANCE;
     }
 
-    public abstract void handle(TrackEvent te);
+    public void handle(TrackEvent te) {
+        if (AppLogs.get() != null) {
+            AppLogs.get().logEvent(te);
+        } else {
+            System.out.println(te);
+            System.out.flush();
+        }
+    }
 
-    public abstract void handle(ErrorEvent ee);
+    public void handle(ErrorEvent ee) {
+        // Check the property manually to handle cases where AppProperties init fails
+        if ((AppProperties.get() != null && AppProperties.get().isAotTrainMode())
+                || Boolean.getBoolean("io.xpipe.app.isCli")) {
+            new LogErrorHandler().handle(ee);
+            if (ee.isTerminal()) {
+                AppOperationMode.halt(1);
+            }
+            return;
+        }
 
-    public abstract void modify(ErrorEvent ee);
+        if (ee.isTerminal()) {
+            new TerminalErrorHandler().handle(ee);
+            return;
+        }
+
+        // Don't block shutdown
+        if (AppOperationMode.isInShutdown()) {
+            handleOnShutdown(ee);
+            return;
+        }
+
+        if (AppOperationMode.get() == null) {
+            AppOperationMode.BACKGROUND.getErrorHandler().handle(ee);
+        } else {
+            AppOperationMode.get().getErrorHandler().handle(ee);
+        }
+    }
+
+    public void modify(ErrorEvent ee) {
+        if (AppLogs.get() != null && AppLogs.get().getSessionLogsDirectory() != null) {
+            ee.addAttachment(AppLogs.get().getSessionLogsDirectory());
+        }
+    }
+
+    private void handleOnShutdown(ErrorEvent ee) {
+        ErrorAction.ignore().handle(ee);
+        handle(TrackEvent.fromErrorEvent(ee));
+    }
 }

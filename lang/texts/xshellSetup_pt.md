@@ -1,5 +1,5 @@
 # Configuração do Xshell
 
-Para utilizar o Xshell como o teu terminal, podes ligá-lo à ponte SSH XPipe. Isto pode funcionar automaticamente quando a chave ssh da ponte local tiver sido adicionada ao Xshell com o nome correto.
+Para usares o Xshell como terminal, podes ligá-lo à ponte SSH do XPipe. Isto funciona automaticamente assim que a chave SSH da ponte local for adicionada ao Xshell com o nome correto.
 
-A única coisa que tens de fazer manualmente é adicionar o ficheiro de chave privada `%s` ao Xshell com o nome fixo `%s`.
+A única coisa que tens de fazer manualmente é adicionar o ficheiro da chave privada `%s` ao Xshell com o nome fixo `%s`.

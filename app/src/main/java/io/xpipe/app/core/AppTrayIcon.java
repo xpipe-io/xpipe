@@ -2,7 +2,10 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.core.OsType;
+import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.LocalExec;
+import io.xpipe.app.util.OsType;
+import io.xpipe.app.util.ThreadHelper;
 
 import java.awt.*;
 import java.io.IOException;
@@ -45,13 +48,27 @@ public class AppTrayIcon {
         {
             var quit = new MenuItem(AppI18n.get("quit"));
             quit.addActionListener(e -> {
-                tray.remove(trayIcon);
-                AppOperationMode.close();
+                var closingMenu = new PopupMenu();
+                var mi = new MenuItem(AppI18n.get(
+                                DataStorage.get() != null && DataStorage.get().syncEnabled()
+                                        ? "synchronizingChanges"
+                                        : "savingChanges")
+                        + " ...");
+                closingMenu.add(mi);
+                trayIcon.setPopupMenu(closingMenu);
+
+                ThreadHelper.runAsync(() -> {
+                    AppOperationMode.shutdown(false);
+                });
             });
             popupMenu.add(quit);
         }
 
         trayIcon.addActionListener(e -> {
+            if (AppOperationMode.isInShutdown()) {
+                return;
+            }
+
             if (OsType.ofLocal() != OsType.MACOS) {
                 tray.remove(trayIcon);
                 AppOperationMode.switchToAsync(AppOperationMode.GUI);
@@ -96,9 +113,11 @@ public class AppTrayIcon {
 
     public void showErrorMessage(String title, String message) {
         if (OsType.ofLocal() == OsType.MACOS) {
-            showMacAlert(title, message, "Error");
+            showMacAlert(title, message, AppI18n.get("errorOccurred"));
         } else {
-            EventQueue.invokeLater(() -> this.trayIcon.displayMessage(title, message, TrayIcon.MessageType.ERROR));
+            EventQueue.invokeLater(() -> {
+                this.trayIcon.displayMessage(title, message, TrayIcon.MessageType.ERROR);
+            });
         }
     }
 
@@ -106,10 +125,6 @@ public class AppTrayIcon {
         String execute = String.format(
                 "display notification \"%s\"" + " with title \"%s\"" + " subtitle \"%s\"",
                 message != null ? message : "", title != null ? title : "", subTitle != null ? subTitle : "");
-        try {
-            Runtime.getRuntime().exec(new String[] {"osascript", "-e", execute});
-        } catch (IOException e) {
-            throw new UnsupportedOperationException("Cannot run osascript with given parameters.");
-        }
+        LocalExec.executeAsync("osascript", "-e", execute);
     }
 }

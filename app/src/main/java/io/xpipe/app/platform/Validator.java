@@ -1,16 +1,14 @@
 package io.xpipe.app.platform;
 
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.storage.DataStoreAccessScope;
 import io.xpipe.app.util.Checkable;
 
 import javafx.beans.binding.StringBinding;
-import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyListProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
-
-import net.synedra.validatorfx.ValidationResult;
 
 import java.util.function.Predicate;
 
@@ -21,8 +19,7 @@ public interface Validator {
                 .dependsOn("val", s)
                 .withMethod(c -> {
                     if (c.get("val") == null) {
-                        c.error(AppI18n.get(
-                                "app.mustNotBeEmpty", name != null ? name.getValue() : AppI18n.get("value")));
+                        c.error(AppI18n.get("mustNotBeEmpty", name != null ? name.getValue() : AppI18n.get("value")));
                     }
                 })
                 .immediate();
@@ -35,8 +32,7 @@ public interface Validator {
                 .dependsOn("if", checkIf)
                 .withMethod(c -> {
                     if (Boolean.TRUE.equals(c.get("if")) && c.get("val") == null) {
-                        c.error(AppI18n.get(
-                                "app.mustNotBeEmpty", name != null ? name.getValue() : AppI18n.get("value")));
+                        c.error(AppI18n.get("mustNotBeEmpty", name != null ? name.getValue() : AppI18n.get("value")));
                     }
                 })
                 .immediate();
@@ -47,8 +43,19 @@ public interface Validator {
                 .dependsOn("val", s)
                 .withMethod(c -> {
                     if (((ObservableList<?>) c.get("val")).size() == 0) {
-                        c.error(AppI18n.get(
-                                "app.mustNotBeEmpty", name != null ? name.getValue() : AppI18n.get("value")));
+                        c.error(AppI18n.get("mustNotBeEmpty", name != null ? name.getValue() : AppI18n.get("value")));
+                    }
+                })
+                .immediate();
+    }
+
+    static Check scopeValid(Validator v, ObservableValue<DataStoreAccessScope> scope) {
+        return v.createCheck()
+                .dependsOn("val", scope)
+                .withMethod(c -> {
+                    var scopeValue = (DataStoreAccessScope) c.get("val");
+                    if (scopeValue != null && !scopeValue.isAnyAccessible()) {
+                        c.error(AppI18n.get("scopeMustBeAccessible"));
                     }
                 })
                 .immediate();
@@ -112,12 +119,12 @@ public interface Validator {
      *
      * @return The Validation result property.
      */
-    ReadOnlyObjectProperty<ValidationResult> validationResultProperty();
+    ObservableValue<ValidationResult> validationResultProperty();
 
     /**
      * A read-only boolean property indicating whether any of the checks of this validator emitted an error.
      */
-    ReadOnlyBooleanProperty containsErrorsProperty();
+    ObservableBooleanValue containsErrorsProperty();
 
     boolean containsErrors();
 

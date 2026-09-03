@@ -1,13 +1,13 @@
 package io.xpipe.ext.base.store;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.action.BatchHubProvider;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStore;
 
 import javafx.beans.value.ObservableValue;
 
@@ -64,7 +64,7 @@ public class StoreRestartActionProvider implements HubLeafProvider<DataStore>, B
 
     @Override
     public String getId() {
-        return "restartAction";
+        return "restartStore";
     }
 
     @Jacksonized

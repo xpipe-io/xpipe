@@ -1,12 +1,12 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStore;
+import io.xpipe.app.store.ShellStore;
 
 import lombok.Value;
 
@@ -38,6 +38,22 @@ public class TerminalProxyManager {
 
         var id = ref.get().getProvider().getId();
         return id.equals("wsl");
+    }
+
+    public static boolean hasConfiguredProxy() {
+        var uuid = AppPrefs.get().terminalProxy().getValue();
+        var hasCustomTerminalShell =
+                uuid != null && !DataStorage.get().local().getUuid().equals(uuid);
+        if (!hasCustomTerminalShell) {
+            return false;
+        }
+
+        var foundEntry = DataStorage.get().getStoreEntryIfPresent(uuid);
+        if (foundEntry.isEmpty()) {
+            return false;
+        }
+
+        return true;
     }
 
     public static Optional<ShellControl> getProxy() {

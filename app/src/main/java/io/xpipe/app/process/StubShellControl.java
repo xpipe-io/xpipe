@@ -1,6 +1,6 @@
 package io.xpipe.app.process;
 
-import io.xpipe.core.FailableConsumer;
+import io.xpipe.app.util.FailableConsumer;
 
 import java.util.function.Consumer;
 

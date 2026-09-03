@@ -1,6 +1,6 @@
 package io.xpipe.app.process;
 
-import io.xpipe.core.FilePath;
+import io.xpipe.app.util.FilePath;
 
 public interface ParentSystemAccess {
 

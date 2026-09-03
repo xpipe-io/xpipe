@@ -154,10 +154,7 @@ public class TlsCertificateFormat {
                 } else {
                     switch (c) {
                         case ',':
-                        case ';':
-                            i++;
-                            break outer;
-                        case '+':
+                        case ';', '+':
                             i++;
                             break outer;
                     }

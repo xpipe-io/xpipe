@@ -114,10 +114,6 @@
     -fx-cursor: hand;
 }
 
-.intro .button {
-    -fx-padding: 6 10;
-}
-
 .error-overlay-comp {
     -fx-font-size: 0.9em;
 }
@@ -245,11 +241,15 @@
     -fx-font-family: Monospace;
 }
 
-.ikonli-font-icon.graphic.terminal-dock-button {
+.ikonli-font-icon.graphic.accent-icon {
     -fx-icon-color: -color-accent-fg;
 }
 
 .text-field:focused {
+    -fx-prompt-text-fill: -color-fg-subtle;
+}
+
+.text-area:focused {
     -fx-prompt-text-fill: -color-fg-subtle;
 }
 
@@ -275,4 +275,33 @@
 
 .store-filter-state-comp .separator {
     -fx-padding: 0.15em 0 0.15em 0;
+}
+
+.webtop-mode {
+    -fx-font-size: 1.6em;
+    -fx-padding: 1em;
+}
+
+.webtop-mode .toggle-button {
+    -fx-background-color: -color-bg-default;
+    -fx-text-fill: -color-fg-default;
+    -fx-border-color: -color-border-default;
+    -fx-padding: 1em;
+    -fx-border-radius: 4;
+}
+
+.webtop-mode .toggle-button:selected {
+    -fx-border-color: -color-accent-muted;
+}
+
+.webtop-mode .ikonli-font-icon {
+    -fx-icon-size: 35;
+}
+
+.drag-comp {
+    -fx-background-color: -color-bg-default;
+    -fx-text-fill: -color-fg-default;
+    -fx-border-color: -color-border-default;
+    -fx-padding: 0.6em;
+    -fx-border-radius: 4;
 }

@@ -1,115 +1,36 @@
 package io.xpipe.app.secret;
 
-import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStorageUserHandler;
+import io.xpipe.app.util.AesSecretValue;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
-import lombok.extern.jackson.Jacksonized;
 
 import javax.crypto.SecretKey;
 
 @EqualsAndHashCode
 @Builder
-@Jacksonized
 @ToString
+@Getter
 public class EncryptionToken {
-
-    private static EncryptionToken vaultToken;
-    private static EncryptionToken groupToken;
-    private static EncryptionToken userToken;
 
     private final String token;
 
-    @JsonIgnore
-    private Boolean isVault;
-
-    @JsonIgnore
-    private Boolean isUser;
-
-    @JsonIgnore
-    private EncryptionToken usedUserToken;
-
-    public static void invalidateUserToken() {
-        userToken = null;
-    }
-
-    private static EncryptionToken createUserToken() {
-        var userHandler = DataStorageUserHandler.getInstance();
-        var userSecretValue =
-                new PasswordLockSecretValue(userHandler.getActiveUser().toCharArray()) {
-                    @Override
-                    protected SecretKey getSecretKey() {
-                        return userHandler.getEncryptionKey();
-                    }
-                };
-        var userCrypt = userSecretValue.getEncryptedValue();
-        return EncryptionToken.builder().token(userCrypt).build();
-    }
-
-    private static EncryptionToken createVaultToken() {
-        var secretValue = new VaultKeySecretValue(new char[] {'x', 'p', 'i', 'p', 'e'});
+    public static EncryptionToken of(EncryptionPrincipal c) {
+        var name = c.getUuid().toString();
+        var secretValue = AesSecretValue.encrypt(name.toCharArray(), c.getSecretKey());
         var crypt = secretValue.getEncryptedValue();
         return EncryptionToken.builder().token(crypt).build();
     }
 
-    public static EncryptionToken ofUser() {
-        if (userToken == null) {
-            var userHandler = DataStorageUserHandler.getInstance();
-            if (userHandler.getActiveUser() == null) {
-                throw new IllegalStateException("No active user available");
-            }
-
-            userToken = createUserToken();
-        }
-        return userToken;
-    }
-
-    public static EncryptionToken ofVaultKey() {
-        if (vaultToken == null) {
-            vaultToken = createVaultToken();
-        }
-        return vaultToken;
-    }
-
-    public boolean canDecrypt() {
-        return isVault() || isUser();
-    }
-
     public String decode(SecretKey secretKey) {
-        var secretValue = new PasswordLockSecretValue(token) {
-            @Override
-            protected SecretKey getSecretKey() {
-                return secretKey;
-            }
-        };
+        var secretValue = AesSecretValue.wrap(token, secretKey);
         return secretValue.getSecretValue();
     }
 
-    public boolean isUser() {
-        var userHandler = DataStorageUserHandler.getInstance();
-        if (userHandler.getActiveUser() == null) {
-            return false;
-        }
-
-        if (usedUserToken == EncryptionToken.ofUser() && isUser != null) {
-            return isUser;
-        }
-
-        usedUserToken = ofUser();
-        isUser = userHandler.getActiveUser().equals(decode(userHandler.getEncryptionKey()));
-        return isUser;
-    }
-
-    public boolean isVault() {
-        if (isVault != null) {
-            return isVault;
-        }
-
-        var key = DataStorage.get().getVaultKey().getKey();
-        var s = decode(key);
-        return (isVault = s.equals("xpipe"));
+    public boolean matches(EncryptionPrincipal c) {
+        var name = c.getUuid().toString();
+        return decode(c.getSecretKey()).equals(name);
     }
 }

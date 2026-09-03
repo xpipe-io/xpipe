@@ -1,16 +1,16 @@
 package io.xpipe.ext.system.incus;
 
-import io.xpipe.app.ext.NetworkContainerStoreState;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.core.JacksonMapper;
+import io.xpipe.app.store.NetworkContainerStoreState;
+import io.xpipe.app.util.JacksonMapper;
 import io.xpipe.ext.base.identity.IdentityValue;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.NonNull;
 import lombok.Value;
+import tools.jackson.databind.JsonNode;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -238,9 +238,9 @@ public class IncusCommandView extends CommandViewBase {
             var json = JacksonMapper.getDefault().readTree(output);
             var l = new ArrayList<ContainerEntry>();
             for (JsonNode jsonNode : json) {
-                var status = jsonNode.required("status").textValue();
-                var project = jsonNode.required("project").textValue();
-                var name = jsonNode.required("name").textValue();
+                var status = jsonNode.required("status").stringValue();
+                var project = jsonNode.required("project").stringValue();
+                var name = jsonNode.required("name").stringValue();
                 var state = jsonNode.required("state");
                 var network = state.get("network");
                 String ipv4 = null;
@@ -248,8 +248,7 @@ public class IncusCommandView extends CommandViewBase {
                 if (network != null) {
                     var eth0 = network.get("eth0");
                     if (eth0 == null && network.size() > 0) {
-                        for (var it = network.fieldNames(); it.hasNext(); ) {
-                            var field = it.next();
+                        for (String field : network.propertyNames()) {
                             if (!field.equals("lo")) {
                                 eth0 = network.required(field);
                                 break;
@@ -260,15 +259,15 @@ public class IncusCommandView extends CommandViewBase {
                     if (eth0 != null) {
                         var addresses = eth0.required("addresses");
                         for (JsonNode address : addresses) {
-                            if (!address.required("scope").textValue().equals("global")) {
+                            if (!address.required("scope").stringValue().equals("global")) {
                                 continue;
                             }
 
-                            var family = address.required("family").textValue();
+                            var family = address.required("family").stringValue();
                             if (family.equals("inet")) {
-                                ipv4 = address.required("address").textValue();
+                                ipv4 = address.required("address").stringValue();
                             } else if (family.equals("inet6")) {
-                                ipv6 = address.required("address").textValue();
+                                ipv6 = address.required("address").stringValue();
                             }
                         }
                     }

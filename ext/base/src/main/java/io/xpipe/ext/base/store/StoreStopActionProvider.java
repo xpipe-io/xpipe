@@ -67,7 +67,7 @@ public class StoreStopActionProvider implements HubLeafProvider<StoppableStore>,
 
     @Override
     public String getId() {
-        return "stopAction";
+        return "stopStore";
     }
 
     @Jacksonized

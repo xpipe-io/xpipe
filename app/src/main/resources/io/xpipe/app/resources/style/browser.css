@@ -10,12 +10,17 @@
     -fx-padding: 0 6 4 4;
 }
 
-.transfer > .download-background.color-box.gray {
+.root .browser .transfer > .download-background.color-box {
     -fx-border-radius: 4;
     -fx-background-radius: 4;
 }
 
-.transfer:highlighted > .download-background.color-box.gray {
+.root .browser .transfer:hover > .download-background.color-box {
+    -fx-border-color: -color-accent-emphasis;
+    -fx-background-color: derive(-color-bg-subtle, 5%);
+}
+
+.root .browser .transfer:highlighted > .download-background.color-box {
     -fx-border-color: -color-accent-emphasis;
     -fx-background-color: derive(-color-bg-subtle, 5%);
 }
@@ -47,6 +52,10 @@
 
 .root:seamless-frame .browser .top-spacer {
     -fx-background-radius: 0 6 0 0;
+}
+
+.browser .welcome {
+    -fx-padding: 40;
 }
 
 .browser .welcome .button:hover {

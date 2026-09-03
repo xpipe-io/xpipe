@@ -1,7 +1,7 @@
 package io.xpipe.app.core.check;
 
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import org.apache.commons.io.FileUtils;
 
@@ -12,9 +12,20 @@ import java.nio.file.Path;
 public class AppDirectoryPermissionsCheck {
 
     public static void checkDirectory(Path dataDirectory) {
+        // Only check this for the daemon to prevent issues with concurrent file creations
+        if (Boolean.getBoolean("io.xpipe.app.isCli")) {
+            return;
+        }
+
         try {
-            FileUtils.forceMkdir(dataDirectory.toFile());
             var testDirectory = dataDirectory.resolve("permissions_check");
+
+            // Maybe we have a broken leftover from a previous attempt?
+            if (Files.exists(testDirectory)) {
+                return;
+            }
+
+            FileUtils.forceMkdir(dataDirectory.toFile());
             FileUtils.forceMkdir(testDirectory.toFile());
             if (!Files.exists(testDirectory)) {
                 throw new IOException("Directory creation in " + dataDirectory + " failed silently");

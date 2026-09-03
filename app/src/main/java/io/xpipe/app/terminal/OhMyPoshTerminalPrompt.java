@@ -3,10 +3,10 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.*;
+import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.GithubReleaseDownloader;
+import io.xpipe.app.util.OsType;
 
-import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
 import javafx.beans.property.Property;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -137,12 +137,18 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
     public void checkValidInstall(ShellControl sc) throws Exception {
         if (sc.getOsType() != OsType.WINDOWS) {
             var dir = getBinaryDirectory(sc);
-            var executable = sc.command(CommandBuilder.of().add("test", "-x").addFile(dir.join("oh-my-posh"))).executeAndCheck();
-            if (!executable) {
-                throw ErrorEventFactory.expected(new IllegalStateException("This system's /tmp file system is protected via a noexec flag. " +
-                        "The oh-my-posh prompt won't be able to be used from there. " +
-                        "XPipe can use run oh-my-posh by installing it into /usr/bin with root permissions. " +
-                        "See https://ohmyposh.dev/docs/installation/linux"));
+            var file = dir.join("oh-my-posh");
+            if (sc.view().fileExists(file)) {
+                var executable = sc.command(
+                                CommandBuilder.of().add("test", "-x").addFile(file))
+                        .executeAndCheck();
+                if (!executable) {
+                    throw ErrorEventFactory.expected(
+                            new IllegalStateException("This system's /tmp file system is protected via a noexec flag. "
+                                    + "The oh-my-posh prompt won't be able to be used from there. "
+                                    + "XPipe can use run oh-my-posh by installing it into /usr/bin with root permissions. "
+                                    + "See https://ohmyposh.dev/docs/installation/linux"));
+                }
             }
         }
     }
@@ -185,8 +191,9 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
             sc.view().transferLocalFile(file, dir.join("oh-my-posh.exe"));
         } else {
             var configDir = getConfigurationDirectory(sc);
-            sc.command("curl -s https://ohmyposh.dev/install.sh | sed -E \"s/validate_dependency unzip\\n//\" | sed -E \"s/install_themes\\n//\" | bash -s -- -d \"" + dir + "\" -t \"" + configDir
-                            + "\"")
+            sc.command(
+                            "curl -s https://ohmyposh.dev/install.sh | sed -E \"s/validate_dependency unzip$//\" | sed -E \"s/install_themes$//\" | bash -s -- -d \""
+                                    + dir + "\" -t \"" + configDir + "\"")
                     .execute();
         }
     }

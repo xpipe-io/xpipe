@@ -2,13 +2,10 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
-import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppLogs;
-import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.core.*;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -37,6 +34,8 @@ import atlantafx.base.util.Animations;
 import net.synedra.validatorfx.GraphicDecorationStackPane;
 
 import java.time.Instant;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 public class ModalOverlayComp extends RegionBuilder<Region> {
 
@@ -60,8 +59,8 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
             protected void registerListeners() {
                 super.registerListeners();
 
-                scrollPane.removeEventFilter(MouseEvent.MOUSE_PRESSED, mouseHandler);
-                scrollPane.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+                contentWrapper.removeEventFilter(MouseEvent.MOUSE_PRESSED, mouseHandler);
+                contentWrapper.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
                     var lastShowValue = lastShow.getValue();
                     if (lastShowValue != null
                             && java.time.Duration.between(lastShowValue, Instant.now())
@@ -88,6 +87,7 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
             }
         });
         modal.getStyleClass().add("modal-overlay-comp");
+        AppStyle.addSizePseudoClasses(modal);
         var pane = new StackPane(bgRegion, modal);
         pane.setAlignment(Pos.TOP_LEFT);
         pane.setPickOnBounds(false);
@@ -218,10 +218,7 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
         if (newValue.getTitle() != null) {
             var l = new LabelComp(
                     newValue.getTitle(),
-                    new SimpleObjectProperty<>(
-                            newValue.getGraphic() != null
-                                    ? newValue.getGraphic()
-                                    : new LabelGraphic.IconGraphic("mdi2i-information-outline")));
+                    new SimpleObjectProperty<>(newValue.getGraphic() != null ? newValue.getGraphic() : null));
             l.style("title");
             l.apply(struc -> {
                 struc.setGraphicTextGap(8);
@@ -241,13 +238,32 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
             for (var o : newValue.getButtons()) {
                 var node = o instanceof ModalButton mb ? toButton(mb) : ((BaseRegionBuilder<?, ?>) o).build();
                 if (o instanceof ModalButton) {
+                    // Make sure that all button retain the correct min width
+                    var maxNode = new AtomicReference<Region>();
                     node.widthProperty().addListener((observable, oldValue, n) -> {
                         var d = Math.clamp(n.doubleValue(), 70.0, 200.0);
                         if (d > max.get()) {
                             max.set(d);
+                            maxNode.set(node);
                         }
                     });
-                    node.minWidthProperty().bind(max);
+                    // Let largest button use its own pref size to always take the pref width, even if constrained
+                    // and make users use max size
+                    node.minWidthProperty()
+                            .bind(Bindings.createDoubleBinding(
+                                    () -> {
+                                        if (node.equals(maxNode.get())) {
+                                            if (node.getWidth() <= 70) {
+                                                return 70.0;
+                                            } else {
+                                                return Region.USE_PREF_SIZE;
+                                            }
+                                        } else {
+                                            return max.get();
+                                        }
+                                    },
+                                    node.widthProperty(),
+                                    max));
                     node.prefHeightProperty().bind(buttonBar.heightProperty());
                 }
                 buttonBar.getChildren().add(node);
@@ -309,12 +325,14 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
     private ObservableDoubleValue modalBoxWidth(ModalPane pane, Region r) {
         return Bindings.createDoubleBinding(
                 () -> {
-                    var max = pane.getWidth() - 120;
+                    var max =
+                            pane.getWidth() - (AppSizeBreakpoints.portraitMode().get() ? 30 : 120);
                     if (r.getPrefWidth() != Region.USE_COMPUTED_SIZE) {
                         return Math.min(max, r.getPrefWidth() + 50);
                     }
                     return max;
                 },
+                AppSizeBreakpoints.portraitMode(),
                 pane.widthProperty(),
                 r.prefWidthProperty());
     }
@@ -324,8 +342,8 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
         if (mb.isDefaultButton()) {
             button.getStyleClass().add(Styles.ACCENT);
         }
-        if (mb.getAugment() != null) {
-            mb.getAugment().accept(button);
+        for (Consumer<Button> augment : mb.getAugments()) {
+            augment.accept(button);
         }
         button.managedProperty().bind(button.visibleProperty());
         button.setOnAction(event -> {

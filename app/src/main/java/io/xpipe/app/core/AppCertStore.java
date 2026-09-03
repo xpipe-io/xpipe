@@ -171,15 +171,15 @@ public class AppCertStore {
 
         // For testing TLS cert acceptance dialogs
         // without setting up a custom proxy
-//        var e = ks.aliases();
-//        var list = new ArrayList<String>();
-//        while (e.hasMoreElements()) {
-//            String alias = e.nextElement();
-//            list.add(alias);
-//        }
-//        for (String s : list) {
-//            ks.deleteEntry(s);
-//        }
+        //        var e = ks.aliases();
+        //        var list = new ArrayList<String>();
+        //        while (e.hasMoreElements()) {
+        //            String alias = e.nextElement();
+        //            list.add(alias);
+        //        }
+        //        for (String s : list) {
+        //            ks.deleteEntry(s);
+        //        }
 
         for (Entry certificate : certificates) {
             ks.setCertificateEntry(certificate.getName(), certificate.getCertificate());

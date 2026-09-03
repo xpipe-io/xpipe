@@ -1,0 +1,196 @@
+package io.xpipe.app.hub.section;
+
+import io.xpipe.app.storage.DataStoreEntry;
+
+import java.time.Instant;
+import java.util.*;
+import java.util.stream.Stream;
+
+public interface StoreSectionSortMode {
+
+    StoreSectionSortMode INDEX_DESC = new StoreSectionSortMode() {
+
+        @Override
+        public String getId() {
+            return "index-desc";
+        }
+
+        @Override
+        public boolean supportsReordering() {
+            return true;
+        }
+
+        @Override
+        public Comparator<StoreSection> comparator(int updateIndex) {
+            return Comparator.<StoreSection>comparingDouble(
+                            e -> e.getWrapper().getOrderIndex().getValue())
+                    .reversed();
+        }
+    };
+    StoreSectionSortMode INDEX_ASC = new StoreSectionSortMode() {
+        @Override
+        public String getId() {
+            return "index-asc";
+        }
+
+        @Override
+        public boolean supportsReordering() {
+            return true;
+        }
+
+        @Override
+        public Comparator<StoreSection> comparator(int updateIndex) {
+            return Comparator.comparingDouble(
+                    e -> e.getWrapper().getOrderIndex().getValue());
+        }
+    };
+    StoreSectionSortMode ALPHABETICAL_DESC = new StoreSectionSortMode() {
+
+        @Override
+        public boolean supportsReordering() {
+            return false;
+        }
+
+        @Override
+        public String getId() {
+            return "alphabetical-desc";
+        }
+
+        @Override
+        public Comparator<StoreSection> comparator(int updateIndex) {
+            return Comparator.comparing(
+                    e -> e.getWrapper().nameProperty().getValue().toLowerCase(Locale.ROOT));
+        }
+    };
+    StoreSectionSortMode ALPHABETICAL_ASC = new StoreSectionSortMode() {
+        @Override
+        public String getId() {
+            return "alphabetical-asc";
+        }
+
+        @Override
+        public boolean supportsReordering() {
+            return false;
+        }
+
+        @Override
+        public Comparator<StoreSection> comparator(int updateIndex) {
+            return Comparator.<StoreSection, String>comparing(
+                            e -> e.getWrapper().nameProperty().getValue().toLowerCase(Locale.ROOT))
+                    .reversed();
+        }
+    };
+    StoreSectionSortMode.DateSortMode DATE_DESC = new StoreSectionSortMode.DateSortMode() {
+
+        public Instant date(StoreSection s) {
+            var la = s.getWrapper().getLastAccess().getValue();
+            if (la == null) {
+                return Instant.MAX;
+            }
+
+            return la;
+        }
+
+        @Override
+        protected int compare(Instant s1, Instant s2) {
+            return s1.compareTo(s2);
+        }
+
+        @Override
+        public boolean supportsReordering() {
+            return false;
+        }
+
+        @Override
+        public String getId() {
+            return "date-desc";
+        }
+    };
+    StoreSectionSortMode.DateSortMode DATE_ASC = new StoreSectionSortMode.DateSortMode() {
+
+        @Override
+        public boolean supportsReordering() {
+            return false;
+        }
+
+        public Instant date(StoreSection s) {
+            var la = s.getWrapper().getLastAccess().getValue();
+            if (la == null) {
+                return Instant.MIN;
+            }
+
+            return la;
+        }
+
+        @Override
+        protected int compare(Instant s1, Instant s2) {
+            return s2.compareTo(s1);
+        }
+
+        @Override
+        public String getId() {
+            return "date-asc";
+        }
+    };
+
+    List<StoreSectionSortMode> ALL =
+            List.of(INDEX_ASC, INDEX_DESC, ALPHABETICAL_DESC, ALPHABETICAL_ASC, DATE_DESC, DATE_ASC);
+
+    static Optional<StoreSectionSortMode> fromId(String id) {
+        return ALL.stream()
+                .filter(storeSortMode -> storeSortMode.getId().equals(id))
+                .findFirst();
+    }
+
+    boolean supportsReordering();
+
+    String getId();
+
+    Comparator<StoreSection> comparator(int updateIndex);
+
+    abstract class DateSortMode implements StoreSectionSortMode {
+
+        private final Map<StoreSection, StoreSection> cachedRepresentatives = new IdentityHashMap<>();
+        private int entriesListObservableIndex = -1;
+
+        public StoreSection computeRepresentative(StoreSection s, int updateIndex) {
+            return Stream.concat(
+                            s.getShownChildren().getList().stream()
+                                    .filter(section ->
+                                            section.getEntry().getValidity() != DataStoreEntry.Validity.LOAD_FAILED)
+                                    .map(section -> getRepresentative(section, updateIndex)),
+                            Stream.of(s))
+                    .max(Comparator.comparing(section -> date(section)))
+                    .orElseThrow();
+        }
+
+        public StoreSection getRepresentative(StoreSection s, int updateIndex) {
+            if (updateIndex != entriesListObservableIndex) {
+                cachedRepresentatives.clear();
+                entriesListObservableIndex = updateIndex;
+            }
+
+            var found = cachedRepresentatives.get(s);
+            if (found != null) {
+                return found;
+            }
+
+            var r = computeRepresentative(s, updateIndex);
+            cachedRepresentatives.put(s, r);
+            return r;
+        }
+
+        public abstract Instant date(StoreSection s);
+
+        protected abstract int compare(Instant s1, Instant s2);
+
+        @Override
+        public Comparator<StoreSection> comparator(int updateIndex) {
+            return (o1, o2) -> {
+                var r1 = getRepresentative(o1, updateIndex);
+                var r2 = getRepresentative(o2, updateIndex);
+                return DateSortMode.this.compare(date(r1), date(r2));
+            };
+        }
+    }
+}

@@ -4,7 +4,7 @@ import io.xpipe.app.ext.ScanProvider;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 public class IncusScanProvider extends ScanProvider {
 

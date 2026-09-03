@@ -3,12 +3,12 @@ package io.xpipe.app.browser.menu.impl.compress;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.ext.FileKind;
+import io.xpipe.app.fs.FileKind;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.process.ShellDialects;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.OsType;
 
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;

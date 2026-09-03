@@ -4,7 +4,7 @@ import io.xpipe.app.core.AppTray;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.app.platform.PlatformThread;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import java.awt.*;
 
@@ -38,9 +38,12 @@ public class AppTrayMode extends AppOperationMode {
 
     @Override
     public void onSwitchFrom() {
-        if (AppTray.get() != null) {
-            TrackEvent.info("Closing tray");
-            PlatformThread.runLaterIfNeededBlocking(() -> AppTray.get().hide());
+        // When changing between modes, close tray instantly
+        // Otherwise, the background mode shutdown closes this
+        if (!AppOperationMode.isInShutdown()) {
+            if (AppTray.get() != null) {
+                PlatformThread.runLaterIfNeededBlocking(() -> AppTray.get().hide());
+            }
         }
     }
 

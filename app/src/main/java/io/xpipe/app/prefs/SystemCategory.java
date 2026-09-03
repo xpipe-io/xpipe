@@ -3,11 +3,10 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ChoiceComp;
 import io.xpipe.app.comp.base.IntFieldComp;
-import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.ext.ShellDialectChoiceComp;
+import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.process.ShellDialectChoiceComp;
 
 public class SystemCategory extends AppPrefsCategory {
 
@@ -41,9 +40,7 @@ public class SystemCategory extends AppPrefsCategory {
                         .pref(prefs.hibernateBehaviour)
                         .addComp(ChoiceComp.ofTranslatable(
                                         prefs.hibernateBehaviour,
-                                        PrefsChoiceValue.getSupported(HibernateBehaviour.class).stream()
-                                                .filter(b -> b.isAvailable())
-                                                .toList(),
+                                        PrefsChoiceValue.getSupported(HibernateBehaviour.class),
                                         true)
                                 .maxWidth(getCompWidth())))
                 .title("shells")
@@ -51,7 +48,7 @@ public class SystemCategory extends AppPrefsCategory {
                         .pref(prefs.localShellDialect)
                         .addComp(
                                 new ShellDialectChoiceComp(
-                                                ProcessControlProvider.get().getAvailableLocalDialects(),
+                                                ProcModuleProvider.get().getAvailableLocalDialects(),
                                                 prefs.localShellDialect,
                                                 ShellDialectChoiceComp.NullHandling.NULL_DISABLED)
                                         .maxWidth(getCompWidth()),

@@ -5,20 +5,25 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.cred.NoIdentityStrategy;
-import io.xpipe.app.cred.SshIdentityStrategy;
-import io.xpipe.app.ext.DataStoreCreationCategory;
-import io.xpipe.app.hub.comp.*;
+import io.xpipe.app.hub.creation.StoreChoicePopover;
+import io.xpipe.app.hub.creation.StoreCreationDialog;
+import io.xpipe.app.hub.entry.StoreEntryWrapper;
+import io.xpipe.app.hub.list.StoreViewState;
+import io.xpipe.app.identity.NoIdentityStrategy;
+import io.xpipe.app.identity.SshIdentityStrategy;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
-import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.secret.EncryptedValue;
+import io.xpipe.app.prefs.DataStorageAccessType;
+import io.xpipe.app.secret.DataStorageAccessHandler;
+import io.xpipe.app.secret.OptionalEncryptedValue;
 import io.xpipe.app.secret.SecretNoneStrategy;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreAccessScope;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStoreCreationCategory;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -46,15 +51,15 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
 
     private final ObjectProperty<DataStoreEntryRef<IdentityStore>> selectedReference;
     private final Property<String> inPlaceUser;
-    private final ObservableValue<SecretRetrievalStrategy> password;
-    private final ObservableValue<SshIdentityStrategy> identityStrategy;
+    private final Property<SecretRetrievalStrategy> password;
+    private final Property<SshIdentityStrategy> identityStrategy;
     private final boolean allowUserInput;
 
     public IdentitySelectComp(
             ObjectProperty<DataStoreEntryRef<IdentityStore>> selectedReference,
             Property<String> inPlaceUser,
-            ObservableValue<SecretRetrievalStrategy> password,
-            ObservableValue<SshIdentityStrategy> identityStrategy,
+            Property<SecretRetrievalStrategy> password,
+            Property<SshIdentityStrategy> identityStrategy,
             boolean allowUserInput) {
         this.selectedReference = selectedReference;
         this.inPlaceUser = inPlaceUser;
@@ -64,36 +69,18 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
     }
 
     private void addNamedIdentity() {
-        var hasPwMan = AppPrefs.get().passwordManager().getValue() != null;
-        var pwManIdentity = DataStorage.get().getStoreEntries().stream()
-                .map(entry -> entry.getStore() instanceof PasswordManagerIdentityStore p ? p : null)
-                .filter(s -> s != null)
-                .findFirst();
-        var hasPassword = password.getValue() != null && !(password.getValue() instanceof SecretNoneStrategy);
-        var hasSshIdentity =
-                identityStrategy.getValue() != null && !(identityStrategy.getValue() instanceof NoIdentityStrategy);
-        if (hasPwMan && pwManIdentity.isPresent() && !hasPassword && !hasSshIdentity) {
-            var perUser = pwManIdentity.get().isPerUser();
-            var id = PasswordManagerIdentityStore.builder()
-                    .key(inPlaceUser.getValue())
-                    .perUser(perUser)
-                    .build();
-            showIdentityCreation(id);
-            return;
-        }
-
         var synced = DataStorage.get().getStoreEntries().stream()
                 .map(entry -> entry.getStore() instanceof SyncedIdentityStore p ? p : null)
                 .filter(s -> s != null)
                 .findFirst();
         if (synced.isPresent()) {
-            var pass = EncryptedValue.VaultKey.of(password.getValue());
+            var pass = OptionalEncryptedValue.of(password.getValue(), DataStoreAccessScope.encryption());
             if (pass == null) {
-                pass = EncryptedValue.VaultKey.of(new SecretNoneStrategy());
+                pass = OptionalEncryptedValue.of(new SecretNoneStrategy(), DataStoreAccessScope.encryption());
             }
-            var ssh = EncryptedValue.VaultKey.of(identityStrategy.getValue());
+            var ssh = OptionalEncryptedValue.of(identityStrategy.getValue(), DataStoreAccessScope.encryption());
             if (ssh == null) {
-                ssh = EncryptedValue.VaultKey.of(new NoIdentityStrategy());
+                ssh = OptionalEncryptedValue.of(new NoIdentityStrategy(), DataStoreAccessScope.encryption());
             }
             var id = SyncedIdentityStore.builder()
                     .username(inPlaceUser.getValue())
@@ -104,13 +91,13 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
             return;
         }
 
-        var pass = EncryptedValue.CurrentKey.of(password.getValue());
+        var pass = OptionalEncryptedValue.of(password.getValue(), DataStoreAccessScope.encryption());
         if (pass == null) {
-            pass = EncryptedValue.CurrentKey.of(new SecretNoneStrategy());
+            pass = OptionalEncryptedValue.of(new SecretNoneStrategy(), DataStoreAccessScope.encryption());
         }
-        var ssh = EncryptedValue.CurrentKey.of(identityStrategy.getValue());
+        var ssh = OptionalEncryptedValue.of(identityStrategy.getValue(), DataStoreAccessScope.encryption());
         if (ssh == null) {
-            ssh = EncryptedValue.CurrentKey.of(new NoIdentityStrategy());
+            ssh = OptionalEncryptedValue.of(new NoIdentityStrategy(), DataStoreAccessScope.encryption());
         }
         var id = LocalIdentityStore.builder()
                 .username(inPlaceUser.getValue())
@@ -139,7 +126,12 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
             return;
         }
 
-        StoreCreationDialog.showEdit(id.get(), id.get().getStore(), true, false, ignored -> {});
+        StoreCreationDialog.showEdit(id.get(), id.get().getStore(), true, false, ignored -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                selectedReference.set(null);
+                selectedReference.set(id);
+            });
+        });
     }
 
     @Override
@@ -184,11 +176,14 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
         IdentityStore id = storeEntry.getStore().asNeeded();
         var suffix = id instanceof LocalIdentityStore
                 ? AppI18n.get("localIdentity")
-                : id instanceof PasswordManagerIdentityStore
+                : id.getClass().getSimpleName().equals("PasswordManagerIdentityStore")
                         ? AppI18n.get("passwordManagerIdentity")
-                        : id instanceof SyncedIdentityStore && storeEntry.isPerUserStore()
-                                ? AppI18n.get("userIdentity")
-                                : AppI18n.get("globalIdentity");
+                        : id instanceof SyncedIdentityStore
+                                        && storeEntry.getAccessScope().isAccessSubRestricted()
+                                ? (DataStorageAccessHandler.getInstance().getType() == DataStorageAccessType.ROLE
+                                        ? AppI18n.get("roleIdentity")
+                                        : AppI18n.get("userIdentity"))
+                                : AppI18n.get("syncedIdentity");
         return storeEntry.getName() + " (" + suffix + ")";
     }
 
@@ -234,7 +229,8 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
 
             // Ugly fix to handle selection of an entry with the same name as another
             // Using the map would lead the sometimes selecting the wrong one
-            var sameName = selectedReference.getValue() != null && formatName(selectedReference.get().get()).equals(newValue);
+            var sameName = selectedReference.getValue() != null
+                    && formatName(selectedReference.get().get()).equals(newValue);
             if (!sameName) {
                 applyRef(newRef);
             }
@@ -254,6 +250,16 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
                 });
             } else {
                 prop.setValue(null);
+            }
+        });
+
+        // Clear old state of in-place identity
+        selectedReference.addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                PlatformThread.runLaterIfNeeded(() -> {
+                    password.setValue(null);
+                    identityStrategy.setValue(null);
+                });
             }
         });
 
@@ -315,7 +321,7 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
                     null,
                     selectedReference,
                     IdentityStore.class,
-                    null,
+                    ref -> !MultiIdentityStore.isExclusivelyHeld(ref),
                     StoreViewState.get().getAllIdentitiesCategory(),
                     null,
                     true,

@@ -1,12 +1,10 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.cred.SecurityKeyImpl;
-import io.xpipe.app.cred.SshIdentityStrategy;
-import io.xpipe.app.ext.HostAddress;
+import io.xpipe.app.beacon.BeaconAuthMethod;
+import io.xpipe.app.beacon.BeaconClientInformation;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellScript;
-import io.xpipe.app.pwman.*;
 import io.xpipe.app.rdp.ExternalRdpClient;
 import io.xpipe.app.secret.*;
 import io.xpipe.app.spice.ExternalSpiceClient;
@@ -15,49 +13,78 @@ import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
 import io.xpipe.app.terminal.TerminalPrompt;
 import io.xpipe.app.vnc.ExternalVncClient;
-import io.xpipe.core.InPlaceSecretValue;
-import io.xpipe.core.JacksonMapper;
-import io.xpipe.core.OsType;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
-import com.fasterxml.jackson.databind.jsontype.NamedType;
-import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
-import com.fasterxml.jackson.databind.jsontype.impl.AsPropertyTypeDeserializer;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.type.SimpleType;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.TokenStreamLocation;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.*;
+import tools.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.jsontype.NamedType;
+import tools.jackson.databind.jsontype.TypeDeserializer;
+import tools.jackson.databind.jsontype.TypeSerializer;
+import tools.jackson.databind.jsontype.impl.AsPropertyTypeDeserializer;
+import tools.jackson.databind.module.SimpleModule;
+import tools.jackson.databind.node.JsonNodeFactory;
 
 import java.io.CharArrayReader;
-import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class AppJacksonModule extends SimpleModule {
 
     @Override
     public void setupModule(SetupContext context) {
-        context.registerSubtypes(VaultKeySecretValue.class);
-        context.registerSubtypes(PasswordLockSecretValue.class);
+        // Load this class early to prevent weird StackOverflow issues
+        // when Jackson loads this class itself
+        var _ = TokenStreamLocation.NA;
+
+        registerSubtypes(
+                new NamedType(BeaconClientInformation.Api.class),
+                new NamedType(BeaconClientInformation.Cli.class),
+                new NamedType(BeaconClientInformation.Daemon.class),
+                new NamedType(BeaconClientInformation.Mcp.class));
+        registerSubtypes(new NamedType(BeaconAuthMethod.Local.class), new NamedType(BeaconAuthMethod.ApiKey.class));
+
+        registerSubtypes(InPlaceSecretValue.class);
+        registerSubtypes(PrincipalSecretValue.class);
+
+        for (ShellDialect t : ShellDialects.ALL) {
+            registerSubtypes(new NamedType(t.getClass()));
+        }
+
+        registerSubtypes(TerminalMultiplexer.getClasses());
+        registerSubtypes(TerminalPrompt.getClasses());
+        registerSubtypes(ExternalVncClient.getClasses());
+        registerSubtypes(ExternalRdpClient.getClasses());
+        registerSubtypes(ExternalSpiceClient.getClasses());
+        registerSubtypes(SecretRetrievalStrategy.getClasses());
+
+        addSerializer(InPlaceSecretValue.class, new InPlaceSecretValueSerializer());
+        addDeserializer(InPlaceSecretValue.class, new InPlaceSecretValueDeserializer());
 
         addSerializer(DataStoreEntryRef.class, new DataStoreEntryRefSerializer());
         addDeserializer(DataStoreEntryRef.class, new DataStoreEntryRefDeserializer());
+
         addSerializer(ContextualFileReference.class, new LocalFileReferenceSerializer());
         addDeserializer(ContextualFileReference.class, new LocalFileReferenceDeserializer());
+
         addSerializer(ExternalTerminalType.class, new ExternalTerminalTypeSerializer());
         addDeserializer(ExternalTerminalType.class, new ExternalTerminalTypeDeserializer());
-        addSerializer(EncryptedValue.class, new EncryptedValueSerializer());
-        addDeserializer(EncryptedValue.class, new EncryptedValueDeserializer<>());
-        addSerializer(EncryptedValue.CurrentKey.class, new EncryptedValueSerializer());
-        addDeserializer(EncryptedValue.CurrentKey.class, new EncryptedValueDeserializer<>());
-        addSerializer(EncryptedValue.VaultKey.class, new EncryptedValueSerializer());
-        addDeserializer(EncryptedValue.VaultKey.class, new EncryptedValueDeserializer<>());
+
+        addSerializer(OptionalEncryptedValue.class, new OptionalEncryptedValueSerializer());
+        addDeserializer(OptionalEncryptedValue.class, new OptionalEncryptedValueDeserializer<>());
 
         addSerializer(ShellDialect.class, new ShellDialectSerializer());
         addDeserializer(ShellDialect.class, new ShellDialectDeserializer());
@@ -69,109 +96,218 @@ public class AppJacksonModule extends SimpleModule {
         addSerializer(ShellScript.class, new ShellScriptSerializer());
         addDeserializer(ShellScript.class, new ShellScriptDeserializer());
 
+        addSerializer(DataStoreAccessScope.class, new DataStoreAccessScopeSerializer());
+        addDeserializer(DataStoreAccessScope.class, new DataStoreAccessScopeDeserializer());
+
+        addSerializer(FilePath.class, new FilePathSerializer());
+        addDeserializer(FilePath.class, new FilePathDeserializer());
+
+        addSerializer(StorePath.class, new StorePathSerializer());
+        addDeserializer(StorePath.class, new StorePathDeserializer());
+
+        addSerializer(Charset.class, new CharsetSerializer());
+        addDeserializer(Charset.class, new CharsetDeserializer());
+
+        addSerializer(Path.class, new LocalPathSerializer());
+        addDeserializer(Path.class, new LocalPathDeserializer());
+
+        addSerializer(EncryptionToken.class, new EncryptionTokenSerializer());
+        addDeserializer(EncryptionToken.class, new EncryptionTokenDeserializer());
+
         addSerializer(HostAddress.class, new HostAddressSerializer());
         addDeserializer(HostAddress.class, new HostAddressDeserializer());
 
-        addSerializer(KeePassXcPasswordManager.class, new KeePassXcPasswordManagerSerializer());
-        addDeserializer(KeePassXcPasswordManager.class, new KeePassXcPasswordManagerDeserializer());
-
-        for (ShellDialect t : ShellDialects.ALL) {
-            context.registerSubtypes(new NamedType(t.getClass()));
-        }
-
-        context.registerSubtypes(SecurityKeyImpl.getClasses());
-        context.registerSubtypes(SshIdentityStrategy.getClasses());
-        context.registerSubtypes(PasswordManagerKeyStrategy.getClasses());
-        context.registerSubtypes(PasswordManager.getClasses());
-        context.registerSubtypes(TerminalMultiplexer.getClasses());
-        context.registerSubtypes(TerminalPrompt.getClasses());
-        context.registerSubtypes(ExternalVncClient.getClasses());
-        context.registerSubtypes(ExternalRdpClient.getClasses());
-        context.registerSubtypes(ExternalSpiceClient.getClasses());
-        context.registerSubtypes(SecretRetrievalStrategy.getClasses());
-        context.registerSubtypes(DataStorageGroupStrategy.getClasses());
-        context.registerSubtypes(KeeperPasswordManager.KeeperAuth.getClasses());
+        setMixInAnnotation(Throwable.class, ThrowableTypeMixIn.class);
 
         super.setupModule(context);
     }
 
-    public static class KeePassXcPasswordManagerSerializer extends JsonSerializer<KeePassXcPasswordManager> {
+    public static class InPlaceSecretValueSerializer extends ValueSerializer<InPlaceSecretValue> {
 
         @Override
-        public void serialize(KeePassXcPasswordManager value, JsonGenerator jgen, SerializerProvider provider)
-                throws IOException {
+        public void serializeWithType(
+                InPlaceSecretValue value, JsonGenerator gen, SerializationContext ctxt, TypeSerializer typeSer)
+                throws JacksonException {
+            serialize(value, gen, ctxt);
+        }
+
+        @Override
+        public void serialize(InPlaceSecretValue value, JsonGenerator jgen, SerializationContext context) {
             if (value == null) {
                 jgen.writeNull();
                 return;
             }
 
-            var tree = JacksonMapper.getDefault().valueToTree(value.getAssociationKeys());
-            var object = JsonNodeFactory.instance.objectNode();
-            object.put("type", "keePassXc");
-            object.set("associationKeys", tree);
-            object.set("keyStrategy", JacksonMapper.getDefault().valueToTree(value.getKeyStrategy()));
-            jgen.writeTree(object);
-        }
-
-        @Override
-        public void serializeWithType(
-                KeePassXcPasswordManager value,
-                JsonGenerator gen,
-                SerializerProvider serializers,
-                TypeSerializer typeSer)
-                throws IOException {
-            serialize(value, gen, serializers);
+            var tree = JsonNodeFactory.instance.objectNode();
+            tree.put("type", "internal");
+            tree.put("encryptedValue", value.getEncryptedValue());
+            jgen.writeTree(tree);
         }
     }
 
-    public static class KeePassXcPasswordManagerDeserializer extends JsonDeserializer<KeePassXcPasswordManager> {
+    public static class InPlaceSecretValueDeserializer extends ValueDeserializer<InPlaceSecretValue> {
 
         @Override
-        @SuppressWarnings("unchecked")
-        public KeePassXcPasswordManager deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+        public Object deserializeWithType(JsonParser p, DeserializationContext ctxt, TypeDeserializer typeDeserializer)
+                throws JacksonException {
+            return deserialize(p, ctxt);
+        }
+
+        @Override
+        public InPlaceSecretValue deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException {
             JsonNode tree = JacksonMapper.getDefault().readTree(p);
-            if (tree == null || !tree.isObject()) {
+            if (tree.isString()) {
+                return InPlaceSecretValue.of(tree.stringValue());
+            }
+
+            var enc = tree.get("encryptedValue");
+            if (enc == null) {
                 return null;
             }
 
-            var keyStrategyNode = tree.get("keyStrategy");
-            var keyStrategy = keyStrategyNode != null
-                    ? JacksonMapper.getDefault().treeToValue(keyStrategyNode, PasswordManagerKeyStrategy.class)
-                    : null;
+            var type = tree.get("type");
+            if (type != null && !type.asString().equals("internal")) {
+                return null;
+            }
 
-            if (tree.has("associationKey")) {
-                var parsed = JacksonMapper.getDefault()
-                        .treeToValue(tree.required("associationKey"), KeePassXcAssociationKey.class);
-                return KeePassXcPasswordManager.builder()
-                        .keyStrategy(keyStrategy)
-                        .associationKeys(parsed != null ? List.of(parsed) : List.of())
-                        .build();
-            } else {
-                var javaType = JacksonMapper.getDefault()
-                        .getTypeFactory()
-                        .constructCollectionLikeType(List.class, KeePassXcAssociationKey.class);
-                var parsed = (List<KeePassXcAssociationKey>)
-                        JacksonMapper.getDefault().treeToValue(tree.required("associationKeys"), javaType);
-                return KeePassXcPasswordManager.builder()
-                        .keyStrategy(keyStrategy)
-                        .associationKeys(parsed)
-                        .build();
+            return InPlaceSecretValue.builder()
+                    .encryptedValue(enc.stringValue())
+                    .build();
+        }
+    }
+
+    public static class EncryptionTokenSerializer extends ValueSerializer<EncryptionToken> {
+
+        @Override
+        public void serialize(EncryptionToken value, JsonGenerator jgen, SerializationContext context) {
+            jgen.writeString(value.getToken());
+        }
+    }
+
+    public static class EncryptionTokenDeserializer extends ValueDeserializer<EncryptionToken> {
+
+        @Override
+        public EncryptionToken deserialize(JsonParser p, DeserializationContext ctxt) {
+            var s = p.getValueAsString();
+            return s != null ? EncryptionToken.builder().token(s).build() : null;
+        }
+    }
+
+    public static class DataStoreAccessScopeSerializer extends ValueSerializer<DataStoreAccessScope> {
+
+        @Override
+        public void serialize(DataStoreAccessScope value, JsonGenerator jgen, SerializationContext context) {
+            var node = JacksonMapper.getDefault().valueToTree(value.getPrincipals());
+            jgen.writeTree(node);
+        }
+    }
+
+    public static class DataStoreAccessScopeDeserializer extends ValueDeserializer<DataStoreAccessScope> {
+
+        @Override
+        public DataStoreAccessScope deserialize(JsonParser p, DeserializationContext ctxt) {
+            var principals = JacksonMapper.getDefault()
+                    .treeToValue(p.readValueAsTree(), new TypeReference<Set<EncryptionPrincipal>>() {});
+            var valid = principals.stream()
+                    .filter(encryptionPrincipal -> encryptionPrincipal != null)
+                    .collect(Collectors.toSet());
+            return !valid.isEmpty() ? DataStoreAccessScope.of(valid) : null;
+        }
+    }
+
+    public static class StorePathSerializer extends ValueSerializer<StorePath> {
+
+        @Override
+        public void serialize(StorePath value, JsonGenerator jgen, SerializationContext context) {
+            var ar = value.getNames().toArray(String[]::new);
+            jgen.writeArray(ar, 0, ar.length);
+        }
+    }
+
+    public static class StorePathDeserializer extends ValueDeserializer<StorePath> {
+
+        @Override
+        public StorePath deserialize(JsonParser p, DeserializationContext ctxt) {
+            JavaType javaType =
+                    JacksonMapper.getDefault().getTypeFactory().constructCollectionLikeType(List.class, String.class);
+            List<String> list = JacksonMapper.getDefault().readValue(p, javaType);
+            return new StorePath(list);
+        }
+    }
+
+    public static class FilePathSerializer extends ValueSerializer<FilePath> {
+
+        @Override
+        public void serialize(FilePath value, JsonGenerator jgen, SerializationContext context) {
+            jgen.writeString(value.toString());
+        }
+    }
+
+    public static class FilePathDeserializer extends ValueDeserializer<FilePath> {
+
+        @Override
+        public FilePath deserialize(JsonParser p, DeserializationContext ctxt) {
+            return FilePath.of(p.getValueAsString());
+        }
+    }
+
+    public static class CharsetSerializer extends ValueSerializer<Charset> {
+
+        @Override
+        public void serialize(Charset value, JsonGenerator jgen, SerializationContext context) {
+            jgen.writeString(value.name());
+        }
+    }
+
+    public static class CharsetDeserializer extends ValueDeserializer<Charset> {
+
+        @Override
+        public Charset deserialize(JsonParser p, DeserializationContext ctxt) {
+            return Charset.forName(p.getValueAsString());
+        }
+    }
+
+    public static class LocalPathSerializer extends ValueSerializer<Path> {
+
+        @Override
+        public void serialize(Path value, JsonGenerator jgen, SerializationContext context) {
+            jgen.writeString(value.toString());
+        }
+    }
+
+    public static class LocalPathDeserializer extends ValueDeserializer<Path> {
+
+        @Override
+        public Path deserialize(JsonParser p, DeserializationContext ctxt) {
+            try {
+                return Path.of(p.getValueAsString());
+            } catch (InvalidPathException ignored) {
+                return null;
             }
         }
     }
 
-    public static class OsTypeSerializer extends JsonSerializer<OsType> {
+    @JsonSerialize(as = Throwable.class)
+    @JsonPropertyOrder(alphabetic = true)
+    public abstract static class ThrowableTypeMixIn {
+
+        @SuppressWarnings("unused")
+        @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class, property = "$id")
+        private Throwable cause;
+    }
+
+    public static class OsTypeSerializer extends ValueSerializer<OsType> {
 
         @Override
-        public void serialize(OsType value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+        public void serialize(OsType value, JsonGenerator jgen, SerializationContext context) {
             jgen.writeString(value.getId());
         }
     }
 
-    public static class OsTypeLocalDeserializer extends JsonDeserializer<OsType.Local> {
+    public static class OsTypeLocalDeserializer extends ValueDeserializer<OsType.Local> {
 
         @Override
-        public OsType.Local deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+        public OsType.Local deserialize(JsonParser p, DeserializationContext ctxt) {
             var stream = Stream.of(OsType.WINDOWS, OsType.LINUX, OsType.MACOS);
             var n = p.getValueAsString();
             return stream.filter(osType ->
@@ -181,10 +317,10 @@ public class AppJacksonModule extends SimpleModule {
         }
     }
 
-    public static class OsTypeAnyDeserializer extends JsonDeserializer<OsType.Any> {
+    public static class OsTypeAnyDeserializer extends ValueDeserializer<OsType.Any> {
 
         @Override
-        public OsType.Any deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+        public OsType.Any deserialize(JsonParser p, DeserializationContext ctxt) {
             var stream = Stream.of(
                     OsType.WINDOWS, OsType.LINUX, OsType.BSD, OsType.SOLARIS, OsType.MACOS, OsType.AIX, OsType.UNIX);
             var n = p.getValueAsString();
@@ -195,77 +331,76 @@ public class AppJacksonModule extends SimpleModule {
         }
     }
 
-    public static class LocalFileReferenceSerializer extends JsonSerializer<ContextualFileReference> {
+    public static class LocalFileReferenceSerializer extends ValueSerializer<ContextualFileReference> {
 
         @Override
-        public void serialize(ContextualFileReference value, JsonGenerator jgen, SerializerProvider provider)
-                throws IOException {
+        public void serialize(ContextualFileReference value, JsonGenerator jgen, SerializationContext context) {
             jgen.writeString(value.serialize());
         }
     }
 
-    public static class ShellDialectSerializer extends JsonSerializer<ShellDialect> {
+    public static class ShellDialectSerializer extends ValueSerializer<ShellDialect> {
 
         @Override
-        public void serialize(ShellDialect value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+        public void serialize(ShellDialect value, JsonGenerator jgen, SerializationContext context) {
             jgen.writeString(value.getId());
         }
     }
 
-    public static class ShellDialectDeserializer extends JsonDeserializer<ShellDialect> {
+    public static class ShellDialectDeserializer extends ValueDeserializer<ShellDialect> {
 
         @Override
-        public ShellDialect deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+        public ShellDialect deserialize(JsonParser p, DeserializationContext ctxt) {
             JsonNode tree = JacksonMapper.getDefault().readTree(p);
             if (tree.isObject()) {
                 var t = tree.get("type");
                 if (t == null) {
                     return null;
                 }
-                return ShellDialects.byIdIfPresent(t.asText()).orElse(null);
+                return ShellDialects.byIdIfPresent(t.asString()).orElse(null);
             }
 
-            return ShellDialects.byIdIfPresent(tree.asText()).orElse(null);
+            return ShellDialects.byIdIfPresent(tree.asString()).orElse(null);
         }
     }
 
-    public static class ShellScriptSerializer extends JsonSerializer<ShellScript> {
+    public static class ShellScriptSerializer extends ValueSerializer<ShellScript> {
 
         @Override
-        public void serialize(ShellScript value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+        public void serialize(ShellScript value, JsonGenerator jgen, SerializationContext context) {
             jgen.writeString(value.getValue());
         }
     }
 
-    public static class ShellScriptDeserializer extends JsonDeserializer<ShellScript> {
+    public static class ShellScriptDeserializer extends ValueDeserializer<ShellScript> {
 
         @Override
-        public ShellScript deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+        public ShellScript deserialize(JsonParser p, DeserializationContext ctxt) {
             return new ShellScript(p.getValueAsString());
         }
     }
 
-    public static class LocalFileReferenceDeserializer extends JsonDeserializer<ContextualFileReference> {
+    public static class LocalFileReferenceDeserializer extends ValueDeserializer<ContextualFileReference> {
 
         @Override
-        public ContextualFileReference deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+        public ContextualFileReference deserialize(JsonParser p, DeserializationContext ctxt) {
             return ContextualFileReference.of(p.getValueAsString());
         }
     }
 
-    public static class ExternalTerminalTypeSerializer extends JsonSerializer<ExternalTerminalType> {
+    public static class ExternalTerminalTypeSerializer extends ValueSerializer<ExternalTerminalType> {
 
         @Override
-        public void serialize(ExternalTerminalType value, JsonGenerator jgen, SerializerProvider provider)
-                throws IOException {
-            jgen.writeString(value.getId());
+        public void serialize(ExternalTerminalType value, JsonGenerator gen, SerializationContext ctxt)
+                throws JacksonException {
+            gen.writeString(value.getId());
         }
     }
 
-    public static class ExternalTerminalTypeDeserializer extends JsonDeserializer<ExternalTerminalType> {
+    public static class ExternalTerminalTypeDeserializer extends ValueDeserializer<ExternalTerminalType> {
 
         @Override
-        public ExternalTerminalType deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+        public ExternalTerminalType deserialize(JsonParser p, DeserializationContext ctxt) {
             var id = p.getValueAsString();
             return ExternalTerminalType.ALL_ON_ALL_PLATFORMS.stream()
                     .filter(terminalType -> terminalType.getId().equals(id))
@@ -275,132 +410,92 @@ public class AppJacksonModule extends SimpleModule {
     }
 
     @SuppressWarnings("all")
-    public static class EncryptedValueSerializer extends JsonSerializer<EncryptedValue> {
+    public static class OptionalEncryptedValueSerializer extends ValueSerializer<OptionalEncryptedValue> {
 
         @Override
-        public void serialize(EncryptedValue value, JsonGenerator jgen, SerializerProvider provider)
-                throws IOException {
-            if (value.getValue() == null) {
-                jgen.writeNull();
+        public void serialize(OptionalEncryptedValue value, JsonGenerator jgen, SerializationContext context) {
+            if (!value.isEncrypted()) {
+                jgen.writeTree(value.getValueJson());
                 return;
             }
 
-            jgen.writeTree(value.getSecret().serialize(value.allowUserSecretKey()));
+            jgen.writeTree(value.getSecret().serialize());
         }
 
         @Override
         public void serializeWithType(
-                EncryptedValue value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer)
-                throws IOException {
-            if (value.getValue() == null) {
-                gen.writeNull();
-                return;
-            }
-
-            gen.writeTree(value.getSecret().serialize(value.allowUserSecretKey()));
+                OptionalEncryptedValue value, JsonGenerator gen, SerializationContext context, TypeSerializer typeSer) {
+            serialize(value, gen, context);
         }
     }
 
     @SuppressWarnings("all")
-    public static class EncryptedValueDeserializer<T extends EncryptedValue<?>> extends JsonDeserializer<T>
-            implements ContextualDeserializer {
+    public static class OptionalEncryptedValueDeserializer<T extends OptionalEncryptedValue<?>>
+            extends ValueDeserializer<T> {
 
-        private boolean useCurrentSecretKeyIfPossible;
-        private boolean forceCurrentSecretKey;
         private Class<?> type;
 
         @Override
         @SuppressWarnings("unchecked")
-        public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property)
-                throws JsonMappingException {
-            var deserializer = new EncryptedValueDeserializer();
-            if (property == null) {
+        public ValueDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) {
+            var deserializer = new OptionalEncryptedValueDeserializer();
+            if (property == null && ctxt.getContextualType() == null) {
                 return deserializer;
             }
 
-            JavaType wrapperType = property.getType();
+            JavaType wrapperType = property != null ? property.getType() : ctxt.getContextualType();
             JavaType valueType = wrapperType.containedType(0);
-            deserializer.useCurrentSecretKeyIfPossible =
-                    !wrapperType.getRawClass().equals(EncryptedValue.VaultKey.class);
-            deserializer.forceCurrentSecretKey = wrapperType.getRawClass().equals(EncryptedValue.CurrentKey.class);
             deserializer.type = valueType.getRawClass();
             return deserializer;
         }
 
         @Override
         @SuppressWarnings("unchecked")
-        public T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+        public T deserialize(JsonParser p, DeserializationContext ctxt) {
             if (type == null) {
                 return null;
             }
 
-            return (T) get(p, type, useCurrentSecretKeyIfPossible, forceCurrentSecretKey);
+            return (T) get(p, type);
         }
 
-        public Object deserializeWithType(JsonParser jp, DeserializationContext ctxt, TypeDeserializer typeDeserializer)
-                throws IOException {
+        @SuppressWarnings("unchecked")
+        public Object deserializeWithType(
+                JsonParser jp, DeserializationContext ctxt, TypeDeserializer typeDeserializer) {
             var type = ((AsPropertyTypeDeserializer) typeDeserializer).baseType();
             JavaType wrapperType = type;
             JavaType valueType = wrapperType.containedType(0);
-            var useCurrentSecretKey = !wrapperType.equals(SimpleType.constructUnsafe(EncryptedValue.VaultKey.class));
-            var forceCurrentSecretKey = wrapperType.equals(SimpleType.constructUnsafe(EncryptedValue.CurrentKey.class));
-            return get(jp, valueType.getRawClass(), useCurrentSecretKey, forceCurrentSecretKey);
+            return get(jp, valueType.getRawClass());
         }
 
-        private EncryptedValue get(
-                JsonParser p, Class<?> type, boolean useCurrentSecretKey, boolean forceCurrentSecretKey)
-                throws IOException {
-            if (forceCurrentSecretKey && DataStorageUserHandler.getInstance().getActiveUser() == null) {
-                return null;
-            }
-
-            Object value;
+        @SuppressWarnings("unchecked")
+        private OptionalEncryptedValue get(JsonParser p, Class<?> type) {
             JsonNode tree = JacksonMapper.getDefault().readTree(p);
-            var secret = DataStorageSecret.deserialize(tree);
-            if (secret == null) {
-                var raw = JacksonMapper.getDefault().treeToValue(tree, type);
-                if (raw != null) {
-                    value = raw;
-                    var s = JacksonMapper.getDefault().writeValueAsString(value);
-                    var internalSecret = InPlaceSecretValue.of(s.toCharArray());
-                    secret = DataStorageSecret.ofSecret(
-                            internalSecret,
-                            useCurrentSecretKey
-                                            && DataStorageUserHandler.getInstance()
-                                                            .getActiveUser()
-                                                    != null
-                                    ? EncryptionToken.ofUser()
-                                    : EncryptionToken.ofVaultKey());
-                } else {
-                    return null;
-                }
-            } else {
-                if (!secret.getEncryptedToken().canDecrypt()) {
+            var encrypted = MultiPrincipalSecret.matches(tree);
+            if (encrypted) {
+                var storageSecret = MultiPrincipalSecret.deserialize(tree);
+                if (storageSecret == null) {
                     return null;
                 }
 
-                var s = secret.getSecret();
-                if (s.length == 0) {
-                    return null;
-                }
-                value = JacksonMapper.getDefault().readValue(new CharArrayReader(s), type);
-                if (value == null) {
-                    return null;
-                }
+                var secret = storageSecret.getInternalSecret();
+                var valueJson = secret != null
+                        ? JacksonMapper.getDefault().readTree(new CharArrayReader(secret.getSecret()))
+                        : null;
+                var value = valueJson != null ? JacksonMapper.getDefault().treeToValue(valueJson, type) : null;
+                return new OptionalEncryptedValue(valueJson, value, storageSecret);
+            } else {
+                var val = JacksonMapper.getDefault().treeToValue(tree, type);
+                return val != null ? new OptionalEncryptedValue(tree, val, null) : null;
             }
-            var perUser = useCurrentSecretKey;
-            return perUser
-                    ? new EncryptedValue.CurrentKey<>(value, secret)
-                    : new EncryptedValue.VaultKey<>(value, secret);
         }
     }
 
     @SuppressWarnings("all")
-    public static class DataStoreEntryRefSerializer extends JsonSerializer<DataStoreEntryRef> {
+    public static class DataStoreEntryRefSerializer extends ValueSerializer<DataStoreEntryRef> {
 
         @Override
-        public void serialize(DataStoreEntryRef value, JsonGenerator jgen, SerializerProvider provider)
-                throws IOException {
+        public void serialize(DataStoreEntryRef value, JsonGenerator jgen, SerializationContext context) {
             if (value == null) {
                 jgen.writeNull();
                 return;
@@ -410,39 +505,24 @@ public class AppJacksonModule extends SimpleModule {
         }
     }
 
-    public static class DataStoreEntryRefDeserializer extends JsonDeserializer<DataStoreEntryRef<?>> {
+    public static class DataStoreEntryRefDeserializer extends ValueDeserializer<DataStoreEntryRef<?>> {
 
         @Override
-        public DataStoreEntryRef<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            JsonNode tree = p.getCodec().readTree(p);
-            if (tree == null) {
+        public DataStoreEntryRef<?> deserialize(JsonParser p, DeserializationContext ctxt) {
+            JsonNode tree = p.objectReadContext().readTree(p);
+            if (tree == null || !tree.isString()) {
                 return null;
             }
 
-            String text;
-            if (tree.isObject()) {
-                var obj = (ObjectNode) tree;
-                if (!obj.has("storeId") || !obj.required("storeId").isTextual()) {
-                    return null;
-                }
-
-                text = obj.required("storeId").asText();
-                if (text.isBlank()) {
-                    return null;
-                }
-            } else {
-                if (!tree.isTextual()) {
-                    return null;
-                }
-                text = tree.asText();
-            }
-
+            var text = tree.stringValue();
             var id = UUID.fromString(text);
-            // Keep an invalid entry if it is per-user, meaning that it will get removed later on
+            // Keep an invalid entry if it is per-user
             var e = DataStorage.get()
                     .getStoreEntryIfPresent(id)
                     .filter(dataStoreEntry -> dataStoreEntry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED
-                            || !dataStoreEntry.getStoreNode().isReadableForUser())
+                            || (dataStoreEntry.getStoreNode() != null
+                                    && !dataStoreEntry.getStoreNode().isAccessible()))
+                    .or(() -> DataStorage.get().getInaccessibleEntry(id))
                     .orElse(null);
             if (e == null) {
                 return null;
@@ -452,10 +532,10 @@ public class AppJacksonModule extends SimpleModule {
         }
     }
 
-    public static class HostAddressSerializer extends JsonSerializer<HostAddress> {
+    public static class HostAddressSerializer extends ValueSerializer<HostAddress> {
 
         @Override
-        public void serialize(HostAddress value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+        public void serialize(HostAddress value, JsonGenerator jgen, SerializationContext context) {
             if (value.isSingle()) {
                 jgen.writeString(value.get());
             } else {
@@ -467,25 +547,25 @@ public class AppJacksonModule extends SimpleModule {
         }
     }
 
-    public static class HostAddressDeserializer extends JsonDeserializer<HostAddress> {
+    public static class HostAddressDeserializer extends ValueDeserializer<HostAddress> {
 
         @Override
-        public HostAddress deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            var tree = (JsonNode) p.getCodec().readTree(p);
-            if (tree.isTextual()) {
-                return !tree.textValue().isBlank() ? HostAddress.of(tree.textValue()) : null;
+        public HostAddress deserialize(JsonParser p, DeserializationContext ctxt) {
+            var tree = (JsonNode) p.readValueAsTree();
+            if (tree.isString()) {
+                return !tree.stringValue().isBlank() ? HostAddress.of(tree.stringValue()) : null;
             } else {
                 var value = tree.get("value");
                 var available = tree.get("available");
-                if (value == null || !value.isTextual() || available == null || !available.isArray()) {
+                if (value == null || !value.isString() || available == null || !available.isArray()) {
                     return null;
                 }
 
                 var l = new ArrayList<String>();
                 for (JsonNode jsonNode : available) {
-                    l.add(jsonNode.textValue());
+                    l.add(jsonNode.stringValue());
                 }
-                return HostAddress.of(value.textValue(), l);
+                return HostAddress.of(value.stringValue(), l);
             }
         }
     }

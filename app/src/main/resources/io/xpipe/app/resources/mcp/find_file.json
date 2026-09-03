@@ -1,6 +1,6 @@
 {
   "name": "find_file",
-  "description": "Finds files in a directory",
+  "description": "Finds files in a directory, also supports recursion",
   "inputSchema": {
     "type": "object",
     "properties": {
@@ -17,13 +17,14 @@
         "description": "Whether to traverse subdirectories recursively or not"
       },
       "name": {
-        "type": "boolean",
+        "type": "string",
         "description": "The name of the file. Supports globs"
       }
     },
     "required": [
       "system",
-      "path"
+      "path",
+      "name"
     ]
   },
   "annotations": {

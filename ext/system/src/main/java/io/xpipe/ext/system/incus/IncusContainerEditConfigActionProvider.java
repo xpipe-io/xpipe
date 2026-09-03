@@ -32,7 +32,7 @@ public class IncusContainerEditConfigActionProvider implements HubLeafProvider<I
 
     @Override
     public LabelGraphic getIcon(DataStoreEntryRef<IncusContainerStore> store) {
-        return new LabelGraphic.IconGraphic("mdi2f-file-document-edit");
+        return new LabelGraphic.IconGraphic("mdi2f-file-edit-outline");
     }
 
     @Override

@@ -1,16 +1,16 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.ext.ConnectionFileSystem;
-import io.xpipe.app.ext.FileEntry;
-import io.xpipe.app.ext.FileInfo;
+import io.xpipe.app.fs.FileEntry;
+import io.xpipe.app.fs.FileInfo;
+import io.xpipe.app.fs.ShellFileSystem;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ElevationFunction;
 import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.OsType;
 
 import java.io.OutputStream;
 import java.util.List;
@@ -87,7 +87,7 @@ public interface BrowserFileOutput {
                                 .elevated(ElevationFunction.elevated(null))
                                 .start()
                         : model.getFileSystem().getShell().orElseThrow().start();
-        var fs = elevate ? new ConnectionFileSystem(sc) : model.getFileSystem();
+        var fs = elevate ? new ShellFileSystem(sc) : model.getFileSystem();
         var checkSudoersFile = shell.isPresent() && file.getPath().startsWith("/etc/sudo");
         var output = new BrowserFileOutput() {
 

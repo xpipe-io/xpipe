@@ -1,10 +1,10 @@
 package io.xpipe.app.browser;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
-import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStore;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;

@@ -1,7 +1,6 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.PrefsChoiceValue;
 
 import javafx.beans.value.ObservableValue;
 

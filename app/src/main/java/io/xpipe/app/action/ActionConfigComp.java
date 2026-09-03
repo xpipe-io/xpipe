@@ -3,15 +3,15 @@ package io.xpipe.app.action;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.*;
-import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.action.BatchStoreAction;
 import io.xpipe.app.hub.action.MultiStoreAction;
 import io.xpipe.app.hub.action.StoreAction;
-import io.xpipe.app.hub.comp.StoreChoiceComp;
-import io.xpipe.app.hub.comp.StoreListChoiceComp;
-import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.hub.creation.StoreChoiceComp;
+import io.xpipe.app.hub.list.StoreListChoiceComp;
+import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStore;
 
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -56,7 +56,7 @@ public class ActionConfigComp extends SimpleRegionBuilder {
         });
 
         var choice = new StoreListChoiceComp<>(
-                listProp, DataStore.class, null, StoreViewState.get().getAllConnectionsCategory(), null, null);
+                listProp, DataStore.class, null, StoreViewState.get().getAllConnectionsCategory(), null);
         choice.hide(listProp.emptyProperty());
         choice.maxHeight(450);
         return choice;

@@ -2,6 +2,10 @@
     -fx-line-spacing: -1px;
 }
 
+.intro .button {
+    -fx-padding: 6 10;
+}
+
 .intro .title {
     -fx-padding: 0 0 0.2em 0;
     -fx-text-fill: -color-fg-emphasis;

@@ -1,11 +1,11 @@
 DELIMITER="-------------------------------------"
 
-hostname -f &> /dev/null && printf "Hostname : $(hostname -f)" || printf "Hostname : $(hostname -s)"
+hostname -f &> /dev/null && printf "Hostname : $(hostname -f)\n" || printf "Hostname : $(hostname -s)\n"
 
 echo -e "Kernel Version :" $(uname -r)
-which arch && printf "OS Architecture :"$(arch | grep x86_64 &> /dev/null) && printf " 64 Bit OS\n"  || printf " 32 Bit OS\n"
+echo "OS Architecture : $(arch)"
 
-echo -en "System Uptime : " $(uptime -p)
+uptime -p &> /dev/null && echo -en "System Uptime : " $(uptime -p) || echo -en "System Uptime : " $(uptime)
 echo -e "\nCurrent System Date & Time : "$(date +%c)
 
 echo -e "Total Swap Memory in MiB : "$(grep -w SwapTotal /proc/meminfo|awk '{print $2/1024}')", in GiB : "\

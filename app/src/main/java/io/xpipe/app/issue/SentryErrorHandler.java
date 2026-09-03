@@ -78,7 +78,9 @@ public class SentryErrorHandler implements ErrorHandler {
             ObjectInputStream ois = new ObjectInputStream(bais);
             var copy = (Throwable) ois.readObject();
 
-            if (!(copy instanceof NullPointerException) && !(copy instanceof IndexOutOfBoundsException) && !(copy instanceof ClassCastException)) {
+            if (!(copy instanceof NullPointerException)
+                    && !(copy instanceof IndexOutOfBoundsException)
+                    && !(copy instanceof ClassCastException)) {
                 var msgField = Throwable.class.getDeclaredField("detailMessage");
                 msgField.setAccessible(true);
                 msgField.set(copy, null);
@@ -239,7 +241,8 @@ public class SentryErrorHandler implements ErrorHandler {
         s.setTag("inStartup", Boolean.toString(AppOperationMode.isInStartup()));
         s.setTag("inShutdown", Boolean.toString(AppOperationMode.isInShutdown()));
         s.setTag("inShutdownHook", Boolean.toString(AppOperationMode.isInShutdownHook()));
-        s.setTag("apiEnabled",
+        s.setTag(
+                "apiEnabled",
                 AppPrefs.get() != null
                         ? AppPrefs.get().enableHttpApi().getValue().toString()
                         : "unknown");

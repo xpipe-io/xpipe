@@ -1,54 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg
-   id="Layer_1"
-   data-name="Layer 1"
-   viewBox="0 0 204.59 204.59"
-   version="1.1"
-   sodipodi:docname="rdp_icon.svg"
-   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
-   xml:space="preserve"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:dc="http://purl.org/dc/elements/1.1/"><sodipodi:namedview
-     id="namedview1"
-     pagecolor="#ffffff"
-     bordercolor="#000000"
-     borderopacity="0.25"
-     inkscape:showpageshadow="2"
-     inkscape:pageopacity="0.0"
-     inkscape:pagecheckerboard="0"
-     inkscape:deskcolor="#d1d1d1"
-     inkscape:zoom="0.69729115"
-     inkscape:cx="-252.40533"
-     inkscape:cy="138.39269"
-     inkscape:window-width="1920"
-     inkscape:window-height="1009"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="Layer_1" /><defs
-     id="defs856"><style
-       id="style854">.cls-1{fill:#ac55ff;}</style><style
-       id="style2411">.cls-1{fill:#606161;}</style></defs><title
-     id="title858">identity</title><path
-     class="cls-1"
-     d="M332.32,153.7H179.68a26,26,0,0,0-26,26V332.32a26,26,0,0,0,26,26H332.32a26,26,0,0,0,26-26V179.68A26,26,0,0,0,332.32,153.7Zm14,178.62a14,14,0,0,1-14,14H179.68a14,14,0,0,1-14-14V179.68a14,14,0,0,1,14-14H332.32a14,14,0,0,1,14,14Z"
-     id="path860"
-     style="fill:#212121;fill-opacity:1"
-     transform="translate(-153.7 -153.7)" /><metadata
-     id="metadata932"><rdf:RDF><cc:Work
-         rdf:about=""><dc:title>identity</dc:title></cc:Work></rdf:RDF></metadata><path
-     class="cls-1"
-     d="M 166.1585,120.5645 127.6738,86.859005 166.38011,48.007151 152.04766,32.33305 103.4363,78.501807 v 16.730436 l 48.04075,42.517797 z"
-     id="path870-3"
-     style="fill:#f27b10;fill-opacity:1;stroke-width:1.604;stroke-dasharray:none"
-     sodipodi:nodetypes="cccccccc" /><path
-     class="cls-1"
-     d="M 44.918433,88.054169 83.403116,121.75965 44.696828,160.6115 59.029257,176.2856 107.64061,130.11683 V 113.3864 L 59.599873,70.868635 Z"
-     id="path870-3-2"
-     style="fill:#30962e;fill-opacity:1;stroke-width:1.60407"
-     sodipodi:nodetypes="cccccccc" /></svg>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" id="Layer_1" data-name="Layer 1" viewBox="0 0 204.59 204.59">
+    <defs id="defs856">
+        <style id="style854">
+            .cls-1{fill:#606161}
+        </style>
+    </defs>
+    <title id="title858">identity</title>
+    <path id="path860" d="M332.32 153.7H179.68a26 26 0 0 0-26 26v152.62a26 26 0 0 0 26 26h152.64a26 26 0 0 0 26-26V179.68a26 26 0 0 0-26-25.98m14 178.62a14 14 0 0 1-14 14H179.68a14 14 0 0 1-14-14V179.68a14 14 0 0 1 14-14h152.64a14 14 0 0 1 14 14Z" class="cls-1" style="fill:#212121;fill-opacity:1" transform="translate(-153.7 -153.7)"/>
+    <path id="path870-3" d="m166.159 120.565-38.485-33.706 38.706-38.852-14.332-15.674-48.612 46.169v16.73l48.041 42.518z" class="cls-1" style="fill:#f27b10;fill-opacity:1;stroke-width:1.604;stroke-dasharray:none"/>
+    <path id="path870-3-2" d="m44.918 88.054 38.485 33.706-38.706 38.852 14.332 15.674 48.612-46.17v-16.73L59.6 70.87Z" class="cls-1" style="fill:#30962e;fill-opacity:1;stroke-width:1.60407"/>
+</svg>

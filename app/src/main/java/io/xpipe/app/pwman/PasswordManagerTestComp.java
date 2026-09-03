@@ -1,0 +1,320 @@
+package io.xpipe.app.pwman;
+
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.SimpleRegionBuilder;
+import io.xpipe.app.comp.base.*;
+import io.xpipe.app.core.App;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.DerivedObservableList;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.GlobalTimer;
+import io.xpipe.app.util.ThreadHelper;
+
+import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+
+import atlantafx.base.controls.Popover;
+import atlantafx.base.controls.Spacer;
+import atlantafx.base.theme.Styles;
+import org.kordamp.ikonli.javafx.FontIcon;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class PasswordManagerTestComp extends SimpleRegionBuilder {
+
+    private final Property<String> value;
+    private final boolean handleEnter;
+    private final boolean showName;
+    private final boolean showSettings;
+    private final AtomicInteger counter = new AtomicInteger(0);
+
+    public PasswordManagerTestComp(boolean handleEnter) {
+        this(new SimpleObjectProperty<>(), handleEnter, false, false);
+    }
+
+    public PasswordManagerTestComp(
+            Property<String> value, boolean handleEnter, boolean showName, boolean showSettings) {
+        this.value = value;
+        this.handleEnter = handleEnter;
+        this.showName = showName;
+        this.showSettings = showSettings;
+    }
+
+    protected void selectFromList(PasswordManager.ListEntry entry) {
+        value.setValue(entry.getKey());
+    }
+
+    @Override
+    protected Region createSimple() {
+        var prefs = AppPrefs.get();
+        var status = new SimpleStringProperty();
+
+        var field = new TextFieldComp(value)
+                .apply(struc -> struc.promptTextProperty()
+                        .bind(Bindings.createStringBinding(
+                                () -> {
+                                    var p = prefs.passwordManager().getValue();
+                                    return p != null
+                                            ? (showName ? p.getDisplayName() + " - " : "") + p.getKeyPlaceholder()
+                                            : "?";
+                                },
+                                prefs.passwordManager(),
+                                AppI18n.activeLanguage())))
+                .hgrow();
+        if (handleEnter) {
+            field.apply(struc -> struc.setOnKeyPressed(event -> {
+                if (event.getCode() == KeyCode.ENTER) {
+                    testPasswordManager(value.getValue(), status);
+                    event.consume();
+                }
+            }));
+        }
+
+        var listButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2m-magnify-scan"), null);
+        listButton.enable(PasswordManagerKeyList.isSupported());
+        listButton.apply(struc -> {
+            struc.setOnAction(event -> {
+                struc.setDisable(true);
+                status.set("    " + AppI18n.get("querying"));
+                ThreadHelper.runFailableAsync(() -> {
+                    List<PasswordManager.ListEntry> list;
+                    try {
+                        list = PasswordManagerKeyList.queryList(false);
+                    } catch (Exception e) {
+                        struc.setDisable(false);
+                        status.set(null);
+                        ErrorEventFactory.fromThrowable(e).handle();
+                        return;
+                    }
+
+                    Platform.runLater(() -> {
+                        struc.setDisable(false);
+                        status.set(null);
+
+                        var popover = new Popover();
+                        popover.setArrowLocation(Popover.ArrowLocation.TOP_CENTER);
+
+                        if (list != null && list.size() > 0) {
+                            var all = FXCollections.observableList(list);
+                            var shown = FXCollections.<PasswordManager.ListEntry>observableArrayList();
+                            shown.addAll(list);
+
+                            var content = new VBox();
+                            content.setSpacing(6);
+                            content.setPadding(new Insets(10));
+                            content.setFillWidth(true);
+
+                            var header = new Label(AppI18n.get("passwordManagerHasKeys"));
+                            header.getStyleClass().add(Styles.TEXT_BOLD);
+                            header.setPadding(new Insets(0, 0, 8, 8));
+
+                            var refresh = new IconButtonComp("mdi2r-refresh", () -> {
+                                        struc.setDisable(true);
+                                        popover.hide();
+                                        ThreadHelper.runAsync(() -> {
+                                            PasswordManagerKeyList.queryList(true);
+                                            Platform.runLater(() -> {
+                                                struc.setDisable(false);
+                                                struc.fire();
+                                            });
+                                        });
+                                    })
+                                    .maxHeight(100)
+                                    .build();
+
+                            var headerBar = new HBox(header, new Spacer(), refresh);
+                            headerBar.setAlignment(Pos.CENTER_LEFT);
+                            headerBar.setFillHeight(true);
+
+                            content.getChildren().add(headerBar);
+
+                            var box = new ListBoxViewComp<>(
+                                    shown,
+                                    all,
+                                    entry -> {
+                                        var buttonName = entry.getTitle();
+                                        var entryButton =
+                                                new ButtonComp(new ReadOnlyObjectWrapper<>(buttonName), () -> {
+                                                    popover.hide();
+                                                    selectFromList(entry);
+                                                });
+                                        entryButton.maxWidth(400);
+                                        entryButton.style(Styles.FLAT);
+                                        entryButton.apply(button -> button.setMnemonicParsing(false));
+                                        entryButton.apply(button -> button.setAlignment(Pos.CENTER_LEFT));
+                                        return entryButton;
+                                    },
+                                    true);
+                            box.setVisibilityControl(true);
+                            box.setFixScrollReset(true);
+                            box.prefWidth(400);
+                            box.prefHeight(300);
+                            content.getChildren().add(box.build());
+
+                            var filterString = new SimpleObjectProperty<String>();
+                            var footer = new TextFieldComp(filterString);
+                            footer.apply(textField ->
+                                    textField.promptTextProperty().bind(AppI18n.observable("searchFilter")));
+                            content.getChildren().add(footer.build());
+                            filterString.addListener((observable, oldValue, newValue) -> {
+                                if (newValue != null) {
+                                    var filtered = list.stream()
+                                            .filter(listEntry -> listEntry.matches(newValue))
+                                            .toList();
+                                    DerivedObservableList.wrap(shown, true).setContent(filtered);
+                                } else {
+                                    DerivedObservableList.wrap(shown, true).setContent(all);
+                                }
+                            });
+
+                            popover.setContentNode(content);
+
+                            content.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                                if (newValue) {
+                                    content.getChildren().getLast().requestFocus();
+                                }
+                            });
+                        } else {
+                            var content = new Label(AppI18n.get("passwordManagerNoKeys"));
+                            content.setPadding(new Insets(10));
+                            popover.setContentNode(content);
+                        }
+
+                        var target = struc.getParent().getChildrenUnmodifiable().getFirst();
+                        if (!popover.isShowing() && target.getScene() != null) {
+                            popover.show(target);
+                        }
+                    });
+                });
+                event.consume();
+            });
+        });
+
+        var settingsButton = new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
+            AppPrefs.get().selectCategory("passwordManager");
+            App.getApp().getStage().requestFocus();
+        });
+
+        var l = new ArrayList<BaseRegionBuilder<?, ?>>();
+        l.add(field);
+        l.add(listButton);
+        if (showSettings) {
+            l.add(settingsButton);
+        }
+        var fieldBox = new InputGroupComp(l);
+        fieldBox.setMainReference(field);
+
+        var testButton = new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
+            testPasswordManager(value.getValue(), status);
+        });
+        testButton.padding(new Insets(6, 9, 6, 9));
+        testButton.disable(BindingsHelper.mapBoolean(value, v -> v == null));
+
+        var testRow = new HorizontalComp(
+                        List.of(testButton, new LabelComp(status).apply(struc -> struc.setOpacity(0.8))))
+                .apply(struc -> struc.setAlignment(Pos.CENTER_LEFT))
+                .apply(struc -> struc.setFillHeight(true));
+
+        var vbox = new VerticalComp(List.of(fieldBox, testRow));
+        vbox.spacing(6);
+        vbox.apply(r -> r.focusedProperty().subscribe(focus -> {
+            if (focus) {
+                r.getChildren().getFirst().requestFocus();
+            }
+        }));
+        return vbox.build();
+    }
+
+    private void testPasswordManager(String key, StringProperty status) {
+        var currentIndex = counter.incrementAndGet();
+        var prefs = AppPrefs.get();
+        ThreadHelper.runFailableAsync(() -> {
+            if (prefs.passwordManager().getValue() == null || key == null) {
+                return;
+            }
+
+            Platform.runLater(() -> {
+                status.set("    " + AppI18n.get("querying"));
+            });
+
+            var r = prefs.passwordManager().getValue().query(key);
+            if (r == null) {
+                Platform.runLater(() -> {
+                    status.set("    " + AppI18n.get("queryFailed"));
+                });
+                GlobalTimer.delay(
+                        () -> {
+                            Platform.runLater(() -> {
+                                if (counter.get() == currentIndex) {
+                                    status.set(null);
+                                }
+                            });
+                        },
+                        Duration.ofSeconds(5));
+                return;
+            }
+
+            List<String> elements = new ArrayList<>();
+            if (r.getCredentials() != null) {
+                elements.add(
+                        r.getCredentials().getUsername() != null
+                                ? r.getCredentials().getUsername()
+                                : "<no user>");
+                if (r.getCredentials().getPassword() != null) {
+                    var secret = r.getCredentials().getPassword().getSecretValue();
+                    var secretFormatted =
+                            secret.length() > 4 ? secret.substring(0, 4) + "*".repeat(secret.length() - 4) : secret;
+                    elements.add(secretFormatted);
+                } else {
+                    elements.add("<no password>");
+                }
+            } else {
+                elements.add("<no credentials>");
+            }
+
+            if (prefs.passwordManager().getValue() != null) {
+                if (r.getSshKey() != null) {
+                    var noRetrievalStrategy = !prefs.passwordManager()
+                                    .getValue()
+                                    .getKeyConfiguration()
+                                    .useInline()
+                            && !prefs.passwordManager()
+                                    .getValue()
+                                    .getKeyConfiguration()
+                                    .useAgent();
+                    elements.add(
+                            AppI18n.get(noRetrievalStrategy ? "sshKeyRetrievedMissingStrategy" : "sshKeyRetrieved"));
+                }
+            }
+
+            var formatted = String.join(" + ", elements);
+            Platform.runLater(() -> {
+                status.set("    " + AppI18n.get("retrievedPassword", formatted));
+            });
+            GlobalTimer.delay(
+                    () -> {
+                        Platform.runLater(() -> {
+                            if (counter.get() == currentIndex) {
+                                status.set(null);
+                            }
+                        });
+                    },
+                    Duration.ofSeconds(5));
+        });
+    }
+}

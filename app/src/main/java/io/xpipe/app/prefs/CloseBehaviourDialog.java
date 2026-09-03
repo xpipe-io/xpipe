@@ -8,7 +8,6 @@ import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.mode.AppOperationMode;
-import io.xpipe.app.ext.PrefsChoiceValue;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;

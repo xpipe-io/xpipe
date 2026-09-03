@@ -36,10 +36,6 @@ public class ShellScript {
         }
     }
 
-    public ShellScript withShebang(ShellDialect dialect) {
-        return new ShellScript("#!/usr/bin/env " + dialect.getExecutableName() + "\n" + withoutShebang());
-    }
-
     @Override
     public String toString() {
         return value;

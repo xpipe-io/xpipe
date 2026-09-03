@@ -8,10 +8,11 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.NativeWinWindowControl;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -88,8 +89,8 @@ public class AppMainWindow {
         }
 
         var stage = App.getApp().getStage();
-        stage.setMinWidth(500);
-        stage.setMinHeight(400);
+        stage.setMinWidth(300);
+        stage.setMinHeight(300);
         INSTANCE = new AppMainWindow(stage);
         AppModifiedStage.prepareStage(stage);
 
@@ -115,7 +116,6 @@ public class AppMainWindow {
         AppWindowStyle.addIcons(stage);
         AppWindowStyle.addStylesheets(stage.getScene());
         AppWindowStyle.addClickShield(stage);
-        AppWindowStyle.addMaximizedPseudoClass(stage);
         AppWindowStyle.addFontSize(scene);
         AppTheme.initThemeHandlers(stage);
 
@@ -156,7 +156,10 @@ public class AppMainWindow {
 
     public static synchronized void resetContent() {
         PlatformThread.runLaterIfNeededBlocking(() -> {
-            loadingText.setValue(AppI18n.get("savingChanges"));
+            loadingText.setValue(AppI18n.get(
+                    DataStorage.get() != null && DataStorage.get().syncEnabled()
+                            ? "synchronizingChanges"
+                            : "savingChanges"));
             loadedContent.setValue(null);
         });
     }
@@ -352,11 +355,14 @@ public class AppMainWindow {
     }
 
     private void setDefaultSize() {
+        int defWidth = 1520;
+        int defHeight = 800;
+
         if (AppProperties.get().isShowcase()) {
-            stage.setX(312);
-            stage.setY(149);
-            stage.setWidth(1296);
-            stage.setHeight(759);
+            stage.setX((double) (1920 - defWidth) / 2 - 8);
+            stage.setY((double) (1080 - defHeight) / 2 - 31);
+            stage.setWidth(defWidth + (2 * 8));
+            stage.setHeight(defHeight + 31 + 8);
             return;
         }
 
@@ -367,8 +373,8 @@ public class AppMainWindow {
 
         var screens = Screen.getScreens();
         if (screens.size() > 1) {
-            stage.setWidth(1280);
-            stage.setHeight(780);
+            stage.setWidth(defWidth);
+            stage.setHeight(defHeight);
             return;
         }
 

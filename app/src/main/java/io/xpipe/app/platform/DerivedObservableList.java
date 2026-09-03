@@ -3,7 +3,6 @@ package io.xpipe.app.platform;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -55,20 +54,20 @@ public class DerivedObservableList<T> {
         return derived;
     }
 
-    public void setContent(List<? extends T> newList) {
+    public boolean setContent(List<? extends T> newList) {
         synchronized (list) {
             if (list.equals(newList)) {
-                return;
+                return false;
             }
 
             if (list.size() == 0) {
                 list.addAll(newList);
-                return;
+                return true;
             }
 
             if (newList.size() == 0) {
                 list.clear();
-                return;
+                return true;
             }
         }
 
@@ -77,6 +76,7 @@ public class DerivedObservableList<T> {
         } else {
             setContentNonUnique(newList);
         }
+        return true;
     }
 
     private void setContentNonUnique(List<? extends T> newList) {
@@ -273,25 +273,6 @@ public class DerivedObservableList<T> {
         });
         comp.addListener(observable -> {
             d.list.sort(comp.getValue());
-        });
-        return d;
-    }
-
-    public DerivedObservableList<T> blockUpdatesIf(ObservableBooleanValue block) {
-        var d = this.<T>createNewDerived();
-        Runnable runnable = () -> {
-            d.setContent(list);
-        };
-        runnable.run();
-        list.addListener((ListChangeListener<? super T>) c -> {
-            if (!block.getValue()) {
-                runnable.run();
-            }
-        });
-        block.addListener(observable -> {
-            if (!block.getValue()) {
-                runnable.run();
-            }
         });
         return d;
     }

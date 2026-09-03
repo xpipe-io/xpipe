@@ -5,23 +5,22 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.hub.comp.StoreChoiceComp;
-import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.ext.ProcModuleProvider;
+import io.xpipe.app.hub.creation.StoreChoiceComp;
+import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.*;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.ShellStore;
 import io.xpipe.app.terminal.*;
 import io.xpipe.app.util.*;
-import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -112,7 +111,7 @@ public class TerminalCategory extends AppPrefsCategory {
                             // Don't use tabs to not use multiplexer stuff
                             TerminalLaunch.builder()
                                     .title("Test")
-                                    .localScript(new ShellScript(ProcessControlProvider.get()
+                                    .localScript(new ShellScript(ProcModuleProvider.get()
                                             .getEffectiveLocalDialect()
                                             .getEchoCommand(
                                                     "If you can read this, the terminal integration works", false)))
@@ -166,7 +165,7 @@ public class TerminalCategory extends AppPrefsCategory {
                 .title("terminalConfiguration")
                 .sub(terminalChoice(true))
                 .sub(terminalProxy())
-                .sub(terminalMultiplexerChoice())
+                .sub(terminalMultiplexer())
                 .sub(terminalPrompt())
                 // .sub(terminalInitScript())
                 .title("sessionLogging")
@@ -259,7 +258,7 @@ public class TerminalCategory extends AppPrefsCategory {
                         button.setOnAction(event -> {
                             ThreadHelper.runFailableAsync(() -> {
                                 BooleanScope.executeExclusive(disable, () -> {
-                                    ProcessControlProvider.get().refreshWsl();
+                                    ProcModuleProvider.get().refreshWsl();
                                 });
                             });
                             event.consume();
@@ -302,7 +301,7 @@ public class TerminalCategory extends AppPrefsCategory {
                         prefs.terminalInitScript);
     }
 
-    public static OptionsBuilder terminalMultiplexerChoice() {
+    public static OptionsBuilder terminalMultiplexer() {
         var prefs = AppPrefs.get();
         var choiceBuilder = OptionsChoiceBuilder.builder()
                 .property(prefs.terminalMultiplexer)
@@ -333,16 +332,18 @@ public class TerminalCategory extends AppPrefsCategory {
         var choice = choiceBuilder.build().buildComp();
         choice.maxWidth(600);
 
+        var testCounter = new SimpleIntegerProperty();
         var testDisabled = new SimpleBooleanProperty();
         var test = new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
                     testDisabled.set(true);
+                    testCounter.set(testCounter.getValue() + 1);
                     ThreadHelper.runFailableAsync(() -> {
                         try {
                             var term = AppPrefs.get().terminalType().getValue();
                             if (term != null) {
                                 TerminalLaunch.builder()
                                         .title("Tab 1 test")
-                                        .localScript(new ShellScript(ProcessControlProvider.get()
+                                        .localScript(new ShellScript(ProcModuleProvider.get()
                                                 .getEffectiveLocalDialect()
                                                 .getEchoCommand(
                                                         "If you can read this, the terminal multiplexer integration works",
@@ -352,9 +353,11 @@ public class TerminalCategory extends AppPrefsCategory {
                                         .pauseOnExit(true)
                                         .launch();
 
+                                ThreadHelper.sleep(1000);
+
                                 TerminalLaunch.builder()
                                         .title("Tab 2 test")
-                                        .localScript(new ShellScript(ProcessControlProvider.get()
+                                        .localScript(new ShellScript(ProcModuleProvider.get()
                                                 .getEffectiveLocalDialect()
                                                 .getEchoCommand(
                                                         "If you can read this, the tabbed terminal multiplexer integration works",
@@ -382,12 +385,20 @@ public class TerminalCategory extends AppPrefsCategory {
                 .documentationLink(DocumentationLink.TERMINAL_MULTIPLEXER)
                 .addComp(choice);
         if (OsType.ofLocal() == OsType.WINDOWS) {
-            options.disable(BindingsHelper.map(prefs.terminalProxy(), uuid -> uuid == null));
+            options.disable(Bindings.createBooleanBinding(
+                    () -> {
+                        if (prefs.terminalMultiplexer.getValue() != null) {
+                            return false;
+                        }
+
+                        return !TerminalProxyManager.hasConfiguredProxy()
+                                && !TerminalMultiplexerManager.isAvailableOnWindows();
+                    },
+                    prefs.terminalProxy(),
+                    prefs.terminalMultiplexer(),
+                    testCounter));
         }
         options.addComp(test).hide(prefs.terminalMultiplexer.isNull());
-        if (OsType.ofLocal() == OsType.WINDOWS) {
-            options.disable(BindingsHelper.map(prefs.terminalProxy(), uuid -> uuid == null));
-        }
         return options;
     }
 

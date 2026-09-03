@@ -5,6 +5,7 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.WindowDockComp;
 
 import javafx.beans.property.SimpleBooleanProperty;
@@ -38,7 +39,9 @@ public class TerminalDockBrowserComp extends WindowDockComp<TerminalDockView> {
             update(stack);
         });
         stack.setOnMouseClicked(event -> {
-            model.attach();
+            ThreadHelper.runAsync(() -> {
+                model.attach();
+            });
             event.consume();
         });
         stack.getStyleClass().add("terminal-dock-comp");

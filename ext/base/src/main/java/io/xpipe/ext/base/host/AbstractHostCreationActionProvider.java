@@ -3,7 +3,7 @@ package io.xpipe.ext.base.host;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
-import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;

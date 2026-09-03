@@ -1,15 +1,16 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.DataStoreCreationCategory;
-import io.xpipe.app.ext.GuiDialog;
-import io.xpipe.app.ext.LocalStore;
-import io.xpipe.app.hub.comp.StoreChoiceComp;
-import io.xpipe.app.hub.comp.StoreCreationModel;
-import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.hub.creation.StoreChoiceComp;
+import io.xpipe.app.hub.creation.StoreCreationModel;
+import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStore;
+import io.xpipe.app.store.DataStoreCreationCategory;
+import io.xpipe.app.store.LocalStore;
+import io.xpipe.app.util.GuiDialog;
 import io.xpipe.ext.base.host.HostAddressGatewayStore;
 
 import javafx.beans.binding.Bindings;
@@ -23,8 +24,12 @@ import java.util.List;
 public class FixedServiceStoreProvider extends AbstractServiceStoreProvider {
 
     @Override
-    public DataStoreEntry getSyntheticParent(DataStoreEntry store) {
+    public DataStoreEntryRef<?> getSyntheticParent(DataStoreEntry store) {
         FixedServiceStore s = store.getStore().asNeeded();
+        if (s.getHost() == null) {
+            return null;
+        }
+
         return s.getDisplayParent() != null
                 ? DataStorage.get()
                         .getOrCreateNewSyntheticEntry(
@@ -33,6 +38,7 @@ public class FixedServiceStoreProvider extends AbstractServiceStoreProvider {
                                 FixedServiceGroupStore.builder()
                                         .parent(s.getDisplayParent().asNeeded())
                                         .build())
+                        .ref()
                 : null;
     }
 

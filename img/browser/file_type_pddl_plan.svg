@@ -1,1 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><title>file_type_pddl_plan</title><rect x="4.178" y="4.956" width="17.37" height="6.45" style="fill:green"/><rect x="11.323" y="13.494" width="17.37" height="6.45" style="fill:green"/><rect x="21.657" y="22.033" width="7.036" height="6.45" style="fill:green"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    <title>file_type_pddl_plan</title>
+    <path d="M4.178 4.956h17.37v6.45H4.178zm7.145 8.538h17.37v6.45h-17.37zm10.334 8.539h7.036v6.45h-7.036z" style="fill:green"/>
+</svg>

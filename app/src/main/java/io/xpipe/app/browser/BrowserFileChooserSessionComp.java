@@ -8,24 +8,23 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.ext.FileSystemStore;
-import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.hub.comp.StoreEntryWrapper;
-import io.xpipe.app.hub.comp.StoreFilter;
-import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.hub.entry.StoreEntryWrapper;
+import io.xpipe.app.hub.list.StoreFilter;
+import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.FileSystemStore;
+import io.xpipe.app.store.ShellStore;
+import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.FileReference;
 import io.xpipe.app.util.ObservableSubscriber;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FilePath;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.*;
 import javafx.collections.ListChangeListener;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -56,7 +55,12 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
             Consumer<FileReference> file,
             boolean save,
             boolean directory,
-            Predicate<DataStoreEntry> filter) {
+            Predicate<DataStoreEntry> filter,
+            BooleanProperty busy) {
+        if (store.get() == null && DataStorage.get().getStoreEntries().stream().noneMatch(filter)) {
+            return;
+        }
+
         var model = new BrowserFileChooserSessionModel(directory);
         model.setOnFinish(fileStores -> {
             file.accept(fileStores.size() > 0 ? fileStores.getFirst() : null);
@@ -73,18 +77,21 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
         });
         var selectionField = new TextFieldComp(selection);
         selectionField.apply(struc -> {
-            struc.setEditable(false);
             AppFontSizes.base(struc);
         });
         selectionField.style("chooser-selection");
         selectionField.hgrow();
-        var modal = ModalOverlay.of(save ? "saveFileTitle" : "openFileTitle", comp);
+        var modal = ModalOverlay.of(
+                save
+                        ? (directory ? "saveDirectoryTitle" : "saveFileTitle")
+                        : (directory ? "openDirectoryTitle" : "openFileTitle"),
+                comp);
         modal.setRequireCloseButtonForClose(true);
         modal.addButtonBarComp(selectionField);
         modal.addButton(new ModalButton("select", () -> model.finishChooser(), true, true));
         modal.show();
         ThreadHelper.runAsync(() -> {
-            model.openFileSystemAsync(store.get(), null, (sc) -> initialPath.get(), model.getBusy());
+            model.openFileSystemAsync(store.get(), null, (sc) -> initialPath.get(), busy);
         });
     }
 
@@ -154,7 +161,12 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
                     if (selected != null) {
                         s.getChildren().setAll(new BrowserFileSystemTabComp(selected, false).build());
                     } else {
-                        s.getChildren().clear();
+                        s.getChildren()
+                                .setAll(new LoadingIconComp(
+                                                new ReadOnlyBooleanWrapper(true), node -> AppFontSizes.title(node))
+                                        .prefWidth(50)
+                                        .prefHeight(50)
+                                        .build());
                     }
                 });
             });

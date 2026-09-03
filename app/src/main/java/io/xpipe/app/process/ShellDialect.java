@@ -1,9 +1,9 @@
 package io.xpipe.app.process;
 
-import io.xpipe.app.ext.FileEntry;
-import io.xpipe.app.ext.FileSystem;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.StreamCharset;
+import io.xpipe.app.fs.FileEntry;
+import io.xpipe.app.fs.FileSystem;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.StreamCharset;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -73,6 +73,8 @@ public interface ShellDialect {
     String prepareTerminalEnvironmentCommands(boolean local);
 
     String addToPathVariableCommand(List<String> entries, boolean append);
+
+    String formatError(String err);
 
     default String applyInitFileCommand(ShellControl sc) throws Exception {
         return null;

@@ -1,7 +1,5 @@
 package io.xpipe.app.util;
 
-import io.xpipe.core.FailableRunnable;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 

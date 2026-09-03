@@ -1,0 +1,119 @@
+package io.xpipe.app.util;
+
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NonNull;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@EqualsAndHashCode
+@Builder
+public class HostAddress {
+
+    private final String value;
+
+    @Getter
+    private final List<String> available;
+
+    private HostAddress(String value, List<String> available) {
+        if (value == null || value.isEmpty()) {
+            throw new IllegalArgumentException("Host address cannot be null or empty");
+        }
+
+        if (available.stream().anyMatch(s -> s == null || s.isEmpty())) {
+            throw new IllegalArgumentException("Host address cannot be null or empty");
+        }
+
+        this.value = value;
+        this.available = available;
+    }
+
+    public static HostAddress empty() {
+        return new HostAddress("unknown", List.of("unknown"));
+    }
+
+    public static HostAddress of(String host) {
+        if (host == null) {
+            return null;
+        }
+
+        return new HostAddress(host.strip(), List.of(host));
+    }
+
+    public static HostAddress of(@NonNull List<String> addresses) {
+        return new HostAddress(
+                addresses.getFirst().strip(),
+                addresses.stream().map(s -> s.strip()).toList());
+    }
+
+    public static HostAddress of(String... addresses) {
+        var l = new ArrayList<String>();
+        for (String s : addresses) {
+            if (s != null) {
+                l.add(s);
+            }
+        }
+
+        if (l.isEmpty()) {
+            return null;
+        }
+
+        return of(l);
+    }
+
+    public static HostAddress of(String host, @NonNull List<String> addresses) {
+        if (host == null) {
+            return null;
+        }
+
+        return new HostAddress(
+                host.strip(), addresses.stream().map(s -> s.strip()).toList());
+    }
+
+    public HostAddress withValue(String value) {
+        if (value == null || !available.contains(value)) {
+            return this;
+        }
+
+        return new HostAddress(value, this.available);
+    }
+
+    public boolean isSingle() {
+        return available.size() == 1;
+    }
+
+    @Override
+    public String toString() {
+        return value;
+    }
+
+    public String get() {
+        return value;
+    }
+
+    public int getSelectedIndex() {
+        return available.indexOf(value);
+    }
+
+    public Optional<String> getIpv4Address() {
+        return available.stream()
+                .filter(s -> s.matches("\\d+\\.\\d+\\.\\d+\\.\\d+"))
+                .findFirst();
+    }
+
+    public HostAddress mergeWithIndex(HostAddress newer) {
+        var index = getSelectedIndex();
+        if (index < newer.getAvailable().size()) {
+            return new HostAddress(newer.getAvailable().get(index), newer.getAvailable());
+        } else {
+            return newer;
+        }
+    }
+
+    public boolean isEmpty() {
+        return available.isEmpty() || available.getFirst().equals("unknown");
+    }
+}

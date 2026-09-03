@@ -8,14 +8,13 @@ import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.core.window.AppMainWindow;
-import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.hub.comp.StoreEntryWrapper;
-import io.xpipe.app.hub.comp.StoreFilter;
-import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.hub.entry.StoreEntryWrapper;
+import io.xpipe.app.hub.list.StoreFilter;
+import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.store.ShellStore;
 import io.xpipe.app.util.ObservableSubscriber;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -80,7 +79,6 @@ public class BrowserFullSessionComp extends SimpleRegionBuilder {
         loadingStack.apply(struc -> struc.setPickOnBounds(false));
         var delayedStack = new DelayedInitComp(
                 left, () -> StoreViewState.get() != null && StoreViewState.get().isInitialized());
-        delayedStack.hide(AppMainWindow.get().getStage().widthProperty().lessThan(1000));
         var splitPane = new LeftSplitPaneComp(delayedStack, loadingStack)
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
                 .withOnDividerChange(d -> {
@@ -201,6 +199,9 @@ public class BrowserFullSessionComp extends SimpleRegionBuilder {
                     cache.keySet().removeIf(browserSessionTab -> !all.contains(browserSessionTab));
 
                     if (newValue == null) {
+                        struc.setMinWidth(0);
+                        struc.setPrefWidth(Region.USE_COMPUTED_SIZE);
+                        struc.setMaxWidth(Region.USE_COMPUTED_SIZE);
                         struc.getChildren().clear();
                         return;
                     }

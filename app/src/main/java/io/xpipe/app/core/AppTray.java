@@ -58,11 +58,11 @@ public class AppTray {
                 return;
             }
 
-            var title = AppI18n.get(event.isTerminal() ? "terminalErrorOccured" : "errorOccured");
+            var title = AppI18n.get(event.isTerminal() ? "terminalErrorOccurred" : "errorOccurred");
             var desc = event.getDescription();
             if (desc == null && event.getThrowable() != null) {
                 var tName = event.getThrowable().getClass().getSimpleName();
-                desc = AppI18n.get("errorTypeOccured", tName);
+                desc = AppI18n.get("errorTypeOccurred", tName);
             }
             if (desc == null) {
                 desc = AppI18n.get("errorNoDetail");

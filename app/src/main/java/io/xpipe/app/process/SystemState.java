@@ -1,6 +1,6 @@
 package io.xpipe.app.process;
 
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 public interface SystemState {
 

@@ -1,8 +1,8 @@
 package io.xpipe.app.storage;
 
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.DataStoreState;
-import io.xpipe.app.ext.StatefulDataStore;
+import io.xpipe.app.store.DataStore;
+import io.xpipe.app.store.DataStoreState;
+import io.xpipe.app.store.StatefulDataStore;
 
 import java.util.function.Supplier;
 
@@ -79,7 +79,9 @@ public class DataStateHandler {
         var r = entry.get().getStoreCache().get(key);
         if (r == null) {
             r = def.get();
-            entry.get().setStoreCache(key, r);
+
+            // TODO: Do we need to set the cache?
+            // entry.get().setStoreCache(key, r);
         }
         return c.cast(r);
     }

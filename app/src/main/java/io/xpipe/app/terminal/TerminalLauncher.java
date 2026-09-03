@@ -7,10 +7,10 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.util.FailableFunction;
+import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.OsType;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FailableFunction;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
 
 import lombok.Value;
 
@@ -36,7 +36,8 @@ public class TerminalLauncher {
             TerminalInitScriptConfig config,
             boolean exit)
             throws Exception {
-        var content = constructTerminalInitScript(t, processControl, workingDirectory, preInit, postInit, config, exit);
+        var content =
+                constructTerminalInitScript(t, processControl, workingDirectory, preInit, postInit, config, exit, true);
         var hash = ScriptHelper.getScriptHash(processControl, content);
         var file = t.getInitFileName(processControl, hash);
         return ScriptHelper.createExecScriptRaw(processControl, file, content, true);
@@ -49,7 +50,8 @@ public class TerminalLauncher {
             List<String> preInit,
             List<String> postInit,
             TerminalInitScriptConfig config,
-            boolean exit)
+            boolean exit,
+            boolean formatScript)
             throws Exception {
         String nl = t.getNewLine().getNewLineString();
         var content = "";
@@ -87,7 +89,10 @@ public class TerminalLauncher {
             content += nl + t.getPassthroughExitCommand();
         }
 
-        content = t.prepareScriptContent(processControl, content);
+        if (formatScript) {
+            content = t.prepareScriptContent(processControl, content);
+        }
+
         return content;
     }
 
@@ -98,7 +103,7 @@ public class TerminalLauncher {
             var script = constructTerminalInitScript(
                     sc.getShellDialect(),
                     sc,
-                    WorkingDirectoryFunction.none(),
+                    WorkingDirectoryFunction.fixed(sc.view().userHome()),
                     List.of(),
                     List.of(command.apply(sc).toString()),
                     new TerminalInitScriptConfig(
@@ -107,7 +112,8 @@ public class TerminalLauncher {
                                     && AppPrefs.get().clearTerminalOnInit().get()
                                     && !AppPrefs.get().developerPrintInitFiles().get(),
                             TerminalInitFunction.none()),
-                    true);
+                    true,
+                    false);
             var singlePane = new TerminalPaneConfiguration(UUID.randomUUID(), title, 0, script, sc.getShellDialect());
             var config = new TerminalLaunchConfiguration(null, title, title, true, false, List.of(singlePane));
             launch(type, config);
@@ -237,6 +243,14 @@ public class TerminalLauncher {
         var multiplexer = TerminalMultiplexerManager.getEffectiveMultiplexer();
         if (multiplexer.isEmpty()) {
             return false;
+        }
+
+        if (OsType.ofLocal() == OsType.WINDOWS
+                && multiplexer.get().requiresUnixEnvironment()
+                && TerminalProxyManager.getProxy().isEmpty()) {
+            throw ErrorEventFactory.expected(
+                    new IllegalStateException(
+                            "The currently active terminal multiplexer is only supported with a WSL terminal environment on Windows"));
         }
 
         var control = TerminalProxyManager.getProxy().orElse(LocalShell.getShell());

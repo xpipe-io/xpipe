@@ -27,18 +27,6 @@ public class AppSideWindow {
         Supplier<Alert> supplier = () -> {
             Alert a = createEmptyAlert();
             var s = (Stage) a.getDialogPane().getScene().getWindow();
-            s.setOnShown(event -> {
-                Platform.runLater(() -> {
-                    AppWindowBounds.clampWindow(s).ifPresent(rectangle2D -> {
-                        s.setX(rectangle2D.getMinX());
-                        s.setY(rectangle2D.getMinY());
-                        // Somehow we have to set max size as setting the normal size does not work?
-                        s.setMaxWidth(rectangle2D.getWidth());
-                        s.setMaxHeight(rectangle2D.getHeight());
-                    });
-                });
-                event.consume();
-            });
             AppWindowBounds.fixInvalidStagePosition(s);
             AppWindowStyle.addFontSize(s.getScene());
             a.getDialogPane().getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {

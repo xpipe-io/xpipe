@@ -4,9 +4,9 @@ import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.LocalShell;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.process.LocalShell;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -121,7 +121,8 @@ public abstract class RealVncClient implements ExternalVncClient {
             try (var appsStream = Files.list(Path.of("/Applications"))) {
                 var dirs = appsStream.toList();
                 return dirs.stream()
-                        .filter(path -> path.getFileName().toString().startsWith("VNC Viewer") || path.getFileName().toString().startsWith("RealVNC Connect Viewer"))
+                        .filter(path -> path.getFileName().toString().startsWith("VNC Viewer")
+                                || path.getFileName().toString().startsWith("RealVNC Connect Viewer"))
                         .findFirst();
             } catch (IOException e) {
                 ErrorEventFactory.fromThrowable(e).handle();

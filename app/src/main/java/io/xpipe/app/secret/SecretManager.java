@@ -4,7 +4,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.process.CountDown;
 import io.xpipe.app.process.SecretReference;
 import io.xpipe.app.util.GlobalTimer;
-import io.xpipe.core.SecretValue;
+import io.xpipe.app.util.SecretValue;
 
 import java.time.Duration;
 import java.util.*;

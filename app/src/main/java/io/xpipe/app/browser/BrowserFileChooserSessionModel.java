@@ -2,14 +2,15 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
-import io.xpipe.app.ext.FileSystem;
-import io.xpipe.app.ext.FileSystemStore;
+import io.xpipe.app.fs.FileKind;
+import io.xpipe.app.fs.FileSystem;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.FileSystemStore;
 import io.xpipe.app.util.BooleanScope;
+import io.xpipe.app.util.FailableFunction;
+import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.FileReference;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FailableFunction;
-import io.xpipe.core.FilePath;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -35,16 +36,35 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
 
     public BrowserFileChooserSessionModel(boolean directory) {
         this.directory = directory;
-        selectedEntry.addListener((observable, oldValue, newValue) -> {
-            if (newValue == null) {
+        selectedEntry.addListener((modelObservable, oldModel, newModel) -> {
+            if (newModel == null) {
                 fileSelection.clear();
                 return;
             }
 
-            fileSelection.setAll(newValue.getFileList().getSelection());
-            newValue.getFileList().getSelection().addListener((ListChangeListener<? super BrowserEntry>) c -> {
-                fileSelection.setAll(newValue.getFileList().getSelection());
+            newModel.getFileList().getSelection().addListener((ListChangeListener<? super BrowserEntry>) c -> {
+                var updated = newModel.getFileList()
+                        .getSelection()
+                        .filtered(browserEntry -> (directory
+                                        && browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY)
+                                || (!directory && browserEntry.getRawFileEntry().getKind() != FileKind.DIRECTORY));
+                if (!updated.isEmpty()) {
+                    fileSelection.setAll(updated);
+                }
             });
+
+            if (directory) {
+                if (newModel.getCurrentDirectory() != null) {
+                    fileSelection.setAll(new BrowserEntry(newModel.getCurrentDirectory(), newModel.getFileList()));
+                }
+                newModel.getCurrentPath().addListener((observable, oldValue, newValue) -> {
+                    if (newModel.getCurrentDirectory() != null) {
+                        fileSelection.setAll(new BrowserEntry(newModel.getCurrentDirectory(), newModel.getFileList()));
+                    } else {
+                        fileSelection.clear();
+                    }
+                });
+            }
         });
     }
 

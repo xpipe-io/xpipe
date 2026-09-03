@@ -17,7 +17,7 @@ It currently supports:
 - [Proxmox PVE](https://docs.xpipe.io/guide/proxmox), [Hyper-V](https://docs.xpipe.io/guide/hyperv), [KVM](https://docs.xpipe.io/guide/kvm), and [VMware Player/Workstation/Fusion](https://docs.xpipe.io/guide/vmware) virtual machines
 - [Tailscale](https://docs.xpipe.io/guide/tailscale), [Netbird](https://docs.xpipe.io/guide/netbird), and [Teleport](https://docs.xpipe.io/guide/teleport) connections
 - [AWS](https://docs.xpipe.io/guide/aws) and [Hetzner Cloud](https://docs.xpipe.io/guide/hcloud) servers
-- [RDP](https://docs.xpipe.io/guide/rdp) and [VNC](https://docs.xpipe.io/guide/vnc) connections
+- [RDP](https://docs.xpipe.io/guide/rdp) + gateways and [VNC](https://docs.xpipe.io/guide/vnc) connections
 - Windows Subsystem for Linux, Cygwin, and MSYS2 environments
 - [Kubernetes](https://docs.xpipe.io/guide/kubernetes) clusters, pods, and containers
 - [Powershell Remote Sessions](https://docs.xpipe.io/guide/pssession)
@@ -28,55 +28,55 @@ It currently supports:
     <a href="https://docs.xpipe.io/guide/ssh" target="_blank" rel="noopener">
         <img src="https://github.com/xpipe-io/.github/raw/main/icons/ssh.svg" width=40 height=40 />
     </a>
-    <a href="#"><img width=10 /></a>
+    <img src="https://github.com/xpipe-io/.github/raw/main/img/1x1.png" width=10 />
     <a href="https://docs.xpipe.io/guide/docker" target="_blank" rel="noopener">
         <img src="https://github.com/xpipe-io/.github/raw/main/icons/docker.svg" width=40 height=40 />
     </a>
-    <a href="#"><img width=10 /></a>
+    <img src="https://github.com/xpipe-io/.github/raw/main/img/1x1.png" width=10 />
     <a href="https://docs.xpipe.io/guide/docker#compose" target="_blank" rel="noopener">
         <img src="https://github.com/xpipe-io/.github/raw/main/icons/compose.png" width=40 height=40 />
     </a>
-    <a href="#"><img width=10 /></a>
+    <img src="https://github.com/xpipe-io/.github/raw/main/img/1x1.png" width=10 />
     <a href="https://docs.xpipe.io/guide/lxc" target="_blank" rel="noopener">
         <img src="https://github.com/xpipe-io/.github/raw/main/icons/lxd.svg" width=40 height=40 />
     </a>
-    <a href="#"><img width=10 /></a>
+    <img src="https://github.com/xpipe-io/.github/raw/main/img/1x1.png" width=10 />
     <a href="https://docs.xpipe.io/guide/podman" target="_blank" rel="noopener">
         <img src="https://github.com/xpipe-io/.github/raw/main/icons/podman.svg" width=40 height=40 />
     </a>
-    <a href="#"><img width=10 /></a>
+    <img src="https://github.com/xpipe-io/.github/raw/main/img/1x1.png" width=10 />
     <a href="https://docs.xpipe.io/guide/aws" target="_blank" rel="noopener">
         <img src="https://github.com/xpipe-io/.github/raw/main/icons/aws.svg" width=40 height=40 />
     </a>
-    <a href="#"><img width=10 /></a>
+    <img src="https://github.com/xpipe-io/.github/raw/main/img/1x1.png" width=10 />
     <a href="https://docs.xpipe.io/guide/kubernetes" target="_blank" rel="noopener">
         <img src="https://github.com/xpipe-io/.github/raw/main/icons/k8s.svg" width=40 height=40 />
     </a>
-    <a href="#"><img width=10 /></a>
+    <img src="https://github.com/xpipe-io/.github/raw/main/img/1x1.png" width=10 />
     <a href="https://docs.xpipe.io/guide/proxmox" target="_blank" rel="noopener">
         <img src="https://github.com/xpipe-io/.github/raw/main/icons/proxmox.svg" width=40 height=40 />
     </a>
-    <a href="#"><img width=10 /></a>
+    <img src="https://github.com/xpipe-io/.github/raw/main/img/1x1.png" width=10 />
     <a href="https://docs.xpipe.io/guide/vmware" target="_blank" rel="noopener">
         <img src="https://github.com/xpipe-io/.github/raw/main/icons/vmware.svg" width=40 height=40 />
     </a>
-    <a href="#"><img width=10 /></a>
+    <img src="https://github.com/xpipe-io/.github/raw/main/img/1x1.png" width=10 />
     <a href="https://docs.xpipe.io/guide/kvm" target="_blank" rel="noopener">
         <img src="https://github.com/xpipe-io/.github/raw/main/icons/virsh.png" width=40 height=40 />
     </a>
-    <a href="#"><img width=10 /></a>
+    <img src="https://github.com/xpipe-io/.github/raw/main/img/1x1.png" width=10 />
     <a href="https://docs.xpipe.io/guide/tailscale" target="_blank" rel="noopener">
         <img src="https://github.com/xpipe-io/.github/raw/main/icons/tailscale.svg" width=40 height=40 />
     </a>
-    <a href="#"><img width=10 /></a>
+    <img src="https://github.com/xpipe-io/.github/raw/main/img/1x1.png" width=10 />
     <a href="https://docs.xpipe.io/guide/netbird" target="_blank" rel="noopener">
         <img src="https://github.com/xpipe-io/.github/raw/main/icons/netbird.svg" width=40 height=40 />
     </a>
-    <a href="#"><img width=10 /></a>
+    <img src="https://github.com/xpipe-io/.github/raw/main/img/1x1.png" width=10 />
     <a href="https://docs.xpipe.io/guide/hcloud" target="_blank" rel="noopener">
         <img src="https://github.com/xpipe-io/.github/raw/main/icons/hetzner.svg" width=40 height=40 />
     </a>
-    <a href="#"><img width=10 /></a>
+    <img src="https://github.com/xpipe-io/.github/raw/main/img/1x1.png" width=10 />
     <a href="https://docs.xpipe.io/guide/teleport" target="_blank" rel="noopener">
         <img src="https://github.com/xpipe-io/.github/raw/main/icons/teleport.png" width=40 height=40 />
     </a>

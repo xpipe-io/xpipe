@@ -1,7 +1,7 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.ext.FileEntry;
-import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ProcModuleProvider;
+import io.xpipe.app.fs.FileEntry;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.GlobalClipboard;
 import io.xpipe.app.platform.GlobalObjectProperty;
@@ -120,7 +120,7 @@ public class BrowserClipboard {
         public String toClipboardString() {
             return entries.stream()
                     .map(fileEntry -> "\"" + fileEntry.getRawFileEntry().getPath() + "\"")
-                    .collect(Collectors.joining(ProcessControlProvider.get()
+                    .collect(Collectors.joining(ProcModuleProvider.get()
                             .getEffectiveLocalDialect()
                             .getNewLine()
                             .getNewLineString()));

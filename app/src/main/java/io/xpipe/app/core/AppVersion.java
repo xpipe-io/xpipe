@@ -14,7 +14,7 @@ public class AppVersion implements Comparable<AppVersion> {
 
     public static Optional<AppVersion> parse(String version) {
         try {
-            var releaseSplit = version.split("-");
+            var releaseSplit = version.strip().split("-");
             var split = releaseSplit[0].split("\\.");
             var major = Integer.parseInt(split[0]);
             var minor = split.length > 1 ? Integer.parseInt(split[1]) : 0;

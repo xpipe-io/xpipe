@@ -1,18 +1,24 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.ext.*;
-import io.xpipe.app.hub.comp.StoreChoiceComp;
-import io.xpipe.app.hub.comp.StoreComboChoiceComp;
-import io.xpipe.app.hub.comp.StoreCreationModel;
-import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.hub.creation.StoreChoiceComp;
+import io.xpipe.app.hub.creation.StoreComboChoiceComp;
+import io.xpipe.app.hub.creation.StoreCreationModel;
+import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.DataStore;
+import io.xpipe.app.store.DataStoreCreationCategory;
+import io.xpipe.app.store.HostAddressStore;
+import io.xpipe.app.store.LocalStore;
+import io.xpipe.app.store.NetworkTunnelStore;
+import io.xpipe.app.util.GuiDialog;
+import io.xpipe.app.util.HostAddress;
 import io.xpipe.ext.base.host.AbstractHostStore;
 import io.xpipe.ext.base.host.HostAddressGatewayStore;
-import io.xpipe.ext.base.host.HostAddressStore;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -24,7 +30,7 @@ import java.util.List;
 public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
 
     @Override
-    public DataStoreEntry getSyntheticParent(DataStoreEntry store) {
+    public DataStoreEntryRef<?> getSyntheticParent(DataStoreEntry store) {
         var c = (CustomServiceStore) store.getStore();
         if (c.getHost() == null || c.getHost().getStore() instanceof AbstractHostStore) {
             return null;
@@ -34,10 +40,10 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
     }
 
     @Override
-    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
+    public DataStoreEntryRef<?> getDisplayParent(DataStoreEntry store) {
         var c = (CustomServiceStore) store.getStore();
         if (c.getHost() != null && c.getHost().getStore() instanceof AbstractHostStore) {
-            return c.getHost().get();
+            return c.getHost();
         }
 
         return super.getDisplayParent(store);

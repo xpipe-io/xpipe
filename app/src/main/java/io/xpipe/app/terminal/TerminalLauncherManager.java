@@ -1,14 +1,14 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.beacon.BeaconClientException;
+import io.xpipe.app.beacon.BeaconServerException;
 import io.xpipe.app.core.AppNames;
-import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.beacon.BeaconClientException;
-import io.xpipe.beacon.BeaconServerException;
-import io.xpipe.core.FilePath;
+import io.xpipe.app.store.ShellStore;
+import io.xpipe.app.util.FilePath;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -159,7 +159,7 @@ public class TerminalLauncherManager {
 
         // These prepend scripts, not append
         TerminalPromptManager.configurePromptScript(session);
-        ProcessControlProvider.get().withDefaultScripts(session);
+        ProcModuleProvider.get().withDefaultScripts(session);
 
         ProcessControl control;
         if (arguments.size() > 0) {
@@ -173,7 +173,7 @@ public class TerminalLauncherManager {
         waitExchange(request);
         var script = launchExchange(request);
         try (var sc = LocalShell.getShell().start()) {
-            var runCommand = ProcessControlProvider.get()
+            var runCommand = ProcModuleProvider.get()
                     .getEffectiveLocalDialect()
                     .getOpenScriptCommand(script.toString())
                     .buildBaseParts(sc);

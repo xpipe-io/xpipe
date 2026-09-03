@@ -1,8 +1,10 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.OsType;
 
 import java.util.*;
 
@@ -11,6 +13,7 @@ public class TerminalMultiplexerManager {
     private static final Map<UUID, TerminalMultiplexer> connectionHubRequests = new HashMap<>();
     private static UUID pendingMultiplexerLaunch;
     private static UUID runningMultiplexerContainer;
+    private static Boolean availableOnWindows;
 
     public static void registerMultiplexerContainerLaunch(UUID uuid) {
         pendingMultiplexerLaunch = uuid;
@@ -42,6 +45,26 @@ public class TerminalMultiplexerManager {
         TerminalView.get().addListener(listener);
     }
 
+    public static boolean isAvailableOnWindows() {
+        // TODO: It seems like zellij is still broken on Windows
+        // Check back later
+        if (true) {
+            return false;
+        }
+
+        if (availableOnWindows != null) {
+            return availableOnWindows;
+        }
+
+        try {
+            return (availableOnWindows =
+                    LocalShell.getShell().view().findProgram("zellij").isPresent());
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable(e).handle();
+            return (availableOnWindows = false);
+        }
+    }
+
     public static Optional<TerminalMultiplexer> getEffectiveMultiplexer() {
         var multiplexer = AppPrefs.get().terminalMultiplexer().getValue();
         if (multiplexer == null) {
@@ -53,10 +76,14 @@ public class TerminalMultiplexerManager {
             return Optional.empty();
         }
 
-        if (OsType.ofLocal() == OsType.WINDOWS) {
-            var hasProxy = AppPrefs.get().terminalProxy().getValue() != null;
-            if (!hasProxy) {
-                return Optional.empty();
+        // Don't apply multiplexer on webtop if it is not installed yet
+        if (AppDistributionType.get() == AppDistributionType.WEBTOP) {
+            try {
+                if (!multiplexer.isSupported()) {
+                    return Optional.empty();
+                }
+            } catch (Exception e) {
+                ErrorEventFactory.fromThrowable(e).handle();
             }
         }
 
@@ -69,14 +96,12 @@ public class TerminalMultiplexerManager {
             return;
         }
 
-        // Wait if we are currently opening a new multiplexer
+        // Step 1: Wait for currently opening multiplexer container shell
         if (pendingMultiplexerLaunch != null) {
             // Wait for max 30s
             // Multiplexer launches in WSL may take a while
             for (int i = 0; i < 300; i++) {
                 if (pendingMultiplexerLaunch == null) {
-                    // Give it a bit more time if it just started
-                    ThreadHelper.sleep(1000);
                     break;
                 }
 
@@ -85,6 +110,18 @@ public class TerminalMultiplexerManager {
 
             // We timed out
             pendingMultiplexerLaunch = null;
+        }
+
+        // Step 2: Wait for first tab to open in multiplexer container to make sure that the session is started
+        if (runningMultiplexerContainer != null) {
+            // Wait for max 10s
+            for (int j = 0; j < 100; j++) {
+                if (getActiveMultiplexerSession().isPresent()) {
+                    break;
+                }
+
+                ThreadHelper.sleep(100);
+            }
         }
     }
 
@@ -127,7 +164,7 @@ public class TerminalMultiplexerManager {
 
         var session = TerminalView.get().getSessions().stream()
                 .filter(shellSession -> shellSession.getTerminal().isRunning()
-                        && mult.get() == connectionHubRequests.get(shellSession.getRequest()))
+                        && (mult.get() == connectionHubRequests.get(shellSession.getRequest())))
                 .findFirst();
         return session.map(shellSession -> shellSession.getTerminal());
     }

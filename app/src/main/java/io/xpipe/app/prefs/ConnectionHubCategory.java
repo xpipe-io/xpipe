@@ -6,8 +6,9 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.FileOpener;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 
@@ -35,6 +36,7 @@ public class ConnectionHubCategory extends AppPrefsCategory {
                 .addToggle(prefs.enableConnectionHubTerminalDocking)
                 .hide(OsType.ofLocal() != OsType.WINDOWS)
                 .nameAndDescription("connectionNotesTemplate")
+                .documentationLink(DocumentationLink.NOTES)
                 .addComp(
                         new ButtonComp(
                                 AppI18n.observable("connectionNotesButton"),

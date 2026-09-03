@@ -1,1 +1,10 @@
-<svg version="1.1" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><title>file_type_bazel_version</title><g><path d="m9 2 7 7-7 7-7-7z" fill="#76d275" style="mix-blend-mode:color-dodge"/><path d="m2 9v7l7 7v-7z" fill="#43a047" style="mix-blend-mode:color-dodge"/><path d="m23 2 7 7-7 7-7-7z" fill="#76d275" style="mix-blend-mode:color-dodge"/><path d="m30 9v7l-7 7v-7z" fill="#43a047" style="mix-blend-mode:color-dodge"/><path d="m16 9 7 7-7 7-7-7z" fill="#43a047" style="mix-blend-mode:color-dodge"/><path d="m16 23v7l-7-7v-7z" fill="#00701a" style="mix-blend-mode:color-dodge"/><path d="m16 23 7-7v7l-7 7z" fill="#004300" style="mix-blend-mode:color-dodge"/></g><g style="mix-blend-mode:screen"><path d="m9 2-7 7v7l14 14 14-14v-7l-7-7-7 7z" fill="#f60" style="mix-blend-mode:screen"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    <title>file_type_bazel_version</title>
+    <path fill="#76d275" d="m9 2 7 7-7 7-7-7z" style="mix-blend-mode:color-dodge"/>
+    <path fill="#43a047" d="M2 9v7l7 7v-7z" style="mix-blend-mode:color-dodge"/>
+    <path fill="#76d275" d="m23 2 7 7-7 7-7-7z" style="mix-blend-mode:color-dodge"/>
+    <path fill="#43a047" d="M30 9v7l-7 7v-7zM16 9l7 7-7 7-7-7z" style="mix-blend-mode:color-dodge"/>
+    <path fill="#00701a" d="M16 23v7l-7-7v-7z" style="mix-blend-mode:color-dodge"/>
+    <path fill="#004300" d="m16 23 7-7v7l-7 7z" style="mix-blend-mode:color-dodge"/>
+    <path fill="#f60" d="M9 2 2 9v7l14 14 14-14V9l-7-7-7 7z" style="mix-blend-mode:screen"/>
+</svg>

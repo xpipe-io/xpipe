@@ -1,8 +1,9 @@
 package io.xpipe.app.storage;
 
-import io.xpipe.app.ext.LocalStore;
+import io.xpipe.app.store.LocalStore;
 
-import java.time.Instant;
+import java.util.Optional;
+import java.util.UUID;
 
 public class ImpersistentStorage extends DataStorage {
 
@@ -14,11 +15,6 @@ public class ImpersistentStorage extends DataStorage {
 
     @Override
     public void reloadContent() {}
-
-    @Override
-    public DataStorageVaultKey getVaultKey() {
-        return DataStorageVaultKey.empty();
-    }
 
     @Override
     public void load() {
@@ -35,21 +31,7 @@ public class ImpersistentStorage extends DataStorage {
             storeCategories.add(cat);
         }
         {
-            var cat = DataStoreCategory.createNew(null, ALL_MACROS_CATEGORY_UUID, "All macros");
-            storeCategories.add(cat);
-        }
-        {
-            var cat = new DataStoreCategory(
-                    null,
-                    DEFAULT_CATEGORY_UUID,
-                    "Default",
-                    Instant.now(),
-                    Instant.now(),
-                    true,
-                    null,
-                    ALL_CONNECTIONS_CATEGORY_UUID,
-                    true,
-                    DataStoreCategoryConfig.empty());
+            var cat = DataStoreCategory.createNew(DEFAULT_CATEGORY_UUID, "Default");
             storeCategories.add(cat);
             selectedCategory = getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).orElseThrow();
         }
@@ -66,10 +48,21 @@ public class ImpersistentStorage extends DataStorage {
     public void saveAsync() {}
 
     @Override
-    public synchronized void save(boolean dispose) {}
+    public synchronized void save(boolean dispose, boolean forceSync) {}
 
     @Override
-    public boolean supportsSync() {
+    public boolean syncEnabled() {
         return false;
     }
+
+    @Override
+    public Optional<DataStoreEntry> getInaccessibleEntry(UUID uuid) {
+        return Optional.empty();
+    }
+
+    @Override
+    protected void deleteStoreEntryFromDisk(DataStoreEntry entry) {}
+
+    @Override
+    protected void deleteStoreCategoryFromDisk(DataStoreCategory cat) {}
 }

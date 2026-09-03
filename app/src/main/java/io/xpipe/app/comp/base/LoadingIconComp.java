@@ -31,7 +31,6 @@ public class LoadingIconComp extends SimpleRegionBuilder {
         label.setAlignment(Pos.CENTER);
         label.setText(Character.toString(chars[0]));
         label.getStyleClass().add("loading-icon-comp");
-        label.setEllipsisString("");
 
         label.setPrefWidth(16);
         label.setPrefHeight(16);

@@ -1,8 +1,7 @@
 package io.xpipe.app.beacon;
 
-import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.beacon.BeaconClientException;
+import io.xpipe.app.store.ShellStore;
 
 import lombok.Value;
 
@@ -15,7 +14,7 @@ public class AppBeaconCache {
 
     Set<BeaconShellSession> shellSessions = new HashSet<>();
 
-    public BeaconShellSession getShellSession(UUID uuid) throws BeaconClientException {
+    public BeaconShellSession getShellSession(UUID uuid) throws Exception {
         var found = shellSessions.stream()
                 .filter(beaconShellSession ->
                         beaconShellSession.getEntry().getUuid().equals(uuid))
@@ -23,6 +22,12 @@ public class AppBeaconCache {
         if (found.isEmpty()) {
             throw new BeaconClientException("No active shell session known for id " + uuid);
         }
+
+        var sc = found.get().getControl();
+        if (!sc.isRunning(true) || sc.isAnyStreamClosed()) {
+            sc.restart();
+        }
+
         return found.get();
     }
 

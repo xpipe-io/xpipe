@@ -94,7 +94,7 @@
 }
 
 .store-creation-bar, .store-sort-bar, .store-category-bar {
-    -fx-spacing: 0.2em;
+    -fx-spacing: 0;
 }
 
 .root:nord .store-creation-bar, .root:nord .store-sort-bar, .root:nord .store-category-bar {

@@ -1,1 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><title>file_type_rake</title><polygon points="16.043 2 23.357 6.249 23.358 13.62 29.677 17.262 29.677 25.902 22.441 30 16.043 26.368 9.646 30 2.323 25.818 2.323 17.262 8.663 13.639 8.672 6.259 16.043 2" style="fill:#666"/><polyline points="16.019 3.07 16.019 10.469 9.621 6.769" style="fill:#cde"/><polyline points="22.417 6.769 16.019 10.469 16.019 3.07" style="fill:#b2cde5"/><polyline points="22.417 6.769 22.417 14.169 16.019 10.469" style="fill:#3379ba"/><polyline points="9.621 6.769 9.621 14.169 16.019 10.469" style="fill:#0057a9"/><polyline points="16.019 10.469 16.019 17.869 9.621 14.169" style="fill:#ccc"/><polyline points="16.022 10.469 16.019 17.869 22.417 14.172" style="fill:#e5e5e5"/><polyline points="22.417 14.169 22.417 21.569 16.019 17.869" style="fill:#4c4c4c"/><polyline points="9.621 14.169 9.621 21.569 16.019 17.869"/><polyline points="16.019 17.869 16.019 25.269 9.621 21.569" style="fill:#191919"/><polyline points="16.022 17.869 16.019 25.269 22.417 21.572" style="fill:#666"/><polyline points="9.621 14.169 9.621 21.569 3.224 17.869" style="fill:#cde"/><polyline points="3.224 17.869 3.224 25.269 9.621 21.569" style="fill:#0057a9"/><polyline points="9.621 21.569 9.621 28.969 3.224 25.269" style="fill:#3379ba"/><polyline points="9.624 21.569 9.621 28.969 16.019 25.272" style="fill:#4c89c3"/><polyline points="28.815 17.872 22.417 21.569 22.42 14.169" style="fill:#b2cde5"/><polyline points="28.815 17.869 28.815 25.269 22.417 21.569" style="fill:#3379ba"/><polyline points="22.417 21.569 22.417 28.969 16.019 25.269" style="fill:#3379ba"/><polyline points="22.42 21.569 22.417 28.969 28.815 25.272" style="fill:#4c89c3"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    <title>file_type_rake</title>
+    <path d="m16.043 2 7.314 4.249.001 7.371 6.319 3.642v8.64L22.441 30l-6.398-3.632L9.646 30l-7.323-4.182v-8.556l6.34-3.623.009-7.38z" style="fill:#666"/>
+    <path d="M16.019 3.07v7.399l-6.398-3.7" style="fill:#cde"/>
+    <path d="m22.417 6.769-6.398 3.7V3.07" style="fill:#b2cde5"/>
+    <path d="M22.417 6.769v7.4l-6.398-3.7" style="fill:#3379ba"/>
+    <path d="M9.621 6.769v7.4l6.398-3.7" style="fill:#0057a9"/>
+    <path d="M16.019 10.469v7.4l-6.398-3.7" style="fill:#ccc"/>
+    <path d="m16.022 10.469-.003 7.4 6.398-3.697" style="fill:#e5e5e5"/>
+    <path d="M22.417 14.169v7.4l-6.398-3.7" style="fill:#4c4c4c"/>
+    <path d="M9.621 14.169v7.4l6.398-3.7"/>
+    <path d="M16.019 17.869v7.4l-6.398-3.7" style="fill:#191919"/>
+    <path d="m16.022 17.869-.003 7.4 6.398-3.697" style="fill:#666"/>
+    <path d="M9.621 14.169v7.4l-6.397-3.7" style="fill:#cde"/>
+    <path d="M3.224 17.869v7.4l6.397-3.7" style="fill:#0057a9"/>
+    <path d="M9.621 21.569v7.4l-6.397-3.7" style="fill:#3379ba"/>
+    <path d="m9.624 21.569-.003 7.4 6.398-3.697" style="fill:#4c89c3"/>
+    <path d="m28.815 17.872-6.398 3.697.003-7.4" style="fill:#b2cde5"/>
+    <path d="M28.815 17.869v7.4l-6.398-3.7m0 0v7.4l-6.398-3.7" style="fill:#3379ba"/>
+    <path d="m22.42 21.569-.003 7.4 6.398-3.697" style="fill:#4c89c3"/>
+</svg>

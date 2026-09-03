@@ -5,8 +5,6 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppSideWindow;
 
-import io.xpipe.app.secret.SecretQueryResult;
-import io.xpipe.app.secret.SecretQueryState;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;

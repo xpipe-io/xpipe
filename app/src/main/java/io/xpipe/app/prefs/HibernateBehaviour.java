@@ -2,8 +2,7 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.mode.AppOperationMode;
-import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.storage.DataStorageUserHandler;
+import io.xpipe.app.secret.DataStorageAccessHandler;
 
 import lombok.Getter;
 
@@ -22,8 +21,8 @@ public enum HibernateBehaviour implements PrefsChoiceValue {
 
         @Override
         public boolean isAvailable() {
-            var handler = DataStorageUserHandler.getInstance();
-            return handler != null && handler.getActiveUser() != null;
+            var handler = DataStorageAccessHandler.getInstance();
+            return handler != null && handler.isAccessRestricted();
         }
     },
 

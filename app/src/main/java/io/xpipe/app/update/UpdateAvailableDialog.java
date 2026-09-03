@@ -3,11 +3,16 @@ package io.xpipe.app.update;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.base.ModalOverlay;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.TrackEvent;
 
 public class UpdateAvailableDialog {
 
     public static boolean showIfNeeded(boolean wait) {
+        if (AppProperties.get().isAotTrainMode()) {
+            return false;
+        }
+
         UpdateHandler uh = AppDistributionType.get().getUpdateHandler();
         if (uh.getPreparedUpdate().getValue() == null) {
             return false;

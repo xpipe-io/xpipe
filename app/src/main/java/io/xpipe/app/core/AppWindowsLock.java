@@ -31,7 +31,7 @@ public class AppWindowsLock {
                     User32.INSTANCE.GetWindowLongPtr(hwnd, GWLP_WNDPROC).toPointer();
             User32Ex.INSTANCE.SetWindowLongPtr(hwnd, GWLP_WNDPROC, PROC);
         } catch (Throwable t) {
-            ErrorEventFactory.fromThrowable(t).omit().handle();
+            ErrorEventFactory.fromThrowable(t).omit().expected().handle();
         }
     }
 

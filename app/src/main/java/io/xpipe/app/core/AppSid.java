@@ -2,9 +2,9 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.LinuxLibC;
+import io.xpipe.app.util.OsType;
 
-import com.sun.jna.Function;
 import lombok.Getter;
 
 import java.util.concurrent.TimeUnit;
@@ -46,9 +46,11 @@ public class AppSid {
             // If there is no setsid command, we can't fully prevent commands from accessing any potential parent tty
             // We can however set the pid to prevent this happening when launched from the cli command
             // If we launched the daemon executable itself, this has no effect
-            var func = Function.getFunction("c", "setsid");
-            func.invoke(new Object[0]);
-            TrackEvent.info("Successfully set process sid");
+            var lib = LinuxLibC.getLibrary();
+            if (lib.isPresent()) {
+                lib.get().setsid();
+                TrackEvent.info("Successfully set process sid");
+            }
         } catch (Throwable t) {
             ErrorEventFactory.fromThrowable(t).omit().handle();
         }

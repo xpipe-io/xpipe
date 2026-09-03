@@ -90,6 +90,19 @@ public class McpCategory extends AppPrefsCategory {
                $ claude mcp add %s --transport http "http://localhost:%s/mcp" --header "Authorization: Bearer %s"
                """);
 
+        var geminiTemplate = createMcpConfig("""
+               {
+                 "mcpServers": {
+                   "%s": {
+                     "serverUrl": "http://localhost:%s/mcp",
+                     "headers": {
+                       "Authorization": "Bearer %s"
+                     }
+                   }
+                 }
+               }
+               """);
+
         var tabComp = RegionBuilder.of(() -> {
             var vsCode = new TextArea();
             vsCode.setEditable(false);
@@ -127,8 +140,17 @@ public class McpCategory extends AppPrefsCategory {
             claudeTab.setContent(claude);
             claudeTab.setClosable(false);
 
+            var gemini = new TextArea();
+            gemini.setEditable(false);
+            gemini.textProperty().bind(geminiTemplate);
+            gemini.setPrefRowCount(12);
+            var geminiTab = new Tab();
+            geminiTab.textProperty().bind(AppI18n.observable("gemini"));
+            geminiTab.setContent(gemini);
+            geminiTab.setClosable(false);
+
             var tabPane = new TabPane();
-            tabPane.getTabs().addAll(vsCodeTab, cursorTab, warpTab, claudeTab);
+            tabPane.getTabs().addAll(vsCodeTab, cursorTab, warpTab, claudeTab, geminiTab);
             return tabPane;
         });
 
@@ -143,6 +165,9 @@ public class McpCategory extends AppPrefsCategory {
                 .sub(new OptionsBuilder()
                         .pref(prefs.enableMcpServer)
                         .addToggle(prefs.enableMcpServer)
+                        .pref(prefs.allowExternalApiRequests)
+                        .addToggle(prefs.allowExternalApiRequests)
+                        .hide(Boolean.getBoolean("XPIPE_API_SERVER"))
                         .nameAndDescription("mcpClientConfigurationDetails")
                         .addComp(tabComp.maxWidth(getCompWidth()))
                         .pref(prefs.mcpAdditionalContext)

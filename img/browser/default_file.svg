@@ -1,1 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><title>default_file</title><path d="M20.414,2H5V30H27V8.586ZM7,28V4H19v6h6V28Z" style="fill:#c5c5c5"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    <title>default_file</title>
+    <path d="M20.414 2H5v28h22V8.586ZM7 28V4h12v6h6v18Z" style="fill:#c5c5c5"/>
+</svg>

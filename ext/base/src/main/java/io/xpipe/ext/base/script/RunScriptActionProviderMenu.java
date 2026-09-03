@@ -2,18 +2,18 @@ package io.xpipe.ext.base.script;
 
 import io.xpipe.app.action.*;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.hub.action.*;
 import io.xpipe.app.hub.action.impl.RefreshActionProvider;
-import io.xpipe.app.hub.comp.StoreCategoryConfigComp;
-import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.hub.category.StoreCategoryConfigComp;
+import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.ShellTtyState;
 import io.xpipe.app.process.SystemState;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.store.ShellStore;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
@@ -69,7 +69,7 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
             return List.of(new ScriptsDisabledActionProvider());
         }
 
-        var replacement = ProcessControlProvider.get().replace(store);
+        var replacement = ProcModuleProvider.get().replace(store);
         var state = replacement.get().getStorePersistentState();
         if (!(state instanceof SystemState systemState) || systemState.getShellDialect() == null) {
             return List.of(new NoStateActionProvider());

@@ -209,13 +209,19 @@ while getopts 'sv:' OPTION; do
 done
 
 if [ "$(uname -s)" = "Linux" ]; then
-  if ! [ -x "$(command -v apt)" ] && ! [ -x "$(command -v rpm)" ] && [ -x "$(command -v pacman)" ]; then
+  if [ -x "$(command -v pacman)" ]; then
     info "Installing from AUR at $aur"
     rm -rf "/tmp/xpipe_aur" || true
     if [[ -z "$version" ]] ; then
       git clone "$aur" /tmp/xpipe_aur
+      if [ "$?" != 0 ]; then
+        return 1
+      fi
     else
       git clone --branch "$version" "$aur" /tmp/xpipe_aur
+      if [ "$?" != 0 ]; then
+        return 1
+      fi
     fi
     cd "/tmp/xpipe_aur"
     makepkg -si

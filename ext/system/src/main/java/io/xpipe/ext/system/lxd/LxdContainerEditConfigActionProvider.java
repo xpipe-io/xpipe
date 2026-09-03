@@ -32,7 +32,7 @@ public class LxdContainerEditConfigActionProvider implements HubLeafProvider<Lxd
 
     @Override
     public LabelGraphic getIcon(DataStoreEntryRef<LxdContainerStore> store) {
-        return new LabelGraphic.IconGraphic("mdi2f-file-document-edit");
+        return new LabelGraphic.IconGraphic("mdi2f-file-edit-outline");
     }
 
     @Override

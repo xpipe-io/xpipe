@@ -2,15 +2,15 @@ package io.xpipe.app.beacon;
 
 import io.xpipe.app.beacon.mcp.AppMcpServer;
 import io.xpipe.app.core.AppLocalTemp;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.beacon.BeaconConfig;
-import io.xpipe.beacon.BeaconInterface;
-import io.xpipe.core.OsType;
+import io.xpipe.app.util.OsType;
 
 import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import lombok.Getter;
 
@@ -47,6 +47,7 @@ public class AppBeaconServer {
 
     @Getter
     private String localAuthSecret;
+
     private FileChannel localLockFileChannel;
     private FileLock localLockFileLock;
 
@@ -56,7 +57,9 @@ public class AppBeaconServer {
 
     public static void init() {
         try {
-            INSTANCE = new AppBeaconServer(BeaconConfig.getUsedPort());
+            // We already queried the beacon port at this point, so this will always work
+            INSTANCE = new AppBeaconServer(
+                    AppProperties.get().queryEffectiveBeaconPort(false).orElseThrow());
             INSTANCE.initAuthSecret();
             INSTANCE.start();
             TrackEvent.withInfo("Started http server")
@@ -111,24 +114,25 @@ public class AppBeaconServer {
     }
 
     private void initAuthSecret() throws IOException {
-        var file = BeaconConfig.getLocalBeaconAuthFile();
+        var file = AppProperties.get().getBeaconAuthFile();
         // Create and set temp dir permissions for Linux
         AppLocalTemp.getLocalTempDataDirectory();
 
         var id = UUID.randomUUID().toString();
-        Files.writeString(file, id);
+        Files.createFile(file);
         if (OsType.ofLocal() != OsType.WINDOWS) {
             Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("rw-rw----"));
         }
+        Files.writeString(file, id);
         localAuthSecret = id;
 
-        var lockFile = BeaconConfig.getLocalBeaconLockFile();
+        var lockFile = AppProperties.get().getBeaconLockFile();
         localLockFileChannel = new RandomAccessFile(lockFile.toFile(), "rw").getChannel();
         localLockFileLock = localLockFileChannel.tryLock();
     }
 
     private void deleteAuthSecret() {
-        var file = BeaconConfig.getLocalBeaconAuthFile();
+        var file = AppProperties.get().getBeaconAuthFile();
         try {
             Files.deleteIfExists(file);
             if (localLockFileLock != null) {
@@ -137,11 +141,12 @@ public class AppBeaconServer {
             if (localLockFileChannel != null) {
                 localLockFileChannel.close();
             }
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
     }
 
     private void start() throws IOException {
-        executor = Executors.newFixedThreadPool(5, r -> {
+        executor = Executors.newFixedThreadPool(3, r -> {
             Thread t = Executors.defaultThreadFactory().newThread(r);
             t.setDaemon(true);
             t.setName("http handler");
@@ -157,11 +162,15 @@ public class AppBeaconServer {
         server = HttpServer.create(new InetSocketAddress(addr, port), 10);
         BeaconInterface.getAll().forEach(beaconInterface -> {
             var handler = new BeaconRequestHandler<>(beaconInterface);
-            server.createContext(beaconInterface.getPath(), exchange -> {
+            HttpHandler httpHandler = exchange -> {
                 if (!handleCorsHeaders(exchange)) {
                     handler.handle(exchange);
                 }
-            });
+            };
+            server.createContext(beaconInterface.getPath(), httpHandler);
+            for (String pathAlias : beaconInterface.getPathAliases()) {
+                server.createContext(pathAlias, httpHandler);
+            }
         });
         server.setExecutor(executor);
 
@@ -175,7 +184,7 @@ public class AppBeaconServer {
             if (!handleCorsHeaders(exchange)) {
                 var mcpServer = AppMcpServer.get();
                 if (mcpServer != null) {
-                    mcpServer.createHttpHandler().handle(exchange);
+                    mcpServer.getHttpHandler().handle(exchange);
                 }
             }
         });
@@ -186,8 +195,7 @@ public class AppBeaconServer {
 
     private boolean handleCorsHeaders(HttpExchange exchange) throws IOException {
         if (AppPrefs.get().enableHttpApi().get()) {
-            exchange.getResponseHeaders()
-                    .add("Origin", "http://localhost:" + getPort());
+            exchange.getResponseHeaders().add("Origin", "http://localhost:" + getPort());
             exchange.getResponseHeaders().add("Vary", "Origin");
             exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
             exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");

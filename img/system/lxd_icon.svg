@@ -1,21 +1,16 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg version="1.1" baseProfile="full" width="340" height="310" xmlns="http://www.w3.org/2000/svg">
-<g stroke="white" stroke-width="1.5">
-<g transform="rotate(30) skewX(30)">
-<rect x="110" y="-72" width="175" height="75" fill="#333333" transform="skewX(-50)"/>
-<rect x="110" y="3" width="87.5" height="75" fill="#CDCDCD" transform="skewX(-50)"/>
-<rect x="16.5" y="78.9" width="87.5" height="25" fill="#CDCDCD"/>
-<rect x="16.5" y="104.5" width="175" height="25" fill="#888888"/>
-<rect x="16.5" y="130" width="175" height="50" fill="#DD4814"/>
-<rect x="104" y="166" width="89.5" height="25" fill="#CDCDCD" transform="skewY(-40)"/>
-<rect x="228.3" y="29.5" width="87.5" height="75" fill="#888888" transform="skewX(-50)"/>
-<rect x="191.8" y="266" width="89.5" height="25" fill="#888888" transform="skewY(-40)"/>
-<rect x="192" y="291" width="179.5" height="50" fill="#DD4814" transform="skewY(-40)"/>
-<rect x="282.3" y="240" width="89.1" height="50" fill="#333333" transform="skewY(-40)"/>
-<rect x="194" y="3.7" width="87.5" height="25" fill="#333333"/>
-</g>
-<line x1="93" y1="57" x2="93" y2="88"/>
-<line x1="169" y1="131" x2="92" y2="88"/>
-<line x1="92" y1="88" x2="14" y2="128"/>
-</g>
+<svg xmlns="http://www.w3.org/2000/svg" width="340" height="310" baseProfile="full">
+    <g stroke="#fff" stroke-width="1.5">
+        <path fill="#333" d="M110-72h175V3H110z" transform="rotate(30)skewX(-31.567)"/>
+        <path fill="#cdcdcd" d="M110 3h87.5v75H110z" transform="rotate(30)skewX(-31.567)"/>
+        <path fill="#cdcdcd" d="M16.5 78.9H104v25H16.5z" transform="rotate(30)skewX(30)"/>
+        <path fill="#888" d="M16.5 104.5h175v25h-175z" transform="rotate(30)skewX(30)"/>
+        <path fill="#dd4814" d="M16.5 130h175v50h-175z" transform="rotate(30)skewX(30)"/>
+        <path fill="#cdcdcd" d="M104 166h89.5v25H104z" transform="scale(.86603 1.1547)skewY(-22.101)"/>
+        <path fill="#888" d="M228.3 29.5h87.5v75h-87.5z" transform="rotate(30)skewX(-31.567)"/>
+        <path fill="#888" d="M191.8 266h89.5v25h-89.5z" transform="scale(.86603 1.1547)skewY(-22.101)"/>
+        <path fill="#dd4814" d="M192 291h179.5v50H192z" transform="scale(.86603 1.1547)skewY(-22.101)"/>
+        <path fill="#333" d="M282.3 240h89.1v50h-89.1z" transform="scale(.86603 1.1547)skewY(-22.101)"/>
+        <path fill="#333" d="M194 3.7h87.5v25H194z" transform="rotate(30)skewX(30)"/>
+        <path d="M93 57v31m76 43L92 88m0 0-78 40"/>
+    </g>
 </svg>

@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.time.Duration;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class WindowDockComp<T extends WindowDockListener> extends SimpleRegionBuilder {
@@ -144,7 +145,11 @@ public class WindowDockComp<T extends WindowDockListener> extends SimpleRegionBu
         });
     }
 
-    protected void update(Region region) {
+    private final AtomicInteger syncCounter = new AtomicInteger();
+
+    protected synchronized void update(Region region) {
+        var currentCounter = syncCounter.incrementAndGet();
+
         if (region.getScene() == null || region.getScene().getWindow() == null) {
             return;
         }
@@ -162,7 +167,10 @@ public class WindowDockComp<T extends WindowDockListener> extends SimpleRegionBu
 
         ThreadHelper.runAsync(() -> {
             var windowRect = new NativeWinWindowControl(handle.get()).getBounds();
-            if (windowRect.getX() == 0.0 && windowRect.getY() == 0.0 && windowRect.getW() == 0 && windowRect.getH() == 0) {
+            if (windowRect.getX() == 0.0
+                    && windowRect.getY() == 0.0
+                    && windowRect.getW() == 0
+                    && windowRect.getH() == 0) {
                 return;
             }
 
@@ -182,7 +190,12 @@ public class WindowDockComp<T extends WindowDockListener> extends SimpleRegionBu
                 h = windowRect.getH() - 20;
             }
 
-            model.resizeView((int) Math.round(x), (int) Math.round(y), (int) Math.round(w), (int) Math.round(h));
+            synchronized (this) {
+                if (syncCounter.get() == currentCounter) {
+                    model.resizeView(
+                            (int) Math.round(x), (int) Math.round(y), (int) Math.round(w), (int) Math.round(h));
+                }
+            }
         });
     }
 }

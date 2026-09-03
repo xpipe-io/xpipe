@@ -3,14 +3,14 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.platform.LabelGraphic;
 
+import javafx.beans.binding.Bindings;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
 import atlantafx.base.theme.Styles;
 import lombok.Setter;
@@ -51,6 +51,10 @@ public class IntroComp extends SimpleRegionBuilder {
         if (img instanceof FontIcon fontIcon) {
             fontIcon.setIconSize(80);
         }
+        var hideImg = Bindings.not(AppSizeBreakpoints.compactMode());
+        img.managedProperty().bind(hideImg);
+        img.visibleProperty().bind(hideImg);
+
         var text = new VBox(title, introDesc);
         text.setSpacing(5);
         text.setAlignment(Pos.CENTER_LEFT);
@@ -69,13 +73,12 @@ public class IntroComp extends SimpleRegionBuilder {
             v.getChildren().add(buttonPane);
         }
 
-        v.setMinWidth(Region.USE_PREF_SIZE);
-        v.setMaxWidth(Region.USE_PREF_SIZE);
-        v.setMinHeight(Region.USE_PREF_SIZE);
-        v.setMaxHeight(Region.USE_PREF_SIZE);
+        v.setMinWidth(0);
+        v.setMinHeight(0);
 
         v.setSpacing(20);
         v.getStyleClass().add("intro");
+        v.setPadding(new Insets(40, 20, 40, 20));
         return v;
     }
 }

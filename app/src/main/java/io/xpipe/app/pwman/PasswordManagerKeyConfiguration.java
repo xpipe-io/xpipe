@@ -1,21 +1,26 @@
 package io.xpipe.app.pwman;
 
-import io.xpipe.app.cred.SshIdentityKeyListStrategy;
+import io.xpipe.app.identity.SshIdentityKeyListStrategy;
 
 import java.nio.file.Path;
 
 public interface PasswordManagerKeyConfiguration {
 
     static PasswordManagerKeyConfiguration of(
-            boolean inline,
-            boolean joined,
+            boolean supportsInline,
+            boolean supportedJoined,
             boolean supportsAgentKeyNames,
             PasswordManagerKeyStrategy strategy,
             Path socket) {
         return new PasswordManagerKeyConfiguration() {
             @Override
+            public boolean supportsJoinedInformation() {
+                return supportedJoined;
+            }
+
+            @Override
             public boolean useInline() {
-                return (strategy == null || !strategy.useAgent()) && inline && joined;
+                return (strategy == null || !strategy.useAgent()) && supportsInline && supportedJoined;
             }
 
             @Override
@@ -43,6 +48,11 @@ public interface PasswordManagerKeyConfiguration {
     static PasswordManagerKeyConfiguration none() {
         return new PasswordManagerKeyConfiguration() {
             @Override
+            public boolean supportsJoinedInformation() {
+                return false;
+            }
+
+            @Override
             public boolean useInline() {
                 return false;
             }
@@ -68,6 +78,8 @@ public interface PasswordManagerKeyConfiguration {
             }
         };
     }
+
+    boolean supportsJoinedInformation();
 
     boolean useInline();
 

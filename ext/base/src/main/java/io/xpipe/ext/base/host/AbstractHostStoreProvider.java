@@ -1,10 +1,16 @@
 package io.xpipe.ext.base.host;
 
-import io.xpipe.app.ext.*;
-import io.xpipe.app.hub.comp.*;
+import io.xpipe.app.hub.creation.StoreChoiceComp;
+import io.xpipe.app.hub.creation.StoreCreationModel;
+import io.xpipe.app.hub.entry.StoreEntryBadge;
+import io.xpipe.app.hub.entry.StoreEntryInformation;
+import io.xpipe.app.hub.list.StoreViewState;
+import io.xpipe.app.hub.section.StoreSection;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStoreCategory;
+import io.xpipe.app.store.*;
 import io.xpipe.app.util.DocumentationLink;
+import io.xpipe.app.util.GuiDialog;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -69,9 +75,9 @@ public class AbstractHostStoreProvider implements CountGroupStoreProvider {
     }
 
     @Override
-    public String summaryString(StoreEntryWrapper wrapper) {
-        AbstractHostStore scriptStore = wrapper.getEntry().getStore().asNeeded();
-        return scriptStore.getHost();
+    public StoreEntryInformation buildInformation(StoreSection section) {
+        var st = (AbstractHostStore) section.getEntry().getStore();
+        return StoreEntryInformation.of(StoreEntryBadge.ofStaticAddress(st.getHost()));
     }
 
     @Override

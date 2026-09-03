@@ -5,14 +5,14 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.secret.InPlaceSecretValue;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.Checkable;
 import io.xpipe.app.util.DocumentationLink;
+import io.xpipe.app.util.GuiDialog;
+import io.xpipe.app.util.JacksonMapper;
 import io.xpipe.app.util.LicenseProvider;
-import io.xpipe.core.InPlaceSecretValue;
-import io.xpipe.core.JacksonMapper;
 
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
@@ -96,6 +96,10 @@ public class OptionsBuilder {
         this.allValidators.add(ownValidator);
     }
 
+    public List<ObservableValue<?>> getProperties() {
+        return props;
+    }
+
     public Validator buildEffectiveValidator() {
         return new ChainedValidator(allValidators);
     }
@@ -110,7 +114,7 @@ public class OptionsBuilder {
             Function<ComboBox<ChoicePaneComp.Entry>, Region> transformer) {
         var list = options.entrySet().stream()
                 .map(e -> new ChoicePaneComp.Entry(
-                        e.getKey(), e.getValue() != null ? e.getValue().buildComp() : RegionBuilder.empty()))
+                        e.getKey(), e.getValue() != null ? e.getValue().buildComp() : null))
                 .toList();
         var validatorList = options.values().stream()
                 .map(builder -> builder != null ? builder.buildEffectiveValidator() : new SimpleValidator())
@@ -118,13 +122,13 @@ public class OptionsBuilder {
         var selected =
                 new SimpleObjectProperty<>(selectedIndex.getValue() != -1 ? list.get(selectedIndex.getValue()) : null);
         selected.addListener((observable, oldValue, newValue) -> {
-            selectedIndex.setValue(newValue != null ? list.indexOf(newValue) : null);
+            selectedIndex.setValue(newValue != null ? list.indexOf(newValue) : -1);
             if (newValue != null) {
                 validatorList.get(list.indexOf(newValue)).validate();
             }
         });
         selectedIndex.addListener((observable, oldValue, newValue) -> {
-            selected.setValue(list.get(newValue.intValue()));
+            selected.setValue(selectedIndex.getValue() != -1 ? list.get(newValue.intValue()) : null);
         });
         var pane = new ChoicePaneComp(list, selected);
         if (transformer != null) {
@@ -378,6 +382,18 @@ public class OptionsBuilder {
         var comp = new TextFieldComp(prop, false);
         pushComp(comp);
         props.add(prop);
+        return this;
+    }
+
+    public OptionsBuilder maxWidth(int width) {
+        finishCurrent();
+        for (OptionsComp.Entry entry : entries) {
+            if (entry.comp() instanceof ButtonComp) {
+                continue;
+            }
+
+            entry.comp().maxWidth(width);
+        }
         return this;
     }
 

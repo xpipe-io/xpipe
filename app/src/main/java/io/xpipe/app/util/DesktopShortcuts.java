@@ -8,8 +8,6 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.update.AppDistributionType;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -107,8 +105,8 @@ public class DesktopShortcuts {
 
         try (var pc = LocalShell.getShell()) {
             pc.getShellDialect().deleteFileOrDirectory(pc, base.toString()).executeAndCheck();
-            pc.executeSimpleCommand(pc.getShellDialect().getMkdirsCommand(base + "/Contents/MacOS"));
-            pc.executeSimpleCommand(pc.getShellDialect().getMkdirsCommand(base + "/Contents/Resources"));
+            pc.view().mkdir(FilePath.of(base.resolve("/Contents/MacOS")));
+            pc.view().mkdir(FilePath.of(base.resolve("/Contents/Resources")));
 
             var macExec = base + "/Contents/MacOS/" + name;
             pc.view().writeScriptFile(FilePath.of(macExec), content);

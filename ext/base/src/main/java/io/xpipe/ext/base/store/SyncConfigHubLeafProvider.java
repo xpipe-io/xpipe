@@ -6,7 +6,7 @@ import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
-import io.xpipe.app.hub.comp.StoreCreationDialog;
+import io.xpipe.app.hub.creation.StoreCreationDialog;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -33,7 +33,7 @@ public class SyncConfigHubLeafProvider implements HubLeafProvider<SyncConfigStor
 
     @Override
     public boolean isApplicable(DataStoreEntryRef<SyncConfigStore> o) {
-        return DataStorage.get().supportsSync() && !o.get().getProvider().isSyncable(o.get());
+        return DataStorage.get().syncEnabled() && !o.get().getProvider().isSyncable(o.get());
     }
 
     @Override

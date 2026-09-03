@@ -42,10 +42,8 @@ public class BrowserTransferComp extends SimpleRegionBuilder {
                 .apply(struc -> struc.setTextAlignment(TextAlignment.CENTER))
                 .apply(struc -> struc.setContentDisplay(ContentDisplay.TOP))
                 .visible(model.getEmpty());
-        var backgroundStack = new StackComp(List.of(background))
-                .style("color-box")
-                .style("gray")
-                .style("download-background");
+        var backgroundStack =
+                new StackComp(List.of(background)).style("color-box").style("download-background");
 
         var binding = DerivedObservableList.wrap(model.getItems(), true)
                 .mapped(item -> item.getBrowserEntry())

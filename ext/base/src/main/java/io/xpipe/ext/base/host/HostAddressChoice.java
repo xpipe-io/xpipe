@@ -4,9 +4,9 @@ import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.IntFieldComp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.app.ext.HostAddress;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.util.HostAddress;
 
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -24,9 +24,11 @@ import java.util.List;
 @Value
 public class HostAddressChoice {
 
+    String nameKey;
     Property<HostAddress> addressProperty;
     Property<Integer> portProperty;
     boolean allowMutation;
+    boolean allowMultiple;
 
     public OptionsBuilder build() {
         var existing = addressProperty.getValue();
@@ -38,7 +40,7 @@ public class HostAddressChoice {
             listHashProp.set(c.getList().hashCode());
         });
         var options = new OptionsBuilder();
-        var addressField = new HostAddressChoiceComp(val, list, allowMutation).hgrow();
+        var addressField = new HostAddressChoiceComp(val, list, allowMutation, allowMultiple).hgrow();
         var sepLabel =
                 new LabelComp(":").apply(label -> AppFontSizes.xxl(label)).padding(new Insets(0, 0, 3, 0));
         var portField = new IntFieldComp(portProperty)
@@ -49,7 +51,14 @@ public class HostAddressChoice {
             portField.disable(true);
         }
         var box = new HorizontalComp(List.of(addressField, sepLabel, portField)).spacing(5);
-        options.nameAndDescription("connectionInformation");
+        box.apply(hBox -> {
+            hBox.focusedProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal) {
+                    hBox.getChildren().getFirst().requestFocus();
+                }
+            });
+        });
+        options.nameAndDescription(nameKey != null ? nameKey : "connectionInformation");
         options.addComp(box);
         options.addProperty(portProperty);
         options.nonNull();

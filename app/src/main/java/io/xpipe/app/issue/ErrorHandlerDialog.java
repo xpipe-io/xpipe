@@ -32,10 +32,10 @@ public class ErrorHandlerDialog {
         try {
             var modal = new AtomicReference<ModalOverlay>();
             var comp = new ErrorHandlerComp(event, () -> {
-                AppDialog.closeDialog(modal.get());
+                AppDialog.hide(modal.get());
             });
             comp.prefWidth(event.getThrowable() != null ? 600 : 500);
-            var headerId = event.isTerminal() ? "terminalErrorOccured" : "errorOccured";
+            var headerId = event.isTerminal() ? "terminalErrorOccurred" : "errorOccurred";
             var errorModal = ModalOverlay.of(headerId, comp, new LabelGraphic.NodeGraphic(() -> {
                 var graphic = new FontIcon("mdomz-warning");
                 graphic.getStyleClass().add("graphic");
@@ -63,7 +63,7 @@ public class ErrorHandlerDialog {
                         .addButton(new ModalButton(
                                 "report",
                                 () -> {
-                                    if (UserReportComp.show(event)) {
+                                    if (UserReportComp.show(event, false)) {
                                         reported.set(true);
                                     }
                                 },

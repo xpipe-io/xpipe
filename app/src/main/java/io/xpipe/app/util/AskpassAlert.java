@@ -4,10 +4,10 @@ import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppSideWindow;
+import io.xpipe.app.secret.InPlaceSecretValue;
 import io.xpipe.app.secret.SecretManager;
 import io.xpipe.app.secret.SecretQueryResult;
 import io.xpipe.app.secret.SecretQueryState;
-import io.xpipe.core.InPlaceSecretValue;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
@@ -33,18 +33,36 @@ public class AskpassAlert {
             prompt = prompt.substring(0, prompt.length() - 1);
         }
 
+        var lines = prompt.lines().count();
+        if (lines > 13) {
+            prompt = String.join("\n", prompt.lines().toList().subList(0, 13)) + "\n...";
+            lines = 14;
+        }
+
         var prop = new SimpleObjectProperty<>(secretValue);
+
         var finalPrompt = prompt;
+        var finalLines = lines;
+
         var r = AppSideWindow.showBlockingAlert(alert -> {
                     alert.initModality(Modality.NONE);
                     alert.setTitle(AppI18n.get("askpassAlertTitle"));
                     alert.setHeaderText(finalPrompt);
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
+                    alert.getButtonTypes().setAll(ButtonType.OK);
+
+                    ButtonBar buttonBar = (ButtonBar) alert.getDialogPane().lookup(".button-bar");
+                    buttonBar.setButtonOrder(ButtonBar.BUTTON_ORDER_NONE);
+
+                    if (finalLines > 3) {
+                        // Title bar + button bar + padding + text field + separator + lines
+                        alert.setHeight(30 + 50 + 40 + 40 + 20 + (finalLines * 28));
+                    }
 
                     // Link to help page for double prompt
                     if (SecretManager.disableCachingForPrompt(finalPrompt)) {
                         var type = new ButtonType("Help", ButtonBar.ButtonData.HELP);
-                        alert.getButtonTypes().add(type);
+                        alert.getButtonTypes().addFirst(type);
                         var button = alert.getDialogPane().lookupButton(type);
                         button.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
                             DocumentationLink.DOUBLE_PROMPT.open();
@@ -113,8 +131,9 @@ public class AskpassAlert {
                         event.consume();
                     });
 
-                    alert.setOnHiding(event -> {
+                    alert.setOnHiding(e -> {
                         anim.stop();
+                        e.consume();
                     });
                 })
                 .filter(b -> b.getButtonData().isDefaultButton())
@@ -122,6 +141,11 @@ public class AskpassAlert {
                     return prop.getValue() != null ? prop.getValue() : InPlaceSecretValue.of("");
                 })
                 .orElse(null);
+
+        if (r != null && r.getSecret().length == 0) {
+            r = null;
+        }
+
         return new SecretQueryResult(r, r == null ? SecretQueryState.CANCELLED : SecretQueryState.NORMAL);
     }
 }

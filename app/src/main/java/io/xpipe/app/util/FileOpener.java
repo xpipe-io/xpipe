@@ -8,7 +8,6 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.core.OsType;
 
 import com.sun.jna.platform.win32.Shell32;
 import com.sun.jna.platform.win32.ShellAPI;
@@ -32,8 +31,19 @@ public class FileOpener {
             return;
         }
 
+        var path = Path.of(localFile);
         try {
-            editor.launch(Path.of(localFile).toRealPath());
+            path = path.toRealPath();
+        } catch (IOException e) {
+            ErrorEventFactory.fromThrowable(e)
+                    .description("Unable to resolve link")
+                    .expected()
+                    .handle();
+            return;
+        }
+
+        try {
+            editor.launch(path);
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(
                             "Unable to launch editor "
@@ -81,12 +91,14 @@ public class FileOpener {
                     pc.command(CommandBuilder.of().add("Invoke-Item").addFile(localFile))
                             .execute();
                 } else {
-                    pc.executeSimpleCommand("start \"\" \"" + localFile + "\"");
+                    pc.command(CommandBuilder.of().add("start").addQuoted("").addFile(localFile))
+                            .execute();
                 }
             } else if (pc.getOsType() == OsType.LINUX) {
-                pc.executeSimpleCommand("xdg-open \"" + localFile + "\"");
+                pc.command(CommandBuilder.of().add("xdg-open").addFile(localFile))
+                        .execute();
             } else {
-                pc.executeSimpleCommand("open \"" + localFile + "\"");
+                pc.command(CommandBuilder.of().add("open").addFile(localFile)).execute();
             }
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable("Unable to open file " + localFile, e)

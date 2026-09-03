@@ -1,10 +1,10 @@
 package io.xpipe.app.secret;
 
-import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.prefs.PasswordManagerTestComp;
+import io.xpipe.app.pwman.PasswordManagerTestComp;
+import io.xpipe.app.util.ValidationException;
 import io.xpipe.app.util.Validators;
 
 import javafx.beans.property.Property;
