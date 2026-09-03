@@ -146,6 +146,11 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                 return;
             }
 
+            var inBatch = StoreViewState.get().getBatchMode().get() && mouseEvent.getX() <= 35;
+            if (inBatch) {
+                return;
+            }
+
             ThreadHelper.runFailableAsync(() -> {
                 getWrapper().executeDefaultAction();
             });

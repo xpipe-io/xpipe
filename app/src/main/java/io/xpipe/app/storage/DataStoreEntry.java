@@ -597,7 +597,7 @@ public class DataStoreEntry extends DataStorageElement {
         var encryptedNotesFile = directory.resolve("notes.json");
         Files.deleteIfExists(normalNotesFile);
         Files.deleteIfExists(encryptedNotesFile);
-        this.notesNode = this.notesNode != null ? this.notesNode.prepareForWrite(this, false, getNotes()) : null;
+        this.notesNode = this.notesNode != null ? this.notesNode.prepareForWrite(this, true, getNotes()) : null;
         if (this.notesNode != null && this.notesNode.requiresWrite()) {
             var file = this.notesNode.isEncrypted() ? encryptedNotesFile : normalNotesFile;
             Files.writeString(file, this.notesNode.isEncrypted() ? this.notesNode.getWriteString() : this.notesNode.getValue());
@@ -653,6 +653,8 @@ public class DataStoreEntry extends DataStorageElement {
         storePersistentStateNode = e.storePersistentStateNode;
         icon = e.icon;
         categoryUuid = e.categoryUuid;
+        orderIndex = e.orderIndex;
+        template = e.template;
         notifyUpdate(false, true);
     }
 

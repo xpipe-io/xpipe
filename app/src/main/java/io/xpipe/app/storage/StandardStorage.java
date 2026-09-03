@@ -318,6 +318,8 @@ public class StandardStorage extends DataStorage {
         // Refresh validities after entries have potentially been removed
         refreshStoreEntries();
 
+        getListeners().forEach(storageListener -> storageListener.onStoreListUpdate());
+
         this.dataStorageSyncHandler.afterStorageLoad();
 
         busyIo.unlock();
