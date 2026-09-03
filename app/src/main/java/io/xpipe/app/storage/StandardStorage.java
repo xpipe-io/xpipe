@@ -127,7 +127,7 @@ public class StandardStorage extends DataStorage {
                         var existing = getStoreCategoryIfPresent(c.get().getUuid());
                         if (existing.isPresent()) {
                             if (existing.get().isChangedForReload(c.get())) {
-                                updateCategory(existing.get(), c.get());
+                                existing.get().applyChanges(c.get());
                             }
                             return;
                         }
@@ -319,6 +319,7 @@ public class StandardStorage extends DataStorage {
         refreshStoreEntries();
 
         getListeners().forEach(storageListener -> storageListener.onStoreListUpdate());
+        getListeners().forEach(storageListener -> storageListener.onCategoryListUpdate());
 
         this.dataStorageSyncHandler.afterStorageLoad();
 

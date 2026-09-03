@@ -176,6 +176,8 @@ public class DataStoreCategory extends DataStorageElement {
 
     public boolean isChangedForReload(DataStoreCategory other) {
         return !Objects.equals(getName(), other.getName())
+                || !Objects.equals(getOrderIndex(), other.getOrderIndex())
+                || !Objects.equals(getEffectiveIconFile(), other.getEffectiveIconFile())
                 || !Objects.equals(getConfig(), other.getConfig())
                 || !Objects.equals(getParentCategory(), other.getParentCategory());
     }
@@ -297,5 +299,14 @@ public class DataStoreCategory extends DataStorageElement {
         FileUtils.forceMkdir(directory.toFile());
         Files.writeString(directory.resolve("category.json"), entryString);
         Files.writeString(directory.resolve("state.json"), stateString);
+    }
+
+    public void applyChanges(DataStoreCategory newCategory) {
+        name = newCategory.getName();
+        parentCategory = newCategory.getParentCategory();
+        orderIndex = newCategory.getOrderIndex();
+        icon = newCategory.getIcon();
+        config = newCategory.getConfig();
+        notifyUpdate(false, true);
     }
 }

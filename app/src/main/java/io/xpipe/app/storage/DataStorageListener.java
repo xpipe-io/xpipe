@@ -12,5 +12,5 @@ public interface DataStorageListener {
 
     void onCategoryRemove(DataStoreCategory category);
 
-    void onEntryCategoryChange();
+    void onCategoryListUpdate();
 }

@@ -18,7 +18,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -410,7 +409,7 @@ public abstract class DataStorage {
         }
 
         if (categoryChanged) {
-            listeners.forEach(storageListener -> storageListener.onEntryCategoryChange());
+            listeners.forEach(storageListener -> storageListener.onCategoryListUpdate());
             listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
         }
 
@@ -526,13 +525,6 @@ public abstract class DataStorage {
         }
     }
 
-    public void updateCategory(DataStoreCategory category, DataStoreCategory newCategory) {
-        category.setName(newCategory.getName());
-        category.setParentCategory(newCategory.getParentCategory());
-        updateCategoryConfig(category, newCategory.getConfig());
-        saveAsync();
-    }
-
     public void updateCategoryConfig(DataStoreCategory category, DataStoreCategoryConfig config) {
         if (category.setConfig(config)) {
             // Update git remote if needed
@@ -583,7 +575,7 @@ public abstract class DataStorage {
             listeners.forEach(storageListener -> storageListener.onCategoryAdd(toMove));
         });
 
-        listeners.forEach(storageListener -> storageListener.onEntryCategoryChange());
+        listeners.forEach(storageListener -> storageListener.onCategoryListUpdate());
         listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
 
         saveAsync();
@@ -638,7 +630,7 @@ public abstract class DataStorage {
         });
         entry.setCategoryUuid(parent.get().getCategoryUuid());
 
-        listeners.forEach(storageListener -> storageListener.onEntryCategoryChange());
+        listeners.forEach(storageListener -> storageListener.onCategoryListUpdate());
         deleteStoreCategory(breakOut.get(), false, false);
         entry.setBreakOutCategory(null);
         listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
@@ -660,7 +652,7 @@ public abstract class DataStorage {
 
             child.setCategoryUuid(newCategory.getUuid());
         });
-        listeners.forEach(storageListener -> storageListener.onEntryCategoryChange());
+        listeners.forEach(storageListener -> storageListener.onCategoryListUpdate());
         listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
         saveAsync();
     }
@@ -690,7 +682,7 @@ public abstract class DataStorage {
         cat.setParentCategory(newParent.getUuid());
         listeners.forEach(storageListener -> storageListener.onCategoryRemove(cat));
         listeners.forEach(storageListener -> storageListener.onCategoryAdd(cat));
-        listeners.forEach(storageListener -> storageListener.onEntryCategoryChange());
+        listeners.forEach(storageListener -> storageListener.onCategoryListUpdate());
         listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
         saveAsync();
     }

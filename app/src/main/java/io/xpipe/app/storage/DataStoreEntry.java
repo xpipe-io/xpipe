@@ -2,7 +2,6 @@ package io.xpipe.app.storage;
 
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.store.*;
 import io.xpipe.app.util.JacksonMapper;
 import io.xpipe.app.util.ThreadHelper;
@@ -23,7 +22,6 @@ import java.nio.file.Path;
 import java.time.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Getter
@@ -396,6 +394,7 @@ public class DataStoreEntry extends DataStorageElement {
                 || !Objects.equals(getColor(), other.getColor())
                 || !Objects.equals(getCategoryUuid(), other.getCategoryUuid())
                 || !Objects.equals(getOrderIndex(), other.getOrderIndex())
+                || !Objects.equals(isTemplate(), other.isTemplate())
                 || !Objects.equals(getEffectiveIconFile(), other.getEffectiveIconFile());
     }
 

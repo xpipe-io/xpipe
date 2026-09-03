@@ -633,7 +633,7 @@ public class StoreViewState {
             }
 
             @Override
-            public void onEntryCategoryChange() {
+            public void onCategoryListUpdate() {
                 Platform.runLater(() -> {
                     synchronized (this) {
                         categories.getList().forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
