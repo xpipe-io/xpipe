@@ -110,7 +110,8 @@ public class DataStorageNode {
     }
 
     public static JsonNode encryptNodeIfNeeded(DataStorageNode node) {
-        if (!node.isEncrypted()) {
+        // Don't encrypt for migration
+        if (true) {
             return node.getContentNode();
         }
 
