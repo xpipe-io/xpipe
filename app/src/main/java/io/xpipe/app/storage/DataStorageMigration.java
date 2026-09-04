@@ -9,6 +9,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.secret.EncryptionToken;
+import io.xpipe.app.util.LicenseProvider;
 import javafx.application.Platform;
 import lombok.Data;
 
@@ -101,6 +102,8 @@ public class DataStorageMigration {
         AppPrefs.get().save();
 
         DataStorageSyncHandler.getInstance().commitDataFiles();
+
+        LicenseProvider.get().migrate();
 
         var versionFile = dir.resolve("vaultversion");
         Files.writeString(versionFile, AppProperties.get().getCanonicalVersion().map(appVersion -> appVersion.toString()).orElse("23.99"));

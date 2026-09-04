@@ -40,6 +40,8 @@ public abstract class LicenseProvider {
 
     public abstract boolean shouldReportError();
 
+    public abstract void migrate();
+
     public static class Loader implements ModuleLayerLoader {
 
         @Override
