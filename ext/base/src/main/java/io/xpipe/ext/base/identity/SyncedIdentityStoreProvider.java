@@ -1,6 +1,7 @@
 package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.hub.creation.StoreCreationModel;
 import io.xpipe.app.hub.entry.StoreEntryWrapper;
 import io.xpipe.app.identity.KeyFileStrategy;
@@ -67,6 +68,11 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                     .resolve("keys", pub.getFileName().toString());
             if (Files.exists(pub)) {
                 DataStorageSyncHandler.getInstance().addDataFile(pub, pubTarget, newValue);
+            }
+
+            if (!DataStorageSyncHandler.getInstance().supportsSync()) {
+                AppLayoutModel.get().selectSettings();
+                AppPrefs.get().selectCategory("vaultSync");
             }
         });
 
