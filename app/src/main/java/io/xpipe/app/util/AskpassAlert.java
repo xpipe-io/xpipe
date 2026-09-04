@@ -56,7 +56,7 @@ public class AskpassAlert {
 
                     if (finalLines > 3) {
                         // Title bar + button bar + padding + text field + separator + lines
-                        alert.setHeight(30 + 50 + 40 + 40 + 20 + (finalLines * 28));
+                        alert.setHeight(30 + 50 + 40 + 40 + 20 + (finalLines * 30));
                     }
 
                     // Link to help page for double prompt
