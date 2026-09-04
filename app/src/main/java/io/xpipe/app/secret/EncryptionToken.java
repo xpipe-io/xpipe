@@ -18,6 +18,7 @@ public class EncryptionToken {
     private static EncryptionToken userToken;
 
     @Setter
+    @Getter
     private static boolean migratedVaultToken;
 
     @Getter

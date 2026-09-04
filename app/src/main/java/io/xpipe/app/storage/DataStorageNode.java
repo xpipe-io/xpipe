@@ -1,5 +1,6 @@
 package io.xpipe.app.storage;
 
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.UserScopeStore;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -111,7 +112,7 @@ public class DataStorageNode {
 
     public static JsonNode encryptNodeIfNeeded(DataStorageNode node) {
         // Don't encrypt for migration
-        if (true) {
+        if (!node.isEncrypted() || EncryptionToken.isMigratedVaultToken()) {
             return node.getContentNode();
         }
 
