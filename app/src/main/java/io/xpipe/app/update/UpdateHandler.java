@@ -96,7 +96,7 @@ public abstract class UpdateHandler {
             preparedUpdate.setValue(null);
         });
 
-        if (startBackgroundThread) {
+        if (startBackgroundThread && !AppProperties.get().isAotTrainMode() && !AppProperties.get().isTest()) {
             startBackgroundUpdater();
         }
     }
