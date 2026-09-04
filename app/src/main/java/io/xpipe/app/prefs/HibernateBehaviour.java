@@ -18,12 +18,6 @@ public enum HibernateBehaviour implements PrefsChoiceValue {
         public void runOnSleep() {
             AppOperationMode.switchToAsync(AppOperationMode.BACKGROUND);
         }
-
-        @Override
-        public boolean isAvailable() {
-            var handler = DataStorageAccessHandler.getInstance();
-            return handler != null && handler.isAccessRestricted();
-        }
     },
 
     RESTART("restart") {
