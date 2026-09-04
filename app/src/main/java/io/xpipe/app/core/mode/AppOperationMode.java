@@ -199,11 +199,15 @@ public abstract class AppOperationMode {
 
         try {
             if (AppProperties.get().isAotTrainMode()) {
-                AppOperationMode.switchToSyncOrThrow(BACKGROUND);
-                inStartup = false;
-                AppAotTrain.runTrainingMode();
-                AppOperationMode.shutdown(false);
-                return;
+                if (AppAotTrain.isSupported()) {
+                    AppOperationMode.switchToSyncOrThrow(BACKGROUND);
+                    inStartup = false;
+                    AppAotTrain.runTrainingMode();
+                    AppOperationMode.shutdown(false);
+                    return;
+                } else {
+                    AppOperationMode.halt(0);
+                }
             }
 
             var startupMode = getStartupMode();
