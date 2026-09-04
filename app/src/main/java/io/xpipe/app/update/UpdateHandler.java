@@ -185,9 +185,7 @@ public abstract class UpdateHandler {
             event("Performing update download ...");
             prepareUpdateImpl();
 
-            // Show available update in PTB more aggressively
-            if (AppProperties.get().isStaging()
-                    && preparedUpdate.getValue() != null
+            if (preparedUpdate.getValue() != null
                     && !AppOperationMode.isInStartup()) {
                 UpdateAvailableDialog.showIfNeeded(false);
             }
