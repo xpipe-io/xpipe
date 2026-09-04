@@ -14,6 +14,11 @@ public class AppAotTrain {
             return;
         }
 
+        // The x86_64 runners seem to have weird issues with the GUI
+        if (OsType.ofLocal() == OsType.MACOS && AppProperties.get().getArch().equals("amd64")) {
+            return;
+        }
+
         AppOperationMode.switchToSyncOrThrow(AppOperationMode.GUI);
         ThreadHelper.sleep(5000);
         BrowserFullSessionModel.DEFAULT.openFileSystemSync(
