@@ -322,7 +322,7 @@ project.ext {
     isStage = System.getenv('STAGE') != null && Boolean.parseBoolean(System.getenv('STAGE'))
     ci = System.getenv('CI') != null
     obfuscate = true
-    fullVersion = file("$rootDir/private_files.txt").exists(){
+    fullVersion = file("$rootDir/private_files.txt").exists()
     // The x86_64 runners seem to have weird issues
     bundleCds = ci && fullVersion && !(org.gradle.internal.os.OperatingSystem.current().isMacOsX() && getArchName() == "x86_64")
     debugCli = false
