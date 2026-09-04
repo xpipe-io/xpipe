@@ -8,15 +8,6 @@ import io.xpipe.app.util.ThreadHelper;
 
 public class AppAotTrain {
 
-    public static boolean isSupported() {
-        // The x86_64 runners seem to have weird issues
-        if (OsType.ofLocal() == OsType.MACOS && AppProperties.get().getArch().equals("amd64")) {
-            return false;
-        }
-
-        return true;
-    }
-
     public static void runTrainingMode() throws Throwable {
         // Linux runners don't support graphics
         if (OsType.ofLocal() == OsType.LINUX) {
