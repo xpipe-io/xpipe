@@ -51,16 +51,17 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
         return true;
     }
 
+    @Override
+    default boolean isRecommended() {
+        // It's basically broken and issues are not getting fixed
+        return false;
+    }
+
     class Windows implements ExternalApplicationType.WindowsType, TabbyTerminalType {
 
         @Override
         public int getProcessHierarchyOffset() {
             return 1;
-        }
-
-        @Override
-        public boolean isRecommended() {
-            return false;
         }
 
         @Override
