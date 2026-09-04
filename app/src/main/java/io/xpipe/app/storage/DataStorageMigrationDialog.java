@@ -21,7 +21,7 @@ import javafx.beans.property.SimpleStringProperty;
 public class DataStorageMigrationDialog {
 
     public static void show() {
-        var content = AppDialog.dialogTextKey("storageMigrationContent");
+        var content = AppDialog.dialogTextKey("storageMigrationContent").prefWidth(650);
         var busy = new SimpleBooleanProperty();
         var modal = ModalOverlay.of("storageMigrationTitle", content);
         modal.addButtonBarComp(new LabelComp(AppI18n.observable("applyingVaultChanges")).visible(busy));

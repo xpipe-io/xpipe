@@ -9,6 +9,7 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
@@ -35,6 +36,7 @@ public class DataStorageMigratedDialog {
             }, true, true));
         } else {
             modal.addButton(ModalButton.ok(() -> {
+                AppPrefs.get().selectCategory("about");
                 ThreadHelper.runFailableAsync(() -> {
                     AppDistributionType.get().getUpdateHandler().refreshUpdateCheck(true, false);
                 });
