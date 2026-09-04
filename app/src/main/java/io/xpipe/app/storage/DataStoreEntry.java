@@ -3,6 +3,7 @@ package io.xpipe.app.storage;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.secret.EncryptionToken;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.JacksonMapper;
 
@@ -575,7 +576,7 @@ public class DataStoreEntry extends StorageElement {
         Files.writeString(directory.resolve("entry.json"), entryString);
         Files.writeString(directory.resolve("store.json"), storeString);
 
-        var encryptNotes = storeNode.isEncrypted();
+        var encryptNotes = !EncryptionToken.isMigratedVaultToken() && storeNode.isEncrypted();
         var normalNotesFile = directory.resolve("notes.md");
         var encryptedNotesFile = directory.resolve("notes.json");
         if (Files.exists(normalNotesFile) && (notes == null || encryptNotes)) {
