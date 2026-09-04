@@ -39,6 +39,7 @@ public class DataStorageMigratedDialog {
                 AppPrefs.get().selectCategory("about");
                 ThreadHelper.runFailableAsync(() -> {
                     AppDistributionType.get().getUpdateHandler().refreshUpdateCheck(true, false);
+                    AppDistributionType.get().getUpdateHandler().prepareUpdate();
                 });
             }));
         }
