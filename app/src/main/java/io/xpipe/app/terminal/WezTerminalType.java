@@ -121,7 +121,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
     default void launch(TerminalLaunchConfiguration configuration) throws Exception {
         var base = getWeztermCommandBase();
         var activeSocket = waitForInstanceStart(1);
-        var tabid = "0";
+        var paneId = "0";
         // Always start a new window for split panes as we can't find the pane index to start with
         if (activeSocket.isEmpty() || configuration.getPanes().size() > 1 || !configuration.isPreferTabs()) {
             var gui = CommandBuilder.of().add(base.buildSimple().replace("wezterm.exe", "wezterm-gui.exe"));
@@ -156,7 +156,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                     .add("cli", "spawn")
                     .add(configuration.getPanes().getFirst().getDialectLaunchCommand());
             command.fixedEnvironment("WEZTERM_UNIX_SOCKET", activeSocket.get().toString());
-            tabid = LocalShell.getShell()
+            paneId = LocalShell.getShell()
                     .command(command)
                     .withWorkingDirectory(FilePath.of(getSocketDir()))
                     .readStdoutOrThrow();
@@ -165,15 +165,13 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         var titleCommand = CommandBuilder.of()
                 .add(base)
                 .add("cli", "set-tab-title")
-                .add("--tab-id", tabid)
+                .add("--pane-id", paneId)
                 .addQuoted(configuration.getColoredTitle());
         titleCommand.fixedEnvironment("WEZTERM_UNIX_SOCKET", activeSocket.get().toString());
-        // Sometimes the tab ids don't exist even though it just returned them to us
-        // So just ignore any errors
         LocalShell.getShell()
                 .command(titleCommand)
                 .withWorkingDirectory(FilePath.of(getSocketDir()))
-                .executeAndCheck();
+                .execute();
 
         if (configuration.getPanes().size() > 1) {
             var direction = AppPrefs.get().terminalSplitStrategy().getValue();
