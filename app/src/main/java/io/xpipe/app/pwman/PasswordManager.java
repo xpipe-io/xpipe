@@ -21,6 +21,10 @@ import java.util.List;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface PasswordManager {
 
+    default PasswordManager validated() {
+        return this;
+    }
+
     default boolean supportsList() {
         return false;
     }
