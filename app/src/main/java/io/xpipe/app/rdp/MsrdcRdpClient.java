@@ -34,6 +34,11 @@ public class MsrdcRdpClient extends MicrosoftRdpClient {
     }
 
     @Override
+    public boolean supportsAdditionalRdpOptions() {
+        return true;
+    }
+
+    @Override
     public String getExecutable() {
         // We don't want to use an exe in the PATH as that one might come from WSL
         return null;

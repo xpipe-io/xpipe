@@ -153,8 +153,7 @@ public class AppInstaller {
                         file,
                         logFile,
                         args,
-                        AppRestart.getBackgroundRestartCommand(
-                                AppProperties.get().getDataDir(), ShellDialects.CMD));
+                        AppRestart.getTerminalRestartCommand(ShellDialects.CMD));
             }
 
             private String getPowershellCommand(String file, String logFile, boolean uninstall, boolean systemWide) {
@@ -190,8 +189,7 @@ public class AppInstaller {
                         file,
                         logFile,
                         startProcessProperty,
-                        AppRestart.getBackgroundRestartCommand(
-                                AppProperties.get().getDataDir(), ShellDialects.POWERSHELL));
+                        AppRestart.getTerminalRestartCommand(ShellDialects.POWERSHELL));
             }
         }
 

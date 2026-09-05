@@ -14,6 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 
+import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 public class RdpCategory extends AppPrefsCategory {
@@ -50,7 +51,7 @@ public class RdpCategory extends AppPrefsCategory {
                     hbox.setMaxWidth(600);
                     HBox.setHgrow(entryComboBox, Priority.ALWAYS);
                     hbox.setSpacing(10);
-                    return hbox;
+                    return PrefsCapabilitiesComp.withPaneBelow(hbox, prefs.rdpClientType);
                 })
                 .build();
 

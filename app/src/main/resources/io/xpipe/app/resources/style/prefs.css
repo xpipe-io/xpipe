@@ -121,3 +121,46 @@
     -fx-padding: 0 2 0 3;
     -fx-background-color: transparent;
 }
+
+.prefs-capability-badge {
+    -fx-border-width: 1;
+    -fx-border-color: -color-border-subtle;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 2 5 2 5;
+}
+
+.prefs-capability-badge .stacked-ikonli-font-icon > .outer-icon {
+    -fx-icon-size: 26px;
+    -fx-opacity: 0.4;
+}
+
+.prefs-capability-badge .stacked-ikonli-font-icon > .inner-icon {
+    -fx-icon-size: 12px;
+}
+
+.prefs-capability-badge.warning-badge .ikonli-font-icon.outer-icon {
+    -fx-icon-color: -color-warning-emphasis;
+}
+
+.prefs-capability-badge.failure-badge .ikonli-font-icon.outer-icon {
+    -fx-icon-color: -color-danger-emphasis;
+}
+
+.prefs-capability-badge.success-badge .ikonli-font-icon.outer-icon {
+    -fx-icon-color: -color-success-emphasis;
+}
+
+.prefs-capability-badge.indeterminant-badge .ikonli-font-icon.outer-icon {
+    -fx-icon-color: #6666DD;
+}
+
+.prefs-capability-badge:hover {
+    -fx-background-color: -color-bg-default-transparent;
+    -fx-border-color: -color-accent-subtle;
+}
+
+.root:nord .prefs-capability-badge {
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}

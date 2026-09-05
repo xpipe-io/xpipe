@@ -9,6 +9,7 @@ import lombok.SneakyThrows;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 public class LocalShell {
 
@@ -17,7 +18,11 @@ public class LocalShell {
     private static boolean powershellInitialized;
     private static final Map<Object, ShellControl> localShellInstances = new HashMap<>();
 
-    public static synchronized ShellControl get(Object key) throws Exception {
+    public static synchronized ShellControl getInstance() throws Exception {
+        return getInstance(UUID.randomUUID());
+    }
+
+    public static synchronized ShellControl getInstance(Object key) throws Exception {
         var found = localShellInstances.get(key);
         if (found != null) {
             return found.start();
@@ -28,7 +33,7 @@ public class LocalShell {
         return sc;
     }
 
-    public static synchronized ShellControl get(Object key, FailableConsumer<ShellControl, Exception> func)
+    public static synchronized ShellControl getInstance(Object key, FailableConsumer<ShellControl, Exception> func)
             throws Exception {
         var found = localShellInstances.get(key);
         if (found != null) {
@@ -87,6 +92,26 @@ public class LocalShell {
                 localPowershell.kill();
             }
             localPowershell = null;
+        }
+
+        for (Map.Entry<Object, ShellControl> e : localShellInstances.entrySet()) {
+            var sci = e.getValue();
+
+            var busy = sci.getLock().isLocked() || sci.isSubShellActive();
+            if (busy) {
+                continue;
+            }
+
+            if (!force) {
+                try {
+                    sci.shutdown();
+                } catch (Exception ex) {
+                    ErrorEventFactory.fromThrowable(ex).omit().handle();
+                    sci.kill();
+                }
+            } else {
+                sci.kill();
+            }
         }
     }
 

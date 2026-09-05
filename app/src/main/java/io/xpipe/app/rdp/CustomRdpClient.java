@@ -59,6 +59,11 @@ public class CustomRdpClient implements ExternalApplicationType, ExternalRdpClie
     }
 
     @Override
+    public boolean supportsAdditionalRdpOptions() {
+        return true;
+    }
+
+    @Override
     public String getWebsite() {
         return null;
     }

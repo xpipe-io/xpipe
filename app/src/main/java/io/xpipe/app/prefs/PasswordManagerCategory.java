@@ -45,7 +45,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                     HBox.setHgrow(entryComboBox, Priority.ALWAYS);
                     hbox.setSpacing(10);
                     hbox.setMaxWidth(600);
-                    return hbox;
+                    return PrefsCapabilitiesComp.withPaneBelow(hbox, prefs.passwordManager);
                 })
                 .build();
         var choice = choiceBuilder.build().buildComp();

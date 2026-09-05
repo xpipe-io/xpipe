@@ -29,10 +29,9 @@ public class AppRestart {
             var b = CommandBuilder.of().addFile(exec).add("open").addAll(arguments);
             return b.buildSimple();
         } else {
-            var exe = loc.getDaemonExecutablePath();
-            var b = CommandBuilder.of().addFile(exe).addAll(arguments);
-            var async = dialect.launchAsync(b, true);
-            return async.buildSimple();
+            var exec = loc.getCliExecutablePath();
+            var b = CommandBuilder.of().add(ShellDialects.isPowershell(dialect) ? "&" : null).addFile(exec).add("open").addAll(arguments);
+            return b.buildSimple();
         }
     }
 

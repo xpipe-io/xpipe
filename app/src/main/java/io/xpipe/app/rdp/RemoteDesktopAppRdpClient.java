@@ -41,6 +41,11 @@ public class RemoteDesktopAppRdpClient implements ExternalApplicationType.MacApp
     }
 
     @Override
+    public boolean supportsAdditionalRdpOptions() {
+        return true;
+    }
+
+    @Override
     public String getWebsite() {
         return "https://learn.microsoft.com/en-us/previous-versions/remote-desktop-client/remote-desktop-macos";
     }

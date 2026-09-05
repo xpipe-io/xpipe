@@ -49,7 +49,7 @@ public class CustomVncClient implements ExternalVncClient {
     }
 
     @Override
-    public boolean supportsPasswords() {
+    public boolean supportsPasswordPassing() {
         return false;
     }
 

@@ -220,6 +220,11 @@ public class FreeRdpClient implements ExternalRdpClient {
     }
 
     @Override
+    public boolean supportsAdditionalRdpOptions() {
+        return true;
+    }
+
+    @Override
     public boolean supportsPasswordPassing() {
         return true;
     }

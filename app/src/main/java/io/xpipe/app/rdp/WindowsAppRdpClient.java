@@ -65,6 +65,11 @@ public class WindowsAppRdpClient implements ExternalApplicationType.MacApplicati
     }
 
     @Override
+    public boolean supportsAdditionalRdpOptions() {
+        return true;
+    }
+
+    @Override
     public String getWebsite() {
         return "https://learn.microsoft.com/en-us/windows-app/get-started-connect-devices-desktops-apps?tabs=windows-avd%2Cwindows-w365%2Cwindows"
                 + "-devbox%2Cmacos-rds%2Cmacos-pc&pivots=remote-pc";

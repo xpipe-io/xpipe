@@ -8,6 +8,8 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.AppPrefsCategory;
+import io.xpipe.app.prefs.PrefsCapabilitiesComp;
+import io.xpipe.app.prefs.PrefsCapabilityProvider;
 import io.xpipe.app.util.*;
 
 import javafx.scene.layout.HBox;
@@ -48,7 +50,7 @@ public class VncCategory extends AppPrefsCategory {
                     var hbox = new HBox(entryComboBox, websiteLinkButton.build());
                     HBox.setHgrow(entryComboBox, Priority.ALWAYS);
                     hbox.setSpacing(10);
-                    return hbox;
+                    return PrefsCapabilitiesComp.withPaneBelow(hbox, prefs.vncClient);
                 })
                 .build();
         var choice = choiceBuilder.build().buildComp().maxWidth(600);

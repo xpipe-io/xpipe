@@ -4,6 +4,9 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.AuthModuleProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.prefs.PrefsCapabilities;
+import io.xpipe.app.prefs.PrefsCapability;
+import io.xpipe.app.prefs.PrefsCapabilityProvider;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.secret.InPlaceSecretValue;
@@ -19,7 +22,17 @@ import java.time.Duration;
 import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-public interface PasswordManager {
+public interface PasswordManager extends PrefsCapabilityProvider {
+
+    @Override
+    default PrefsCapabilities getCapabilities() {
+        var listing = supportsList();
+        var keys = supportsKeyConfiguration();
+        return PrefsCapabilities.of(
+                PrefsCapability.of("pwmanCapabilityListing", PrefsCapability.Type.of(listing)),
+                PrefsCapability.of("pwmanCapabilitySshKeys", PrefsCapability.Type.of(keys))
+        );
+    }
 
     default PasswordManager validated() {
         return this;
@@ -92,7 +105,7 @@ public interface PasswordManager {
     }
 
     default ShellControl getShell() throws Exception {
-        return LocalShell.get(getClass());
+        return LocalShell.getInstance(getClass());
     }
 
     enum ListEntryType {

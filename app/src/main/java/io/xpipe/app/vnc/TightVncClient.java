@@ -48,7 +48,7 @@ public class TightVncClient implements ExternalApplicationType.InstallLocationTy
     }
 
     @Override
-    public boolean supportsPasswords() {
+    public boolean supportsPasswordPassing() {
         return true;
     }
 

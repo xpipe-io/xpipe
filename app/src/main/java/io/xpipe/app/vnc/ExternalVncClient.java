@@ -1,8 +1,7 @@
 package io.xpipe.app.vnc;
 
 import io.xpipe.app.platform.ClipboardHelper;
-import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.prefs.PrefsValue;
+import io.xpipe.app.prefs.*;
 import io.xpipe.app.util.OsType;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -11,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-public interface ExternalVncClient extends PrefsValue {
+public interface ExternalVncClient extends PrefsValue, PrefsCapabilityProvider {
 
     static void launchClient(VncLaunchConfig configuration) throws Exception {
         var client = AppPrefs.get().vncClient.getValue();
@@ -19,7 +18,7 @@ public interface ExternalVncClient extends PrefsValue {
             return;
         }
 
-        if (!client.supportsPasswords() && configuration.hasFixedPassword()) {
+        if (!client.supportsPasswordPassing() && configuration.hasFixedPassword()) {
             var pw = configuration.retrievePassword();
             if (pw.isPresent()) {
                 ClipboardHelper.copyPassword(pw.get(), false);
@@ -57,9 +56,17 @@ public interface ExternalVncClient extends PrefsValue {
         return l;
     }
 
+    @Override
+    default PrefsCapabilities getCapabilities() {
+        var passwords = supportsPasswordPassing();
+        return PrefsCapabilities.of(
+                PrefsCapability.of("rdpCapabilityPasswordPassing", PrefsCapability.Type.of(passwords))
+        );
+    }
+
     void launch(VncLaunchConfig configuration) throws Exception;
 
-    boolean supportsPasswords();
+    boolean supportsPasswordPassing();
 
     String getWebsite();
 }

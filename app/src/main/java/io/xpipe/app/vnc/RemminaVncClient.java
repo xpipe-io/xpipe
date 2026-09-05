@@ -66,7 +66,7 @@ public class RemminaVncClient implements ExternalApplicationType.LinuxApplicatio
     }
 
     @Override
-    public boolean supportsPasswords() {
+    public boolean supportsPasswordPassing() {
         return true;
     }
 

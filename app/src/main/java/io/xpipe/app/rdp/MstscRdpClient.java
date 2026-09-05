@@ -38,6 +38,11 @@ public class MstscRdpClient extends MicrosoftRdpClient {
     }
 
     @Override
+    public boolean supportsAdditionalRdpOptions() {
+        return true;
+    }
+
+    @Override
     public Optional<Path> determineInstallation() {
         return Optional.of(AppSystemInfo.ofWindows().getSystemRoot().resolve("System32", "mstsc.exe"));
     }

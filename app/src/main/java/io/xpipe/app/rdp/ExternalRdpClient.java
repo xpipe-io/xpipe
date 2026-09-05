@@ -1,8 +1,7 @@
 package io.xpipe.app.rdp;
 
 import io.xpipe.app.core.AppLocalTemp;
-import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.prefs.PrefsValue;
+import io.xpipe.app.prefs.*;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.util.*;
 
@@ -13,7 +12,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-public interface ExternalRdpClient extends PrefsValue {
+public interface ExternalRdpClient extends PrefsValue, PrefsCapabilityProvider {
 
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();
@@ -100,9 +99,23 @@ public interface ExternalRdpClient extends PrefsValue {
         };
     }
 
+    @Override
+    default PrefsCapabilities getCapabilities() {
+        var passwords = supportsPasswordPassing();
+        // var resize = true;
+        var options = supportsAdditionalRdpOptions();
+        return PrefsCapabilities.of(
+                PrefsCapability.of("rdpCapabilityPasswordPassing", PrefsCapability.Type.of(passwords)),
+                // PrefsCapability.of("rdpCapabilityScreenResize", PrefsCapability.Type.of(resize)),
+                PrefsCapability.of("rdpCapabilityAdditionalOptions", PrefsCapability.Type.of(options))
+        );
+    }
+
     void launch(RdpLaunchConfig configuration) throws Exception;
 
     boolean supportsPasswordPassing();
+
+    boolean supportsAdditionalRdpOptions();
 
     String getWebsite();
 

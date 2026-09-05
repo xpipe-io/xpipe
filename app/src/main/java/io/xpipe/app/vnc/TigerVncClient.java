@@ -65,7 +65,7 @@ public abstract class TigerVncClient implements ExternalVncClient {
         }
 
         @Override
-        public boolean supportsPasswords() {
+        public boolean supportsPasswordPassing() {
             return false;
         }
     }
@@ -89,7 +89,7 @@ public abstract class TigerVncClient implements ExternalVncClient {
         }
 
         @Override
-        public boolean supportsPasswords() {
+        public boolean supportsPasswordPassing() {
             try {
                 return LocalShell.getShell().view().findProgram("vncpasswd").isPresent();
             } catch (Exception e) {
@@ -129,7 +129,7 @@ public abstract class TigerVncClient implements ExternalVncClient {
         }
 
         @Override
-        public boolean supportsPasswords() {
+        public boolean supportsPasswordPassing() {
             return false;
         }
 

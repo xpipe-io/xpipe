@@ -49,6 +49,11 @@ public class KrdcRdpClient implements ExternalApplicationType.LinuxApplication, 
     }
 
     @Override
+    public boolean supportsAdditionalRdpOptions() {
+        return true;
+    }
+
+    @Override
     public boolean detach() {
         return true;
     }

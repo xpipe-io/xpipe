@@ -20,6 +20,11 @@ import java.util.Optional;
 public class DevolutionsRdpClient implements ExternalApplicationType.WindowsType, ExternalRdpClient {
 
     @Override
+    public boolean supportsAdditionalRdpOptions() {
+        return true;
+    }
+
+    @Override
     public boolean detach() {
         return true;
     }
@@ -44,8 +49,8 @@ public class DevolutionsRdpClient implements ExternalApplicationType.WindowsType
 
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
-        var config = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
-        launch(CommandBuilder.of().addQuoted(config.toString()));
+        var file = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
+        launch(CommandBuilder.of().addQuoted(file.toString()));
     }
 
     @Override

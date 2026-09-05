@@ -89,7 +89,7 @@ public class PlatformInit {
             PlatformThread.runLaterIfNeededBlocking(() -> {
                 AppDisplayScale.init();
                 AppStyle.init();
-                AppTheme.init();
+                AppThemeHandler.init();
             });
             AppI18n.init();
             AppDesktopIntegration.init();

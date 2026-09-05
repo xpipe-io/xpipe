@@ -28,7 +28,7 @@ public class KrdcVncClient implements ExternalApplicationType.LinuxApplication, 
     }
 
     @Override
-    public boolean supportsPasswords() {
+    public boolean supportsPasswordPassing() {
         return false;
     }
 

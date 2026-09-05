@@ -27,7 +27,7 @@ public class ScreenSharingVncClient implements ExternalApplicationType.MacApplic
     }
 
     @Override
-    public boolean supportsPasswords() {
+    public boolean supportsPasswordPassing() {
         return true;
     }
 

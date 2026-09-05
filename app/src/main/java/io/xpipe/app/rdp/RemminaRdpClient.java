@@ -75,6 +75,11 @@ public class RemminaRdpClient implements ExternalApplicationType.LinuxApplicatio
     }
 
     @Override
+    public boolean supportsAdditionalRdpOptions() {
+        return false;
+    }
+
+    @Override
     public boolean detach() {
         return true;
     }
