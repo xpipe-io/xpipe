@@ -81,7 +81,7 @@ public class DataStorageCompatibilityCheck {
         var version = AppProperties.get().isStaging() ? "23.99-5" : "23.99";
         var downloaded = AppDownloads.downloadArtifact(AppRelease.ofPortable(version));
         var tempTarget = AppSystemInfo.ofCurrent().getTemp().resolve("xpipe-v23.99");
-        var shell = LocalShell.get(DataStorageCompatibilityCheck.class);
+        var shell = LocalShell.getInstance(DataStorageCompatibilityCheck.class);
         switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> {
                 Files.createDirectories(tempTarget);

@@ -88,7 +88,7 @@ public interface PasswordManager {
     }
 
     default ShellControl getShell() throws Exception {
-        return LocalShell.get(getClass());
+        return LocalShell.getInstance(getClass());
     }
 
     enum ListEntryType {
