@@ -49,6 +49,11 @@ public class UpdateCheckComp extends SimpleRegionBuilder {
                         return prefix + " (" + version + ")";
                     }
 
+                    var available = uh.getLastUpdateCheckResult().getValue();
+                    if (available != null) {
+                        return AppI18n.get("updateAvailable", available.getVersion());
+                    }
+
                     return AppI18n.get("checkForUpdates");
                 },
                 AppI18n.activeLanguage(),
@@ -70,6 +75,11 @@ public class UpdateCheckComp extends SimpleRegionBuilder {
                         return AppDistributionType.get() == AppDistributionType.PORTABLE
                                 ? AppI18n.get("updateReadyDescriptionPortable")
                                 : AppI18n.get("updateReadyDescription");
+                    }
+
+                    var available = uh.getLastUpdateCheckResult().getValue();
+                    if (available != null) {
+                        return AppI18n.get("updateAvailableDescription");
                     }
 
                     return AppI18n.get("checkForUpdatesDescription");
