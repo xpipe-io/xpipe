@@ -80,6 +80,10 @@ public class LocalShell {
             if (!force) {
                 try {
                     localPowershell.exitAndWait();
+                    var p = localPowershell.getParentControl();
+                    if (p.isPresent()) {
+                        p.get().exitAndWait();
+                    }
                 } catch (Exception e) {
                     ErrorEventFactory.fromThrowable(e).omit().handle();
                     localPowershell.kill();

@@ -337,7 +337,7 @@ public class AppProperties {
                 .tag("build", build)
                 .tag("dataDir", dataDir)
                 .tag("fullVersion", fullVersion)
-                .tag("arch", arch)
+                .tag("arch", arch + " / " + System.getProperty("os.arch"))
                 .handle();
 
         TrackEvent.withInfo("Received arguments")

@@ -53,7 +53,7 @@ public class DataStorageCompatibilityCheck {
         ErrorEventFactory.fromMessage(
                         "The vault" + (version.isPresent() ? " from v" + version.get() + " " : " ")
                                 + "comes from an XPipe version prior to v24."
-                                + " This legacy format is unsupported in newer versions. To migrate your data, you need to first install and launch XPipe v23.99."
+                                + " This legacy format is unsupported in newer versions. To migrate your data, you need to first install and launch XPipe v23.99.x."
                                 + " This will start a migration for the vault data. Afterwards, you can upgrade to XPipe v24+ and launch it as normal.")
                 .customAction(new ErrorAction() {
                     @Override
@@ -63,7 +63,7 @@ public class DataStorageCompatibilityCheck {
 
                     @Override
                     public String getDescription() {
-                        return "Download and launch XPipe v23.99 to perform the migration";
+                        return "Download and launch XPipe v23.99.x to perform the migration";
                     }
 
                     @Override
@@ -78,7 +78,7 @@ public class DataStorageCompatibilityCheck {
     }
 
     private static void runTransitoryBuild() throws Exception {
-        var version = AppProperties.get().isStaging() ? "23.99-5" : "23.99";
+        var version = AppProperties.get().isStaging() ? "23.99-5" : "23.99.2";
         var downloaded = AppDownloads.downloadArtifact(AppRelease.ofPortable(version));
         var tempTarget = AppSystemInfo.ofCurrent().getTemp().resolve("xpipe-v23.99");
         var shell = LocalShell.getInstance(DataStorageCompatibilityCheck.class);

@@ -361,6 +361,11 @@ public abstract class DataStorage {
             newEntry.setIcon(icon, true);
         }
 
+        var orderIndex = entry.getOrderIndex();
+        if (newEntry.getOrderIndex() == 0.0) {
+            newEntry.setOrderIndex(orderIndex);
+        }
+
         var syntheticParent = getSyntheticParent(newEntry);
         if (syntheticParent.isPresent()) {
             addStoreEntryIfNotPresent(syntheticParent.get());
