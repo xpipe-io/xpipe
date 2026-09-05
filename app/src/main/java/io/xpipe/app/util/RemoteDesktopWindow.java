@@ -123,7 +123,7 @@ public class RemoteDesktopWindow {
         AppWindowStyle.addClickShield(stage);
         AppWindowStyle.addFontSize(scene);
         AppWindowStyle.addNavigationPseudoClasses(scene);
-        AppTheme.initThemeHandlers(stage);
+        AppThemeHandler.initThemeHandlers(stage);
 
         setupWindowListeners();
     }

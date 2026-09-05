@@ -143,10 +143,10 @@ public final class AppPrefs {
             .valueClass(Boolean.class)
             .requiresRestart(true)
             .build());
-    public final ObjectProperty<AppTheme.Theme> theme = map(Mapping.builder()
+    public final ObjectProperty<AppTheme> theme = map(Mapping.builder()
             .property(new GlobalObjectProperty<>())
             .key("theme")
-            .valueClass(AppTheme.Theme.class)
+            .valueClass(AppTheme.class)
             .build());
     final BooleanProperty useSystemFont = map(Mapping.builder()
             .property(new GlobalBooleanProperty(OsType.ofLocal() != OsType.MACOS))
@@ -596,7 +596,7 @@ public final class AppPrefs {
         return focusWindowOnNotifications;
     }
 
-    public ObservableValue<AppTheme.Theme> theme() {
+    public ObservableValue<AppTheme> theme() {
         return theme;
     }
 
