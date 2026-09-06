@@ -17,11 +17,13 @@ import io.xpipe.app.store.ShellStore;
 import io.xpipe.app.terminal.*;
 import io.xpipe.app.util.*;
 
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ListCell;
@@ -129,7 +131,7 @@ public class TerminalCategory extends AppPrefsCategory {
         if (!docsLink) {
             builder.documentationLink((DocumentationLink) null);
         }
-        builder.addComp(h, prefs.terminalType);
+        builder.addComp(PrefsCapabilitiesComp.withPaneBelow(h, new PrefsCapabilitiesComp(prefs.terminalType, List.of(prefs.terminalMultiplexer))));
         builder.pref(prefs.customTerminalCommand)
                 .addComp(new TextFieldComp(prefs.customTerminalCommand, true)
                         .apply(struc -> struc.setPromptText("myterminal -e $CMD"))

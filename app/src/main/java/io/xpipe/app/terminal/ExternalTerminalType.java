@@ -1,9 +1,7 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.app.prefs.PrefsChoiceValue;
+import io.xpipe.app.prefs.*;
 import io.xpipe.app.process.*;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.OsType;
@@ -13,7 +11,7 @@ import lombok.Getter;
 
 import java.util.*;
 
-public interface ExternalTerminalType extends PrefsChoiceValue {
+public interface ExternalTerminalType extends PrefsChoiceValue, PrefsCapabilityProvider {
 
     //    ExternalTerminalType PUTTY = new WindowsType("app.putty","putty") {
     //
@@ -634,6 +632,18 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     boolean isRecommended();
 
     boolean useColoredTitle();
+
+    @Override
+    default PrefsCapabilities getCapabilities() {
+        var docking = this instanceof TrackableTerminalType ttt && ttt.getDockMode() != TerminalDockMode.UNSUPPORTED;
+        var tabs = getOpenFormat() != TerminalOpenFormat.NEW_WINDOW;
+        var splitPanes = supportsSplitView();
+        return PrefsCapabilities.of(
+                OsType.ofLocal() == OsType.WINDOWS ? PrefsCapability.of("terminalCapabilityDocking", PrefsCapability.Type.of(docking)) : null,
+                AppPrefs.get().terminalMultiplexer().getValue() == null ? PrefsCapability.of("terminalCapabilityTabs", PrefsCapability.Type.of(tabs)) : null,
+                PrefsCapability.of("terminalCapabilitySplitView", PrefsCapability.Type.of(splitPanes))
+        );
+    }
 
     default boolean supportsEscapes() {
         return true;

@@ -20,9 +20,9 @@ public class PrefsCapabilities {
                 .toList());
     }
 
-    public PrefsCapabilities append(PrefsCapabilities information) {
+    public PrefsCapabilities append(PrefsCapabilities caps) {
         var l = new ArrayList<>(capabilities);
-        l.addAll(information.getCapabilities());
+        l.addAll(caps.getCapabilities());
         return new PrefsCapabilities(l);
     }
 

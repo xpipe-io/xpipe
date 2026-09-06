@@ -1,6 +1,8 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.prefs.ExternalApplicationType;
+import io.xpipe.app.prefs.PrefsCapabilities;
+import io.xpipe.app.prefs.PrefsCapability;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellDialects;
@@ -10,10 +12,17 @@ import io.xpipe.app.util.WindowsRegistry;
 import java.nio.file.Path;
 import java.util.Optional;
 
-public interface TabbyTerminalType extends ExternalTerminalType, TrackableTerminalType {
+public interface TabbyTerminalType extends TrackableTerminalType {
 
     ExternalTerminalType TABBY_WINDOWS = new Windows();
     ExternalTerminalType TABBY_MAC_OS = new MacOs();
+
+    @Override
+    default PrefsCapabilities getCapabilities() {
+        var caps = TrackableTerminalType.super.getCapabilities();
+        var warn = PrefsCapability.of("prefsCapabilityWarning", PrefsCapability.Type.WARNING);
+        return PrefsCapabilities.of(warn).append(caps);
+    }
 
     @Override
     default TerminalInitFunction additionalInitCommands() {

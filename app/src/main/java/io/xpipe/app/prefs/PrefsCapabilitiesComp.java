@@ -5,6 +5,7 @@ import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.TooltipHelper;
+import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.hub.entry.StoreEntryBadge;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.LabelGraphic;
@@ -33,10 +34,30 @@ public class PrefsCapabilitiesComp extends SimpleRegionBuilder {
         return vbox;
     }
 
+    public static BaseRegionBuilder<?, ?> withPaneBelow(BaseRegionBuilder<?, ?> b, ObservableValue<? extends PrefsCapabilityProvider> prop) {
+        var caps = new PrefsCapabilitiesComp(prop);
+        var vbox = new VerticalComp(List.of(b, caps));
+        vbox.apply(vBox -> vBox.setSpacing(10));
+        return vbox;
+    }
+
+    public static BaseRegionBuilder<?, ?> withPaneBelow(BaseRegionBuilder<?, ?> b, PrefsCapabilitiesComp comp) {
+        var vbox = new VerticalComp(List.of(b, comp));
+        vbox.apply(vBox -> vBox.setSpacing(10));
+        return vbox;
+    }
+
     private final ObservableValue<? extends PrefsCapabilityProvider> provider;
+    private final List<ObservableValue<?>> observables;
 
     public PrefsCapabilitiesComp(ObservableValue<? extends PrefsCapabilityProvider> provider) {
         this.provider = provider;
+        this.observables = List.of();
+    }
+
+    public PrefsCapabilitiesComp(ObservableValue<? extends PrefsCapabilityProvider> provider, List<ObservableValue<?>> observables) {
+        this.provider = provider;
+        this.observables = observables;
     }
 
     @Override
@@ -55,9 +76,19 @@ public class PrefsCapabilitiesComp extends SimpleRegionBuilder {
         hbox.setAlignment(Pos.CENTER_LEFT);
 
         var l = DerivedObservableList.<PrefsCapability>arrayList(true);
-        prop.subscribe(provider -> {
-            l.setContent(provider.getCapabilities());
+        prop.subscribe(caps -> {
+            l.setContent(caps != null ? caps.getCapabilities() : List.of());
         });
+
+        for (ObservableValue<?> observable : observables) {
+            Listeners.listenWeak(hbox, observable, (hBox, o) -> {
+                var currentProvider = provider.getValue();
+                prop.set(null);
+                if (currentProvider != null) {
+                    prop.set(currentProvider.getCapabilities());
+                }
+            });
+        }
 
         Listeners.subscribeList(l.getList(), (capList) -> {
             hbox.getChildren().clear();
