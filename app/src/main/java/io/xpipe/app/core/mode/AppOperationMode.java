@@ -115,6 +115,11 @@ public abstract class AppOperationMode {
                         AppOperationMode.halt(1);
                     }
 
+                    // There are weird NPEs on macOS shutdowns without a stack trace
+                    if (AppOperationMode.isInShutdown() && ex.getStackTrace().length == 0 && OsType.ofLocal() == OsType.MACOS) {
+                        return;
+                    }
+
                     if (ex instanceof OutOfMemoryError) {
                         ex.printStackTrace();
                         AppOperationMode.halt(1);
