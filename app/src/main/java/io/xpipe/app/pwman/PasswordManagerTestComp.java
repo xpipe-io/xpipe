@@ -147,7 +147,7 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
                                     shown,
                                     all,
                                     entry -> {
-                                        var buttonName = entry.getTitle();
+                                        var buttonName = entry.getListTitle();
                                         var entryButton =
                                                 new ButtonComp(new ReadOnlyObjectWrapper<>(buttonName), () -> {
                                                     popover.hide();
