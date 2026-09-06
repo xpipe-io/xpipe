@@ -1,8 +1,11 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppLocalTemp;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
+import io.xpipe.app.prefs.PrefsCapabilities;
+import io.xpipe.app.prefs.PrefsCapability;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.*;
 
@@ -11,6 +14,14 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 public class MobaXTermTerminalType implements ExternalApplicationType.WindowsType, ExternalTerminalType {
+
+    @Override
+    public PrefsCapabilities getCapabilities() {
+        var caps = ExternalTerminalType.super.getCapabilities();
+        var warn = PrefsCapability.of("prefsCapabilityBrokenWarning", PrefsCapability.Type.WARNING);
+        var setup = PrefsCapability.of("prefsCapabilitySetupRequiredWarning", PrefsCapability.Type.WARNING);
+        return PrefsCapabilities.of(AppSystemInfo.ofCurrent().getUser().contains(" ") ? warn : null, setup).append(caps);
+    }
 
     @Override
     public TerminalOpenFormat getOpenFormat() {

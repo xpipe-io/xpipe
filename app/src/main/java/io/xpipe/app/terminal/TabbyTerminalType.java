@@ -20,7 +20,7 @@ public interface TabbyTerminalType extends TrackableTerminalType {
     @Override
     default PrefsCapabilities getCapabilities() {
         var caps = TrackableTerminalType.super.getCapabilities();
-        var warn = PrefsCapability.of("prefsCapabilityWarning", PrefsCapability.Type.WARNING);
+        var warn = PrefsCapability.of("prefsCapabilityBrokenWarning", PrefsCapability.Type.WARNING);
         return PrefsCapabilities.of(warn).append(caps);
     }
 

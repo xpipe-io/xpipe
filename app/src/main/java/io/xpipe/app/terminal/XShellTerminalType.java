@@ -7,6 +7,8 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
+import io.xpipe.app.prefs.PrefsCapabilities;
+import io.xpipe.app.prefs.PrefsCapability;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.SshLocalBridge;
 import io.xpipe.app.util.WindowsRegistry;
@@ -15,6 +17,13 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 public class XShellTerminalType implements ExternalApplicationType.WindowsType, ExternalTerminalType {
+
+    @Override
+    public PrefsCapabilities getCapabilities() {
+        var caps = ExternalTerminalType.super.getCapabilities();
+        var setup = PrefsCapability.of("prefsCapabilitySetupRequiredWarning", PrefsCapability.Type.WARNING);
+        return PrefsCapabilities.of(setup).append(caps);
+    }
 
     @Override
     public TerminalOpenFormat getOpenFormat() {
@@ -85,7 +94,7 @@ public class XShellTerminalType implements ExternalApplicationType.WindowsType, 
         var b = SshLocalBridge.get();
         var keyName = b.getIdentityKey().getFileName().toString();
         var activated = AppI18n.get().getMarkdownTranslation("app:xshellSetup").formatted(b.getIdentityKey(), keyName);
-        var modal = ModalOverlay.of("xshellSetup", new MarkdownComp(activated, s -> s, false).prefWidth(450));
+        var modal = ModalOverlay.of("xshellSetup", new MarkdownComp(activated, s -> s, false).prefWidth(550).prefHeight(450));
         modal.addButton(ModalButton.ok(() -> {
             AppCache.update("xshellSetup", true);
         }));

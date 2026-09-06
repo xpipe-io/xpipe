@@ -2,14 +2,23 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.prefs.PrefsCapabilities;
+import io.xpipe.app.prefs.PrefsCapability;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 
-public interface WaveTerminalType extends ExternalTerminalType, TrackableTerminalType {
+public interface WaveTerminalType extends TrackableTerminalType {
 
     ExternalTerminalType WAVE_WINDOWS = new Windows();
     ExternalTerminalType WAVE_LINUX = new Linux();
     ExternalTerminalType WAVE_MAC_OS = new MacOs();
+
+    @Override
+    default PrefsCapabilities getCapabilities() {
+        var caps = TrackableTerminalType.super.getCapabilities();
+        var setup = PrefsCapability.of("prefsCapabilitySetupRequiredWarning", PrefsCapability.Type.WARNING);
+        return PrefsCapabilities.of(setup).append(caps);
+    }
 
     @Override
     default boolean isAvailable() {

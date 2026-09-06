@@ -6,6 +6,8 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.prefs.PrefsCapabilities;
+import io.xpipe.app.prefs.PrefsCapability;
 import io.xpipe.app.util.*;
 
 import java.io.IOException;
@@ -15,6 +17,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class TermiusTerminalType implements ExternalTerminalType {
+
+    @Override
+    public PrefsCapabilities getCapabilities() {
+        var caps = ExternalTerminalType.super.getCapabilities();
+        var warn = PrefsCapability.of("prefsCapabilityBrokenWarning", PrefsCapability.Type.WARNING);
+        var setup = PrefsCapability.of("prefsCapabilitySetupRequiredWarning", PrefsCapability.Type.WARNING);
+        return PrefsCapabilities.of(warn, setup).append(caps);
+    }
 
     @Override
     public String getId() {
