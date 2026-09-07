@@ -153,6 +153,16 @@ def getBaseJvmArgs() {
     // Reduce heap usage with deduplication
     jvmRunArgs += ['-XX:+UseStringDeduplication']
 
+    return jvmRunArgs
+}
+
+def getDaemonJvmArgs() {
+    def os = DefaultNativePlatform.currentOperatingSystem
+    def jvmRunArgs = ["-Dio.xpipe.app.isDaemon=true"]
+
+    // Use custom JavaFX preloader
+    jvmRunArgs += ["-Djavafx.preloader=" + packageName("core.AppPreloader")]
+
     // Why is this not on by default? ...
     // https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/doc-files/net-properties.html
     // https://stackoverflow.com/questions/53333556/proxy-authentication-with-jdk-11-httpclient
@@ -163,17 +173,6 @@ def getBaseJvmArgs() {
             '-Djdk.http.auth.tunneling.disabledSchemes=""',
             '-Djdk.httpclient.auth.retrylimit=1'
     ]
-
-
-    return jvmRunArgs
-}
-
-def getDaemonJvmArgs() {
-    def os = DefaultNativePlatform.currentOperatingSystem
-    def jvmRunArgs = ["-Dio.xpipe.app.isDaemon=true"]
-
-    // Use custom JavaFX preloader
-    jvmRunArgs += ["-Djavafx.preloader=" + packageName("core.AppPreloader")]
 
     // Disable JDK24 warnings
     jvmRunArgs += [

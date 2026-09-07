@@ -2,12 +2,10 @@ package io.xpipe.app.beacon;
 
 import io.xpipe.app.beacon.api.DaemonStopExchange;
 
+import io.xpipe.app.core.AppProperties;
 import lombok.SneakyThrows;
 
-import java.net.Inet4Address;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 
 public class BeaconServer {
 
@@ -15,7 +13,7 @@ public class BeaconServer {
     public static boolean isReachable(int port) {
         var local = Inet4Address.getByAddress(new byte[] {0x7f, 0x00, 0x00, 0x01});
 
-        try (var socket = new Socket()) {
+        try (var socket = new Socket(Proxy.NO_PROXY)) {
             InetSocketAddress adress = new InetSocketAddress(local, port);
             socket.connect(adress, 5000);
         } catch (Exception e) {

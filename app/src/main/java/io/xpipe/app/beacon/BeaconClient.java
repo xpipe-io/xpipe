@@ -46,6 +46,7 @@ public class BeaconClient {
         }
 
         var client = HttpClient.newBuilder()
+                .proxy(HttpClient.Builder.NO_PROXY)
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .build();
         HttpResponse<String> response;
