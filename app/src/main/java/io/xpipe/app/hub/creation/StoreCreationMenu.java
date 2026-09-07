@@ -186,6 +186,10 @@ public class StoreCreationMenu {
                         () -> DataStorage.get().local().ref(),
                         () -> null,
                         fileReference -> {
+                            if (fileReference == null) {
+                                return;
+                            }
+
                             var file = fileReference.getPath().asLocalPath();
                             ThreadHelper.runFailableAsync(() -> {
                                 ProcModuleProvider.get().importRdpFile(file);
