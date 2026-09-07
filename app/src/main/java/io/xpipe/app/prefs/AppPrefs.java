@@ -31,6 +31,7 @@ import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
 
+import javafx.geometry.Side;
 import lombok.*;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.JavaType;
@@ -142,6 +143,11 @@ public final class AppPrefs {
             .key("limitedTouchscreenMode")
             .valueClass(Boolean.class)
             .requiresRestart(true)
+            .build());
+    final ObjectProperty<SidebarLocation> sidebarLocation = map(Mapping.builder()
+            .property(new GlobalObjectProperty<>(SidebarLocation.RIGHT))
+            .key("sidebarLocation")
+            .valueClass(SidebarLocation.class)
             .build());
     public final ObjectProperty<AppTheme> theme = map(Mapping.builder()
             .property(new GlobalObjectProperty<>())
@@ -538,6 +544,10 @@ public final class AppPrefs {
 
     public ObservableValue<TerminalPrompt> terminalPrompt() {
         return terminalPrompt;
+    }
+
+    public ObservableValue<SidebarLocation> sidebarLocation() {
+        return sidebarLocation;
     }
 
     public ObservableValue<UUID> terminalProxy() {

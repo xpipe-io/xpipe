@@ -108,6 +108,7 @@ public class AppMainWindow {
         content.prefWidthProperty().bind(scene.widthProperty());
         content.prefHeightProperty().bind(scene.heightProperty());
         AppWindowStyle.setSceneFill(scene);
+        AppWindowStyle.setSidebarLocationPseudoClass(scene);
 
         stage.setScene(scene);
         if (AppPrefs.get() != null) {

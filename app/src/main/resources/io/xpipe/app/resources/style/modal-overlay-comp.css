@@ -35,12 +35,20 @@
     -color-modal-pane-overlay: rgba(0, 0, 0, 0.4);
 }
 
-.modal-overlay-stack-element:loaded > .modal-overlay-comp.modal-pane > .modal-pane-content {
+.root:sidebar-right .modal-overlay-stack-element:loaded > .modal-overlay-comp.modal-pane > .modal-pane-content {
     -fx-background-insets: 0 3.2em 0 0;
 }
 
-.root:seamless-frame .modal-overlay-stack-element:loaded > .modal-overlay-comp.modal-pane > .modal-pane-content {
+.root:sidebar-left .modal-overlay-stack-element:loaded > .modal-overlay-comp.modal-pane > .modal-pane-content {
+    -fx-background-insets: 0 0 0 3.2em;
+}
+
+.root:seamless-frame:sidebar-right .modal-overlay-stack-element:loaded > .modal-overlay-comp.modal-pane > .modal-pane-content {
     -fx-background-radius: 0 6 0 0;
+}
+
+.root:seamless-frame:sidebar-left .modal-overlay-stack-element:loaded > .modal-overlay-comp.modal-pane > .modal-pane-content {
+    -fx-background-radius: 6 0 0 0;
 }
 
 .root:seamless-frame:nord .modal-overlay-stack-element:loaded > .modal-overlay-comp.modal-pane > .modal-pane-content {
