@@ -57,7 +57,12 @@ public class DataStoreAccessScope {
 
         var handler = DataStorageAccessHandler.getInstance();
         var vaultPrincipal = handler.getFallbackPrincipal();
+
         var encryptPrincipal = handler.getEncryptAllPrincipal();
+        // If we can't access the encryption principal, just keep it
+        if (!encryptPrincipal.isAccessible()) {
+            return principal;
+        }
 
         var isVault = vaultPrincipal.equals(principal);
         var exists = handler.getAllEncryptionPrincipals().contains(principal);
