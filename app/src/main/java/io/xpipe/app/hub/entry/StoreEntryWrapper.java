@@ -158,11 +158,12 @@ public class StoreEntryWrapper {
             return;
         }
 
-        // We received an update after moving/deleting a category
         var newCat = StoreViewState.get().getCategories().getList().stream()
                 .filter(storeCategoryWrapper ->
                         storeCategoryWrapper.getCategory().getUuid().equals(entry.getCategoryUuid()))
                 .findFirst();
+
+        // We received an update after moving/deleting a category
         if (newCat.isEmpty()) {
             return;
         }
