@@ -1,6 +1,7 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppInstallation;
+import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
@@ -61,10 +62,13 @@ public class TerminalPaneConfiguration {
             boolean enableLogging,
             boolean alwaysPromptRestart)
             throws Exception {
+        var debugMode = AppProperties.get().isDeveloperMode()
+                && AppLogs.get().isWriteToSysout();
+
         if (!enableLogging || !AppPrefs.get().enableTerminalLogging().get()) {
             var sc = LocalShell.getShell();
             var register = TerminalLauncher.getTerminalRegisterCommand(request, sc);
-            var launcherScript =
+            var launcherScript = (debugMode ? sc.getShellDialect().getSetEnvironmentVariableCommand("XPIPE_DEBUG", "true") + "\n" : "") +
                     register + "\n" + sc.getShellDialect().terminalLauncherScript(request, title, alwaysPromptRestart);
             var config = new TerminalPaneConfiguration(request, title, paneIndex, launcherScript, sc.getShellDialect());
             return config;
@@ -86,12 +90,14 @@ public class TerminalPaneConfiguration {
                     ShellDialects.POWERSHELL.terminalLauncherScript(request, title, alwaysPromptRestart));
             var content = """
                           %s
+                          %s
                           echo 'Session logging is active, output file is "sessions\\%s"'
                           Start-Transcript -Force -LiteralPath "%s" | Out-Null
                           & "%s"
                           Stop-Transcript | Out-Null
                           echo 'Session logging is finished, output file is "sessions\\%s"'
                           """.formatted(
+                            debugMode ? ShellDialects.POWERSHELL.getSetEnvironmentVariableCommand("XPIPE_DEBUG", "true") : "",
                             TerminalLauncher.getTerminalRegisterCommand(
                                     request, LocalShell.getLocalPowershell().orElseThrow()),
                             logFile.getFileName(),
@@ -131,11 +137,13 @@ public class TerminalPaneConfiguration {
                     : "script --quiet --command '%s' \"%s\"".formatted(command, logFile);
             var content = """
                           %s
+                          %s
                           echo "Session logging is active, output file is sessions/%s"
                           %s
                           echo "Session logging is finished, output file is sessions/%s"
                           cat "%s" | "%s" terminal-clean > "%s.txt"
                           """.formatted(
+                            debugMode ? ShellDialects.POWERSHELL.getSetEnvironmentVariableCommand("XPIPE_DEBUG", "true") : "",
                             TerminalLauncher.getTerminalRegisterCommand(request, sc),
                             logFile.getFileName(),
                             scriptCommand,

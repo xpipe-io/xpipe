@@ -17,6 +17,9 @@ public class BeaconServer {
             InetSocketAddress adress = new InetSocketAddress(local, port);
             socket.connect(adress, 5000);
         } catch (Exception e) {
+            if (AppProperties.get().isDebugCli()) {
+                e.printStackTrace();
+            }
             return false;
         }
 

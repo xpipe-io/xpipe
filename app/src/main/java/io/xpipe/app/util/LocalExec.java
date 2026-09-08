@@ -5,9 +5,37 @@ import io.xpipe.app.issue.TrackEvent;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 
 public class LocalExec {
+
+    public static void prepareLocalProcessEnvironment(Map<String, String> env) {
+        // https://bugs.openjdk.org/browse/JDK-8360500
+        env.remove("_JPACKAGE_LAUNCHER");
+
+        // Remove debug mode vars
+        env.remove("JAVA_EXEC");
+        env.remove("CDS_JVM_OPTS");
+
+        // Remove any custom java vars
+        env.remove("_JAVA_OPTIONS");
+        env.remove("JAVA_TOOL_OPTIONS");
+        env.remove("JDK_JAVA_OPTIONS");
+
+        // Remove dev vars
+        env.remove("XPIPE_MAPPING");
+
+        // Ensure that electron applications on Linux use wayland features if possible
+        // https://github.com/microsoft/vscode/issues/207033#issuecomment-2167500295
+        if (OsType.ofLocal() == OsType.LINUX && !AppSystemInfo.ofLinux().isVirtualMachine()) {
+            env.put("ELECTRON_OZONE_PLATFORM_HINT", "auto");
+        }
+
+        // Add proxy vars
+        var proxyMap = HttpProxy.getEnvironmentVariables();
+        env.putAll(proxyMap);
+    }
 
     public static Process executeAsync(String... command) {
         var list = Arrays.stream(command).filter(s -> s != null).toList();
@@ -22,12 +50,7 @@ public class LocalExec {
             pb.directory(AppSystemInfo.ofCurrent().getUserHome().toFile());
 
             var env = pb.environment();
-            // https://bugs.openjdk.org/browse/JDK-8360500
-            env.remove("_JPACKAGE_LAUNCHER");
-
-            env.remove("_JAVA_OPTIONS");
-            env.remove("JAVA_TOOL_OPTIONS");
-            env.remove("JDK_JAVA_OPTIONS");
+            prepareLocalProcessEnvironment(env);
 
             return pb.start();
         } catch (Exception ex) {
@@ -49,12 +72,7 @@ public class LocalExec {
             pb.directory(AppSystemInfo.ofCurrent().getUserHome().toFile());
 
             var env = pb.environment();
-            // https://bugs.openjdk.org/browse/JDK-8360500
-            env.remove("_JPACKAGE_LAUNCHER");
-
-            env.remove("_JAVA_OPTIONS");
-            env.remove("JAVA_TOOL_OPTIONS");
-            env.remove("JDK_JAVA_OPTIONS");
+            prepareLocalProcessEnvironment(env);
 
             var process = pb.start();
             var out = process.getInputStream().readAllBytes();
