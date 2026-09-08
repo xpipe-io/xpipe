@@ -158,6 +158,15 @@ public class StoreEntryWrapper {
             return;
         }
 
+        // We received an update after moving/deleting a category
+        var newCat = StoreViewState.get().getCategories().getList().stream()
+                .filter(storeCategoryWrapper ->
+                        storeCategoryWrapper.getCategory().getUuid().equals(entry.getCategoryUuid()))
+                .findFirst();
+        if (newCat.isEmpty()) {
+            return;
+        }
+
         // Avoid reupdating name when changed from the name property!
         if (!entry.getName().equals(name.getValue())) {
             name.setValue(entry.getName());
@@ -196,12 +205,7 @@ public class StoreEntryWrapper {
         sessionActive.setValue(entry.getStore() instanceof SingletonSessionStore<?> ss
                 && entry.getStore() instanceof ShellStore
                 && ss.isSessionRunning());
-        var newCat = StoreViewState.get().getCategories().getList().stream()
-                .filter(storeCategoryWrapper ->
-                        storeCategoryWrapper.getCategory().getUuid().equals(entry.getCategoryUuid()))
-                .findFirst()
-                .orElse(StoreViewState.get().getAllConnectionsCategory());
-        category.setValue(newCat);
+        category.setValue(newCat.get());
         accessScopeRestricted.setValue(DataStorageAccessHandler.getInstance().getType() == DataStorageAccessType.ROLE
                 && entry.getAccessScope().isAccessSubRestricted());
         pinToTop.setValue(entry.isPinToTop());
