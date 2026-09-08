@@ -26,6 +26,7 @@ import io.xpipe.app.store.GroupStore;
 import io.xpipe.app.store.LocalStore;
 import io.xpipe.app.store.ShellStore;
 import io.xpipe.app.store.SingletonSessionStore;
+import io.xpipe.app.util.HostHelper;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -36,6 +37,7 @@ import javafx.collections.ObservableList;
 
 import lombok.Getter;
 
+import java.net.Inet4Address;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -78,6 +80,7 @@ public class StoreEntryWrapper {
     private final BooleanProperty effectiveBusy = new SimpleBooleanProperty();
     private final Property<StoreCategoryWrapper> lastInformationCategory = new SimpleObjectProperty<>();
     private final ObservableList<String> tags = FXCollections.observableArrayList();
+    private final Property<Inet4Address> nameIpAddress = new SimpleObjectProperty<>();
     private boolean effectiveBusyProviderBound = false;
 
     public StoreEntryWrapper(DataStoreEntry entry) {
@@ -120,6 +123,7 @@ public class StoreEntryWrapper {
     private void setupListeners() {
         name.addListener((c, o, n) -> {
             entry.setName(n);
+            nameIpAddress.setValue(HostHelper.parseIpv4(n).orElse(null));
         });
 
         expanded.addListener((c, o, n) -> {
@@ -161,6 +165,7 @@ public class StoreEntryWrapper {
         // Avoid reupdating name when changed from the name property!
         if (!entry.getName().equals(name.getValue())) {
             name.setValue(entry.getName());
+            nameIpAddress.setValue(HostHelper.parseIpv4(entry.getName()).orElse(null));
         }
 
         shownName.setValue(
