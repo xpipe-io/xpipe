@@ -190,7 +190,7 @@ public class TerminalDockHubManager {
     private void addStateListeners() {
         var wasShowing = new SimpleBooleanProperty();
         var wasAttached = new SimpleBooleanProperty();
-        AppDialog.getModalOverlays().addListener((ListChangeListener<? super ModalOverlay>) c -> {
+        AppDialog.getModalOverlaysRaw().addListener((ListChangeListener<? super ModalOverlay>) c -> {
             ThreadHelper.runAsync(() -> {
                 if (c.getList().isEmpty()) {
                     if (wasShowing.get()) {
@@ -233,7 +233,7 @@ public class TerminalDockHubManager {
                         dockModel.trackTerminal(t, dock);
                         dockModel.closeOtherTerminals(session.getRequest());
 
-                        if (!AppDialog.getModalOverlays().isEmpty()) {
+                        if (!AppDialog.getModalOverlaysRaw().isEmpty()) {
                             hideDock();
                             wasAttached.set(true);
                             wasShowing.set(true);

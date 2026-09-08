@@ -21,20 +21,36 @@ import javafx.util.Duration;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AppDialog {
 
-    @Getter
     private static final ObservableList<ModalOverlay> modalOverlays = FXCollections.observableArrayList();
 
-    public static Optional<ModalOverlay> getCurrentModalOverlay() {
-        if (modalOverlays.isEmpty()) {
-            return Optional.empty();
-        }
+// For debugging dialog states
+//    static {
+//        modalOverlays.addListener(new ListChangeListener<>() {
+//
+//            @Override
+//            public void onChanged(Change<? extends ModalOverlay> c) {
+//                System.out.println(c.getList().stream().map(modalOverlay -> modalOverlay != null ?
+//                        modalOverlay.getTitle().getValue() : null).toList());
+//            }
+//        });
+//    }
 
-        return Optional.of(modalOverlays.getLast());
+    public static ObservableList<ModalOverlay> getModalOverlaysRaw() {
+        return modalOverlays;
+    }
+
+    public static List<ModalOverlay> getCurrentModalOverlays() {
+        synchronized (modalOverlays) {
+            var copy = new ArrayList<>(modalOverlays);
+            return copy.stream().filter(modalOverlay -> modalOverlay != null).toList();
+        }
     }
 
     public static void waitForAllDialogsClose() {
@@ -55,19 +71,17 @@ public class AppDialog {
 
     public static void hide(ModalOverlay o) {
         PlatformThread.runLaterIfNeeded(() -> {
-            var firstElement = o.equals(modalOverlays.stream()
-                    .filter(modalOverlay -> modalOverlay != null)
-                    .findFirst()
-                    .orElse(null));
-            var lastElement =
-                    modalOverlays.size() > 0 && modalOverlays.getLast().equals(o);
-            // Prevent indices from being moved when closing a modal in the back
-            if (firstElement && !lastElement) {
-                modalOverlays.set(modalOverlays.indexOf(o), null);
-            } else if (firstElement && lastElement) {
-                modalOverlays.clear();
-            } else {
-                modalOverlays.remove(o);
+            synchronized (modalOverlays) {
+                var firstElement = o.equals(modalOverlays.stream().filter(modalOverlay -> modalOverlay != null).findFirst().orElse(null));
+                var lastElement = modalOverlays.size() > 0 && modalOverlays.getLast().equals(o);
+                // Prevent indices from being moved when closing a modal in the back
+                if (firstElement && !lastElement) {
+                    modalOverlays.set(modalOverlays.indexOf(o), null);
+                } else if (firstElement && lastElement) {
+                    modalOverlays.clear();
+                } else {
+                    modalOverlays.remove(o);
+                }
             }
         });
     }

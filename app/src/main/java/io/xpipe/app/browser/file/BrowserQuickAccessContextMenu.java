@@ -76,9 +76,9 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
         };
         showingProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                AppDialog.getModalOverlays().addListener(modalListener);
+                AppDialog.getModalOverlaysRaw().addListener(modalListener);
             } else {
-                AppDialog.getModalOverlays().removeListener(modalListener);
+                AppDialog.getModalOverlaysRaw().removeListener(modalListener);
             }
         });
     }
@@ -172,7 +172,17 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
             this.menu = new Menu(
                     // Use original name, not the link target
                     browserEntry.getRawFileEntry().getName(),
-                    BrowserIcons.createIcon(browserEntry.getIcon()).build());
+                    BrowserIcons.createIcon(browserEntry.getIcon()).build()) {
+                @Override
+                public void show() {
+                    try {
+                        // When we push the nested context menus pretty hard, we sometimes get a NPE,
+                        // probably due to the Scene being removed at the same as show() is called
+                        // It's very rare though
+                        super.show();
+                    } catch (NullPointerException ignored) {}
+                }
+            };
             createMenu();
             addInputListeners();
         }

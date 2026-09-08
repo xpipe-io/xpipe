@@ -286,15 +286,15 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
     }
 
     private void updateVisibilities(ScrollPane scroll, VBox vbox) {
+        if (!visibilityControl) {
+            return;
+        }
+
         if (!Platform.isFxApplicationThread()) {
             throw new IllegalStateException("Not in FxApplication thread");
         }
 
         if (!scroll.isVisible() || !vbox.isVisible()) {
-            return;
-        }
-
-        if (!visibilityControl) {
             return;
         }
 

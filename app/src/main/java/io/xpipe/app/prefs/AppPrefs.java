@@ -1021,7 +1021,7 @@ public final class AppPrefs {
         found.ifPresent(appPrefsCategory -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 if (AppLayoutModel.get().isSettingsActive()) {
-                    var l = new ArrayList<>(AppDialog.getModalOverlays());
+                    var l = AppDialog.getCurrentModalOverlays();
                     l.forEach(overlay -> overlay.close());
                 }
 

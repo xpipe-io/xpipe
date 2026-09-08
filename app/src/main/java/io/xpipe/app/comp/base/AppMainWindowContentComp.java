@@ -40,7 +40,6 @@ public class AppMainWindowContentComp extends SimpleRegionBuilder {
 
     @Override
     public Region createSimple() {
-        var overlay = AppDialog.getModalOverlays();
         var loaded = AppMainWindow.getLoadedContent();
         var sidebarPresent = new SimpleBooleanProperty();
         var bg = RegionBuilder.of(() -> {
@@ -98,7 +97,7 @@ public class AppMainWindowContentComp extends SimpleRegionBuilder {
                 loadingIcon.setImage(AppImages.loadImage(image));
             });
 
-            loadingIcon.visibleProperty().bind(Bindings.isEmpty(AppDialog.getModalOverlays()));
+            loadingIcon.visibleProperty().bind(Bindings.isEmpty(AppDialog.getModalOverlaysRaw()));
 
             var version = new LabelComp(
                     (AppNames.ofCurrent().getName()) + " " + AppProperties.get().getVersion());
@@ -181,7 +180,7 @@ public class AppMainWindowContentComp extends SimpleRegionBuilder {
                 }
             });
 
-            overlay.addListener((ListChangeListener<? super ModalOverlay>) c -> {
+            AppDialog.getModalOverlaysRaw().addListener((ListChangeListener<? super ModalOverlay>) c -> {
                 if (c.next() && c.wasAdded()) {
                     AppMainWindow.get().focus();
 
@@ -198,7 +197,7 @@ public class AppMainWindowContentComp extends SimpleRegionBuilder {
             return pane;
         });
 
-        var modal = new ModalOverlayStackComp(bg, overlay);
+        var modal = new ModalOverlayStackComp(bg);
         var r = modal.build();
         var p = r.lookupAll(".modal-overlay-stack-element");
         sidebarPresent.subscribe(v -> {

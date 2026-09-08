@@ -136,7 +136,7 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
                 }
             });
         });
-        AppDialog.getModalOverlays().addListener((ListChangeListener<? super ModalOverlay>) c -> {
+        AppDialog.getModalOverlaysRaw().addListener((ListChangeListener<? super ModalOverlay>) c -> {
             if (c.getList().size() > 0) {
                 dockModel.deactivateView();
             } else {
