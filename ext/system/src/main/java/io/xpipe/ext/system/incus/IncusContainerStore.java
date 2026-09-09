@@ -9,9 +9,7 @@ import io.xpipe.app.store.*;
 import io.xpipe.app.util.*;
 import io.xpipe.ext.base.host.HostAddressGatewayStore;
 import io.xpipe.ext.base.identity.IdentityValue;
-import io.xpipe.ext.base.store.PauseableStore;
-import io.xpipe.ext.base.store.StartableStore;
-import io.xpipe.ext.base.store.StoppableStore;
+import io.xpipe.ext.base.store.*;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AllArgsConstructor;
@@ -33,14 +31,14 @@ import java.util.OptionalInt;
 @Value
 public class IncusContainerStore
         implements ShellStore,
-                FixedChildStore,
-                StatefulDataStore<NetworkContainerStoreState>,
-                StartableStore,
-                StoppableStore,
-                PauseableStore,
-                NameableStore,
-                HostAddressGatewayStore,
-                EncryptionStore {
+                   FixedChildStore,
+                   StatefulDataStore<NetworkContainerStoreState>,
+                   StartableStore,
+                   StoppableStore,
+                   PauseableStore,
+                   NameableStore, ForceStoppableStore,
+                   HostAddressGatewayStore,
+                   EncryptionStore {
 
     DataStoreEntryRef<IncusInstallStore> install;
     String projectName;
@@ -178,6 +176,14 @@ public class IncusContainerStore
         stopSessionIfNeeded();
         var view = view();
         view.stop(containerName);
+        refreshContainerState();
+    }
+
+    @Override
+    public void forceStop() throws Exception {
+        stopSessionIfNeeded();
+        var view = view();
+        view.forceStop(containerName);
         refreshContainerState();
     }
 

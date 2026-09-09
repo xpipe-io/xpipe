@@ -128,7 +128,7 @@ public interface StoreEntryBadge {
             b = ofIndeterminant(s);
         }
 
-        return b.withAction(Action.providerMenu("startStore", "stopStore", "pauseStore", "restartStore"));
+        return b.withAction(Action.providerMenu("startStore", "stopStore", "pauseStore", "restartStore", "forceStopStore", "killStore"));
     }
 
     static StoreEntryBadge ofAuth(String s) {

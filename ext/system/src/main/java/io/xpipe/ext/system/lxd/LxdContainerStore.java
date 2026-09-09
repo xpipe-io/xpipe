@@ -9,6 +9,7 @@ import io.xpipe.app.store.*;
 import io.xpipe.app.util.*;
 import io.xpipe.ext.base.host.HostAddressGatewayStore;
 import io.xpipe.ext.base.identity.IdentityValue;
+import io.xpipe.ext.base.store.ForceStoppableStore;
 import io.xpipe.ext.base.store.PauseableStore;
 import io.xpipe.ext.base.store.StartableStore;
 import io.xpipe.ext.base.store.StoppableStore;
@@ -37,7 +38,7 @@ public class LxdContainerStore
                 StatefulDataStore<NetworkContainerStoreState>,
                 StartableStore,
                 StoppableStore,
-                PauseableStore,
+                PauseableStore, ForceStoppableStore,
                 NameableStore,
                 HostAddressGatewayStore,
                 EncryptionStore {
@@ -178,6 +179,14 @@ public class LxdContainerStore
         stopSessionIfNeeded();
         var view = view();
         view.stop(containerName);
+        refreshContainerState();
+    }
+
+    @Override
+    public void forceStop() throws Exception {
+        stopSessionIfNeeded();
+        var view = view();
+        view.forceStop(containerName);
         refreshContainerState();
     }
 

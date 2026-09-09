@@ -66,6 +66,11 @@ public class IncusCommandView extends CommandViewBase {
                     .execute();
         }
 
+        public void forceStop(String containerName) throws Exception {
+            build(commandBuilder -> commandBuilder.add("stop").addQuoted(containerName).add("--force"))
+                    .execute();
+        }
+
         public void pause(String containerName) throws Exception {
             build(commandBuilder -> commandBuilder.add("pause").addQuoted(containerName))
                     .execute();
