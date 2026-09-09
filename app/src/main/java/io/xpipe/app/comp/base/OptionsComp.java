@@ -66,6 +66,7 @@ public class OptionsComp extends RegionBuilder<VBox> {
                     && (entry.description() != null || entry.comp() instanceof SimpleTitledPaneComp));
             if (showVertical) {
                 var line = new VBox();
+                line.getStyleClass().add("entry");
                 line.prefWidthProperty().bind(pane.widthProperty());
 
                 var name = new Label();

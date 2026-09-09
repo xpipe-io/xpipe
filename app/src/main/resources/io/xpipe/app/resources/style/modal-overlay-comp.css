@@ -11,6 +11,11 @@
     -fx-background-radius: 0;
 }
 
+.root:macos .modal-overlay-comp .modal-box {
+    -fx-border-radius: 15;
+    -fx-background-radius: 15;
+}
+
 .modal-overlay-comp .modal-box > .content {
     -fx-padding: 15 27 10 27;
 }
@@ -29,6 +34,12 @@
 .root:nord .modal-overlay-comp .modal-box .button-bar .button {
     -fx-border-radius: 0;
     -fx-background-radius: 0;
+}
+
+.root:macos .modal-overlay-comp .modal-box .button-bar .button {
+    -fx-padding: 0.35em 0.6em 0.35em 0.6em;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
 }
 
 .root:dark .modal-overlay-comp.modal-pane {
