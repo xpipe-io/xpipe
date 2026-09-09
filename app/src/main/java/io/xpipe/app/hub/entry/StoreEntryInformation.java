@@ -54,8 +54,6 @@ public class StoreEntryInformation {
 
         if (s.getOsName() != null) {
             l.add(StoreEntryBadge.ofSystemName(s.getOsType(), s.getOsName()));
-        } else if (s instanceof ShellStoreState sss && sss.getRunning() != null && sss.getRunning()) {
-            // Don't add anything
         } else if (s.getShellDialect() == null && s.getOsName() == null) {
             l.add(StoreEntryBadge.ofUnknownSystemName().withCompressBehaviour(StoreEntryBadge.CompressBehaviour.HIDE));
         }

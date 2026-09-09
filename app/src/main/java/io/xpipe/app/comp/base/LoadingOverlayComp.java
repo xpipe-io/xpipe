@@ -40,8 +40,8 @@ public class LoadingOverlayComp extends RegionBuilder<StackPane> {
             loadingOverlay.getChildren().add(loading);
         }
         loadingOverlay.getStyleClass().add("loading-comp");
-        loadingOverlay.setVisible(showIcon && this.loading.getValue());
-        loadingOverlay.setManaged(showIcon && this.loading.getValue());
+        loadingOverlay.setVisible(this.loading.getValue());
+        loadingOverlay.setManaged(this.loading.getValue());
 
         var listener = new ChangeListener<Boolean>() {
             @Override

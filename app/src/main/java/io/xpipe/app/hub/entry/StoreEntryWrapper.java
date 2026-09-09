@@ -171,12 +171,6 @@ public class StoreEntryWrapper {
         shownName.setValue(
                 AppPrefs.get().censorMode().get() ? "*".repeat(name.getValue().length()) : name.getValue());
 
-        if (effectiveBusyProviderBound && !getValidity().getValue().isUsable()) {
-            this.effectiveBusyProviderBound = false;
-            this.effectiveBusy.unbind();
-            this.effectiveBusy.bind(busy);
-        }
-
         lastAccess.setValue(entry.getLastAccess());
         disabled.setValue(entry.isDisabled());
         validity.setValue(entry.getValidity());
@@ -342,14 +336,14 @@ public class StoreEntryWrapper {
             }
         }
 
-        if (!effectiveBusyProviderBound && getValidity().getValue().isUsable()) {
+        if (effectiveBusyProviderBound && !getValidity().getValue().isUsable()) {
+            this.effectiveBusyProviderBound = false;
+            this.effectiveBusy.unbind();
+            this.effectiveBusy.bind(busy);
+        } else if (!effectiveBusyProviderBound && getValidity().getValue().isUsable()) {
             this.effectiveBusyProviderBound = true;
             this.effectiveBusy.unbind();
             this.effectiveBusy.bind(busy.or(getEntry().getProvider().busy(this)));
-        }
-
-        if (!this.effectiveBusy.isBound() && !getValidity().getValue().isUsable()) {
-            this.effectiveBusy.bind(busy);
         }
 
         // The property values are only registered as changed once they are queried
