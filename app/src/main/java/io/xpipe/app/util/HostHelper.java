@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
+import java.util.Optional;
 
 public class HostHelper {
 
@@ -45,6 +46,17 @@ public class HostHelper {
         }
 
         return false;
+    }
+
+    public static Optional<Inet4Address> parseIpv4(String host) {
+        Inet4Address inet4Address;
+        try {
+            inet4Address = Inet4Address.ofLiteral(host);
+        } catch (IllegalArgumentException ignored) {
+            return Optional.empty();
+        }
+
+        return Optional.of(inet4Address);
     }
 
     public static boolean isLocalNetworkAddress(String host) {

@@ -2,6 +2,7 @@ package io.xpipe.app.hub.section;
 
 import io.xpipe.app.storage.DataStoreEntry;
 
+import java.net.InetAddress;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Stream;
@@ -58,8 +59,53 @@ public interface StoreSectionSortMode {
 
         @Override
         public Comparator<StoreSection> comparator(int updateIndex) {
-            return Comparator.comparing(
-                    e -> e.getWrapper().nameProperty().getValue().toLowerCase(Locale.ROOT));
+            return new Comparator<>() {
+
+                private int compare(InetAddress adr1, InetAddress adr2) {
+                    byte[] ba1 = adr1.getAddress();
+                    byte[] ba2 = adr2.getAddress();
+
+                    if(ba1.length < ba2.length) {
+                        return -1;
+                    }
+
+                    if(ba1.length > ba2.length) {
+                        return 1;
+                    }
+
+                    for(int i = 0; i < ba1.length; i++) {
+                        int b1 = unsignedByteToInt(ba1[i]);
+                        int b2 = unsignedByteToInt(ba2[i]);
+                        if(b1 == b2) {
+                            continue;
+                        }
+                        if(b1 < b2) {
+                            return -1;
+                        }
+                        else {
+                            return 1;
+                        }
+                    }
+                    return 0;
+                }
+
+                private int unsignedByteToInt(byte b) {
+                    return (int) b & 0xFF;
+                }
+
+                @Override
+                public int compare(StoreSection o1, StoreSection o2) {
+                    var i1 = o1.getWrapper().getNameIpAddress().getValue();
+                    var i2 = o2.getWrapper().getNameIpAddress().getValue();
+                    if (i1 != null && i2 != null) {
+                        return compare(i1, i2);
+                    }
+
+                    var n1 = o1.getWrapper().getName().getValue();
+                    var n2 = o2.getWrapper().getName().getValue();
+                    return n1.compareToIgnoreCase(n2);
+                }
+            };
         }
     };
     StoreSectionSortMode ALPHABETICAL_ASC = new StoreSectionSortMode() {
@@ -75,9 +121,8 @@ public interface StoreSectionSortMode {
 
         @Override
         public Comparator<StoreSection> comparator(int updateIndex) {
-            return Comparator.<StoreSection, String>comparing(
-                            e -> e.getWrapper().nameProperty().getValue().toLowerCase(Locale.ROOT))
-                    .reversed();
+            var comp = ALPHABETICAL_DESC.comparator(updateIndex);
+            return comp.reversed();
         }
     };
     StoreSectionSortMode.DateSortMode DATE_DESC = new StoreSectionSortMode.DateSortMode() {
