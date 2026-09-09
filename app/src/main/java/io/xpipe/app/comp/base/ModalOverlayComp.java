@@ -34,6 +34,8 @@ import atlantafx.base.util.Animations;
 import net.synedra.validatorfx.GraphicDecorationStackPane;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -123,6 +125,8 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
             }
         });
 
+        var buttonMap = new HashMap<ModalButton, Button>();
+
         modal.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE) {
                 if (actionRunning.get()) {
@@ -136,15 +140,10 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
                             .findFirst();
                     if (def.isPresent()) {
                         var mb = (ModalButton) def.get();
-                        if (mb.getAction() != null) {
-                            try (var ignored = actionRunning.start()) {
-                                mb.getAction().run();
-                            }
+                        var foundButton = buttonMap.get(mb);
+                        if (foundButton != null) {
+                            foundButton.fire();
                         }
-                        if (mb.isClose()) {
-                            overlayContent.setValue(null);
-                        }
-                        event.consume();
                     }
                 }
             }
@@ -169,7 +168,7 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
                         if (newValue.getContent() instanceof ModalOverlayContentComp mocc) {
                             mocc.setModalOverlay(newValue);
                         }
-                        showModalBox(modal, newValue);
+                        showModalBox(modal, newValue, buttonMap);
                     }
                 } catch (Throwable t) {
                     AppLogs.get().logException(null, t);
@@ -182,14 +181,15 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
 
         var current = overlayContent.getValue();
         if (current != null) {
-            showModalBox(modal, current);
+            showModalBox(modal, current, buttonMap);
         }
 
         return pane;
     }
 
-    private void showModalBox(ModalPane modal, ModalOverlay overlay) {
-        var modalBox = toBox(modal, overlay);
+    private void showModalBox(ModalPane modal, ModalOverlay overlay, Map<ModalButton, Button> buttonMap) {
+        buttonMap.clear();
+        var modalBox = toBox(modal, overlay, buttonMap);
         modal.setPersistent(overlay.isRequireCloseButtonForClose());
         modal.show(modalBox);
         if (!overlay.isHasCloseButton() || overlay.getTitle() == null) {
@@ -201,7 +201,7 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
         modal.requestFocus();
     }
 
-    private Region toBox(ModalPane pane, ModalOverlay newValue) {
+    private Region toBox(ModalPane pane, ModalOverlay newValue, Map<ModalButton, Button> buttonMap) {
         Region r = newValue.getContent().build();
         var validatorPane = new GraphicDecorationStackPane();
         validatorPane.getChildren().add(r);
@@ -237,7 +237,9 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
             buttonBar.setAlignment(Pos.CENTER_RIGHT);
             for (var o : newValue.getButtons()) {
                 var node = o instanceof ModalButton mb ? toButton(mb) : ((BaseRegionBuilder<?, ?>) o).build();
-                if (o instanceof ModalButton) {
+                if (o instanceof ModalButton mb) {
+                    buttonMap.put(mb, (Button) node);
+
                     // Make sure that all button retain the correct min width
                     var maxNode = new AtomicReference<Region>();
                     node.widthProperty().addListener((observable, oldValue, n) -> {

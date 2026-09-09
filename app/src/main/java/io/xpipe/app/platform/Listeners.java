@@ -44,6 +44,17 @@ public class Listeners {
         });
     }
 
+    public static <T> void listenList(ObservableList<T> l, Runnable r) {
+        listenList(l, ignored -> r.run());
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> void listenList(ObservableList<T> l, Consumer<List<T>> r) {
+        l.addListener((ListChangeListener<? super T>) c -> {
+            r.accept((List<T>) c.getList());
+        });
+    }
+
     public static <R extends Region, T> void attachWithScene(R node, ObservableValue<T> value, Consumer<T> consumer) {
         var listener = new ChangeListener<T>() {
             @Override

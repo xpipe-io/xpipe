@@ -249,7 +249,7 @@ public class StoreChoicePopover<T extends DataStore> {
             });
 
             // Hide on connection creation dialog
-            AppDialog.getModalOverlays().addListener((ListChangeListener<? super ModalOverlay>) c -> {
+            AppDialog.getModalOverlaysRaw().addListener((ListChangeListener<? super ModalOverlay>) c -> {
                 popover.hide();
             });
 

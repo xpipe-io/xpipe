@@ -3,6 +3,7 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 
+import io.xpipe.app.core.window.AppDialog;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -11,11 +12,9 @@ import javafx.scene.layout.Region;
 public class ModalOverlayStackComp extends SimpleRegionBuilder {
 
     private final BaseRegionBuilder<?, ?> background;
-    private final ObservableList<ModalOverlay> modalOverlay;
 
-    public ModalOverlayStackComp(BaseRegionBuilder<?, ?> background, ObservableList<ModalOverlay> modalOverlay) {
+    public ModalOverlayStackComp(BaseRegionBuilder<?, ?> background) {
         this.background = background;
-        this.modalOverlay = modalOverlay;
     }
 
     @Override
@@ -28,13 +27,14 @@ public class ModalOverlayStackComp extends SimpleRegionBuilder {
     }
 
     private BaseRegionBuilder<?, ?> buildModalOverlay(BaseRegionBuilder<?, ?> current, int index) {
-        var prop = new SimpleObjectProperty<>(modalOverlay.size() > index ? modalOverlay.get(index) : null);
-        modalOverlay.addListener((ListChangeListener<? super ModalOverlay>) c -> {
-            prop.set(modalOverlay.size() > index ? modalOverlay.get(index) : null);
+        var modalOverlays = AppDialog.getModalOverlaysRaw();
+        var prop = new SimpleObjectProperty<>(modalOverlays.size() > index ? modalOverlays.get(index) : null);
+        modalOverlays.addListener((ListChangeListener<? super ModalOverlay>) c -> {
+            prop.set(modalOverlays.size() > index ? modalOverlays.get(index) : null);
         });
         prop.addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {
-                modalOverlay.remove(oldValue);
+                AppDialog.hide(oldValue);
             }
         });
         var comp = new ModalOverlayComp(current, prop);

@@ -6,6 +6,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.LocalExec;
 
+import io.xpipe.app.util.ModuleAccess;
 import lombok.Getter;
 
 import java.io.IOException;
@@ -24,7 +25,6 @@ public class AppExtensionManager {
 
     private static AppExtensionManager INSTANCE;
     private final List<Module> loadedModules = new ArrayList<>();
-    private final List<ModuleLayer> leafModuleLayers = new ArrayList<>();
 
     @Getter
     private final Set<String> externalModules = new HashSet<>();
@@ -32,18 +32,15 @@ public class AppExtensionManager {
     @Getter
     private FileSystem externalModuleFileSystem;
 
-    private ModuleLayer baseLayer = ModuleLayer.boot();
-
     @Getter
     private ModuleLayer extendedLayer;
 
-    public static synchronized void init() {
+    public static synchronized void init() throws Exception {
         if (INSTANCE != null) {
             return;
         }
 
         INSTANCE = new AppExtensionManager();
-        INSTANCE.loadBaseExtension();
         INSTANCE.loadAllExtensions();
         try {
             ModuleLayerLoader.loadAll(INSTANCE.extendedLayer, t -> {
@@ -83,16 +80,6 @@ public class AppExtensionManager {
         return !s.isEmpty() ? s : "?";
     }
 
-    private void loadBaseExtension() {
-        var baseModule = findAndParseExtension("base", ModuleLayer.boot());
-        if (baseModule.isEmpty()) {
-            throw ExtensionException.corrupt("Missing base module");
-        }
-
-        baseLayer = baseModule.get().getLayer();
-        loadedModules.add(baseModule.get());
-    }
-
     public Set<Module> getContentModules() {
         return Stream.concat(
                         Stream.of(ModuleLayer.boot()
@@ -102,36 +89,24 @@ public class AppExtensionManager {
                 .collect(Collectors.toSet());
     }
 
-    private void loadAllExtensions() {
-        for (var ext : List.of("system", "proc", "uacc", "auth")) {
-            var extension = findAndParseExtension(ext, baseLayer)
+    private void loadAllExtensions() throws Exception {
+        var currentLayer = ModuleLayer.boot();
+        for (var ext : List.of("base", "system", "proc", "uacc", "auth")) {
+            var extension = findAndParseExtension(ext, currentLayer)
                     .orElseThrow(() -> ExtensionException.corrupt("Missing module " + ext));
             loadedModules.add(extension);
-            leafModuleLayers.add(extension.getLayer());
+            currentLayer = extension.getLayer();
         }
+        extendedLayer = currentLayer;
 
-        var scl = ClassLoader.getSystemClassLoader();
-        var cfs = leafModuleLayers.stream().map(ModuleLayer::configuration).toList();
-        var finder = ModuleFinder.ofSystem();
-        var cf = Configuration.resolve(finder, cfs, finder, List.of());
-        var controller = ModuleLayer.defineModulesWithOneLoader(cf, leafModuleLayers, scl);
-        extendedLayer = controller.layer();
-
+        // Fix module access for dynamically loaded modules
+        // We can't use Module Controllers as they require
         if (!AppProperties.get().isFullVersion()) {
-            controller.addExports(
+            ModuleAccess.exportAndOpen(
                     ModuleLayer.boot().findModule("java.base").orElseThrow(),
                     "java.io",
                     extendedLayer.findModule(AppNames.extModuleName("proc")).orElseThrow());
-            controller.addOpens(
-                    ModuleLayer.boot().findModule("java.base").orElseThrow(),
-                    "java.io",
-                    extendedLayer.findModule(AppNames.extModuleName("proc")).orElseThrow());
-
-            controller.addExports(
-                    ModuleLayer.boot().findModule("org.apache.commons.io").orElseThrow(),
-                    "org.apache.commons.io.input",
-                    extendedLayer.findModule(AppNames.extModuleName("proc")).orElseThrow());
-            controller.addOpens(
+            ModuleAccess.exportAndOpen(
                     ModuleLayer.boot().findModule("org.apache.commons.io").orElseThrow(),
                     "org.apache.commons.io.input",
                     extendedLayer.findModule(AppNames.extModuleName("proc")).orElseThrow());
@@ -209,7 +184,7 @@ public class AppExtensionManager {
         try {
             ModuleFinder finder = ModuleFinder.of(dir);
             var found = finder.findAll();
-            var hasModules = found.size() > 0;
+            var hasModules = !found.isEmpty();
 
             TrackEvent.withTrace("Found modules").elements(found).handle();
 
@@ -220,8 +195,8 @@ public class AppExtensionManager {
                                 ModuleFinder.of(),
                                 found.stream().map(r -> r.descriptor().name()).collect(Collectors.toSet()));
                 ClassLoader scl = ClassLoader.getSystemClassLoader();
-                var layer = ModuleLayer.defineModulesWithOneLoader(cf, List.of(parent), scl)
-                        .layer();
+                var controller = ModuleLayer.defineModulesWithOneLoader(cf, List.of(parent), scl);
+                var layer = controller.layer();
                 var mod = layer.modules().iterator().next();
                 return Optional.of(mod);
             }

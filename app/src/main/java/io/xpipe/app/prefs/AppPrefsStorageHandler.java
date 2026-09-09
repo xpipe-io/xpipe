@@ -80,7 +80,7 @@ public class AppPrefsStorageHandler {
         }
 
         var mapper = JacksonMapper.getDefault();
-        setContent(key, mapper.valueToTree(object));
+        setContent(key, mapper.writerFor(type).valueToTree(object));
     }
 
     @SuppressWarnings("unchecked")

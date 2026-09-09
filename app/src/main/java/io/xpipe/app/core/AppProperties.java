@@ -217,6 +217,7 @@ public class AppProperties {
         beaconLockFile = beaconAuthFile.getParent().resolve("lock");
         clearLeftoverAuthFile();
         debugCli = Optional.ofNullable(System.getProperty(AppNames.propertyName("debugCli")))
+                .or(() -> Optional.ofNullable(System.getenv("XPIPE_DEBUG")))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
     }

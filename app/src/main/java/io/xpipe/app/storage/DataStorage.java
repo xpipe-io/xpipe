@@ -1301,13 +1301,17 @@ public abstract class DataStorage {
     }
 
     public DataStoreColor getEffectiveColor(DataStoreEntry entry) {
-        var cat = getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow();
-        var root = getRootForEntry(entry, cat);
+        var cat = getStoreCategoryIfPresent(entry.getCategoryUuid());
+        if (cat.isEmpty()) {
+            return null;
+        }
+
+        var root = getRootForEntry(entry, cat.get());
         if (root.getColor() != null) {
             return root.getColor();
         }
 
-        var catConfig = getEffectiveCategoryConfig(cat);
+        var catConfig = getEffectiveCategoryConfig(cat.get());
         return catConfig.getColor();
     }
 

@@ -33,7 +33,7 @@ public class HttpProxy {
             if (env != null) {
                 try {
                     var parsed = URI.create(env);
-                    var isSocks = parsed.getScheme().equals("socks5");
+                    var isSocks = parsed.getScheme() != null && parsed.getScheme().equals("socks5");
                     var host = parsed.getHost();
                     var port = parsed.getPort() != -1 ? parsed.getPort() : isSocks ? 1080 : 8080;
                     var userInfo = parsed.getUserInfo();

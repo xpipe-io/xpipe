@@ -115,6 +115,7 @@ open module io.xpipe.app {
     requires org.kordamp.ikonli.bootstrapicons;
     requires jdk.zipfs;
     requires org.int4.fx.builders;
+    requires com.google.zxing;
     requires java.desktop;
 
     uses ActionProvider;
