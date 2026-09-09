@@ -11,6 +11,7 @@ import io.xpipe.app.util.Validators;
 import io.xpipe.ext.base.service.AbstractServiceStore;
 import io.xpipe.ext.base.service.FixedServiceCreatorStore;
 import io.xpipe.ext.base.service.MappedServiceStore;
+import io.xpipe.ext.base.store.KillableStore;
 import io.xpipe.ext.base.store.RestartableStore;
 import io.xpipe.ext.base.store.StartableStore;
 import io.xpipe.ext.base.store.StoppableStore;
@@ -35,7 +36,7 @@ public class PodmanContainerStore
                 RestartableStore,
                 ShellStore,
                 InternalCacheDataStore,
-                FixedChildStore,
+                FixedChildStore, KillableStore,
                 StatefulDataStore<PodmanContainerStoreState>,
                 FixedServiceCreatorStore,
                 SelfReferentialStore,
@@ -78,6 +79,15 @@ public class PodmanContainerStore
         var sc = getCmd().getStore().getHost().getStore().getOrStartSession();
         var view = commandView(sc);
         view.stop(containerName);
+        refreshContainerState(sc);
+    }
+
+    @Override
+    public void kill() throws Exception {
+        stopSessionIfNeeded();
+        var sc = getCmd().getStore().getHost().getStore().getOrStartSession();
+        var view = commandView(sc);
+        view.kill(containerName);
         refreshContainerState(sc);
     }
 

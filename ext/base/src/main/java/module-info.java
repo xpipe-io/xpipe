@@ -53,6 +53,8 @@ open module io.xpipe.ext.base {
             ScriptQuickEditHubLeafProvider,
             StoreStartActionProvider,
             StoreStopActionProvider,
+            StoreForceStopActionProvider,
+            StoreKillActionProvider,
             StorePauseActionProvider,
             StoreRestartActionProvider,
             SyncConfigHubLeafProvider,

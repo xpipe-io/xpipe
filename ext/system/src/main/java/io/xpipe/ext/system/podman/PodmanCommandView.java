@@ -168,6 +168,11 @@ public class PodmanCommandView extends CommandViewBase {
                     .execute();
         }
 
+        public void kill(String container) throws Exception {
+            build(commandBuilder -> commandBuilder.add("kill").addQuoted(container))
+                    .execute();
+        }
+
         public void restart(String container, String service) throws Exception {
             if (shellControl.getOsType() == OsType.LINUX && service != null) {
                 shellControl
