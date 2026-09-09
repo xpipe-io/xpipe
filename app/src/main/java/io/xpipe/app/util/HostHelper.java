@@ -49,6 +49,11 @@ public class HostHelper {
     }
 
     public static Optional<Inet4Address> parseIpv4(String host) {
+        var potential = host.chars().allMatch(value -> Character.isDigit(value) || value == '.');
+        if (!potential) {
+            return Optional.empty();
+        }
+
         Inet4Address inet4Address;
         try {
             inet4Address = Inet4Address.ofLiteral(host);
