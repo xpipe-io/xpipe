@@ -1,0 +1,58 @@
+.store-creator > .choice-comp * {
+    -fx-opacity: 1.0;
+}
+
+.store-creator .combo-box:disabled .arrow {
+    -fx-background-color: transparent;
+}
+
+.store-creator .scroll-pane {
+    -fx-padding: 0 0 0 -7;
+}
+
+.store-creator .store-creator-options {
+    -fx-padding: 0 2 0 7;
+}
+
+.root:macos .store-creator .store-creator-options .options-comp > .entry {
+    -fx-padding: 0 7 7 7;
+    -fx-background-radius: 7;
+}
+
+.root:macos .store-creator .store-creator-options .options-comp > .entry .options-comp > .entry {
+    -fx-padding: 0;
+    -fx-background-radius: 0;
+    -fx-background-color: transparent;
+}
+
+.root:macos:light .store-creator .store-creator-options .options-comp > .entry {
+    -fx-background-color: -color-bg-subtle;
+}
+
+.root:macos:light .store-creator > .choice-comp {
+    -fx-background-color: -color-bg-subtle;
+}
+
+.root:macos:dark .store-creator .store-creator-options .options-comp > .entry {
+    -fx-background-color: derive(-color-bg-default, 5%);
+}
+
+.root:macos:dark .store-creator > .choice-comp {
+    -fx-background-color: derive(-color-bg-default, 5%);
+}
+
+.store-creator .simple-titled-pane-comp {
+    -fx-background-color: transparent;
+}
+
+.store-creator .simple-titled-pane-comp > .title {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 5 0 0 0;
+}
+
+.store-creator .simple-titled-pane-comp > .content {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+}
