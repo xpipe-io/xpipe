@@ -26,11 +26,11 @@
 }
 
 .root:macos:light .store-creator .store-creator-options .options-comp > .entry {
-    -fx-background-color: -color-bg-subtle;
+    -fx-background-color: derive(-color-bg-default, -4%);
 }
 
 .root:macos:light .store-creator > .choice-comp {
-    -fx-background-color: -color-bg-subtle;
+    -fx-background-color: derive(-color-bg-default, -4%);
 }
 
 .root:macos:dark .store-creator .store-creator-options .options-comp > .entry {

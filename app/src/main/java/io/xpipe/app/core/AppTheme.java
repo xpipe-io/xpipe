@@ -28,58 +28,58 @@ import java.util.stream.Collectors;
 public class AppTheme implements PrefsChoiceValue {
 
     public static final AppTheme PRIMER_LIGHT = new AppTheme("light", "primer", new PrimerLight(),
-            () -> AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11), Color.WHITE, Color.web("#24292f"),
+            () -> AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_10), Color.WHITE, Color.web("#24292f"),
             () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().darker().desaturate().brighter(), 0.3),
             () -> Platform.getPreferences().getAccentColor(), 4, "atlantafx.base");
     public static final AppTheme PRIMER_DARK = new AppTheme("dark", "primer", new PrimerDark(),
-            () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11), Color.web("#0d1117"), Color.web("#c9d1d9"),
+            () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_10), Color.web("#0d1117"), Color.web("#c9d1d9"),
             () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().desaturate().desaturate().darker(), 0.2),
             () -> Platform.getPreferences().getAccentColor(), 4, "atlantafx.base");
     public static final AppTheme NORD_LIGHT = new AppTheme("nordLight", "nord", new NordLight(),
-            () -> AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11), Color.web("#dadadc"),
+            () -> AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_10), Color.web("#dadadc"),
             Color.web("#2E3440"), () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().darker().desaturate().brighter(), 0.3),
             () -> Platform.getPreferences().getAccentColor(), 0, "atlantafx.base");
     public static final AppTheme NORD_DARK = new AppTheme("nordDark", "nord", new NordDark(),
-            () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11), Color.web("#2d3137"), Color.web("#24292f"),
+            () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_10), Color.web("#2d3137"), Color.web("#24292f"),
             () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().desaturate().desaturate().darker(), 0.2),
             () -> Platform.getPreferences().getAccentColor(), 0, "atlantafx.base");
     public static final AppTheme CUPERTINO_LIGHT = new AppTheme("cupertinoLight", "cupertino", new CupertinoLight(),
-            () -> AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11), Color.WHITE, Color.BLACK,
+            () -> AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_10), Color.WHITE, Color.BLACK,
             () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().darker().desaturate().brighter(), 0.3),
             () -> Platform.getPreferences().getAccentColor(), 4, "atlantafx.base");
     public static final AppTheme CUPERTINO_DARK = new AppTheme("cupertinoDark", "cupertino", new CupertinoDark(),
-            () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11), Color.BLACK, Color.WHITE,
+            () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_10), Color.BLACK, Color.WHITE,
             () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().desaturate().desaturate().darker(), 0.2),
             () -> Platform.getPreferences().getAccentColor(), 4, "atlantafx.base");
     public static final AppTheme DRACULA = new AppTheme("dracula", "dracula", new Dracula(),
-            () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11), Color.web("#383f49"), Color.web("#9580ff"),
+            () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_10), Color.web("#383f49"), Color.web("#9580ff"),
             () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().desaturate().desaturate().darker(), 0.2),
             () -> Platform.getPreferences().getAccentColor(), 6, "atlantafx.base");
     public static final AppTheme SPRING_DARK = new AppTheme("springDark", "springDark", new SpringDark(),
-            () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11), Color.web("#0c1a10"), Color.web("#44a844"),
+            () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_10), Color.web("#0c1a10"), Color.web("#44a844"),
             () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().desaturate().desaturate().darker(), 0.2), () -> null, 4,
             "com.dlsc.atlantafx.themes");
     public static final AppTheme FALL_LIGHT = new AppTheme("fallLight", "fallLight", new FallLight(),
-            () -> AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11), Color.web("#fdf8f0"),
+            () -> AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_10), Color.web("#fdf8f0"),
             Color.web("#c0a080"), () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().desaturate().desaturate().darker(), 0.2),
             () -> null, 4, "com.dlsc.atlantafx.themes");
     public static final AppTheme FALL_DARK = new AppTheme("fallDark", "fallDark", new FallDark(),
-            () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11), Color.web("#1e0c06"), Color.web("#c88418"),
+            () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_10), Color.web("#1e0c06"), Color.web("#c88418"),
             () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().desaturate().desaturate().darker(), 0.2), () -> null, 4,
             "com.dlsc.atlantafx.themes");
     public static final AppTheme WINTER_DARK = new AppTheme("winterDark", "winterDark", new WinterDark(),
-            () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11), Color.web("#080c18"), Color.web("#4488ff"),
+            () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_10), Color.web("#080c18"), Color.web("#4488ff"),
             () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().desaturate().desaturate().darker(), 0.2), () -> null, 4,
             "com.dlsc.atlantafx.themes");
     public static final AppTheme MOCHA = new DerivedTheme("mocha", "mocha", "Mocha", new PrimerDark(),
-            () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11), Color.web("#2E2E4EFF"),
+            () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_10), Color.web("#2E2E4EFF"),
             Color.web("#CDD6F4FF"), () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().desaturate().desaturate().darker(), 0.2),
             () -> Platform.getPreferences().getAccentColor(), 4, "atlantafx.base", 91);
 
     // Adjust this to create your own theme
     @SuppressWarnings("unused")
     public static final AppTheme CUSTOM = new DerivedTheme("custom", "primer", "Custom", new PrimerDark(),
-            () -> AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11), Color.web("#0d1117"),
+            () -> AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_10), Color.web("#0d1117"),
             Color.web("#24292f"), () -> ColorHelper.withOpacity(Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2),
             () -> Platform.getPreferences().getAccentColor(), 4, "atlantafx.base", 91);
 
