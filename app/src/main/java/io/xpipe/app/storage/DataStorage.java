@@ -398,7 +398,7 @@ public abstract class DataStorage {
 
         var categoryChanged = !entry.getCategoryUuid().equals(newEntry.getCategoryUuid());
 
-        if (entry.getStore() != null && newEntry.getStore() != null) {
+        if (entry.getStore() != null && newEntry.getStore() != null && newEntry.getStore() != entry.getStore()) {
             synchronized (storeMoveCache) {
                 storeMoveCache.put(entry.getStore(), newEntry.getStore());
             }
@@ -514,7 +514,7 @@ public abstract class DataStorage {
         }
 
         finalizeWithDependencies(entry);
-        if (entry.getStore() != null && store != null && !entry.getStore().equals(store)) {
+        if (entry.getStore() != null && store != null  && entry.getStore() != store) {
             synchronized (storeMoveCache) {
                 storeMoveCache.put(entry.getStore(), store);
             }
