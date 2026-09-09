@@ -11,6 +11,7 @@ import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.secret.DataStorageAccessHandler;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.store.DataStore;
@@ -155,6 +156,10 @@ public class StoreCreationDialog {
             StoreCreationConsumer con,
             boolean staticDisplay,
             DataStoreEntry existingEntry) {
+        if (!DataStorageAccessHandler.getInstance().isAccessible()) {
+            throw ErrorEventFactory.expected(new IllegalStateException("Current vault encryption is not accessible. Vault data can't be modified in this state"));
+        }
+
         var ex = StoreCreationQueueEntry.findExisting(existingEntry);
         if (ex.isPresent()) {
             ex.get().execute();
