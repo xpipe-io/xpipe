@@ -60,7 +60,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 return currentPath.get() == null;
             },
             currentPath);
-    private final ObservableList<UUID> terminalRequests = FXCollections.observableArrayList();
+    private final ObservableList<UUID> terminalRequests = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
     private final BooleanProperty transferCancelled = new SimpleBooleanProperty();
     private final Property<BrowserTransferProgress> progress = new SimpleObjectProperty<>();
     private final ObservableList<BrowserTransferProgress> progressesIntervalHistory =
@@ -607,7 +607,9 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         if (dock
                 && browserModel instanceof BrowserFullSessionModel fullSessionModel
                 && !(fullSessionModel.getSplits().get(this) instanceof BrowserTerminalDockTabModel)) {
-            terminalRequests.add(uuid);
+            synchronized (terminalRequests) {
+                terminalRequests.add(uuid);
+            }
             fullSessionModel.splitTab(this, new BrowserTerminalDockTabModel(browserModel, this, terminalRequests));
         }
 

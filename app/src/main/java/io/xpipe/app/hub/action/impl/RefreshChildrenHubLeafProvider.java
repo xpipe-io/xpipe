@@ -67,9 +67,8 @@ public class RefreshChildrenHubLeafProvider implements HubLeafProvider<FixedHier
             var success = DataStorage.get().refreshChildren(ref.get());
             if (success && !hadChildren) {
                 var section = StoreViewState.get()
-                        .getSectionForWrapper(StoreViewState.get().getEntryWrapper(ref.get()))
-                        .orElseThrow();
-                if (section.getShownChildren().getList().isEmpty()) {
+                        .getSectionForWrapper(StoreViewState.get().getEntryWrapper(ref.get()));
+                if (section.isPresent() && section.get().getShownChildren().getList().isEmpty()) {
                     ref.getStore().enableShowAll();
                 }
             }
