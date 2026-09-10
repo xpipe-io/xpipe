@@ -62,8 +62,9 @@ public class TerminalPaneConfiguration {
             boolean enableLogging,
             boolean alwaysPromptRestart)
             throws Exception {
-        var debugMode = AppProperties.get().isDeveloperMode()
-                && AppLogs.get().isWriteToSysout();
+        var debugMode = !AppProperties.get().isDevelopmentEnvironment() &&
+                AppProperties.get().isDeveloperMode() &&
+                AppLogs.get().isWriteToSysout();
 
         if (!enableLogging || !AppPrefs.get().enableTerminalLogging().get()) {
             var sc = LocalShell.getShell();
@@ -143,7 +144,8 @@ public class TerminalPaneConfiguration {
                           echo "Session logging is finished, output file is sessions/%s"
                           cat "%s" | "%s" terminal-clean > "%s.txt"
                           """.formatted(
-                            debugMode ? ShellDialects.POWERSHELL.getSetEnvironmentVariableCommand("XPIPE_DEBUG", "true") : "",
+                            debugMode ? LocalShell.getShell()
+                                        .getShellDialect().getSetEnvironmentVariableCommand("XPIPE_DEBUG", "true") : "",
                             TerminalLauncher.getTerminalRegisterCommand(request, sc),
                             logFile.getFileName(),
                             scriptCommand,

@@ -214,7 +214,6 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
 
         var l = new ArrayList<String>();
         l.add("zellij attach xpipe");
-        l.add("Start-Sleep -s 50");
         return ShellScript.lines(l);
     }
 
