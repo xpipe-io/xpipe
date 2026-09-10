@@ -26,12 +26,6 @@ public class LocalExec {
         // Remove dev vars
         env.remove("XPIPE_MAPPING");
 
-        // Ensure that electron applications on Linux use wayland features if possible
-        // https://github.com/microsoft/vscode/issues/207033#issuecomment-2167500295
-        if (OsType.ofLocal() == OsType.LINUX && !AppSystemInfo.ofLinux().isVirtualMachine()) {
-            env.put("ELECTRON_OZONE_PLATFORM_HINT", "auto");
-        }
-
         // Add proxy vars
         var proxyMap = HttpProxy.getEnvironmentVariables();
         env.putAll(proxyMap);
