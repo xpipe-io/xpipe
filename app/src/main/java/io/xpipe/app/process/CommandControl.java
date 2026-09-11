@@ -34,6 +34,8 @@ public interface CommandControl extends ProcessControl {
 
     CommandControl withErrorFormatter(Function<String, String> formatter);
 
+    CommandControl complex();
+
     CommandControl notComplex();
 
     CommandControl withWorkingDirectory(FilePath directory);
