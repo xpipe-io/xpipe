@@ -36,7 +36,6 @@ public class BeaconClient {
         return client;
     }
 
-    @SuppressWarnings("unchecked")
     public <RES> RES performRequest(BeaconInterface<?> prov, String rawNode)
             throws BeaconConnectorException, BeaconClientException, BeaconServerException {
         var content = rawNode;
