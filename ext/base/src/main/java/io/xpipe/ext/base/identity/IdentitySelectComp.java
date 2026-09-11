@@ -343,6 +343,10 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
                     return;
                 }
 
+                if (inPlaceUser.getValue() != null) {
+                    return;
+                }
+
                 struc.show();
                 event.consume();
             });
