@@ -26,6 +26,10 @@ public class OsLogoRegistry {
             return null;
         }
 
+        if (name.contains("Junos OS")) {
+            return null;
+        }
+
         if (ICONS.isEmpty()) {
             AppResources.with(AppResources.MAIN_MODULE, "os", file -> {
                 try (var list = Files.list(file)) {
