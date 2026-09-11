@@ -13,6 +13,7 @@ import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreCategoryConfig;
 import io.xpipe.app.storage.DataStoreColor;
 
+import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -122,8 +123,14 @@ public class StoreCategoryWrapper {
     }
 
     public void delete() {
+        ThreadHelper.runAsync(() -> {
+            deleteImpl();
+        });
+    }
+
+    private void deleteImpl() {
         for (var c : children.getList()) {
-            c.delete();
+            c.deleteImpl();
         }
         DataStorage.get().deleteStoreCategory(category, false, false);
     }

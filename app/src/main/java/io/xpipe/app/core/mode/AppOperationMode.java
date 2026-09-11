@@ -331,6 +331,11 @@ public abstract class AppOperationMode {
             AppOperationMode.halt(1);
         }
 
+        if (isInShutdown()) {
+            TrackEvent.info("Received shutdown request while in shutdown. Halting ...");
+            AppOperationMode.halt(1);
+        }
+
         TrackEvent.info("Starting shutdown ...");
 
         synchronized (AppOperationMode.class) {
