@@ -235,6 +235,8 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
             buttonBar.getStyleClass().add("button-bar");
             buttonBar.setSpacing(10);
             buttonBar.setAlignment(Pos.CENTER_RIGHT);
+            // We don't want snapping, we need exact values for the button width calculation
+            buttonBar.setSnapToPixel(false);
             for (var o : newValue.getButtons()) {
                 var node = o instanceof ModalButton mb ? toButton(mb) : ((BaseRegionBuilder<?, ?>) o).build();
                 if (o instanceof ModalButton mb) {

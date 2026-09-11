@@ -176,6 +176,11 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
                 .apply(struc -> hover.bind(struc.hoverProperty()))
                 .apply(struc -> focus.bind(struc.focusWithinProperty()))
                 .maxWidth(2000);
+        h.apply(struc -> {
+            dragOver.subscribe(value -> {
+                struc.pseudoClassStateChanged(PseudoClass.getPseudoClass("drag-over"), value);
+            });
+        });
         h.describe(b -> b.showTooltips(false)
                 .focusTraversal(RegionDescriptor.FocusTraversal.ENABLED)
                 .name(category.getName()));
