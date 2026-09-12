@@ -25,6 +25,8 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.awt.*;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
@@ -127,6 +129,43 @@ public abstract class AppOperationMode {
 
                     ErrorEventFactory.fromThrowable(ex).unhandled(true).build().handle();
                 });
+            }
+
+            // This is very important on Windows to not get into encoding issues
+            if (OsType.ofLocal() == OsType.WINDOWS) {
+                var con = System.console();
+                // If a program does not have console attached, it can't determine the code page
+                // This happens if the program is run non-interactively, e.g.
+                // $Script="$(& 'C:\Program Files\XPipe\xpipe.exe' terminal-launch --port ? --request ?)"
+                // If the output of this command contains special characters, the stdout will print in the system default encoding
+                // However, all non-interactive usages like this are done in an environment
+                // where XPipe or another environment sets the code page to UTF8
+                // Therefore, we have to override the stdout encoding if we don't have a console
+                if (con == null) {
+                    var outField = FilterOutputStream.class.getDeclaredField("out");
+                    outField.setAccessible(true);
+
+                    // The original raw out stream is a private class
+                    // designed to unblock carrier threads
+                    // We want to keep this to retain all functionality
+                    var printStreamOut = (BufferedOutputStream) outField.get(System.out);
+                    var fdout = (FileOutputStream) outField.get(printStreamOut);
+                    var newStdout = new PrintStream(new BufferedOutputStream(fdout, 128), true, StandardCharsets.UTF_8);
+                    System.setProperty("stdout.encoding", "UTF-8");
+                    System.setOut(newStdout);
+
+                    // The original raw err stream is a private class
+                    // designed to unblock carrier threads
+                    // We want to keep this to retain all functionality
+                    var printStreamErr = (BufferedOutputStream) outField.get(System.err);
+                    var fderr = (FileOutputStream) outField.get(printStreamErr);
+                    var newStderr = new PrintStream(new BufferedOutputStream(fderr, 128), true, StandardCharsets.UTF_8);
+                    System.setProperty("stderr.encoding", "UTF-8");
+                    System.setErr(newStderr);
+
+                    // The stdin is a raw stream
+                    System.setProperty("stdin.encoding", "UTF-8");
+                }
             }
 
             AppProperties.init(args);
