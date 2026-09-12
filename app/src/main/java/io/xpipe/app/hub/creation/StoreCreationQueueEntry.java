@@ -39,7 +39,12 @@ public class StoreCreationQueueEntry extends AppLayoutModel.QueueEntry {
             return Optional.empty();
         }
 
-        return AppLayoutModel.get().getQueueEntries().stream()
+        var l = AppLayoutModel.get();
+        if (l == null) {
+            return Optional.empty();
+        }
+
+        return l.getQueueEntries().stream()
                 .filter(queueEntry -> queueEntry instanceof StoreCreationQueueEntry q && entry.equals(q.getEntry()))
                 .findFirst();
     }
