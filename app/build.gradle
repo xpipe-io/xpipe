@@ -76,7 +76,7 @@ dependencies {
     api "org.slf4j:slf4j-api:2.0.18"
     api "org.slf4j:slf4j-jdk-platform-logging:2.0.18"
     api 'io.xpipe:modulefs:0.1.9'
-    api 'net.synedra:validatorfx:0.4.2'
+    api 'net.synedra:validatorfx:1.0.0'
     api 'io.xpipe:atlantafx-base:2.1.1'
     api ("io.xpipe:atlantafx-themes:1.9.1") {
         exclude group: "io.github.mkpaz", module: "atlantafx-base"
