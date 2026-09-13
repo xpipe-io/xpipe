@@ -157,7 +157,7 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                         + "\"",
                 "sleep 0.5",
                 "zellij -s xpipe action go-to-tab 2",
-                "sleep 0.5",
+                "sleep 1.5",
                 "zellij -s xpipe action write-chars -- " + escape(control, " " + firstCommand, true, true)
                         + getCommandExitLiteral(control),
                 "zellij -s xpipe action clear",
