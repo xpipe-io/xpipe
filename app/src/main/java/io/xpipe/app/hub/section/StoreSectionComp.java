@@ -123,13 +123,11 @@ public class StoreSectionComp extends StoreSectionBaseComp {
             }
 
             if (op.getSelection().contains(section.getWrapper())) {
-                event.consume();
                 return;
             }
 
             var sortMode = StoreViewState.get().getSortMode().getValue();
             if (!sortMode.supportsReordering()) {
-                event.consume();
                 return;
             }
 
