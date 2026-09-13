@@ -138,7 +138,7 @@ public class StoreSectionComp extends StoreSectionBaseComp {
                     : op.isTopLevelTarget(section) ? new StoreSectionDrag.TopLevelTarget(section, order) : null;
             if (target != null) {
                 StoreViewState.get().setSectionDragTarget(target);
-                event.acceptTransferModes(TransferMode.MOVE);
+                event.acceptTransferModes(TransferMode.ANY);
                 event.consume();
             }
         });

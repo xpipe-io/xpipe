@@ -184,7 +184,7 @@ public class StoreViewState {
         var drag = new StoreSectionDrag(selection, dragTarget);
         this.sectionDragOperation.setValue(drag);
 
-        Dragboard db = r.startDragAndDrop(TransferMode.MOVE);
+        Dragboard db = r.startDragAndDrop(TransferMode.ANY);
         db.setContent(Map.of(SECTION_DRAG_DATA_FORMAT, "dummy"));
 
         var image = StoreSectionDragComp.snapshot(selection);
@@ -203,7 +203,7 @@ public class StoreViewState {
 
         categories.getList().forEach(c -> c.update());
 
-        Dragboard db = r.startDragAndDrop(TransferMode.MOVE);
+        Dragboard db = r.startDragAndDrop(TransferMode.ANY);
         db.setContent(Map.of(SECTION_DRAG_DATA_FORMAT, "dummy"));
 
         var image = StoreCategoryDragComp.snapshot(selection);

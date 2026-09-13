@@ -281,7 +281,7 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
                             : null;
                     if (target != null) {
                         StoreViewState.get().setCategoryDragTarget(target);
-                        event.acceptTransferModes(TransferMode.MOVE);
+                        event.acceptTransferModes(TransferMode.ANY);
                         event.consume();
                     }
                 }
@@ -425,7 +425,7 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
 
                 var target = new StoreSectionDrag.CategoryTarget(getCategory());
                 StoreViewState.get().setSectionDragTarget(target);
-                event.acceptTransferModes(TransferMode.MOVE);
+                event.acceptTransferModes(TransferMode.ANY);
                 event.consume();
             }
 
@@ -442,7 +442,7 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
                         : StoreCategoryDrag.Order.BEFORE;
                 var target = new StoreCategoryDrag.CategoryTarget(getCategory(), order);
                 StoreViewState.get().setCategoryDragTarget(target);
-                event.acceptTransferModes(TransferMode.MOVE);
+                event.acceptTransferModes(TransferMode.ANY);
                 event.consume();
             }
         });
