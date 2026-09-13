@@ -18,6 +18,7 @@ import org.slf4j.spi.MDCAdapter;
 import org.slf4j.spi.SLF4JServiceProvider;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -121,7 +122,7 @@ public class AppLogs {
                 var file = usedLogsDir.resolve(AppNames.ofMain().getKebapName() + ".log");
                 var fos = new FileOutputStream(file.toFile(), true);
                 var buf = new BufferedOutputStream(fos);
-                outFileStream = new PrintStream(buf, false);
+                outFileStream = new PrintStream(buf, false, StandardCharsets.UTF_8);
             } catch (Exception ex) {
                 ErrorEventFactory.fromThrowable(ex).build().handle();
             }
@@ -175,7 +176,7 @@ public class AppLogs {
             @Override
             public void write(int b) {
                 if (b == '\r' || b == '\n') {
-                    String line = baos.toString();
+                    String line = baos.toString(StandardCharsets.UTF_8);
                     if (line.length() == 0) {
                         return;
                     }
@@ -186,7 +187,7 @@ public class AppLogs {
                     baos.write(b);
                 }
             }
-        }));
+        },true, StandardCharsets.UTF_8));
     }
 
     private void hookUpSystemErr() {
@@ -196,7 +197,7 @@ public class AppLogs {
             @Override
             public void write(int b) {
                 if (b == '\r' || b == '\n') {
-                    String line = baos.toString();
+                    String line = baos.toString(StandardCharsets.UTF_8);
                     if (line.length() == 0) {
                         return;
                     }
@@ -209,7 +210,7 @@ public class AppLogs {
                     baos.write(b);
                 }
             }
-        }));
+        },true, StandardCharsets.UTF_8));
     }
 
     public void logException(String description, Throwable e) {

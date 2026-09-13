@@ -144,6 +144,7 @@ def getBaseJvmArgs() {
             "--add-opens", "java.base/java.lang=$appPackage",
             "--add-opens", "java.base/java.net=$appPackage",
             "--add-opens", "java.base/java.nio.file=$appPackage",
+            "--add-opens", "java.base/java.io=$appPackage",
             "--add-opens", "jdk.zipfs/jdk.nio.zipfs=io.xpipe.modulefs",
     ]
 

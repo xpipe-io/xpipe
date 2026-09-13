@@ -103,6 +103,10 @@ public class TerminalDockHubManager {
     }
 
     private static void showDialogIfNeeded() {
+        if (AppOperationMode.isInShutdown()) {
+            return;
+        }
+
         var shown = AppCache.getBoolean("terminalDockDialog", false);
         if (shown) {
             return;
