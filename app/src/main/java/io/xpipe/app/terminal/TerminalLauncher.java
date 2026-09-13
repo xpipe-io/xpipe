@@ -1,5 +1,6 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -401,6 +402,7 @@ public class TerminalLauncher {
         var registerLine = CommandBuilder.of()
                 .addFile(sc.getLocalSystemAccess().translateFromLocalSystemPath(FilePath.of(exec)))
                 .add("terminal-register", "--request", request.toString())
+                .add("--port", AppBeaconServer.get().getPort() + "")
                 .buildSimple();
         var powershell = ShellDialects.isPowershell(sc);
         var bellLine = "printf \"\\a\"";
