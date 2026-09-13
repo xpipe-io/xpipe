@@ -1,7 +1,10 @@
 package io.xpipe.app.beacon;
 
 import io.xpipe.app.beacon.api.HandshakeExchange;
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.JacksonMapper;
 
 import lombok.SneakyThrows;
@@ -13,31 +16,34 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Optional;
 
 public class BeaconClient {
 
+    private final String address;
     private final int port;
     private String token;
 
-    public BeaconClient(int port) {
+    public BeaconClient(String address, int port) {
+        this.address = address;
         this.port = port;
     }
 
-    public static BeaconClient establishConnection(int port, BeaconClientInformation information, Path authFile)
-            throws Exception {
-        var client = new BeaconClient(port);
+    public static BeaconClient establishConnection(int port, BeaconClientInformation information, Path authFile) throws Exception {
+        var addr = "127.0.0.1";
+        var client = new BeaconClient(addr, port);
         var auth = Files.readString(authFile);
         HandshakeExchange.Response response = client.performRequest(HandshakeExchange.Request.builder()
                 .client(information)
                 .auth(BeaconAuthMethod.Local.builder().authFileContent(auth).build())
-                .build());
+                .build(), 5);
         client.token = response.getSessionToken();
         return client;
     }
 
     @SuppressWarnings("unchecked")
-    public <RES> RES performRequest(BeaconInterface<?> prov, String rawNode)
+    public <RES> RES performRequest(BeaconInterface<?> prov, String rawNode, int timeoutSeconds)
             throws BeaconConnectorException, BeaconClientException, BeaconServerException {
         var content = rawNode;
         if (AppProperties.get().isPrintBeaconMessages()) {
@@ -46,20 +52,24 @@ public class BeaconClient {
         }
 
         var client = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(5))
+                .version(HttpClient.Version.HTTP_1_1)
                 .proxy(HttpClient.Builder.NO_PROXY)
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .build();
         HttpResponse<String> response;
         try {
             // Use direct IP to prevent DNS lookups and potential blocks (e.g. portmaster)
-            var uri = URI.create("http://127.0.0.1:" + port + prov.getPath());
+            var uri = URI.create("http://" + address + ":" + port + prov.getPath());
             var builder = HttpRequest.newBuilder();
             if (token != null) {
                 builder.header("Authorization", "Bearer " + token);
             }
-            var httpRequest = builder.uri(uri)
-                    .POST(HttpRequest.BodyPublishers.ofString(content))
-                    .build();
+            var b = builder.uri(uri).POST(HttpRequest.BodyPublishers.ofString(content));
+            if (timeoutSeconds != -1) {
+                b.timeout(Duration.ofSeconds(timeoutSeconds));
+            }
+            var httpRequest = b.build();
             response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         } catch (Exception ex) {
             throw new BeaconConnectorException("Couldn't send request", ex);
@@ -107,6 +117,11 @@ public class BeaconClient {
 
     public <REQ, RES> RES performRequest(REQ req)
             throws BeaconConnectorException, BeaconClientException, BeaconServerException {
+        return performRequest(req, -1);
+    }
+
+    public <REQ, RES> RES performRequest(REQ req, int timeoutSeconds)
+            throws BeaconConnectorException, BeaconClientException, BeaconServerException {
         ObjectNode node = JacksonMapper.getDefault().valueToTree(req);
         var prov = BeaconInterface.byRequest(req);
         if (prov.isEmpty()) {
@@ -114,10 +129,10 @@ public class BeaconClient {
         }
         if (AppProperties.get().isPrintBeaconMessages()) {
             System.out.println(
-                    "Sending request to server of type " + req.getClass().getName());
+                    "Sending request to server " + address + ":" + port + " of type " + req.getClass().getName());
         }
 
-        return performRequest(prov.get(), node.toPrettyString());
+        return performRequest(prov.get(), node.toPrettyString(), timeoutSeconds);
     }
 
     private Optional<BeaconClientErrorResponse> parseClientError(HttpResponse<String> response)

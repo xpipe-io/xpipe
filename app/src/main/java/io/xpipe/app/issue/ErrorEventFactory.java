@@ -6,10 +6,7 @@ import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.util.OsType;
 
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.AccessDeniedException;
-import java.nio.file.FileSystemException;
-import java.nio.file.InvalidPathException;
-import java.nio.file.NoSuchFileException;
+import java.nio.file.*;
 import java.util.*;
 
 public class ErrorEventFactory {
@@ -68,6 +65,10 @@ public class ErrorEventFactory {
 
         if (t instanceof NoSuchFileException nsfe) {
             return "No such file: " + nsfe.getMessage();
+        }
+
+        if (t instanceof FileAlreadyExistsException faee) {
+            return "File already exists: " + faee.getMessage();
         }
 
         if (t instanceof InvalidPathException ipe) {
