@@ -37,8 +37,8 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
     }
 
     @Override
-    public boolean shouldShow(StoreEntryWrapper w) {
-        LxdContainerStore s = w.getEntry().getStore().asNeeded();
+    public boolean shouldShow(StoreSection section) {
+        LxdContainerStore s = section.getEntry().getStore().asNeeded();
         var state = s.getState();
         return Boolean.TRUE.equals(state.getRunning())
                 || s.getCmd().getStore().getState().isShowNonRunning();
