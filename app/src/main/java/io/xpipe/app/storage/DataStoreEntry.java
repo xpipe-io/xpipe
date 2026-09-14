@@ -661,7 +661,7 @@ public class DataStoreEntry extends DataStorageElement {
         notifyUpdate(false, true);
     }
 
-    void setStoreInternal(DataStore store, boolean updateTime) {
+    public void setStoreInternal(DataStore store, boolean updateTime) {
         var changed = !Objects.equals(getStore(), store);
         if (!changed) {
             return;
