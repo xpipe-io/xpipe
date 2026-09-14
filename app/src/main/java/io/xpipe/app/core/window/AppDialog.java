@@ -46,6 +46,13 @@ public class AppDialog {
         return modalOverlays;
     }
 
+    public static void closeAllModalOverlays() {
+        synchronized (modalOverlays) {
+            modalOverlays.clear();
+        }
+    }
+
+
     public static List<ModalOverlay> getCurrentModalOverlays() {
         synchronized (modalOverlays) {
             var copy = new ArrayList<>(modalOverlays);
