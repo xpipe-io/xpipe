@@ -176,7 +176,7 @@ public class RemoteDesktopWindow {
     }
 
     public void focus() {
-        PlatformThread.runLaterIfNeeded(() -> {
+        ThreadHelper.runFailableAsync(() -> {
             model.focus();
         });
     }

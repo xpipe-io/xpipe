@@ -25,6 +25,7 @@ import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.WorkspaceManager;
 import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.rdp.MicrosoftRdpClient;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageMigratedDialog;
 import io.xpipe.app.storage.DataStorageSyncHandler;
@@ -220,6 +221,7 @@ public class AppBaseMode extends AppOperationMode {
         AppMcpServer.reset();
         WorkspaceManager.reset();
         RemoteDesktopWindow.reset();
+        MicrosoftRdpClient.reset();
         AppPrefs.reset();
         DataStorage.reset();
         DataStorageSyncHandler.getInstance().reset();
