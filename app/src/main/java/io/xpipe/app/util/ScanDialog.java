@@ -31,10 +31,10 @@ public class ScanDialog {
         var button = new ModalButton(
                 "ok",
                 () -> {
-                    AppLayoutModel.get().getQueueEntries().add(queueEntry);
+                    AppLayoutModel.get().showQueueEntry(queueEntry);
                     ThreadHelper.runAsync(() -> {
                         comp.finish();
-                        AppLayoutModel.get().getQueueEntries().remove(queueEntry);
+                        AppLayoutModel.get().hideQueueEntry(queueEntry);
                     });
                 },
                 true,
@@ -59,10 +59,10 @@ public class ScanDialog {
         var button = new ModalButton(
                 "ok",
                 () -> {
-                    AppLayoutModel.get().getQueueEntries().add(queueEntry);
+                    AppLayoutModel.get().showQueueEntry(queueEntry);
                     ThreadHelper.runAsync(() -> {
                         comp.finish();
-                        AppLayoutModel.get().getQueueEntries().remove(queueEntry);
+                        AppLayoutModel.get().hideQueueEntry(queueEntry);
                     });
                 },
                 true,

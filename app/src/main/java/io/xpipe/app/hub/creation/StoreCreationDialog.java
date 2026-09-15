@@ -202,7 +202,7 @@ public class StoreCreationDialog {
         var queueEntry = StoreCreationQueueEntry.of(model, modal);
 
         modal.setHideAction(() -> {
-            AppLayoutModel.get().getQueueEntries().add(queueEntry);
+            AppLayoutModel.get().showQueueEntry(queueEntry);
             showNotice();
         });
 
@@ -212,7 +212,7 @@ public class StoreCreationDialog {
             }
 
             modal.hide();
-            AppLayoutModel.get().getQueueEntries().add(queueEntry);
+            AppLayoutModel.get().showQueueEntry(queueEntry);
             showNotice();
         });
         modal.setRequireCloseButtonForClose(true);

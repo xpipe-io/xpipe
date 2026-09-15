@@ -36,6 +36,7 @@ import javafx.scene.input.KeyCombination;
 import lombok.*;
 import lombok.experimental.NonFinal;
 import lombok.extern.jackson.Jacksonized;
+import org.int4.fx.builders.FX;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.time.Duration;
@@ -43,21 +44,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-@Getter
 public class AppLayoutModel {
 
     private static AppLayoutModel INSTANCE;
 
+    @Getter
     private final SavedState savedState;
 
+    @Getter
     private final List<Entry> entries;
 
+    @Getter
     private final Property<Entry> selected;
 
     private final ObservableList<QueueEntry> queueEntries;
 
+    @Getter
     private final BooleanProperty ptbAvailable = new SimpleBooleanProperty();
 
+    @Getter
     private final BooleanProperty portraitLayoutCollapsed = new SimpleBooleanProperty();
 
     public AppLayoutModel(SavedState savedState) {
@@ -136,10 +141,10 @@ public class AppLayoutModel {
                 true);
         AppSizeBreakpoints.compactMode().subscribe(v -> {
             if (v) {
-                getQueueEntries().add(toggleExpand);
+                queueEntries.add(toggleExpand);
                 portraitExpanded.set(false);
             } else {
-                getQueueEntries().remove(toggleExpand);
+                queueEntries.remove(toggleExpand);
                 portraitExpanded.set(true);
             }
         });
@@ -167,6 +172,23 @@ public class AppLayoutModel {
 
         AppCache.update("layoutState", INSTANCE.savedState);
         INSTANCE = null;
+    }
+
+    public synchronized void hideQueueEntry(QueueEntry entry) {
+        queueEntries.remove(entry);
+    }
+
+    public ObservableList<QueueEntry> getQueueEntriesRaw() {
+        return queueEntries;
+    }
+
+    public synchronized List<QueueEntry> getQueueEntries() {
+        var copy = new ArrayList<>(queueEntries);
+        return copy;
+    }
+    
+    public void showQueueEntry(QueueEntry entry) {
+        showQueueEntry(entry, null, true);
     }
 
     public synchronized void showQueueEntry(QueueEntry entry, Duration duration, boolean allowDuplicates) {
@@ -376,19 +398,19 @@ public class AppLayoutModel {
                 var r = getAction().get();
                 if (r) {
                     PlatformThread.runLaterIfNeeded(() -> {
-                        AppLayoutModel.get().getQueueEntries().remove(this);
+                        AppLayoutModel.get().hideQueueEntry(this);
                     });
                 }
             } catch (Throwable t) {
                 PlatformThread.runLaterIfNeeded(() -> {
-                    AppLayoutModel.get().getQueueEntries().remove(this);
+                    AppLayoutModel.get().hideQueueEntry(this);
                 });
                 throw t;
             }
         }
 
         public void hide() {
-            AppLayoutModel.get().getQueueEntries().remove(this);
+            AppLayoutModel.get().hideQueueEntry(this);
         }
     }
 }

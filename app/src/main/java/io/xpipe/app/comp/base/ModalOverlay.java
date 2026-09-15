@@ -67,7 +67,7 @@ public class ModalOverlay {
 
     public void hideable(AppLayoutModel.QueueEntry entry) {
         setHideAction(() -> {
-            AppLayoutModel.get().getQueueEntries().add(entry);
+            AppLayoutModel.get().showQueueEntry(entry);
         });
     }
 
