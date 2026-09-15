@@ -689,8 +689,6 @@ public abstract class DataStorage {
         }
 
         cat.setParentCategory(newParent.getUuid());
-        listeners.forEach(storageListener -> storageListener.onCategoryRemove(cat));
-        listeners.forEach(storageListener -> storageListener.onCategoryAdd(cat));
         listeners.forEach(storageListener -> storageListener.onCategoryListUpdate());
         listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
         saveAsync();

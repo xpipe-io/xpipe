@@ -90,7 +90,7 @@ public class StoreCategoryChoiceComp extends SimpleRegionBuilder {
                 setGraphic(PrettyImageHelper.ofFixedSizeSquare(w.getIconFile().getValue(), 16)
                         .build());
                 setText(w.getShownName().getValue());
-                setPadding(new Insets(6, 6, 6, 8 + (indent ? w.getDepth() * 8 : 0)));
+                setPadding(new Insets(6, 6, 6, 8 + (indent ? w.getDepth().getValue() * 8 : 0)));
             } else {
                 setGraphic(null);
                 setText("None");

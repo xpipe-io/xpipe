@@ -284,7 +284,7 @@ public class StoreViewState {
         }
     }
 
-    public void unselectBatchMode(StoreSection section) {
+    public void unselectBatchMode(StoreSection section, boolean recursive) {
         var wrapper = section.getWrapper();
         if (wrapper != null && wrapper.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
             return;
@@ -292,8 +292,8 @@ public class StoreViewState {
         if (wrapper != null) {
             batchModeSelection.getList().remove(wrapper);
         }
-        if (wrapper == null || wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP) {
-            section.getShownChildren().getList().forEach(c -> unselectBatchMode(c));
+        if (wrapper == null || wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP || recursive) {
+            section.getAllChildren().getList().forEach(c -> unselectBatchMode(c, recursive));
         }
     }
 
@@ -717,7 +717,7 @@ public class StoreViewState {
                     return 1;
                 }
 
-                if (o1.getDepth() > o2.getDepth()) {
+                if (o1.getDepth().getValue() > o2.getDepth().getValue()) {
                     if (p1 == o2) {
                         return 1;
                     }
@@ -725,7 +725,7 @@ public class StoreViewState {
                     return compare(p1, o2);
                 }
 
-                if (o1.getDepth() < o2.getDepth()) {
+                if (o1.getDepth().getValue() < o2.getDepth().getValue()) {
                     if (p2 == o1) {
                         return -1;
                     }

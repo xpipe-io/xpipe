@@ -464,8 +464,14 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
             if (cat == StoreActionCategory.CONFIGURATION
                     && getWrapper().getEntry().getValidity() != DataStoreEntry.Validity.LOAD_FAILED) {
                 var rename = new MenuItem(AppI18n.get("rename"), new FontIcon("mdal-edit"));
+                rename.setAccelerator(switch (OsType.ofLocal()) {
+                    case OsType.Linux ignored -> new KeyCodeCombination(KeyCode.F2);
+                    case OsType.MacOs ignored -> new KeyCodeCombination(KeyCode.ENTER);
+                    case OsType.Windows ignored -> new KeyCodeCombination(KeyCode.F2);
+                });
                 rename.setOnAction(event -> {
                     name.requestFocus();
+                    event.consume();
                 });
                 items.add(items.size(), rename);
 
@@ -613,7 +619,11 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                                     return !getWrapper().getDeletable().get();
                                 },
                                 getWrapper().getDeletable()));
-                del.setOnAction(event -> getWrapper().delete());
+                del.setOnAction(event -> {
+                    getWrapper().delete();
+                    event.consume();
+                });
+                del.setAccelerator(new KeyCodeCombination(KeyCode.DELETE));
                 contextMenu.getItems().add(del);
             }
 

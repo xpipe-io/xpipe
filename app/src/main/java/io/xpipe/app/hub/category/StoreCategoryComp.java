@@ -158,8 +158,11 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
         var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().syncEnabled()))
                 .or(showing)
                 .or(focus);
+        var indentSpacer = RegionBuilder.hspacer(Bindings.createDoubleBinding(() -> {
+            return category.getDepth().getValue() * 8.0;
+        }, category.getDepth()));
         var h = new HorizontalComp(List.of(
-                RegionBuilder.hspacer((category.getDepth() * 8)),
+                indentSpacer,
                 expandButton,
                 RegionBuilder.hspacer(3),
                 iconButton,
@@ -454,20 +457,27 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
         if (AppPrefs.get().enableHttpApi().get()) {
             var copyId = new MenuItem(AppI18n.get("copyId"), new FontIcon("mdi2c-content-copy"));
             copyId.setOnAction(event ->
-                    ClipboardHelper.copyText(category.getCategory().getUuid().toString()));
+            {
+                ClipboardHelper.copyText(category.getCategory().getUuid().toString());
+                event.consume();
+            });
             contextMenu.getItems().add(copyId);
         }
 
         if (AppPrefs.get().developerMode().getValue()) {
             var browse = new MenuItem(AppI18n.get("browseInternalStorage"), new FontIcon("mdi2f-folder-open-outline"));
             browse.setOnAction(
-                    event -> DesktopHelper.browseFile(category.getCategory().getDirectory()));
+                    event -> {
+                        DesktopHelper.browseFile(category.getCategory().getDirectory());
+                        event.consume();
+                    });
             contextMenu.getItems().add(browse);
         }
 
         var newCategory = new MenuItem(AppI18n.get("createNewCategory"), new FontIcon("mdi2p-plus-thick"));
         newCategory.setOnAction(event -> {
             StoreViewState.get().createNewCategory(category);
+            event.consume();
         });
         newCategory.setDisable(!DataStorage.get().canCreateStoreCategoryWithin(category.getCategory()));
         contextMenu.getItems().add(newCategory);
@@ -477,10 +487,16 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
         var configure = new MenuItem(AppI18n.get("configure"), new FontIcon("mdi2w-wrench-outline"));
         configure.setOnAction(event -> {
             StoreCategoryConfigComp.show(category);
+            event.consume();
         });
         contextMenu.getItems().add(configure);
 
         var rename = new MenuItem(AppI18n.get("rename"), new FontIcon("mdal-edit"));
+        rename.setAccelerator(switch (OsType.ofLocal()) {
+            case OsType.Linux ignored -> new KeyCodeCombination(KeyCode.F2);
+            case OsType.MacOs ignored -> new KeyCodeCombination(KeyCode.ENTER);
+            case OsType.Windows ignored -> new KeyCodeCombination(KeyCode.F2);
+        });
         rename.setOnAction(event -> {
             category.getRenameTrigger().fire(null);
             event.consume();
@@ -511,8 +527,10 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
         contextMenu.getItems().add(new SeparatorMenuItem());
 
         var del = new MenuItem(AppI18n.get("remove"), new FontIcon("mdal-delete_outline"));
+        del.setAccelerator(new KeyCodeCombination(KeyCode.DELETE));
         del.setOnAction(event -> {
             category.delete();
+            event.consume();
         });
         del.setDisable(!DataStorage.get().canDeleteStoreCategory(category.getCategory()));
         contextMenu.getItems().add(del);
