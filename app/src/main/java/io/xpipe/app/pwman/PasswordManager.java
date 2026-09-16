@@ -107,14 +107,15 @@ public interface PasswordManager {
     @AllArgsConstructor
     class ListEntry {
 
-        String title;
+        String entryTitle;
+        String listTitle;
         String key;
         String internalId;
         ListEntryType type;
         List<String> urls;
 
         public boolean matches(String filter) {
-            return title.toLowerCase().contains(filter.toLowerCase())
+            return listTitle.toLowerCase().contains(filter.toLowerCase())
                     || key.toLowerCase().contains(filter.toLowerCase())
                     || urls.stream().anyMatch(url -> url.toLowerCase().contains(filter.toLowerCase()))
                     || (internalId != null && internalId.equalsIgnoreCase(filter));
