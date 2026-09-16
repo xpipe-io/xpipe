@@ -124,7 +124,7 @@ public class DataStoreCategory extends DataStorageElement {
                 .orElse(Instant.now());
         var expanded = Optional.ofNullable(stateJson.get("expanded"))
                 .map(jsonNode -> jsonNode.booleanValue())
-                .orElse(true);
+                .orElse(false);
         var config = Optional.ofNullable(categoryJson.get("config"))
                 .map(jsonNode -> {
                     return JacksonMapper.getDefault().treeToValue(jsonNode, DataStoreCategoryConfig.class);

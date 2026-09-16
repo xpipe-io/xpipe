@@ -298,7 +298,7 @@ public class DataStoreEntry extends DataStorageElement {
                 .orElse(Instant.EPOCH);
         var expanded = Optional.ofNullable(stateJson.get("expanded"))
                 .map(jsonNode -> jsonNode.booleanValue())
-                .orElse(true);
+                .orElse(false);
 
         var created = Optional.ofNullable(entryJson.get("created"))
                 .map(jsonNode -> jsonNode.stringValue())
