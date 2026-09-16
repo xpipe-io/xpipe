@@ -85,6 +85,23 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             },
             "Antigravity.exe");
 
+    WindowsType ANTIGRAVITY_IDE_WINDOWS = new VsCodeWindowsType(
+            "app.antigravityIde",
+            "https://antigravity.google/",
+            () -> {
+                var perUser = AppSystemInfo.ofWindows()
+                        .getLocalAppData()
+                        .resolve("Programs")
+                        .resolve("Antigravity IDE");
+                if (Files.exists(perUser)) {
+                    return perUser;
+                }
+
+                var perMachine = AppSystemInfo.ofWindows().getProgramFiles().resolve("Antigravity IDE");
+                return perMachine;
+            },
+            "Antigravity IDE.exe");
+
     WindowsType CURSOR_WINDOWS = new VsCodeWindowsType(
             "app.cursor",
             "https://cursor.com/",
