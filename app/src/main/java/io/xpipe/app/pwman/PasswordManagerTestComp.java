@@ -56,7 +56,9 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
     }
 
     protected void selectFromList(PasswordManager.ListEntry entry) {
-        value.setValue(entry.getKey());
+        var pwman = AppPrefs.get().passwordManager().getValue();
+        var preferId = pwman != null && pwman.preferListIds();
+        value.setValue(preferId && entry.getInternalId() != null ? entry.getInternalId() : entry.getKey());
     }
 
     @Override
