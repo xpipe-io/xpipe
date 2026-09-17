@@ -224,24 +224,14 @@ public final class FilePath {
         }
 
         var joined = String.join("/", split());
-        var prefix = hasWindowsUncPrefix() ? "//" : value.startsWith("/") ? "/" : "";
+        var prefix = value.startsWith("/") ? "/" : "";
         var suffix = value.endsWith("/") || value.endsWith("\\") ? "/" : "";
         return FilePath.of(prefix + joined + suffix);
     }
 
     public FilePath toWindows() {
-        var prefix = hasWindowsUncPrefix() ? "\\\\" : "";
         var suffix = value.endsWith("/") || value.endsWith("\\") ? "\\" : "";
-        return FilePath.of(prefix + String.join("\\", split()) + suffix);
-    }
-
-    /**
-     * Returns whether this file path has a Universal Naming Convention (UNC) prefix.
-     *
-     * @return true if the file path has a UNC prefix, false otherwise
-     */
-    private boolean hasWindowsUncPrefix() {
-        return value.startsWith("\\\\") && !split().isEmpty();
+        return FilePath.of(String.join("\\", split()) + suffix);
     }
 
     public boolean isRoot() {

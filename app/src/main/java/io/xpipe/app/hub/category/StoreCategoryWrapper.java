@@ -369,6 +369,10 @@ public class StoreCategoryWrapper {
     public void insertSiblingCategory(StoreCategoryWrapper selection, boolean after) {
         var l = getParent().getShownChildren().getList();
         var index = l.indexOf(this);
+        if (index == -1) {
+            return;
+        }
+
         var min = index > 0 || after
                 ? l.get(index - (after ? 0 : 1)).getCategory().getOrderIndex()
                 : l.getFirst().getCategory().getOrderIndex() - 1.0;
