@@ -219,8 +219,9 @@ public final class FilePath {
     }
 
     public FilePath toUnix() {
-        if (value.equals("/")) {
-            return this;
+        var split = split();
+        if (split.size() == 0) {
+            return FilePath.of("/");
         }
 
         var joined = String.join("/", split());
