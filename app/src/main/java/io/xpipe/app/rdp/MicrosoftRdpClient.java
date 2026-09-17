@@ -194,33 +194,29 @@ public abstract class MicrosoftRdpClient implements ExternalApplicationType.Inst
 
         disableSignatureWarning(configuration);
 
+        var storedTargets = new HashSet<String>();
+        if (configuration.getPassword() != null) {
+            String target = "TERMSRV/" + configuration.getHost();
+            AuthModuleProvider.get().setWindowsCredential(target, CRED_TYPE_GENERIC, CRED_PERSIST_SESSION, configuration.getUsername(),
+                    configuration.getPassword());
+            storedTargets.add(target);
+        }
+
+        var gateway = configuration.getGateway();
+        if (gateway != null && gateway.getPassword() != null) {
+            String target = gateway.getHost();
+            AuthModuleProvider.get().setWindowsCredential(target, CRED_TYPE_GENERIC, CRED_PERSIST_SESSION, gateway.getUsername(),
+                    gateway.getPassword());
+            storedTargets.add(target);
+        }
+
+        for (String storedTarget : storedTargets) {
+            GlobalTimer.delay(() -> {
+                AuthModuleProvider.get().deleteWindowsCredential(storedTarget, CRED_PERSIST_SESSION);
+            }, Duration.ofSeconds(120));
+        }
         synchronized (storedCredentials) {
-            if (configuration.getPassword() != null) {
-                String target = "TERMSRV/" + configuration.getHost();
-
-                var existing = AuthModuleProvider.get().getWindowsCredential(target, CRED_TYPE_GENERIC);
-                if (existing.isPresent()) {
-                    AuthModuleProvider.get().setWindowsCredential(target, CRED_TYPE_GENERIC, CRED_PERSIST_SESSION, configuration.getUsername(),
-                            configuration.getPassword());
-                    storedCredentials.add(target);
-                }
-
-                GlobalTimer.delay(() -> {
-                    AuthModuleProvider.get().deleteWindowsCredential(target, CRED_PERSIST_SESSION);
-                }, Duration.ofSeconds(120));
-            }
-
-            var gateway = configuration.getGateway();
-            if (gateway != null && gateway.getPassword() != null) {
-                String target = gateway.getHost();
-                AuthModuleProvider.get().setWindowsCredential(target, CRED_TYPE_GENERIC, CRED_PERSIST_SESSION, gateway.getUsername(),
-                        gateway.getPassword());
-                storedCredentials.add(target);
-
-                GlobalTimer.delay(() -> {
-                    AuthModuleProvider.get().deleteWindowsCredential(target, CRED_PERSIST_SESSION);
-                }, Duration.ofSeconds(120));
-            }
+            storedCredentials.addAll(storedTargets);
         }
 
         var file = writeRdpConfigFile(configuration.getTitle(), adaptedRdpConfig);
@@ -239,6 +235,10 @@ public abstract class MicrosoftRdpClient implements ExternalApplicationType.Inst
                     Duration.ofSeconds(120),
                     p -> {
                         return !p.isDialog();
+                    }, ignored -> {
+                        for (String storedTarget : storedTargets) {
+                            AuthModuleProvider.get().deleteWindowsCredential(storedTarget, CRED_PERSIST_SESSION);
+                        }
                     });
         }
 

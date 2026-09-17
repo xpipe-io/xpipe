@@ -30,6 +30,7 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class RemoteDesktopWindow {
@@ -225,7 +226,9 @@ public class RemoteDesktopWindow {
             int h,
             Process process,
             Duration maxWait,
-            Predicate<ControllableWindowProcess> filter) {
+            Predicate<ControllableWindowProcess> filter,
+            Consumer<RemoteDesktopDockEntry> onSuccess
+            ) {
         var start = process.info().startInstant().orElseThrow();
         GlobalTimer.scheduleUntil(Duration.ofMillis(200), false, () -> {
             if (Duration.between(start, Instant.now()).compareTo(maxWait) > 0) {
@@ -273,6 +276,7 @@ public class RemoteDesktopWindow {
 
                 var entry = new RemoteDesktopDockEntry(name, icon, color, e, c, null, w, h);
                 model.track(entry);
+                onSuccess.accept(entry);
                 return true;
             }
 

@@ -141,10 +141,10 @@ public class AppLayoutModel {
                 true);
         AppSizeBreakpoints.compactMode().subscribe(v -> {
             if (v) {
-                queueEntries.add(toggleExpand);
+                showQueueEntry(toggleExpand);
                 portraitExpanded.set(false);
             } else {
-                queueEntries.remove(toggleExpand);
+                hideQueueEntry(toggleExpand);
                 portraitExpanded.set(true);
             }
         });
