@@ -15,12 +15,14 @@ import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.store.DataStore;
 
+import io.xpipe.app.util.ContextMenuWrapper;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
@@ -203,12 +205,14 @@ public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
                 },
                 expanded,
                 s.getName());
-        var button = new ButtonComp(name, new SimpleObjectProperty<>(s.getIcon()), () -> {
-            if (batchActions.size() > 0) {
-                return;
-            }
-
-            runActions(s);
+        var button = new ButtonComp(name, s.getIcon(), null);
+        button.apply(struc -> {
+            struc.setOnAction(e -> {
+                if (batchActions.size() == 0) {
+                    runActions(s);
+                    e.consume();
+                }
+            });
         });
         button.describe(d -> d.name(s.getName()));
 
@@ -219,15 +223,17 @@ public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
                 childrenRefs.getList()));
 
         if (batchActions.size() > 0) {
-            button.apply(new ContextMenuAugment<>(
-                    mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, keyEvent -> false, () -> {
-                        var cm = MenuHelper.createContextMenu();
-                        s.getChildren(childrenRefs.getList()).forEach(childProvider -> {
-                            var menu = buildMenuItemForAction(childrenRefs.getList(), childProvider);
-                            cm.getItems().add(menu);
-                        });
-                        return cm;
-                    }));
+            var cm = new ContextMenuWrapper(() -> {
+                var c = new ContextMenu();
+                s.getChildren(childrenRefs.getList()).forEach(childProvider -> {
+                    var menu = buildMenuItemForAction(childrenRefs.getList(), childProvider);
+                    c.getItems().add(menu);
+                });
+                return c;
+            });
+            button.apply(struc -> {
+                cm.installOnButton(struc);
+            });
         }
         return button;
     }

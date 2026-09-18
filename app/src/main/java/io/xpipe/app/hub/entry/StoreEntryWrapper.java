@@ -36,6 +36,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import lombok.Getter;
+import org.int4.fx.values.util.Trigger;
 
 import java.net.Inet4Address;
 import java.time.Instant;
@@ -74,13 +75,13 @@ public class StoreEntryWrapper {
     private final Property<String> shownDescription = new SimpleObjectProperty<>();
     private final Property<StoreEntryInformation> shownInformation = new SimpleObjectProperty<>();
     private final BooleanProperty template = new SimpleBooleanProperty();
-    private final BooleanProperty renaming = new SimpleBooleanProperty();
     private final BooleanProperty pinToTop = new SimpleBooleanProperty();
     private final DoubleProperty orderIndex = new SimpleDoubleProperty();
     private final BooleanProperty effectiveBusy = new SimpleBooleanProperty();
     private final Property<StoreCategoryWrapper> lastInformationCategory = new SimpleObjectProperty<>();
     private final ObservableList<String> tags = FXCollections.observableArrayList();
     private final Property<Inet4Address> nameIpAddress = new SimpleObjectProperty<>();
+    private final Trigger<Void> renameTrigger = Trigger.of();
     private boolean effectiveBusyProviderBound = false;
 
     public StoreEntryWrapper(DataStoreEntry entry) {
@@ -387,10 +388,17 @@ public class StoreEntryWrapper {
         return false;
     }
 
-    public boolean canBreakOutCategory() {
+    public boolean canToggleBreakOutCategory() {
+        if (entry.getBreakOutCategory() != null) {
+            return true;
+        }
+
+        var section = StoreViewState.get().getSectionForWrapper(this);
+        var parentSection = StoreViewState.get().getParentSectionForWrapper(this);
         return (getStore().getValue() instanceof FixedHierarchyStore
                         || getStore().getValue() instanceof GroupStore<?>)
-                && StoreViewState.get().getParentSectionForWrapper(this).isPresent();
+                && parentSection.isPresent()
+                && section.isPresent() && !section.get().getAllChildren().getList().isEmpty();
     }
 
     public void breakOutCategory() {

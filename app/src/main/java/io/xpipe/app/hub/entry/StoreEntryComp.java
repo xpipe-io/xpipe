@@ -39,7 +39,6 @@ import atlantafx.base.layout.InputGroup;
 import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,10 +62,11 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                 }
             },
             App.getApp().getStage().widthProperty());
+
     private static String DEFAULT_NOTES = null;
     protected final StoreSection section;
     protected final BaseRegionBuilder<?, ?> content;
-    protected final IntegerProperty contextMenuCount = new SimpleIntegerProperty();
+    protected final ContextMenuWrapper contextMenu = new ContextMenuWrapper(() -> createContextMenu());
 
     public StoreEntryComp(StoreSection section, BaseRegionBuilder<?, ?> content) {
         this.section = section;
@@ -137,10 +137,6 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                 return;
             }
 
-            if (getWrapper().getRenaming().get()) {
-                return;
-            }
-
             var count = AppPrefs.get().requireDoubleClickForConnections().get() ? 2 : 1;
             if (mouseEvent.getClickCount() != count) {
                 return;
@@ -157,11 +153,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
             mouseEvent.consume();
         });
 
-        new ContextMenuAugment<>(
-                        mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY,
-                        null,
-                        () -> this.createContextMenu(name))
-                .accept(r);
+        contextMenu.installOnMouseClick(r, mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY, true);
 
         var loading =
                 new LoadingOverlayComp(RegionBuilder.of(() -> r), getWrapper().getEffectiveBusy(), false);
@@ -224,7 +216,10 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         var name = new LazyTextFieldComp(prop);
         name.style("name");
         name.applyStructure(struc -> {
-            getWrapper().getRenaming().bind(struc.getTextField().focusedProperty());
+            getWrapper().getRenameTrigger().onFire(() -> {
+                struc.get().requestFocus();
+                struc.getTextField().selectAll();
+            });
         });
         return name;
     }
@@ -337,7 +332,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         return stack;
     }
 
-    protected Region createButtonBar(Region name) {
+    protected Region createButtonBar() {
         var list = DerivedObservableList.wrap(getWrapper().getMajorActionProviders(), false);
         var buttons = list.mapped(actionProvider -> {
                     var button = buildButton(actionProvider);
@@ -349,7 +344,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         var ig = new InputGroup();
         Runnable update = () -> {
             var l = new ArrayList<Node>(buttons);
-            var settingsButton = createSettingsButton(name).build();
+            var settingsButton = createSettingsButton().build();
             l.add(settingsButton);
             l.forEach(o -> o.getStyleClass().remove(Styles.FLAT));
             ig.getChildren().setAll(l);
@@ -373,56 +368,55 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                         }
                         : null);
         if (branch != null) {
-            button.apply(new ContextMenuAugment<>(
-                    mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, keyEvent -> false, () -> {
-                        var cm = MenuHelper.createContextMenu();
-                        var children = branch
-                                .getChildren(getWrapper().getEntry().ref())
-                                .stream()
-                                .filter(hubMenuItemProvider -> {
-                                    return hubMenuItemProvider.isApplicable(
-                                            getWrapper().getEntry().ref());
-                                })
-                                .toList();
-                        var cats = Arrays.stream(StoreActionCategory.values())
-                                .collect(Collectors.toCollection(ArrayList::new));
-                        cats.addFirst(null);
-                        for (var cat : cats) {
-                            var catChildren = children.stream()
-                                    .filter(actionProvider -> actionProvider.getCategory() == cat)
-                                    .toList();
-                            if (catChildren.isEmpty()) {
-                                continue;
-                            }
+            var buttonCm = new ContextMenuWrapper(() -> {
+                var cm = new ContextMenu();
+                var children = branch
+                        .getChildren(getWrapper().getEntry().ref())
+                        .stream()
+                        .filter(hubMenuItemProvider -> {
+                            return hubMenuItemProvider.isApplicable(
+                                    getWrapper().getEntry().ref());
+                        })
+                        .toList();
+                var cats = Arrays.stream(StoreActionCategory.values())
+                        .collect(Collectors.toCollection(ArrayList::new));
+                cats.addFirst(null);
+                for (var cat : cats) {
+                    var catChildren = children.stream()
+                            .filter(actionProvider -> actionProvider.getCategory() == cat)
+                            .toList();
+                    if (catChildren.isEmpty()) {
+                        continue;
+                    }
 
-                            catChildren.forEach(childProvider -> {
-                                var menu = buildMenuItemForAction(getWrapper(), childProvider);
-                                if (menu != null) {
-                                    cm.getItems().add(menu);
-                                }
-                            });
-                            cm.getItems().add(new SeparatorMenuItem());
+                    catChildren.forEach(childProvider -> {
+                        var menu = buildMenuItemForAction(getWrapper(), childProvider);
+                        if (menu != null) {
+                            cm.getItems().add(menu);
                         }
+                    });
+                    cm.getItems().add(new SeparatorMenuItem());
+                }
 
-                        if (cm.getItems().getLast() instanceof SeparatorMenuItem) {
-                            cm.getItems().removeLast();
-                        }
+                if (cm.getItems().getLast() instanceof SeparatorMenuItem) {
+                    cm.getItems().removeLast();
+                }
 
-                        return cm;
-                    }));
+                return cm;
+            });
+            button.apply(struc -> buttonCm.installOnButton(struc));
         }
         button.describe(d -> d.name(p.getName(getWrapper().getEntry().ref())));
         return button;
     }
 
-    protected BaseRegionBuilder<?, ?> createSettingsButton(Region name) {
+    protected BaseRegionBuilder<?, ?> createSettingsButton() {
         var settingsButton = new IconButtonComp("mdi2d-dots-horizontal-circle-outline", null);
         settingsButton.style("settings");
         settingsButton.describe(d -> d.nameKey("more"));
-        settingsButton.apply(new ContextMenuAugment<>(
-                event -> event.getButton() == MouseButton.PRIMARY,
-                null,
-                () -> StoreEntryComp.this.createContextMenu(name)));
+        settingsButton.apply(struc -> {
+            contextMenu.installOnButton(struc);
+        });
         return settingsButton;
     }
 
@@ -432,20 +426,8 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         return c;
     }
 
-    private void handleContextMenuCount(ContextMenu contextMenu) {
-        var ref = new WeakReference<>(contextMenu);
-        contextMenuCount.set(contextMenuCount.get() + 1);
-        contextMenuCount.addListener((observable, oldValue, newValue) -> {
-            var cm = ref.get();
-            if (cm != null) {
-                cm.hide();
-            }
-        });
-    }
-
-    protected ContextMenu createContextMenu(Region name) {
-        var contextMenu = MenuHelper.createContextMenu();
-        handleContextMenuCount(contextMenu);
+    protected ContextMenu createContextMenu() {
+        var contextMenu = new ContextMenu();
 
         var cats = Arrays.stream(StoreActionCategory.values()).collect(Collectors.toCollection(ArrayList::new));
         cats.addFirst(null);
@@ -470,7 +452,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                     case OsType.Windows ignored -> new KeyCodeCombination(KeyCode.F2);
                 });
                 rename.setOnAction(event -> {
-                    name.requestFocus();
+                    getWrapper().getRenameTrigger().fire(null);
                     event.consume();
                 });
                 items.add(items.size(), rename);
@@ -589,7 +571,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                     items.add(tags);
                 }
 
-                if (getWrapper().canBreakOutCategory()) {
+                if (getWrapper().canToggleBreakOutCategory()) {
                     var breakOut = new MenuItem();
                     var is = getWrapper().getBreakoutCategory().isPresent();
                     if (is) {
