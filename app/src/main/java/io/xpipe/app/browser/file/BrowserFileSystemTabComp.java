@@ -76,7 +76,8 @@ public class BrowserFileSystemTabComp extends SimpleRegionBuilder {
 
         var menuButton = MenuHelper.createMenuButton();
         menuButton.setGraphic(new FontIcon("mdral-folder_open"));
-        var cm = new ContextMenuWrapper(() -> new BrowserContextMenu(model, null, false));
+        var cm = new ContextMenuWrapper(() -> new BrowserContextMenu(model, null, false))
+                .withCustomKeyHandling();
         cm.installOnMouseClick(menuButton, mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, false);
         menuButton.disableProperty().bind(PlatformThread.sync(model.getInOverview()));
         RegionDescriptor.builder().nameKey("directoryOptions").build().apply(menuButton);

@@ -39,7 +39,8 @@ public class BrowserFileListCompEntry {
         this.row = row;
         this.item = item;
         this.model = model;
-        this.contextMenu = new ContextMenuWrapper(() -> new BrowserContextMenu(model.getFileSystemModel(), item, false));
+        this.contextMenu = new ContextMenuWrapper(() -> new BrowserContextMenu(model.getFileSystemModel(), item, false))
+                .withCustomKeyHandling();
     }
 
     public void onMouseClick(MouseEvent t) {

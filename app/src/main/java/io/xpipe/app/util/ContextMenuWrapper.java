@@ -25,9 +25,15 @@ public class ContextMenuWrapper {
     private static final Set<ContextMenu> allContextMenus = new HashSet<>();
 
     private final Supplier<ContextMenu> contextMenuSupplier;
+    private boolean customKeyHandling;
     private ContextMenu contextMenu;
 
     public ContextMenuWrapper(Supplier<ContextMenu> contextMenuSupplier) {this.contextMenuSupplier = contextMenuSupplier;}
+
+    public ContextMenuWrapper withCustomKeyHandling() {
+        customKeyHandling = true;
+        return this;
+    }
 
     private void applyFixes() {
         contextMenu.setAutoHide(!AppPrefs.get().limitedTouchscreenMode().get());
@@ -54,15 +60,17 @@ public class ContextMenuWrapper {
         });
         AppFontSizes.lg(contextMenu.getStyleableNode());
 
-        contextMenu.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
-            for (MenuItem item : contextMenu.getItems()) {
-                if (item.getAccelerator() != null && item.getAccelerator().match(e)) {
-                    contextMenu.hide();
-                    item.fire();
-                    e.consume();
+        if (!customKeyHandling) {
+            contextMenu.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+                for (MenuItem item : contextMenu.getItems()) {
+                    if (item.getAccelerator() != null && item.getAccelerator().match(e)) {
+                        contextMenu.hide();
+                        item.fire();
+                        e.consume();
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     private ContextMenu getOrCreate() {
