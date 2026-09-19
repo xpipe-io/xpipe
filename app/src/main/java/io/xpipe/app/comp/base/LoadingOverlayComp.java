@@ -45,9 +45,12 @@ public class LoadingOverlayComp extends RegionBuilder<StackPane> {
         }
         loadingOverlay.getStyleClass().add("loading-comp");
 
-        this.loading.subscribe((v) -> {
+        loadingOverlay.setVisible(this.loading.getValue());
+        loadingOverlay.setManaged(this.loading.getValue());
+
+        this.loading.addListener((observable, oldValue, newValue) -> {
             // Reduce flickering for consecutive loads
-            if (!v) {
+            if (!newValue) {
                 GlobalTimer.delay(() -> {
                     if (!LoadingOverlayComp.this.loading.getValue()) {
                         Platform.runLater(() -> {
