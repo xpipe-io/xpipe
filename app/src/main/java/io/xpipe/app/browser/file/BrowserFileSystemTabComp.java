@@ -9,6 +9,7 @@ import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.util.ContextMenuWrapper;
 import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.GlobalTimer;
 
@@ -75,11 +76,8 @@ public class BrowserFileSystemTabComp extends SimpleRegionBuilder {
 
         var menuButton = MenuHelper.createMenuButton();
         menuButton.setGraphic(new FontIcon("mdral-folder_open"));
-        new ContextMenuAugment<>(
-                        event -> event.getButton() == MouseButton.PRIMARY,
-                        null,
-                        () -> new BrowserContextMenu(model, null, false))
-                .accept(menuButton);
+        var cm = new ContextMenuWrapper(() -> new BrowserContextMenu(model, null, false));
+        cm.installOnMouseClick(menuButton, mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, false);
         menuButton.disableProperty().bind(PlatformThread.sync(model.getInOverview()));
         RegionDescriptor.builder().nameKey("directoryOptions").build().apply(menuButton);
 

@@ -60,7 +60,7 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                 .name("keyAuthentication")
                 .description("keyAuthenticationDescription")
                 .documentationLink(DocumentationLink.SSH_KEYS)
-                .sub(IdentityChoiceBuilder.keyAuthChoice(identity, sshIdentityChoiceConfig), identity)
+                .sub(IdentityChoiceBuilder.keyAuthChoice(identity, sshIdentityChoiceConfig, true), identity)
                 .bind(
                         () -> {
                             return LocalIdentityStore.builder()

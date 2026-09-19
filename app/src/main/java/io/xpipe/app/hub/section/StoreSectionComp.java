@@ -123,13 +123,11 @@ public class StoreSectionComp extends StoreSectionBaseComp {
             }
 
             if (op.getSelection().contains(section.getWrapper())) {
-                event.consume();
                 return;
             }
 
             var sortMode = StoreViewState.get().getSortMode().getValue();
             if (!sortMode.supportsReordering()) {
-                event.consume();
                 return;
             }
 
@@ -140,7 +138,7 @@ public class StoreSectionComp extends StoreSectionBaseComp {
                     : op.isTopLevelTarget(section) ? new StoreSectionDrag.TopLevelTarget(section, order) : null;
             if (target != null) {
                 StoreViewState.get().setSectionDragTarget(target);
-                event.acceptTransferModes(TransferMode.MOVE);
+                event.acceptTransferModes(TransferMode.ANY);
                 event.consume();
             }
         });
@@ -150,10 +148,6 @@ public class StoreSectionComp extends StoreSectionBaseComp {
         entryButton.hgrow();
         entryButton.apply(struc -> {
             struc.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-                if (section.getWrapper().getRenaming().get()) {
-                    return;
-                }
-
                 if (event.getCode() == KeyCode.SPACE) {
                     section.getWrapper().toggleExpanded();
                     event.consume();

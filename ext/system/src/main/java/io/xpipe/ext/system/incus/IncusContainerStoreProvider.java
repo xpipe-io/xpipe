@@ -37,8 +37,8 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
     }
 
     @Override
-    public boolean shouldShow(StoreEntryWrapper w) {
-        IncusContainerStore s = w.getEntry().getStore().asNeeded();
+    public boolean shouldShow(StoreSection section) {
+        IncusContainerStore s = section.getEntry().getStore().asNeeded();
         var state = s.getState();
         return Boolean.TRUE.equals(state.getRunning())
                 || s.getInstall().getStore().getState().isShowNonRunning();

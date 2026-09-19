@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.TrackEvent;
 
@@ -34,9 +35,9 @@ public class LocalExec {
     public static Process executeAsync(String... command) {
         var list = Arrays.stream(command).filter(s -> s != null).toList();
         try {
-            TrackEvent.withTrace("Running local command")
-                    .tag("command", String.join(" ", list))
-                    .handle();
+            if (AppProperties.get().isDaemon()) {
+                TrackEvent.withTrace("Running local command").tag("command", String.join(" ", list)).handle();
+            }
 
             var pb = new ProcessBuilder(list)
                     .redirectOutput(ProcessBuilder.Redirect.DISCARD)
@@ -48,19 +49,18 @@ public class LocalExec {
 
             return pb.start();
         } catch (Exception ex) {
-            TrackEvent.withTrace("Local command finished")
-                    .tag("command", String.join(" ", list))
-                    .tag("error", ex.toString())
-                    .handle();
+            if (AppProperties.get().isDaemon()) {
+                TrackEvent.withTrace("Local command finished").tag("command", String.join(" ", list)).tag("error", ex.toString()).handle();
+            }
             return null;
         }
     }
 
     public static Optional<String> readStdoutIfPossible(String... command) {
         try {
-            TrackEvent.withTrace("Running local command")
-                    .tag("command", String.join(" ", command))
-                    .handle();
+            if (AppProperties.get().isDaemon()) {
+                TrackEvent.withTrace("Running local command").tag("command", String.join(" ", command)).handle();
+            }
 
             var pb = new ProcessBuilder(command).redirectError(ProcessBuilder.Redirect.DISCARD);
             pb.directory(AppSystemInfo.ofCurrent().getUserHome().toFile());
@@ -75,17 +75,15 @@ public class LocalExec {
                 return Optional.empty();
             } else {
                 var s = new String(out, StandardCharsets.UTF_8).strip();
-                TrackEvent.withTrace("Local command finished")
-                        .tag("command", String.join(" ", command))
-                        .tag("stdout", s)
-                        .handle();
+                if (AppProperties.get().isDaemon()) {
+                    TrackEvent.withTrace("Local command finished").tag("command", String.join(" ", command)).tag("stdout", s).handle();
+                }
                 return Optional.of(s);
             }
         } catch (Exception ex) {
-            TrackEvent.withTrace("Local command finished")
-                    .tag("command", String.join(" ", command))
-                    .tag("error", ex.toString())
-                    .handle();
+            if (AppProperties.get().isDaemon()) {
+                TrackEvent.withTrace("Local command finished").tag("command", String.join(" ", command)).tag("error", ex.toString()).handle();
+            }
             return Optional.empty();
         }
     }

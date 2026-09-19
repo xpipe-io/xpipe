@@ -29,8 +29,8 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
     }
 
     @Override
-    public boolean shouldShow(StoreEntryWrapper w) {
-        PodmanContainerStore s = w.getEntry().getStore().asNeeded();
+    public boolean shouldShow(StoreSection section) {
+        PodmanContainerStore s = section.getEntry().getStore().asNeeded();
         var state = s.getState();
         return Boolean.TRUE.equals(state.getRunning())
                 || s.getCmd() == null

@@ -47,4 +47,6 @@ public abstract class AuthModuleProvider {
 
     public abstract void setWindowsCredential(
             String target, int type, int persist, String userName, SecretValue password);
+
+    public abstract void deleteWindowsCredential(String target, int type);
 }

@@ -404,11 +404,8 @@ public final class BrowserFileListComp extends SimpleRegionBuilder {
             action.ifPresent(browserAction -> {
                 // Prevent concurrent modification by creating copy on platform thread
                 var selectionCopy = new ArrayList<>(selected);
-                try {
-                    browserAction.execute(fileList.getFileSystemModel(), selectionCopy);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+                browserAction.execute(fileList.getFileSystemModel(), selectionCopy);
+                ContextMenuWrapper.hideAll();
                 event.consume();
             });
             if (action.isPresent()) {

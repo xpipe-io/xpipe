@@ -55,7 +55,7 @@ public class AppLayoutComp extends RegionStructureBuilder<BorderPane, AppLayoutC
         pane.setCenter(multiR);
         TrackEvent.info("Window content comp created");
 
-        var sidebar = new SideMenuBarComp(model.getSelected(), model.getEntries(), model.getQueueEntries());
+        var sidebar = new SideMenuBarComp(model.getSelected(), model.getEntries(), model.getQueueEntriesRaw());
         var sidebarR = sidebar.build();
         TrackEvent.info("Window sidebar comp created");
 

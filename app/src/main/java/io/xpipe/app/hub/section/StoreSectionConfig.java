@@ -93,7 +93,7 @@ public class StoreSectionConfig {
                 && (selector.excludeNonShown() || !matchesSelector)) {
             var showProvider = true;
             try {
-                showProvider = section.getEntry().getProvider().shouldShow(section.getWrapper());
+                showProvider = section.getEntry().getProvider().shouldShow(section);
             } catch (Exception ignored) {
             }
             if (!showProvider) {

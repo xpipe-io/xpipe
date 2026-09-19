@@ -1,6 +1,8 @@
 package io.xpipe.app.beacon;
 
+import io.xpipe.app.beacon.api.HandshakeExchange;
 import io.xpipe.app.beacon.mcp.AppMcpServer;
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppLocalTemp;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -62,6 +64,7 @@ public class AppBeaconServer {
                     AppProperties.get().queryEffectiveBeaconPort(false).orElseThrow());
             INSTANCE.initAuthSecret();
             INSTANCE.start();
+            INSTANCE.testConnection();
             TrackEvent.withInfo("Started http server")
                     .tag("port", INSTANCE.getPort())
                     .build()
@@ -142,6 +145,26 @@ public class AppBeaconServer {
                 localLockFileChannel.close();
             }
         } catch (IOException ignored) {
+        }
+    }
+
+    private void testConnection() {
+        var address = "127.0.0.1";
+        var client = new BeaconClient(address, port);
+        var method = BeaconAuthMethod.Local.builder().authFileContent(localAuthSecret).build();
+        var info = BeaconClientInformation.Daemon.builder().build();
+
+        try {
+            client.performRequest(HandshakeExchange.Request.builder().client(info).auth(method).build(), 5);
+        } catch (Exception ex) {
+            if (AppProperties.get().isPrintBeaconMessages()) {
+                ErrorEventFactory.fromThrowable(ex).description("Failed to connect to beacon server " + address + ":" + port)
+                        .omit().expected().handle();
+            }
+
+            var msg = "Unable to connect to local running HTTP server on http://localhost:" + port +
+                    ". Is something on your system interfering with HTTP connections or TCP sockets?";
+            ErrorEventFactory.fromMessage(msg).handle();
         }
     }
 

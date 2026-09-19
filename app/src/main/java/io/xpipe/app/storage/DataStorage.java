@@ -689,8 +689,6 @@ public abstract class DataStorage {
         }
 
         cat.setParentCategory(newParent.getUuid());
-        listeners.forEach(storageListener -> storageListener.onCategoryRemove(cat));
-        listeners.forEach(storageListener -> storageListener.onCategoryAdd(cat));
         listeners.forEach(storageListener -> storageListener.onCategoryListUpdate());
         listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
         saveAsync();
@@ -745,6 +743,7 @@ public abstract class DataStorage {
         }
 
         var oldChildren = getStoreChildren(e);
+        var oldDeepChildren = getDeepStoreChildren(e);
         var toRemove = oldChildren.stream()
                 .filter(oc -> {
                     var oid = getFixedChildId(oc);
@@ -767,7 +766,7 @@ public abstract class DataStorage {
                         return false;
                     }
 
-                    return oldChildren.stream()
+                    return oldDeepChildren.stream()
                             .filter(oc -> oc.getStore() instanceof FixedChildStore)
                             .filter(oc -> getFixedChildId(oc).isPresent())
                             .noneMatch(oc -> {
@@ -775,7 +774,7 @@ public abstract class DataStorage {
                             });
                 })
                 .toList();
-        var toUpdate = new ArrayList<>(oldChildren.stream()
+        var toUpdate = new ArrayList<>(oldDeepChildren.stream()
                 .map(oc -> {
                     var oid = getFixedChildId(oc);
                     if (oid.isEmpty()) {

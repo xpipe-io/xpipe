@@ -48,34 +48,6 @@ public class MenuHelper {
         return cb;
     }
 
-    public static ContextMenu createContextMenu() {
-        ContextMenu contextMenu = new ContextMenu();
-        contextMenu.setAutoHide(!AppPrefs.get().limitedTouchscreenMode().get());
-        InputHelper.onLeft(contextMenu, false, e -> {
-            contextMenu.hide();
-            e.consume();
-        });
-        contextMenu.addEventFilter(Menu.ON_SHOWING, e -> {
-            Node content = contextMenu.getSkin().getNode();
-            if (content instanceof Region r) {
-                r.setMaxWidth(500);
-            }
-        });
-        contextMenu.addEventFilter(Menu.ON_SHOWN, e -> {
-            Platform.runLater(() -> {
-                var first = contextMenu.getItems().getFirst();
-                if (first != null) {
-                    var s = first.getStyleableNode();
-                    if (s != null) {
-                        s.requestFocus();
-                    }
-                }
-            });
-        });
-        AppFontSizes.lg(contextMenu.getStyleableNode());
-        return contextMenu;
-    }
-
     public static MenuItem createMenuItem(LabelGraphic graphic, String nameKey) {
         var i = new MenuItem();
         i.textProperty().bind(AppI18n.observable(nameKey));
@@ -90,18 +62,6 @@ public class MenuHelper {
                 return;
             }
             contextMenu.show(ref, side, 0, 0);
-        }
-    }
-
-    public static void toggleMenuShow(ContextMenu contextMenu, Node ref, Side side) {
-        if (!contextMenu.isShowing()) {
-            // Prevent NPE in show()
-            if (contextMenu.getScene() == null || ref == null || ref.getScene() == null) {
-                return;
-            }
-            contextMenu.show(ref, side, 0, 0);
-        } else {
-            contextMenu.hide();
         }
     }
 }

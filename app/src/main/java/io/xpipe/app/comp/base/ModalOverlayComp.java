@@ -235,13 +235,15 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
             buttonBar.getStyleClass().add("button-bar");
             buttonBar.setSpacing(10);
             buttonBar.setAlignment(Pos.CENTER_RIGHT);
+            // We don't want snapping, we need exact values for the button width calculation
+            buttonBar.setSnapToPixel(false);
+            var maxNode = new SimpleObjectProperty<Region>();
             for (var o : newValue.getButtons()) {
                 var node = o instanceof ModalButton mb ? toButton(mb) : ((BaseRegionBuilder<?, ?>) o).build();
                 if (o instanceof ModalButton mb) {
                     buttonMap.put(mb, (Button) node);
 
                     // Make sure that all button retain the correct min width
-                    var maxNode = new AtomicReference<Region>();
                     node.widthProperty().addListener((observable, oldValue, n) -> {
                         var d = Math.clamp(n.doubleValue(), 70.0, 200.0);
                         if (d > max.get()) {
@@ -264,6 +266,7 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
                                             return max.get();
                                         }
                                     },
+                                    maxNode,
                                     node.widthProperty(),
                                     max));
                     node.prefHeightProperty().bind(buttonBar.heightProperty());

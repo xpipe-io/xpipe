@@ -8,6 +8,7 @@ import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
+import io.xpipe.app.util.ContextMenuWrapper;
 import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -21,10 +22,7 @@ import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.AccessibleRole;
 import javafx.scene.Node;
-import javafx.scene.control.ButtonBase;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -42,6 +40,8 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
     private final BooleanProperty updating = new SimpleBooleanProperty();
     private final Property<BrowserEntry> editing;
 
+    private final ContextMenuWrapper contextMenu;
+
     public BrowserFileListNameCell(
             BrowserFileListModel fileList,
             ObservableStringValue typedSelection,
@@ -50,6 +50,8 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
         this.editing = editing;
         this.fileList = fileList;
         this.typedSelection = typedSelection;
+        this.contextMenu = new ContextMenuWrapper(() -> new BrowserContextMenu(
+                fileList.getFileSystemModel(), getTableRow().getItem(), false));
 
         accessibleTextProperty()
                 .bind(Bindings.createStringBinding(
@@ -59,20 +61,18 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
                         itemProperty()));
         setAccessibleRole(AccessibleRole.TEXT);
 
-        var textField = new LazyTextFieldComp(text)
-                .minWidth(USE_PREF_SIZE)
-                .buildStructure()
-                .getTextField();
+        var lazyTextField = new LazyTextFieldComp(text).minWidth(USE_PREF_SIZE).buildStructure();
+        var textField = lazyTextField.getTextField();
         var quickAccess = createQuickAccessButton();
-        setupShortcuts(tableView, (ButtonBase) quickAccess);
+        setupShortcuts(tableView, (ButtonBase) quickAccess, lazyTextField.getLabel());
         setupRename(fileList, textField);
 
         Node imageView = PrettyImageHelper.ofFixedSize(img, 24, 24).build();
-        HBox graphic = new HBox(imageView, new Spacer(5), quickAccess, new Spacer(1), textField);
+        HBox graphic = new HBox(imageView, new Spacer(5), quickAccess, new Spacer(1), lazyTextField.get());
         quickAccess.prefHeightProperty().bind(graphic.heightProperty());
         graphic.setAlignment(Pos.CENTER_LEFT);
         graphic.setPrefHeight(34);
-        HBox.setHgrow(textField, Priority.ALWAYS);
+        HBox.setHgrow(lazyTextField.get(), Priority.ALWAYS);
         graphic.setAlignment(Pos.CENTER_LEFT);
         setGraphic(graphic);
     }
@@ -100,7 +100,7 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
         return quickAccess;
     }
 
-    private void setupShortcuts(TableView<BrowserEntry> tableView, ButtonBase quickAccess) {
+    private void setupShortcuts(TableView<BrowserEntry> tableView, ButtonBase quickAccess, Label textDisplay) {
         InputHelper.onExactKeyCode(tableView, KeyCode.RIGHT, false, event -> {
             var selected = fileList.getSelection();
             if (selected.size() == 1 && selected.getFirst() == getTableRow().getItem()) {
@@ -131,9 +131,7 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
             var selected = fileList.getSelection();
             // Only show one menu across all selected entries
             if (selected.size() > 0 && selected.getLast() == getTableRow().getItem()) {
-                var cm = new BrowserContextMenu(
-                        fileList.getFileSystemModel(), getTableRow().getItem(), false);
-                MenuHelper.show(cm, this, Side.RIGHT);
+                contextMenu.show(textDisplay, Side.RIGHT);
                 event.consume();
             }
         });

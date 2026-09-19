@@ -47,6 +47,7 @@ public class IdentityChoiceBuilder {
     boolean requirePassword;
     boolean keyInput;
     boolean requireKeyInput;
+    boolean allowKeygen;
     String userChoiceTranslationKey;
     ObservableValue<String> passwordChoiceTranslationKey;
     ObservableValue<DataStoreEntryRef<ShellStore>> fileSystem;
@@ -59,6 +60,7 @@ public class IdentityChoiceBuilder {
             boolean requirePassword,
             boolean keyInput,
             boolean requireKeyInput,
+            boolean allowKeygen,
             String userChoiceTranslationKey,
             String passwordChoiceTranslationKey) {
         this.syncedBase = syncedBase;
@@ -68,6 +70,7 @@ public class IdentityChoiceBuilder {
         this.requirePassword = requirePassword;
         this.keyInput = keyInput;
         this.requireKeyInput = requireKeyInput;
+        this.allowKeygen = allowKeygen;
         this.userChoiceTranslationKey = userChoiceTranslationKey;
         this.passwordChoiceTranslationKey = new ReadOnlyStringWrapper(passwordChoiceTranslationKey);
         this.fileSystem = new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref());
@@ -130,24 +133,28 @@ public class IdentityChoiceBuilder {
     public static OptionsBuilder ssh(
             ObjectProperty<IdentityValue> identity, ObservableBooleanValue syncedBase, boolean requireUser) {
         var i = new IdentityChoiceBuilder(
-                identity, syncedBase, true, requireUser, true, true, true, "identityChoice", "passwordAuthentication");
+                identity, syncedBase, true, requireUser, true, true, true, false, "identityChoice", "passwordAuthentication");
         return i.build();
     }
 
     public static OptionsBuilder container(ObjectProperty<IdentityValue> identity, ObservableBooleanValue syncedBase) {
         var i = new IdentityChoiceBuilder(
-                identity, syncedBase, true, false, false, false, false, "customUsername", "customUsernamePassword");
+                identity, syncedBase, true, false, false, false, false, false, "customUsername", "customUsernamePassword");
         return i.build();
     }
 
     public static OptionsBuilder keyAuthChoice(
-            Property<SshIdentityStrategy> identity, SshIdentityStrategyChoiceConfig config) {
+            Property<SshIdentityStrategy> identity, SshIdentityStrategyChoiceConfig config, boolean allowKeygen) {
         return OptionsChoiceBuilder.builder()
                 .allowNull(false)
                 .property(identity)
                 .customConfiguration(config)
                 .available(AuthModuleProvider.get().getSshIdentityStrategyClasses())
                 .transformer(entryComboBox -> {
+                    if (!allowKeygen) {
+                        return entryComboBox;
+                    }
+
                     var button = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2k-key-plus"), () -> {
                         ProcModuleProvider.get().showSshKeygenDialog(null, identity);
                     });
@@ -226,7 +233,7 @@ public class IdentityChoiceBuilder {
             options.name("keyAuthentication")
                     .description("keyAuthenticationDescription")
                     .documentationLink(DocumentationLink.SSH_KEYS)
-                    .sub(keyAuthChoice(identityStrategy, sshIdentityChoiceConfig), identityStrategy)
+                    .sub(keyAuthChoice(identityStrategy, sshIdentityChoiceConfig, allowKeygen), identityStrategy)
                     .nonNullIf(inPlaceSelected.and(new ReadOnlyBooleanWrapper(requireKeyInput)))
                     .hide(refSelected);
         }

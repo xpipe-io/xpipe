@@ -97,7 +97,7 @@ public interface DataStoreProvider {
         return true;
     }
 
-    default boolean shouldShow(StoreEntryWrapper w) {
+    default boolean shouldShow(StoreSection section) {
         return true;
     }
 

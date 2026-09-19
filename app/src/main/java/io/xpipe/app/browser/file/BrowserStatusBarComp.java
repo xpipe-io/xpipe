@@ -3,13 +3,13 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
-import io.xpipe.app.comp.base.ContextMenuAugment;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.util.ContextMenuWrapper;
 import io.xpipe.app.util.HumanReadableFormat;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -236,12 +236,5 @@ public class BrowserStatusBarComp extends SimpleRegionBuilder {
         r.setOnDragDone(event -> {
             emptyEntry.onDragDone(event);
         });
-
-        // Use status bar as an extension of file list
-        new ContextMenuAugment<>(
-                        mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY,
-                        null,
-                        () -> new BrowserContextMenu(model, null, false))
-                .accept(r);
     }
 }

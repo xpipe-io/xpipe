@@ -105,7 +105,7 @@ public class LazyTextFieldComp extends RegionStructureBuilder<StackPane, LazyTex
             }
         });
 
-        return new Structure(stack, r);
+        return new Structure(stack, r, sizeLabel);
     }
 
     @Value
@@ -113,6 +113,7 @@ public class LazyTextFieldComp extends RegionStructureBuilder<StackPane, LazyTex
     public static class Structure implements RegionStructure<StackPane> {
         StackPane pane;
         TextField textField;
+        Label label;
 
         @Override
         public StackPane get() {

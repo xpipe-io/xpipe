@@ -12,6 +12,7 @@ import io.xpipe.app.platform.*;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreColor;
+import io.xpipe.app.util.ContextMenuWrapper;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.OsType;
 
@@ -68,7 +69,9 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
                     });
                 })
                 .build();
-        var showing = new SimpleBooleanProperty();
+
+        var contextMenu = new ContextMenuWrapper(() -> createContextMenu());
+        var contextMenuShowing = new SimpleBooleanProperty();
 
         var expandIcon = Bindings.createObjectBinding(
                 () -> {
@@ -123,12 +126,9 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
                     struc.setAlignment(Pos.CENTER);
                     struc.setPadding(new Insets(0, 0, 0, 0));
                 })
-                .apply(new ContextMenuAugment<>(
-                        mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, null, () -> {
-                            var cm = createContextMenu();
-                            showing.bind(cm.showingProperty());
-                            return cm;
-                        }))
+                .apply(struc -> {
+                    contextMenu.installOnButton(struc);
+                })
                 .describe(d -> d.nameKey("configuration"))
                 .style("status-button");
 
@@ -156,10 +156,13 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
         var dragIntoIndicator = createDragIntoIndicator(dragOver);
 
         var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().syncEnabled()))
-                .or(showing)
+                .or(contextMenuShowing)
                 .or(focus);
+        var indentSpacer = RegionBuilder.hspacer(Bindings.createDoubleBinding(() -> {
+            return category.getDepth().getValue() * 8.0;
+        }, category.getDepth()));
         var h = new HorizontalComp(List.of(
-                RegionBuilder.hspacer((category.getDepth() * 8)),
+                indentSpacer,
                 expandButton,
                 RegionBuilder.hspacer(3),
                 iconButton,
@@ -176,6 +179,11 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
                 .apply(struc -> hover.bind(struc.hoverProperty()))
                 .apply(struc -> focus.bind(struc.focusWithinProperty()))
                 .maxWidth(2000);
+        h.apply(struc -> {
+            dragOver.subscribe(value -> {
+                struc.pseudoClassStateChanged(PseudoClass.getPseudoClass("drag-over"), value);
+            });
+        });
         h.describe(b -> b.showTooltips(false)
                 .focusTraversal(RegionDescriptor.FocusTraversal.ENABLED)
                 .name(category.getName()));
@@ -192,12 +200,11 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
             });
         });
 
-        h.apply(new ContextMenuAugment<>(
-                mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY,
-                keyEvent -> keyEvent.getCode() == KeyCode.SPACE,
-                () -> createContextMenu()));
         h.apply(struc -> {
-            struc.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            contextMenu.installOnMouseClick(struc, mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY, true);
+        });
+        h.apply(struc -> {
+            struc.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
                 if (event.getCode() == KeyCode.SPACE) {
                     category.toggleExpanded();
                     event.consume();
@@ -276,7 +283,7 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
                             : null;
                     if (target != null) {
                         StoreViewState.get().setCategoryDragTarget(target);
-                        event.acceptTransferModes(TransferMode.MOVE);
+                        event.acceptTransferModes(TransferMode.ANY);
                         event.consume();
                     }
                 }
@@ -420,7 +427,7 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
 
                 var target = new StoreSectionDrag.CategoryTarget(getCategory());
                 StoreViewState.get().setSectionDragTarget(target);
-                event.acceptTransferModes(TransferMode.MOVE);
+                event.acceptTransferModes(TransferMode.ANY);
                 event.consume();
             }
 
@@ -437,32 +444,39 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
                         : StoreCategoryDrag.Order.BEFORE;
                 var target = new StoreCategoryDrag.CategoryTarget(getCategory(), order);
                 StoreViewState.get().setCategoryDragTarget(target);
-                event.acceptTransferModes(TransferMode.MOVE);
+                event.acceptTransferModes(TransferMode.ANY);
                 event.consume();
             }
         });
     }
 
     private ContextMenu createContextMenu() {
-        var contextMenu = MenuHelper.createContextMenu();
+        var contextMenu = new ContextMenu();
 
         if (AppPrefs.get().enableHttpApi().get()) {
             var copyId = new MenuItem(AppI18n.get("copyId"), new FontIcon("mdi2c-content-copy"));
             copyId.setOnAction(event ->
-                    ClipboardHelper.copyText(category.getCategory().getUuid().toString()));
+            {
+                ClipboardHelper.copyText(category.getCategory().getUuid().toString());
+                event.consume();
+            });
             contextMenu.getItems().add(copyId);
         }
 
         if (AppPrefs.get().developerMode().getValue()) {
             var browse = new MenuItem(AppI18n.get("browseInternalStorage"), new FontIcon("mdi2f-folder-open-outline"));
             browse.setOnAction(
-                    event -> DesktopHelper.browseFile(category.getCategory().getDirectory()));
+                    event -> {
+                        DesktopHelper.browseFile(category.getCategory().getDirectory());
+                        event.consume();
+                    });
             contextMenu.getItems().add(browse);
         }
 
         var newCategory = new MenuItem(AppI18n.get("createNewCategory"), new FontIcon("mdi2p-plus-thick"));
         newCategory.setOnAction(event -> {
             StoreViewState.get().createNewCategory(category);
+            event.consume();
         });
         newCategory.setDisable(!DataStorage.get().canCreateStoreCategoryWithin(category.getCategory()));
         contextMenu.getItems().add(newCategory);
@@ -472,10 +486,16 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
         var configure = new MenuItem(AppI18n.get("configure"), new FontIcon("mdi2w-wrench-outline"));
         configure.setOnAction(event -> {
             StoreCategoryConfigComp.show(category);
+            event.consume();
         });
         contextMenu.getItems().add(configure);
 
         var rename = new MenuItem(AppI18n.get("rename"), new FontIcon("mdal-edit"));
+        rename.setAccelerator(switch (OsType.ofLocal()) {
+            case OsType.Linux ignored -> new KeyCodeCombination(KeyCode.F2);
+            case OsType.MacOs ignored -> new KeyCodeCombination(KeyCode.ENTER);
+            case OsType.Windows ignored -> new KeyCodeCombination(KeyCode.F2);
+        });
         rename.setOnAction(event -> {
             category.getRenameTrigger().fire(null);
             event.consume();
@@ -506,8 +526,10 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
         contextMenu.getItems().add(new SeparatorMenuItem());
 
         var del = new MenuItem(AppI18n.get("remove"), new FontIcon("mdal-delete_outline"));
+        del.setAccelerator(new KeyCodeCombination(KeyCode.DELETE));
         del.setOnAction(event -> {
             category.delete();
+            event.consume();
         });
         del.setDisable(!DataStorage.get().canDeleteStoreCategory(category.getCategory()));
         contextMenu.getItems().add(del);

@@ -82,7 +82,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                 ? contentRegion
                 : RegionBuilder.empty().hide(new ReadOnlyBooleanWrapper(true)).build();
         cr.getStyleClass().add("custom-content");
-        var bb = createButtonBar(name);
+        var bb = createButtonBar();
         var controls = new HBox(cr, bb);
         controls.setFillHeight(true);
         HBox.setHgrow(cr, Priority.ALWAYS);

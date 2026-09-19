@@ -4,10 +4,7 @@ import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.fs.FileKind;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.BooleanScope;
-import io.xpipe.app.util.GlobalTimer;
-import io.xpipe.app.util.OsType;
-import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.util.*;
 
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -15,6 +12,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
 
+import javafx.scene.layout.Region;
 import lombok.Getter;
 
 import java.io.IOException;
@@ -28,31 +26,25 @@ import java.util.Objects;
 public class BrowserFileListCompEntry {
 
     private final TableView<BrowserEntry> tv;
-    private final Node row;
+    private final Region row;
     private final BrowserEntry item;
     private final BrowserFileListModel model;
+    private final ContextMenuWrapper contextMenu;
 
     private Instant lastHoverUpdate;
-    private ContextMenu lastContextMenu;
 
     public BrowserFileListCompEntry(
-            TableView<BrowserEntry> tv, Node row, BrowserEntry item, BrowserFileListModel model) {
+            TableView<BrowserEntry> tv, Region row, BrowserEntry item, BrowserFileListModel model) {
         this.tv = tv;
         this.row = row;
         this.item = item;
         this.model = model;
+        this.contextMenu = new ContextMenuWrapper(() -> new BrowserContextMenu(model.getFileSystemModel(), item, false));
     }
 
     public void onMouseClick(MouseEvent t) {
-        if (lastContextMenu != null) {
-            lastContextMenu.hide();
-            lastContextMenu = null;
-        }
-
         if (showContextMenu(t)) {
-            var cm = new BrowserContextMenu(model.getFileSystemModel(), item, false);
-            cm.show(row, t.getScreenX(), t.getScreenY());
-            lastContextMenu = cm;
+            contextMenu.show(row, t.getScreenX(), t.getScreenY());
             t.consume();
             return;
         }

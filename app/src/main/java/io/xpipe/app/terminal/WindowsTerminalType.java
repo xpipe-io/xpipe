@@ -182,6 +182,12 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         }
 
         @Override
+        public boolean isAvailable() {
+            // The executable is a weird link
+            return Files.exists(getPath().getParent()) || super.isAvailable();
+        }
+
+        @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             checkProfile();
             try (var sc = LocalShell.getShell().start()) {

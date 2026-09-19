@@ -2,7 +2,6 @@ package io.xpipe.app.hub.list;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
-import io.xpipe.app.comp.base.ContextMenuAugment;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.comp.base.VerticalComp;
@@ -14,6 +13,7 @@ import io.xpipe.app.hub.section.StoreSectionComp;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.prefs.AppPrefs;
 
+import io.xpipe.app.util.ContextMenuWrapper;
 import javafx.animation.AnimationTimer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
@@ -22,6 +22,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.DragEvent;
@@ -81,14 +82,12 @@ public class StoreEntryListComp extends SimpleRegionBuilder {
         content.style("store-list-comp");
         content.vgrow();
 
-        content.apply(s -> {
-            var cm = new ContextMenuAugment<>(me -> me.getButton() == MouseButton.SECONDARY, null, () -> {
-                var menu = MenuHelper.createContextMenu();
-                StoreCreationMenu.addButtons(menu.getItems(), false);
-                return menu;
-            });
-            cm.accept(s);
+        var cm = new ContextMenuWrapper(() -> {
+            var menu = new ContextMenu();
+            StoreCreationMenu.addButtons(menu.getItems(), false);
+            return menu;
         });
+        content.apply(struc -> cm.installOnMouseClick(struc, mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY, true));
 
         content.apply(s -> {
             setupBorderScroll(s);
@@ -270,12 +269,12 @@ public class StoreEntryListComp extends SimpleRegionBuilder {
         var map = new LinkedHashMap<BaseRegionBuilder<?, ?>, ObservableValue<Boolean>>();
         map.put(
                 new StoreNotFoundComp().apply(s -> {
-                    var cm = new ContextMenuAugment<>(me -> me.getButton() == MouseButton.SECONDARY, null, () -> {
-                        var menu = MenuHelper.createContextMenu();
+                    var cm = new ContextMenuWrapper(() -> {
+                        var menu = new ContextMenu();
                         StoreCreationMenu.addButtons(menu.getItems(), false);
                         return menu;
                     });
-                    cm.accept(s);
+                    cm.installOnMouseClick(s, mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY, true);
                 }),
                 Bindings.and(
                         Bindings.not(Bindings.isEmpty(

@@ -28,7 +28,7 @@ public class AppGuiMode extends AppOperationMode {
         TrackEvent.info("Closing windows");
         PlatformThread.runLaterIfNeededBlocking(() -> {
             // Close dialogs
-            AppDialog.getModalOverlaysRaw().clear();
+            AppDialog.closeAllModalOverlays();
 
             // Close other windows
             Stage.getWindows().stream()

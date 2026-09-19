@@ -9,6 +9,7 @@ import io.xpipe.app.webtop.WebtopApp;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 
 public interface WarpTerminalType extends ExternalTerminalType, TrackableTerminalType {
@@ -57,7 +58,20 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
 
         @Override
         public boolean isAvailable() {
-            return WindowsRegistry.local().keyExists(WindowsRegistry.HKEY_CURRENT_USER, "Software\\Classes\\warp");
+            // The uninstaller leaves the protocol handler key behind
+            var command = WindowsRegistry.local()
+                    .readStringValueIfPresent(
+                            WindowsRegistry.HKEY_CURRENT_USER, "Software\\Classes\\warp\\shell\\open\\command", null);
+            if (command.isEmpty()) {
+                return false;
+            }
+
+            try {
+                var split = command.get().split("\"");
+                return split.length > 1 && Files.exists(Path.of(split[1]));
+            } catch (InvalidPathException ignored) {
+                return false;
+            }
         }
 
         @Override

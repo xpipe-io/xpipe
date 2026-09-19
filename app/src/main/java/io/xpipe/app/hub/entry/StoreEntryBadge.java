@@ -47,21 +47,30 @@ public interface StoreEntryBadge {
         }
 
         static Action providerMenu(String... ids) {
-            var cm = new AtomicReference<ContextMenu>();
             return new Action() {
-                @Override
-                public void run(StoreEntryWrapper wrapper, Button button) {
-                    if (cm.get() == null) {
-                        cm.set(MenuHelper.createContextMenu());
+
+                private ContextMenu contextMenu;
+
+                private void buildContextMenu(StoreEntryWrapper wrapper) {
+                    if (contextMenu == null) {
+                        contextMenu = new ContextMenu();
                     }
 
+                    contextMenu.getItems().clear();
                     var provs = getProviders(wrapper);
-                    cm.get().getItems().clear();
                     for (var p : provs) {
                         var item = StoreEntryComp.buildMenuItemForAction(wrapper, p);
-                        cm.get().getItems().add(item);
+                        contextMenu.getItems().add(item);
                     }
-                    MenuHelper.show(cm.get(), button, Side.BOTTOM);
+                }
+
+                @Override
+                public void run(StoreEntryWrapper wrapper, Button button) {
+                    var cm = new ContextMenuWrapper(() -> {
+                        buildContextMenu(wrapper);
+                        return contextMenu;
+                    });
+                    cm.show(button, Side.BOTTOM);
                 }
 
                 @Override
@@ -189,58 +198,71 @@ public interface StoreEntryBadge {
             return null;
         }
 
-        var cm = new AtomicReference<ContextMenu>();
         var busy = new SimpleBooleanProperty();
-        return of("mdi2s-server-network-outline", effective).withAction((wrapper, b) -> {
-            b.opacityProperty()
-                    .bind(PlatformThread.sync(Bindings.createDoubleBinding(
-                            () -> {
-                                return busy.get() ? 0.5 : 1.0;
-                            },
-                            busy)));
+        return of("mdi2s-server-network-outline", effective).withAction(new Action() {
 
-            if (wrapper.getEntry().getStore() instanceof HostAddressStore has) {
-                if (busy.get()) {
-                    return;
+            private ContextMenu contextMenu;
+
+            private void buildContextMenu(HostAddress has) {
+                if (contextMenu == null) {
+                    contextMenu = new ContextMenu();
                 }
 
-                ThreadHelper.runFailableAsync(() -> {
-                    BooleanScope.executeExclusive(busy, () -> {
-                        has.refreshHostAddressOrThrow();
+                contextMenu.getItems().clear();
+                for (var a : has.getAvailable()) {
+                    var i = new MenuItem();
+                    i.setText(a);
+                    i.setGraphic(new FontIcon("mdi2c-clipboard-multiple-outline"));
+                    i.setOnAction(event -> {
+                        ClipboardHelper.copyText(a);
+                        event.consume();
                     });
-
-                    var refreshed = has.getHostAddress();
-                    if (refreshed == null || refreshed.isEmpty()) {
-                        return;
-                    }
-
-                    if (refreshed.isSingle()) {
-                        ClipboardHelper.copyText(refreshed.get());
-                        return;
-                    }
-
-                    Platform.runLater(() -> {
-                        if (cm.get() == null) {
-                            cm.set(MenuHelper.createContextMenu());
-                        }
-
-                        cm.get().getItems().clear();
-                        for (var a : refreshed.getAvailable()) {
-                            var i = new MenuItem();
-                            i.setText(a);
-                            i.setGraphic(new FontIcon("mdi2c-clipboard-multiple-outline"));
-                            i.setOnAction(event -> {
-                                ClipboardHelper.copyText(a);
-                                event.consume();
-                            });
-                            cm.get().getItems().add(i);
-                        }
-                        MenuHelper.show(cm.get(), b, Side.BOTTOM);
-                    });
-                });
-            } else {
-                ClipboardHelper.copyText(effective);
+                    contextMenu.getItems().add(i);
+                }
             }
+
+            @Override
+            public void run(StoreEntryWrapper wrapper, Button b) {
+                b.opacityProperty()
+                        .bind(PlatformThread.sync(Bindings.createDoubleBinding(
+                                () -> {
+                                    return busy.get() ? 0.5 : 1.0;
+                                },
+                                busy)));
+
+                if (wrapper.getEntry().getStore() instanceof HostAddressStore has) {
+                    if (busy.get()) {
+                        return;
+                    }
+
+                    ThreadHelper.runFailableAsync(() -> {
+                        BooleanScope.executeExclusive(busy, () -> {
+                            has.refreshHostAddressOrThrow();
+                        });
+
+                        var refreshed = has.getHostAddress();
+                        if (refreshed == null || refreshed.isEmpty()) {
+                            return;
+                        }
+
+                        if (refreshed.isSingle()) {
+                            ClipboardHelper.copyText(refreshed.get());
+                            return;
+                        }
+
+                        Platform.runLater(() -> {
+                            var cm = new ContextMenuWrapper(() -> {
+                                buildContextMenu(addr);
+                                return contextMenu;
+                            });
+                            cm.show(b, Side.BOTTOM);
+                        });
+                    });
+                } else {
+                    ClipboardHelper.copyText(effective);
+                }
+            }
+
         });
     }
 

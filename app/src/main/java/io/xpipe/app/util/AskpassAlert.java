@@ -1,8 +1,10 @@
 package io.xpipe.app.util;
 
+import com.sun.jna.platform.win32.User32;
 import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.mode.AppOperationMode;
+import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.core.window.AppSideWindow;
 import io.xpipe.app.secret.InPlaceSecretValue;
 import io.xpipe.app.secret.SecretManager;
@@ -20,6 +22,8 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+
+import java.time.Duration;
 
 public class AskpassAlert {
 
@@ -119,15 +123,19 @@ public class AskpassAlert {
                     };
 
                     alert.setOnShown(event -> {
-                        stage.requestFocus();
-                        if (stealFocus) {
-                            anim.start();
-                        }
-                        // Wait 1 pulse before focus so that the scene can be assigned to text
-                        Platform.runLater(() -> {
-                            text.getField().requestFocus();
-                            text.getField().end();
-                        });
+                        GlobalTimer.delay(() -> {
+                            Platform.runLater(() -> {
+                                stage.requestFocus();
+                                if (stealFocus) {
+                                    anim.start();
+                                }
+                                // Wait 1 pulse before focus so that the scene can be assigned to text
+                                Platform.runLater(() -> {
+                                    text.getField().requestFocus();
+                                    text.getField().end();
+                                });
+                            });
+                        }, Duration.ofMillis(100));
                         event.consume();
                     });
 

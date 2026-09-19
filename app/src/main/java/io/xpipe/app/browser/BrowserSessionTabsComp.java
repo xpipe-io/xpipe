@@ -15,6 +15,7 @@ import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
 
+import io.xpipe.app.util.ContextMenuWrapper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
@@ -65,14 +66,19 @@ public class BrowserSessionTabsComp extends SimpleRegionBuilder {
             }
 
             if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(keyEvent)) {
-                tabs.getTabs().remove(current);
+                if (current.isClosable()) {
+                    tabs.getTabs().remove(current);
+                }
                 keyEvent.consume();
                 return;
             }
 
             if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN)
                     .match(keyEvent)) {
-                tabs.getTabs().clear();
+                tabs.getTabs()
+                        .removeAll(tabs.getTabs().stream()
+                                .filter(t -> t.isClosable())
+                                .toList());
                 keyEvent.consume();
             }
 
@@ -298,7 +304,7 @@ public class BrowserSessionTabsComp extends SimpleRegionBuilder {
     }
 
     private ContextMenu createContextMenu(TabPane tabs, Tab tab, BrowserSessionTab tabModel) {
-        var cm = MenuHelper.createContextMenu();
+        var cm = new ContextMenu();
 
         if (tabModel.isCloseable()) {
             var unpin = MenuHelper.createMenuItem(LabelGraphic.none(), "unpinTab");
@@ -408,9 +414,6 @@ public class BrowserSessionTabsComp extends SimpleRegionBuilder {
 
     private Tab createTab(TabPane tabs, BrowserSessionTab tabModel) {
         var tab = new Tab();
-        if (tabModel.isCloseable()) {
-            tab.setContextMenu(createContextMenu(tabs, tab, tabModel));
-        }
 
         tab.setClosable(tabModel.isCloseable());
         // Prevent closing while busy
@@ -514,6 +517,7 @@ public class BrowserSessionTabsComp extends SimpleRegionBuilder {
                     if (color != null) {
                         c.getStyleClass().add(color.getId());
                     }
+
                     c.addEventHandler(DragEvent.DRAG_ENTERED, de -> {
                         // Prevent switch when dragging local files into app
                         if (tabModel.isCloseable() && !de.getDragboard().hasContent(DataFormat.FILES)) {
@@ -521,6 +525,11 @@ public class BrowserSessionTabsComp extends SimpleRegionBuilder {
                             de.consume();
                         }
                     });
+
+                    if (tabModel.isCloseable()) {
+                        var cm = new ContextMenuWrapper(() -> createContextMenu(tabs, tab, tabModel));
+                        cm.installOnMouseClick(c, mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY, false);
+                    }
                 });
             }
         });

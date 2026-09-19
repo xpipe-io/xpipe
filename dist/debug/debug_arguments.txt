@@ -2,5 +2,5 @@
 -Dio.xpipe.app.writeLogs=false
 -Dio.xpipe.app.logLevel=trace
 -Dio.xpipe.app.developerMode=true
--Dio.xpipe.beacon.debugOutput=true
+-Dio.xpipe.app.printBeaconMessages=true
 -Dio.xpipe.app.useVirtualThreads=false

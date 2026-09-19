@@ -29,6 +29,10 @@ public interface PasswordManager {
         return false;
     }
 
+    default boolean preferListIds() {
+        return false;
+    }
+
     default List<ListEntry> listKeys() {
         return List.of();
     }
