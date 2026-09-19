@@ -22,7 +22,7 @@ import java.net.URI;
 @EqualsAndHashCode
 @ToString
 public abstract class AbstractServiceStore
-        implements SingletonSessionStore<NetworkTunnelSession>, DataStore, StartOnInitStore {
+        implements SingletonSessionStore<NetworkTunnelStoreSession>, DataStore, StartOnInitStore {
 
     private final Integer remotePort;
     private final Integer localPort;
@@ -141,7 +141,7 @@ public abstract class AbstractServiceStore
 
     @Override
     @SneakyThrows
-    public NetworkTunnelSession newSession() {
+    public NetworkTunnelStoreSession newSession() {
         if (getAddress() != null) {
             if (getGateway() == null || !getGateway().getStore().isLocallyTunnelable()) {
                 return null;
@@ -219,7 +219,7 @@ public abstract class AbstractServiceStore
 
     @Override
     public Class<?> getSessionClass() {
-        return NetworkTunnelSession.class;
+        return NetworkTunnelStoreSession.class;
     }
 
     @Override

@@ -11,12 +11,12 @@ import lombok.Getter;
 import java.time.Duration;
 
 @Getter
-public class ShellSession extends Session {
+public class ShellStoreSession extends StoreSession {
 
     private final FailableSupplier<ShellControl> supplier;
     private ShellControl shellControl;
 
-    public ShellSession(FailableSupplier<ShellControl> supplier) {
+    public ShellStoreSession(FailableSupplier<ShellControl> supplier) {
         this.supplier = supplier;
     }
 

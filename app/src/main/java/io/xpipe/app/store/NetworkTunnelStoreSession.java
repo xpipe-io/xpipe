@@ -2,7 +2,7 @@ package io.xpipe.app.store;
 
 import io.xpipe.app.process.ShellControl;
 
-public abstract class NetworkTunnelSession extends Session {
+public abstract class NetworkTunnelStoreSession extends StoreSession {
 
     public abstract int getLocalPort();
 

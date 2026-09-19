@@ -7,7 +7,7 @@ import io.xpipe.app.process.ShellControlFunction;
 import io.xpipe.app.process.ShellControlParentStoreFunction;
 import io.xpipe.app.process.StubShellControl;
 
-public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore, SingletonSessionStore<ShellSession> {
+public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore, SingletonSessionStore<ShellStoreSession> {
 
     default ShellControl getOrStartSession() throws Exception {
         // Check if the cache is not available
@@ -36,16 +36,16 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
     }
 
     @Override
-    default ShellSession newSession() {
+    default ShellStoreSession newSession() {
         var func = shellFunction();
-        var session = new ShellSession(() -> new StubShellControl(func.control()));
+        var session = new ShellStoreSession(() -> new StubShellControl(func.control()));
         session.addListener(this);
         return session;
     }
 
     @Override
     default Class<?> getSessionClass() {
-        return ShellSession.class;
+        return ShellStoreSession.class;
     }
 
     @Override

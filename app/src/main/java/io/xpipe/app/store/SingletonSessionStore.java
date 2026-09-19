@@ -1,6 +1,6 @@
 package io.xpipe.app.store;
 
-public interface SingletonSessionStore<T extends Session>
+public interface SingletonSessionStore<T extends StoreSession>
         extends ExpandedLifecycleStore, InternalCacheDataStore, SessionListener {
 
     @Override

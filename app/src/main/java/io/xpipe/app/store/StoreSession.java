@@ -6,7 +6,7 @@ import io.xpipe.app.util.ThreadHelper;
 
 import java.time.Duration;
 
-public abstract class Session implements AutoCloseable {
+public abstract class StoreSession implements AutoCloseable {
 
     protected SessionListener listener = running -> {};
 

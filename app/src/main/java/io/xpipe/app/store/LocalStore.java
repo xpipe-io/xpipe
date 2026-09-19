@@ -47,7 +47,7 @@ public class LocalStore
     }
 
     @Override
-    public NetworkTunnelSession createTunnelSession(int localPort, int remotePort, String address) {
+    public NetworkTunnelStoreSession createTunnelSession(int localPort, int remotePort, String address) {
         return null;
     }
 

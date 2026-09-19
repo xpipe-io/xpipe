@@ -50,5 +50,5 @@ public interface NetworkTunnelStore extends DataStore, SelfReferentialStore {
         return getUnsupportedParent().isEmpty();
     }
 
-    NetworkTunnelSession createTunnelSession(int localPort, int remotePort, String address);
+    NetworkTunnelStoreSession createTunnelSession(int localPort, int remotePort, String address);
 }

@@ -48,12 +48,12 @@ public class ProcessOutputException extends Exception {
     }
 
     public static ProcessOutputException withPrefix(String customPrefix, ProcessOutputException ex) {
-        var joined = customPrefix + (ex.prefix != null ? "\n" + ex.prefix : "");
+        var joined = customPrefix + (ex.prefix != null ? "\n\n" + ex.prefix : "");
         return new ProcessOutputException(ex.getCommand(), ex.getExitCode(), ex.getOutput(), joined, null, ex);
     }
 
     public static ProcessOutputException withSuffix(String customSuffix, ProcessOutputException ex) {
-        var joined = (ex.suffix != null ? ex.suffix + "\n" : "") + customSuffix;
+        var joined = (ex.suffix != null ? ex.suffix + "\n\n" : "") + customSuffix;
         return new ProcessOutputException(ex.getCommand(), ex.getExitCode(), ex.getOutput(), null, joined, ex);
     }
 
