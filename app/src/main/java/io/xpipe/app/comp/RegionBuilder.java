@@ -1,5 +1,6 @@
 package io.xpipe.app.comp;
 
+import javafx.beans.value.ObservableDoubleValue;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.Region;
@@ -24,6 +25,10 @@ public abstract class RegionBuilder<T extends Region> extends BaseRegionBuilder<
 
     public static RegionBuilder<Spacer> hspacer(double size) {
         return of(() -> new Spacer(size));
+    }
+
+    public static RegionBuilder<Spacer> hspacer(ObservableDoubleValue size) {
+        return of(() -> new Spacer(size, Orientation.HORIZONTAL));
     }
 
     public static RegionBuilder<Spacer> vspacer() {

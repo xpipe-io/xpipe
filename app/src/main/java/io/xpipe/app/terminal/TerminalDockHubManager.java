@@ -339,7 +339,7 @@ public class TerminalDockHubManager {
         showing.set(true);
 
         NativeWinWindowControl.MAIN_WINDOW.setWindowsTransitionsEnabled(false);
-        AppLayoutModel.get().getQueueEntries().add(queueEntry);
+        AppLayoutModel.get().showQueueEntry(queueEntry);
     }
 
     public void disableDock() {
@@ -354,7 +354,7 @@ public class TerminalDockHubManager {
         showDialogIfNeeded();
 
         NativeWinWindowControl.MAIN_WINDOW.setWindowsTransitionsEnabled(true);
-        AppLayoutModel.get().getQueueEntries().remove(queueEntry);
+        AppLayoutModel.get().hideQueueEntry(queueEntry);
     }
 
     public void triggerDock() {

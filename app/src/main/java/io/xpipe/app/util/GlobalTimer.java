@@ -15,7 +15,7 @@ public class GlobalTimer {
         TIMER = new Timer("global-timer", true);
     }
 
-    public static void reset() {
+    public static synchronized void reset() {
         if (TIMER == null) {
             return;
         }
@@ -30,10 +30,16 @@ public class GlobalTimer {
             public void run() {
                 try {
                     if (!s.get()) {
-                        // Use this approach instead of scheduleAtFixedRate
-                        // to prevent it from being run rapidly in case the timer is trying
-                        // to catch up. For example with system hibernation
-                        TIMER.schedule(createDelayedTask(interval, s), interval.toMillis());
+                        synchronized (GlobalTimer.class) {
+                            if (TIMER == null) {
+                                return;
+                            }
+
+                            // Use this approach instead of scheduleAtFixedRate
+                            // to prevent it from being run rapidly in case the timer is trying
+                            // to catch up. For example with system hibernation
+                            TIMER.schedule(createDelayedTask(interval, s), interval.toMillis());
+                        }
                     }
                 } catch (IllegalStateException e) {
                     // The timer might be shutdown already
@@ -46,23 +52,23 @@ public class GlobalTimer {
     }
 
     private static void schedule(TimerTask task, long delay) {
-        if (TIMER == null) {
-            return;
-        }
-
         try {
-            TIMER.schedule(
-                    new TimerTask() {
-                        @Override
-                        public void run() {
-                            try {
-                                task.run();
-                            } catch (Throwable t) {
-                                ErrorEventFactory.fromThrowable(t).handle();
-                            }
+            synchronized (GlobalTimer.class) {
+                if (TIMER == null) {
+                    return;
+                }
+
+                TIMER.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        try {
+                            task.run();
+                        } catch (Throwable t) {
+                            ErrorEventFactory.fromThrowable(t).handle();
                         }
-                    },
-                    delay);
+                    }
+                }, delay);
+            }
         } catch (IllegalStateException e) {
             // The timer might be shutdown already
             ErrorEventFactory.fromThrowable(e).omit().expected().handle();

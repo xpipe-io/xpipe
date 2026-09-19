@@ -37,4 +37,9 @@ public class PasswordManagerKeyList {
         cachedPasswordManagerClass = pwman.getClass();
         return l;
     }
+
+    public static synchronized void clear() {
+        cachedPasswordManagerClass = null;
+        cached = null;
+    }
 }

@@ -63,6 +63,10 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
         CommandSupport.isInPathOrThrow(sc, "zellij");
     }
 
+    private String getPauseTiming() {
+        return OsType.ofLocal() == OsType.WINDOWS && ShellDialects.isPowershell(LocalShell.getDialect()) ? "1.5" : "0.5";
+    }
+
     @Override
     public ShellScript launchForExistingSession(ShellControl control, TerminalLaunchConfiguration config) {
         var l = new ArrayList<String>();
@@ -151,13 +155,14 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
         }
 
         var asyncLines = new ArrayList<String>();
+        var pause = getPauseTiming();
         asyncLines.addAll(List.of(
-                "sleep 0.5",
+                "sleep " + pause,
                 "zellij -s xpipe action new-tab --name \"" + escape(control, config.getColoredTitle(), false, true)
                         + "\"",
-                "sleep 0.5",
+                "sleep " + pause,
                 "zellij -s xpipe action go-to-tab 2",
-                "sleep 0.5",
+                "sleep " + pause,
                 "zellij -s xpipe action write-chars -- " + escape(control, " " + firstCommand, true, true)
                         + getCommandExitLiteral(control),
                 "zellij -s xpipe action clear",

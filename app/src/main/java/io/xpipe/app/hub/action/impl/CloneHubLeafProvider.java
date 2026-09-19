@@ -76,6 +76,9 @@ public class CloneHubLeafProvider implements HubLeafProvider<DataStore> {
             entry.setPinToTop(ref.get().isPinToTop());
             entry.setOrderIndex(DataStorage.get().getNextOrderIndex());
             entry.setNotes(ref.get().getNotes());
+            for (String tag : ref.get().getTags()) {
+                entry.addTag(tag);
+            }
 
             var instant = ref.get().getLastAccess().plus(Duration.ofSeconds(1));
             entry.setLastModified(instant);

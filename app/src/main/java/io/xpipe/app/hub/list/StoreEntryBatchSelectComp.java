@@ -37,7 +37,7 @@ public class StoreEntryBatchSelectComp extends SimpleRegionBuilder {
                         return;
                     }
 
-                    StoreViewState.get().unselectBatchMode(section);
+                    StoreViewState.get().unselectBatchMode(section, false);
                 }
             });
         });
@@ -59,8 +59,14 @@ public class StoreEntryBatchSelectComp extends SimpleRegionBuilder {
             }
 
             BooleanScope.executeExclusive(selfUpdate, () -> {
-                if (cb.isSelected()) {
-                    StoreViewState.get().selectBatchMode(section);
+                while (c.next()) {
+                    if (c.wasRemoved()) {
+                        for (StoreSection r : c.getRemoved()) {
+                            Platform.runLater(() -> {
+                                StoreViewState.get().unselectBatchMode(r, true);
+                            });
+                        }
+                    }
                 }
             });
         });
@@ -75,7 +81,7 @@ public class StoreEntryBatchSelectComp extends SimpleRegionBuilder {
                     if (cb.isSelected()) {
                         StoreViewState.get().selectBatchMode(section);
                     } else {
-                        StoreViewState.get().unselectBatchMode(section);
+                        StoreViewState.get().unselectBatchMode(section, false);
                     }
                 }
 

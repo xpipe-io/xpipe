@@ -38,7 +38,7 @@ public abstract class AbstractAction {
             AppCache.update("pickIntroductionShown", true);
         }
 
-        AppLayoutModel.get().getQueueEntries().add(queueEntry);
+        AppLayoutModel.get().showQueueEntry(queueEntry);
         pick = action -> {
             if (action instanceof SerializableAction) {
                 cancelPick();
@@ -55,7 +55,7 @@ public abstract class AbstractAction {
             });
 
     public static synchronized void cancelPick() {
-        AppLayoutModel.get().getQueueEntries().remove(queueEntry);
+        AppLayoutModel.get().hideQueueEntry(queueEntry);
         pick = null;
     }
 

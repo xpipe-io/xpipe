@@ -9,6 +9,7 @@ import io.xpipe.app.platform.BooleanAnimationTimer;
 import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
+import io.xpipe.app.util.ContextMenuWrapper;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
@@ -36,10 +37,8 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
 
     private final Supplier<BrowserEntry> base;
     private final BrowserFileSystemTabModel model;
-    private ContextMenu shownBrowserActionsMenu;
     private boolean expandBrowserActionMenuKey;
     private boolean keyBasedNavigation;
-    private boolean closeBrowserActionMenuKey;
 
     public BrowserQuickAccessContextMenu(Supplier<BrowserEntry> base, BrowserFileSystemTabModel model) {
         this.base = base;
@@ -162,13 +161,14 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
         private final BrowserEntry browserEntry;
         private final Menu menu;
         private final MenuItem empty;
-        private ContextMenu browserActionMenu;
+        private final ContextMenuWrapper browserActionMenu;
 
         public QuickAccessMenu(BrowserEntry browserEntry) {
             empty = new Menu("...");
             empty.getStyleClass().add("leaf");
 
             this.browserEntry = browserEntry;
+            this.browserActionMenu = new ContextMenuWrapper(() -> new BrowserContextMenu(model, browserEntry, true));
             this.menu = new Menu(
                     // Use original name, not the link target
                     browserEntry.getRawFileEntry().getName(),
@@ -254,12 +254,6 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
                     expandDirectoryMenu(empty);
                 }
             });
-
-            menu.addEventFilter(Menu.ON_HIDING, event -> {
-                if (closeBrowserActionMenuKey) {
-                    menu.show();
-                }
-            });
         }
 
         private void addHoverHandling() {
@@ -292,13 +286,6 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
                             expandBrowserActionMenuKey = true;
                         } else {
                             expandBrowserActionMenuKey = false;
-                        }
-                        if (event.getCode().equals(KeyCode.LEFT)
-                                && browserActionMenu != null
-                                && browserActionMenu.isShowing()) {
-                            closeBrowserActionMenuKey = true;
-                        } else {
-                            closeBrowserActionMenuKey = false;
                         }
                     });
                     contextMenu.addEventFilter(MouseEvent.ANY, event -> {
@@ -334,31 +321,18 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
         }
 
         private boolean hideBrowserActionsMenu() {
-            if (shownBrowserActionsMenu != null && shownBrowserActionsMenu.isShowing()) {
-                shownBrowserActionsMenu.hide();
-                shownBrowserActionsMenu = null;
+            if (browserActionMenu.isShowing()) {
+                browserActionMenu.hide();
                 return true;
             }
             return false;
         }
 
         private void showBrowserActionsMenu() {
-            if (browserActionMenu == null) {
-                this.browserActionMenu = new BrowserContextMenu(model, browserEntry, true);
-                this.browserActionMenu.setOnAction(e -> {
-                    hide();
-                });
-                InputHelper.onLeft(this.browserActionMenu, true, keyEvent -> {
-                    this.browserActionMenu.hide();
-                    keyEvent.consume();
-                });
-            }
-
             menu.hide();
-            browserActionMenu.show(menu.getStyleableNode(), Side.RIGHT, 0, 0);
-            shownBrowserActionsMenu = browserActionMenu;
+            browserActionMenu.show((Region) menu.getStyleableNode(), Side.RIGHT);
             Platform.runLater(() -> {
-                var items = browserActionMenu.getItems();
+                var items = browserActionMenu.getContextMenu().getItems();
                 if (items.size() > 0) {
                     items.getFirst().getStyleableNode().requestFocus();
                 }

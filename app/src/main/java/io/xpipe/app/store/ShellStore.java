@@ -22,7 +22,7 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
                 stopSessionIfNeeded();
             } else {
                 existingSession.getShellControl().waitForSubShellExit();
-                return new StubShellControl(existingSession.getShellControl());
+                return existingSession.getShellControl();
             }
         }
 
@@ -32,13 +32,13 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
         // Then, the cache returns null
         // getSession()
 
-        return new StubShellControl(session.getShellControl());
+        return session.getShellControl();
     }
 
     @Override
     default ShellSession newSession() {
         var func = shellFunction();
-        var session = new ShellSession(() -> func.control());
+        var session = new ShellSession(() -> new StubShellControl(func.control()));
         session.addListener(this);
         return session;
     }

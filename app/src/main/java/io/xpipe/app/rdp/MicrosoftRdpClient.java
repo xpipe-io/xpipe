@@ -10,6 +10,7 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.secret.InPlaceSecretValue;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
 
@@ -25,9 +26,7 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 import java.time.Duration;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SuperBuilder(toBuilder = true)
@@ -148,6 +147,16 @@ public abstract class MicrosoftRdpClient implements ExternalApplicationType.Inst
     private static final int CRED_TYPE_GENERIC = 1;
     private static final int CRED_TYPE_DOMAIN_PASSWORD = 2;
     private static final int CRED_PERSIST_SESSION = 1;
+    
+    private static final Set<String> storedCredentials = new HashSet<String>();
+
+    public static void reset() {
+        synchronized (storedCredentials) {
+            for (String s : storedCredentials) {
+                AuthModuleProvider.get().deleteWindowsCredential(s, CRED_PERSIST_SESSION);
+            }
+        }
+    }
 
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
@@ -185,25 +194,29 @@ public abstract class MicrosoftRdpClient implements ExternalApplicationType.Inst
 
         disableSignatureWarning(configuration);
 
+        var storedTargets = new HashSet<String>();
         if (configuration.getPassword() != null) {
-            AuthModuleProvider.get()
-                    .setWindowsCredential(
-                            "TERMSRV/" + configuration.getHost(),
-                            CRED_TYPE_GENERIC,
-                            CRED_PERSIST_SESSION,
-                            configuration.getUsername(),
-                            configuration.getPassword());
+            String target = "TERMSRV/" + configuration.getHost();
+            AuthModuleProvider.get().setWindowsCredential(target, CRED_TYPE_GENERIC, CRED_PERSIST_SESSION, configuration.getUsername(),
+                    configuration.getPassword());
+            storedTargets.add(target);
         }
 
         var gateway = configuration.getGateway();
         if (gateway != null && gateway.getPassword() != null) {
-            AuthModuleProvider.get()
-                    .setWindowsCredential(
-                            gateway.getHost(),
-                            CRED_TYPE_GENERIC,
-                            CRED_PERSIST_SESSION,
-                            gateway.getUsername(),
-                            gateway.getPassword());
+            String target = gateway.getHost();
+            AuthModuleProvider.get().setWindowsCredential(target, CRED_TYPE_GENERIC, CRED_PERSIST_SESSION, gateway.getUsername(),
+                    gateway.getPassword());
+            storedTargets.add(target);
+        }
+
+        for (String storedTarget : storedTargets) {
+            GlobalTimer.delay(() -> {
+                AuthModuleProvider.get().deleteWindowsCredential(storedTarget, CRED_PERSIST_SESSION);
+            }, Duration.ofSeconds(120));
+        }
+        synchronized (storedCredentials) {
+            storedCredentials.addAll(storedTargets);
         }
 
         var file = writeRdpConfigFile(configuration.getTitle(), adaptedRdpConfig);
@@ -222,6 +235,10 @@ public abstract class MicrosoftRdpClient implements ExternalApplicationType.Inst
                     Duration.ofSeconds(120),
                     p -> {
                         return !p.isDialog();
+                    }, ignored -> {
+                        for (String storedTarget : storedTargets) {
+                            AuthModuleProvider.get().deleteWindowsCredential(storedTarget, CRED_PERSIST_SESSION);
+                        }
                     });
         }
 
@@ -267,6 +284,16 @@ public abstract class MicrosoftRdpClient implements ExternalApplicationType.Inst
     private RdpConfig getAdaptedConfig(RdpLaunchConfig configuration) {
         var input = configuration.getConfig();
         var pass = configuration.getPassword();
+
+        // Use existing pw if possible and needed
+        if (pass == null) {
+            String target = "TERMSRV/" + configuration.getHost();
+            var existing = AuthModuleProvider.get().getWindowsCredential(target, CRED_TYPE_GENERIC);
+            if (existing.isPresent()) {
+                pass = InPlaceSecretValue.of(existing.get().getPassword());
+            }
+        }
+
         var adapted = input.overlay(Map.of(
                 "prompt for credentials",
                 new RdpConfig.TypedValue("i", pass != null ? "0" : "1"),

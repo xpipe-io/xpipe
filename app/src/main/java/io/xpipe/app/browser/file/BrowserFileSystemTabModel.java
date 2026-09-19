@@ -489,7 +489,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                                 .orElse(null)
                         == ShellDialects.CMD) {
             var env = ProcModuleProvider.get().subShellEnvironment(getEntry().asNeeded(), ShellDialects.POWERSHELL);
-            var entry = DataStoreEntry.createNew(getName().getValue() + " (PowerShell)", env);
+            var entry = DataStoreEntry.createNew("PowerShell", env);
             entry.setColor(DataStorage.get().getEffectiveColor(getEntry().get()));
             entry.setCategoryUuid(getEntry().get().getCategoryUuid());
             bm.openFileSystemAsync(entry.ref(), null, m -> FilePath.of(path), null);

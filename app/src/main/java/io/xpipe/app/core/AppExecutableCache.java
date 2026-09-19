@@ -33,7 +33,7 @@ public class AppExecutableCache {
                     Hyperlinks.open(url);
                     return true;
                 });
-        AppLayoutModel.get().getQueueEntries().add(queueEntry);
+        AppLayoutModel.get().showQueueEntry(queueEntry);
 
         try {
             function.accept(file);
@@ -47,7 +47,7 @@ public class AppExecutableCache {
                 throw e;
             }
         } finally {
-            AppLayoutModel.get().getQueueEntries().remove(queueEntry);
+            AppLayoutModel.get().hideQueueEntry(queueEntry);
         }
     }
 }

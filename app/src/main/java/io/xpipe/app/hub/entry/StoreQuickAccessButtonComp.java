@@ -8,6 +8,7 @@ import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.prefs.AppPrefs;
 
+import io.xpipe.app.util.ContextMenuWrapper;
 import javafx.geometry.Side;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
@@ -28,12 +29,12 @@ public class StoreQuickAccessButtonComp extends RegionBuilder<Button> {
         this.action = action;
     }
 
-    private ContextMenu createMenu() {
+    private ContextMenu createContextMenu() {
         if (section.getShownChildren().getList().isEmpty()) {
             return null;
         }
 
-        var cm = MenuHelper.createContextMenu();
+        var cm = new ContextMenu();
         cm.getStyleClass().add("condensed");
         Menu menu = (Menu) recurse(cm, section);
         cm.getItems().addAll(menu.getItems());
@@ -85,21 +86,10 @@ public class StoreQuickAccessButtonComp extends RegionBuilder<Button> {
 
     @Override
     public Button createSimple() {
+        var cm = new ContextMenuWrapper(() -> createContextMenu());
         var button = new IconButtonComp("mdi2c-chevron-double-right");
         button.apply(struc -> {
-            AtomicReference<ContextMenu> menu = new AtomicReference<>();
-            struc.setOnAction(event -> {
-                if (menu.get() == null) {
-                    menu.set(createMenu());
-                }
-
-                if (menu.get() == null) {
-                    return;
-                }
-
-                MenuHelper.toggleMenuShow(menu.get(), struc, Side.RIGHT);
-                event.consume();
-            });
+            cm.installOnButton(struc);
         });
         return button.build();
     }

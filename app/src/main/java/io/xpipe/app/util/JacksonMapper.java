@@ -69,18 +69,18 @@ public class JacksonMapper {
         return modules;
     }
 
-    public static JsonMapper getWithoutModules(Class<?>... classes) {
+    public static synchronized JsonMapper getWithoutModules(Class<?>... classes) {
         var mods = new ArrayList<>(MODULES);
         mods.removeIf(
                 jacksonModule -> Arrays.stream(classes).anyMatch(aClass -> aClass.equals(jacksonModule.getClass())));
         return BASE.rebuild().addModules(mods).build();
     }
 
-    public static JsonMapper getDefault() {
+    public static synchronized JsonMapper getDefault() {
         return INSTANCE;
     }
 
-    public static JsonMapper getRedactedSecretMapper() {
+    public static synchronized JsonMapper getRedactedSecretMapper() {
         var b = INSTANCE.rebuild();
         b.disable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION);
         b.addModule(new SimpleModule() {
@@ -107,7 +107,7 @@ public class JacksonMapper {
         return b.build();
     }
 
-    public static JsonMapper getUnredactSecretMapper() {
+    public static synchronized JsonMapper getUnredactSecretMapper() {
         var b = INSTANCE.rebuild();
         b.addModule(new SimpleModule() {
             @Override

@@ -5,7 +5,6 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.RegionStructure;
 import io.xpipe.app.comp.RegionStructureBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.ContextMenuAugment;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppFontSizes;
@@ -14,6 +13,7 @@ import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
+import io.xpipe.app.util.ContextMenuWrapper;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
@@ -63,9 +63,11 @@ public class BrowserNavBarComp extends RegionStructureBuilder<HBox, BrowserNavBa
 
         var homeButton = new ButtonComp(null, breadcrumbsGraphic, null)
                 .describe(d -> d.nameKey("directoryOptions"))
-                .apply(new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, null, () -> {
-                    return model.getInOverview().get() ? null : new BrowserContextMenu(model, null, false);
-                }))
+                .apply(struc -> {
+                    var cm = new ContextMenuWrapper(
+                            () -> model.getInOverview().get() ? null : new BrowserContextMenu(model, null, false));
+                    cm.installOnButton(struc);
+                })
                 .build();
         homeButton.getStyleClass().add(Styles.LEFT_PILL);
         homeButton.getStyleClass().add("path-graphic-button");
@@ -75,8 +77,10 @@ public class BrowserNavBarComp extends RegionStructureBuilder<HBox, BrowserNavBa
                 .describe(
                         d -> d.nameKey("history").shortcut(new KeyCodeCombination(KeyCode.H, KeyCombination.ALT_DOWN)))
                 .style(Styles.RIGHT_PILL)
-                .apply(new ContextMenuAugment<>(
-                        event -> event.getButton() == MouseButton.PRIMARY, null, this::createContextMenu))
+                .apply(struc -> {
+                    var cm = new ContextMenuWrapper(() -> createContextMenu());
+                    cm.installOnMouseClick(struc, event -> event.getButton() == MouseButton.PRIMARY, false);
+                })
                 .build();
         AppFontSizes.xs(historyButton);
 
@@ -212,7 +216,7 @@ public class BrowserNavBarComp extends RegionStructureBuilder<HBox, BrowserNavBa
     }
 
     private ContextMenu createContextMenu() {
-        var cm = MenuHelper.createContextMenu();
+        var cm = new ContextMenu();
 
         var f = model.getHistory().getForwardHistory(8).stream().toList();
         for (int i = f.size() - 1; i >= 0; i--) {

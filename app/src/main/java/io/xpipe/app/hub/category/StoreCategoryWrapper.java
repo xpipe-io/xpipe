@@ -32,11 +32,11 @@ import java.util.Optional;
 public class StoreCategoryWrapper {
 
     private final DataStoreCategory root;
-    private final int depth;
-    private final Property<String> name;
+    private final IntegerProperty depth = new SimpleIntegerProperty();
+    private final Property<String> name = new SimpleObjectProperty<>();
     private final DataStoreCategory category;
-    private final Property<Instant> lastAccess;
-    private final BooleanProperty sync;
+    private final Property<Instant> lastAccess = new SimpleObjectProperty<>();
+    private final BooleanProperty sync = new SimpleBooleanProperty();
     private final DerivedObservableList<StoreCategoryWrapper> children;
     private final DerivedObservableList<StoreCategoryWrapper> shownChildren;
     private final DerivedObservableList<StoreEntryWrapper> directContainedEntries;
@@ -50,29 +50,11 @@ public class StoreCategoryWrapper {
     private StoreCategoryWrapper cachedParent;
 
     public StoreCategoryWrapper(DataStoreCategory category) {
-        var d = 0;
-        DataStoreCategory last = category;
-        DataStoreCategory p = category;
-        while ((p = DataStorage.get()
-                        .getStoreCategoryIfPresent(p.getParentCategory())
-                        .orElse(null))
-                != null) {
-            d++;
-            last = p;
-        }
-        depth = d;
-
-        this.root = last;
+        this.root = DataStorage.get().getRootCategory(category);
         this.category = category;
-        this.name = new SimpleStringProperty(category.getName());
-        this.lastAccess = new SimpleObjectProperty<>(category.getLastAccess());
-        this.sync = new SimpleBooleanProperty(Boolean.TRUE.equals(
-                DataStorage.get().getEffectiveCategoryConfig(category).getSync()));
         this.children = DerivedObservableList.arrayList(true);
         this.shownChildren = DerivedObservableList.arrayList(true);
         this.directContainedEntries = DerivedObservableList.arrayList(true);
-        this.color.setValue(
-                DataStorage.get().getEffectiveCategoryConfig(category).getColor());
         setupListeners();
     }
 
@@ -191,6 +173,18 @@ public class StoreCategoryWrapper {
         if (!catName.equals(name.getValue())) {
             name.setValue(catName);
         }
+
+        var d = 0;
+        DataStoreCategory last = category;
+        DataStoreCategory p = category;
+        while ((p = DataStorage.get()
+                .getStoreCategoryIfPresent(p.getParentCategory())
+                .orElse(null))
+                != null) {
+            d++;
+            last = p;
+        }
+        depth.setValue(d);
 
         orderIndex.set(category.getOrderIndex());
         lastAccess.setValue(category.getLastAccess().minus(Duration.ofMillis(500)));

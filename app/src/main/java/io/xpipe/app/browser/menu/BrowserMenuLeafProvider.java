@@ -67,11 +67,7 @@ public interface BrowserMenuLeafProvider extends BrowserMenuItemProvider {
         var name = getName(model, selected);
         var b = new Button();
         b.setOnAction(event -> {
-            try {
-                execute(model, selected);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            execute(model, selected);
             event.consume();
         });
         RegionDescriptor.builder().name(name).shortcut(getShortcut()).build().apply(b);
@@ -102,11 +98,7 @@ public interface BrowserMenuLeafProvider extends BrowserMenuItemProvider {
         var mi = new MenuItem();
         mi.textProperty().bind(name);
         mi.setOnAction(event -> {
-            try {
-                execute(model, selected);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            execute(model, selected);
             event.consume();
         });
         if (getShortcut() != null) {

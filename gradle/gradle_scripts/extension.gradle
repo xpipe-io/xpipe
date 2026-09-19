@@ -43,7 +43,7 @@ configurations {
 dependencies {
     compileOnly "tools.jackson.core:jackson-databind:3.2.0"
     compileOnly project(':app')
-    compileOnly 'io.xpipe:atlantafx-base:2.1.0'
+    compileOnly 'io.xpipe:atlantafx-base:2.1.2'
     compileOnly 'commons-io:commons-io:2.22.0'
     compileOnly "org.kordamp.ikonli:ikonli-javafx:12.4.0"
 

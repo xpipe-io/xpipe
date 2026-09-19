@@ -61,10 +61,10 @@ public class AskpassExchange extends BeaconInterface<AskpassExchange.Request> {
                         new SimpleStringProperty(msg.getPrompt()),
                         new LabelGraphic.IconGraphic("mdi2f-fingerprint"),
                         () -> true);
-                AppLayoutModel.get().getQueueEntries().add(qe);
+                AppLayoutModel.get().showQueueEntry(qe);
                 GlobalTimer.delay(
                         () -> {
-                            AppLayoutModel.get().getQueueEntries().remove(qe);
+                            AppLayoutModel.get().hideQueueEntry(qe);
                         },
                         Duration.ofSeconds(15));
             }
