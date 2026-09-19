@@ -28,15 +28,6 @@ public final class BrowserContextMenu extends ContextMenu {
     }
 
     private void createMenu() {
-        AppFontSizes.lg(getStyleableNode());
-
-        setAutoHide(!AppPrefs.get().limitedTouchscreenMode().get());
-
-        InputHelper.onLeft(this, false, e -> {
-            hide();
-            e.consume();
-        });
-
         var empty = source == null;
         var selected = new ArrayList<>(
                 empty
@@ -77,16 +68,6 @@ public final class BrowserContextMenu extends ContextMenu {
                 var item = a.toMenuItem(model, used);
                 if (item != null) {
                     getItems().add(item);
-
-                    if (a.getShortcut() != null) {
-                        addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-                            if (!a.getShortcut().match(event)) {
-                                return;
-                            }
-
-                            hide();
-                        });
-                    }
                 }
             }
         }

@@ -14,6 +14,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
+import lombok.Getter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -26,6 +27,8 @@ public class ContextMenuWrapper {
 
     private final Supplier<ContextMenu> contextMenuSupplier;
     private boolean customKeyHandling;
+
+    @Getter
     private ContextMenu contextMenu;
 
     public ContextMenuWrapper(Supplier<ContextMenu> contextMenuSupplier) {this.contextMenuSupplier = contextMenuSupplier;}
@@ -37,7 +40,7 @@ public class ContextMenuWrapper {
 
     private void applyFixes() {
         contextMenu.setAutoHide(!AppPrefs.get().limitedTouchscreenMode().get());
-        InputHelper.onLeft(contextMenu, false, e -> {
+        InputHelper.onLeft(contextMenu, true, e -> {
             contextMenu.hide();
             e.consume();
         });
@@ -83,12 +86,18 @@ public class ContextMenuWrapper {
         return contextMenu;
     }
 
-    private boolean isHidden() {
+    public boolean isHidden() {
         return contextMenu == null || !contextMenu.isShowing();
     }
 
-    private boolean isShowing() {
+    public boolean isShowing() {
         return contextMenu != null && contextMenu.isShowing();
+    }
+
+    public static void hideAll() {
+        for (ContextMenu cm : allContextMenus) {
+            cm.hide();
+        }
     }
 
     private void hideOthers(boolean includeSelf) {
@@ -98,6 +107,12 @@ public class ContextMenuWrapper {
             }
 
             cm.hide();
+        }
+    }
+
+    public void hide() {
+        if (isShowing()) {
+            contextMenu.hide();
         }
     }
 

@@ -3,6 +3,8 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
+import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
@@ -10,6 +12,8 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.StackPane;
+
+import java.time.Duration;
 
 public class LoadingOverlayComp extends RegionBuilder<StackPane> {
 
@@ -40,45 +44,29 @@ public class LoadingOverlayComp extends RegionBuilder<StackPane> {
             loadingOverlay.getChildren().add(loading);
         }
         loadingOverlay.getStyleClass().add("loading-comp");
-        loadingOverlay.setVisible(this.loading.getValue());
-        loadingOverlay.setManaged(this.loading.getValue());
 
-        var listener = new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean busy) {
-                if (!busy) {
-                    // Reduce flickering for consecutive loads
-                    ThreadHelper.runAsync(() -> {
-                        try {
-                            Thread.sleep(50);
-                        } catch (InterruptedException ignored) {
-                        }
-
-                        if (!LoadingOverlayComp.this.loading.getValue()) {
-                            Platform.runLater(() -> {
-                                loadingOverlay.setVisible(false);
-                                loadingOverlay.setManaged(false);
-                            });
-                        }
-                    });
-                } else {
-                    ThreadHelper.runAsync(() -> {
-                        try {
-                            Thread.sleep(50);
-                        } catch (InterruptedException ignored) {
-                        }
-
-                        if (LoadingOverlayComp.this.loading.getValue()) {
-                            Platform.runLater(() -> {
-                                loadingOverlay.setVisible(true);
-                                loadingOverlay.setManaged(true);
-                            });
-                        }
-                    });
-                }
+        this.loading.subscribe((v) -> {
+            // Reduce flickering for consecutive loads
+            if (!v) {
+                GlobalTimer.delay(() -> {
+                    if (!LoadingOverlayComp.this.loading.getValue()) {
+                        Platform.runLater(() -> {
+                            loadingOverlay.setVisible(false);
+                            loadingOverlay.setManaged(false);
+                        });
+                    }
+                }, Duration.ofMillis(500));
+            } else {
+                GlobalTimer.delay(() -> {
+                    if (LoadingOverlayComp.this.loading.getValue()) {
+                        Platform.runLater(() -> {
+                            loadingOverlay.setVisible(true);
+                            loadingOverlay.setManaged(true);
+                        });
+                    }
+                }, Duration.ofMillis(50));
             }
-        };
-        this.loading.addListener(listener);
+        });
 
         var stack = new StackPane(r, loadingOverlay);
 
