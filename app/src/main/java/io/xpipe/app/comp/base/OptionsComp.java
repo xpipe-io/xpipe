@@ -66,6 +66,7 @@ public class OptionsComp extends RegionBuilder<VBox> {
                     && (entry.description() != null || entry.comp() instanceof SimpleTitledPaneComp));
             if (showVertical) {
                 var line = new VBox();
+                line.getStyleClass().add("entry");
                 line.prefWidthProperty().bind(pane.widthProperty());
 
                 var name = new Label();
@@ -81,8 +82,8 @@ public class OptionsComp extends RegionBuilder<VBox> {
                                     return name.isManaged() ? 2.0 : 0.0;
                                 },
                                 name.managedProperty()));
-                name.visibleProperty().bind(compRegion.visibleProperty());
-                name.managedProperty().bind(compRegion.managedProperty());
+                line.visibleProperty().bind(compRegion.visibleProperty());
+                line.managedProperty().bind(compRegion.managedProperty());
                 VBox.setMargin(name, new Insets(0, 0, 0, 1));
 
                 if (entry.description() != null) {
@@ -92,8 +93,6 @@ public class OptionsComp extends RegionBuilder<VBox> {
                     description.textProperty().bind(entry.description());
                     description.setAlignment(Pos.CENTER_LEFT);
                     description.setMinHeight(Region.USE_PREF_SIZE);
-                    description.visibleProperty().bind(compRegion.visibleProperty());
-                    description.managedProperty().bind(compRegion.managedProperty());
 
                     var vbox = new VBox();
                     vbox.getChildren().add(name);
@@ -149,16 +148,12 @@ public class OptionsComp extends RegionBuilder<VBox> {
                         descriptionBox.setAlignment(Pos.TOP_LEFT);
                         vbox.getChildren().add(descriptionBox);
                         VBox.setMargin(descriptionBox, new Insets(0, 0, 0, 1));
-                        descriptionBox.visibleProperty().bind(compRegion.visibleProperty());
-                        descriptionBox.managedProperty().bind(compRegion.managedProperty());
                     } else {
                         var descriptionBox = new HBox(description);
                         descriptionBox.getStyleClass().add("description-box");
                         vbox.getChildren().add(descriptionBox);
                         vbox.getChildren().add(new Spacer(2, Orientation.VERTICAL));
                         VBox.setMargin(descriptionBox, new Insets(0, 0, 0, 1));
-                        descriptionBox.visibleProperty().bind(compRegion.visibleProperty());
-                        descriptionBox.managedProperty().bind(compRegion.managedProperty());
                     }
 
                     line.getChildren().add(vbox);
@@ -188,8 +183,8 @@ public class OptionsComp extends RegionBuilder<VBox> {
                 name.setAccessibleRole(AccessibleRole.TEXT);
                 name.accessibleTextProperty().bind(entry.name());
                 nameRegions.add(name);
-                name.visibleProperty().bind(compRegion.visibleProperty());
-                name.managedProperty().bind(compRegion.managedProperty());
+                line.visibleProperty().bind(compRegion.visibleProperty());
+                line.managedProperty().bind(compRegion.managedProperty());
                 line.getChildren().add(name);
                 nameMap.put(compRegion, name);
 

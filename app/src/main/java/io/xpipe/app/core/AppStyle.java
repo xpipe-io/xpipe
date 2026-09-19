@@ -23,8 +23,8 @@ import java.util.*;
 public class AppStyle {
 
     private static final Map<Path, String> STYLESHEET_CONTENTS = new LinkedHashMap<>();
-    private static final Map<AppTheme.Theme, String> THEME_SPECIFIC_STYLESHEET_CONTENTS = new LinkedHashMap<>();
-    private static final Map<AppTheme.Theme, String> THEME_PREFERENCES_STYLESHEET_CONTENTS = new LinkedHashMap<>();
+    private static final Map<AppTheme, String> THEME_SPECIFIC_STYLESHEET_CONTENTS = new LinkedHashMap<>();
+    private static final Map<AppTheme, String> THEME_PREFERENCES_STYLESHEET_CONTENTS = new LinkedHashMap<>();
     private static final WeakHashMap<Scene, Object> scenes = new WeakHashMap<>();
     private static String FONT_CONTENTS = null;
 
@@ -103,7 +103,7 @@ public class AppStyle {
                 return;
             }
 
-            for (AppTheme.Theme theme : AppTheme.Theme.ALL) {
+            for (AppTheme theme : AppTheme.ALL) {
                 var file = path.resolve(theme.getId() + ".css");
                 var bytes = Files.readAllBytes(file);
                 var s = "data:text/css;base64," + Base64.getEncoder().encodeToString(bytes);
@@ -140,7 +140,7 @@ public class AppStyle {
             scene.getStylesheets().remove(THEME_PREFERENCES_STYLESHEET_CONTENTS.get(t));
         });
         THEME_PREFERENCES_STYLESHEET_CONTENTS.clear();
-        for (AppTheme.Theme theme : AppTheme.Theme.ALL) {
+        for (AppTheme theme : AppTheme.ALL) {
             THEME_PREFERENCES_STYLESHEET_CONTENTS.put(
                     theme, Styles.toDataURI(theme.getPlatformPreferencesStylesheet()));
         }
@@ -149,7 +149,7 @@ public class AppStyle {
         });
     }
 
-    private static void changeTheme(AppTheme.Theme theme) {
+    private static void changeTheme(AppTheme theme) {
         scenes.keySet().forEach(scene -> {
             scene.getStylesheets().removeAll(THEME_SPECIFIC_STYLESHEET_CONTENTS.values());
             scene.getStylesheets().removeAll(THEME_PREFERENCES_STYLESHEET_CONTENTS.values());

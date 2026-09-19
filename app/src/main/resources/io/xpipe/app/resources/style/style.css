@@ -114,28 +114,8 @@
     -fx-cursor: hand;
 }
 
-.error-overlay-comp {
-    -fx-font-size: 0.9em;
-}
-
-.store-creator > .choice-comp {
-    -fx-opacity: 0.9;
-}
-
 .root:light .busy-loading-icon {
     -fx-text-fill: -color-bg-default;
-}
-
-.store-creator > .choice-comp * {
-    -fx-opacity: 1.0;
-}
-
-.store-creator .combo-box:disabled .arrow {
-    -fx-background-color: transparent;
-}
-
-.store-creator .store-creator-options {
-    -fx-padding: -5 4 0 5;
 }
 
 .icon-button-comp.batch-mode-button {

@@ -1,7 +1,6 @@
 package io.xpipe.app.secret;
 
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
-import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.LocalShell;
@@ -62,8 +61,7 @@ public class SecretCustomCommandStrategy implements SecretRetrievalStrategy {
                     throw ErrorEventFactory.expected(new IllegalStateException("No custom command specified"));
                 }
 
-                try (var sc =
-                        ProcModuleProvider.get().createLocalProcessControl(true).start()) {
+                try (var sc = LocalShell.getInstance(SecretCustomCommandStrategy.class).start()) {
                     var cc = sc.command(command);
                     return new SecretQueryResult(
                             InPlaceSecretValue.of(cc.readStdoutOrThrow()), SecretQueryState.NORMAL);

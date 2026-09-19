@@ -240,7 +240,7 @@ public class AppBaseMode extends AppOperationMode {
         StoreViewState.reset();
         StoreFilterState.reset();
         AppLayoutModel.reset();
-        AppTheme.reset();
+        AppThemeHandler.reset();
         PlatformState.teardown();
         AppResources.reset();
         AppExtensionManager.reset();

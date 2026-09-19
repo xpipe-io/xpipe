@@ -8,6 +8,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.SidebarLocation;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.update.UpdateAvailableDialog;
 import io.xpipe.app.update.UpdateHandler;
@@ -165,7 +166,9 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
         });
 
         var indicator = RegionBuilder.empty().style("indicator");
-        var stack = new StackComp(List.of(indicator, b)).apply(struc -> struc.setAlignment(Pos.CENTER_RIGHT));
+        var stack = new StackComp(List.of(indicator, b)).apply(struc -> struc.alignmentProperty().bind(Bindings.createObjectBinding(() -> {
+            return AppPrefs.get().sidebarLocation().getValue() == SidebarLocation.RIGHT ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT;
+        }, AppPrefs.get().sidebarLocation())));
         stack.apply(struc -> {
             var indicatorRegion = (Region) struc.getChildren().getFirst();
             var buttonRegion = (Region) struc.getChildren().get(1);

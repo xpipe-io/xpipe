@@ -5,7 +5,10 @@ import io.xpipe.app.comp.RegionStructure;
 import io.xpipe.app.comp.RegionStructureBuilder;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.platform.Listeners;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.SidebarLocation;
 import io.xpipe.app.terminal.TerminalDockHubManager;
 
 import javafx.beans.binding.Bindings;
@@ -55,7 +58,16 @@ public class AppLayoutComp extends RegionStructureBuilder<BorderPane, AppLayoutC
         var sidebar = new SideMenuBarComp(model.getSelected(), model.getEntries(), model.getQueueEntries());
         var sidebarR = sidebar.build();
         TrackEvent.info("Window sidebar comp created");
-        pane.setRight(sidebarR);
+
+        Listeners.subscribeWeak(pane, AppPrefs.get().sidebarLocation(), (borderPane, sidebarLocation) -> {
+            if (sidebarLocation == SidebarLocation.LEFT) {
+                pane.setRight(null);
+                pane.setLeft(sidebarR);
+            } else {
+                pane.setLeft(null);
+                pane.setRight(sidebarR);
+            }
+        });
 
         pane.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             sidebarR.getChildrenUnmodifiable().forEach(node -> {

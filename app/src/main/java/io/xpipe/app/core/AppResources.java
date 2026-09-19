@@ -75,7 +75,7 @@ public class AppResources {
         }
     }
 
-    public static Optional<URL> getResourceURL(String module, String file) {
+    public static Optional<URL> getIntegratedResourceURL(String module, String file) {
         try {
             var fs = openFileSystemIfNeeded(module);
             var f = fs.getPath(module.replace('.', '/') + "/resources/" + file);

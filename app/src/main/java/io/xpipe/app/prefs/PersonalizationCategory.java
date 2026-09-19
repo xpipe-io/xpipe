@@ -26,12 +26,12 @@ public class PersonalizationCategory extends AppPrefsCategory {
 
     public static OptionsBuilder themeChoice() {
         var prefs = AppPrefs.get();
-        var c = ChoiceComp.ofTranslatable(prefs.theme, AppTheme.Theme.ALL, false)
+        var c = ChoiceComp.ofTranslatable(prefs.theme, AppTheme.ALL, false)
                 .style("theme-switcher");
         c.apply(struc -> {
-            Supplier<ListCell<AppTheme.Theme>> cell = () -> new ListCell<>() {
+            Supplier<ListCell<AppTheme>> cell = () -> new ListCell<>() {
                 @Override
-                protected void updateItem(AppTheme.Theme theme, boolean empty) {
+                protected void updateItem(AppTheme theme, boolean empty) {
                     super.updateItem(theme, empty);
                     if (theme == null) {
                         setText(null);

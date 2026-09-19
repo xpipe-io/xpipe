@@ -2,6 +2,7 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.base.ChoiceComp;
 import io.xpipe.app.comp.base.IntFieldComp;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -13,6 +14,8 @@ import javafx.scene.control.Slider;
 
 import atlantafx.base.controls.ProgressSliderSkin;
 import atlantafx.base.theme.Styles;
+
+import java.util.List;
 
 public class DisplayCategory extends AppPrefsCategory {
 
@@ -42,6 +45,9 @@ public class DisplayCategory extends AppPrefsCategory {
                                 }),
                                 prefs.uiScale)
                         .hide(new SimpleBooleanProperty(OsType.ofLocal() == OsType.MACOS))
+                        .pref(prefs.sidebarLocation)
+                        .addComp(ChoiceComp.ofTranslatable(prefs.sidebarLocation, List.of(SidebarLocation.RIGHT, SidebarLocation.LEFT), false)
+                                .maxWidth(400))
                         .pref(prefs.useSystemFont)
                         .addToggle(prefs.useSystemFont)
                         .pref(prefs.censorMode)

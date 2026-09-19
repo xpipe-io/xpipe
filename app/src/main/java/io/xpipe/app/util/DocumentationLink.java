@@ -43,6 +43,7 @@ public enum DocumentationLink {
     TAILSCALE("guide/tailscale"),
     TAILSCALE_AUTH("guide/tailscale#tailscale-authentication"),
     IDENTITY_APPLY("guide/ssh-auth#applying-identities"),
+    WIREGUARD("guide/wireguard"),
     NETBIRD("guide/netbird"),
     NETBIRD_DAEMON("guide/netbird#daemon"),
     TELEPORT("guide/teleport"),

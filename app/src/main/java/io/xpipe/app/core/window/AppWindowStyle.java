@@ -2,7 +2,9 @@ package io.xpipe.app.core.window;
 
 import io.xpipe.app.core.*;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.platform.Listeners;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.SidebarLocation;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.OsType;
 
@@ -21,6 +23,18 @@ import java.time.Instant;
 import java.util.List;
 
 public class AppWindowStyle {
+
+    public static void setSidebarLocationPseudoClass(Scene scene) {
+        if (AppPrefs.get() == null) {
+            return;
+        }
+
+        var r = scene.getRoot();
+        Listeners.subscribeWeak(r, AppPrefs.get().sidebarLocation(), (parent, sidebarLocation) -> {
+            parent.pseudoClassStateChanged(PseudoClass.getPseudoClass("sidebar-left"), sidebarLocation == SidebarLocation.LEFT);
+            parent.pseudoClassStateChanged(PseudoClass.getPseudoClass("sidebar-right"), sidebarLocation == SidebarLocation.RIGHT);
+        });
+    }
 
     public static void setSceneFill(Scene scene) {
         if (OsType.ofLocal() != OsType.LINUX || AppPrefs.get() == null) {

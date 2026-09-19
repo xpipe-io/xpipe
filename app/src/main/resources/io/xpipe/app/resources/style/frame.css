@@ -18,8 +18,6 @@
     -fx-background-color: derive(-color-bg-default, -9%);
 }
 
-
-
 .root:dark:seamless-frame .background {
     -fx-background-color: derive(-color-bg-default-transparent, 1%);
 }
@@ -36,18 +34,32 @@
     -fx-background-color: derive(-color-bg-default-transparent, -9%);
 }
 
-.root:seamless-frame .layout > .background {
+.root:seamless-frame:sidebar-right .layout > .background {
     -fx-background-radius: 0 6 0 0;
     -fx-border-radius: 0 6 0 0;
     -fx-border-width: 1 1 0 0;
-    -fx-padding: 0 0 0 0;
+    -fx-padding: 0;
 }
 
-.root:seamless-frame:nord .layout > .background {
+.root:seamless-frame:sidebar-left .layout > .background {
+    -fx-background-radius: 6 0 0 0;
+    -fx-border-radius: 6 0 0 0;
+    -fx-border-width: 1 0 0 1;
+    -fx-padding: 0;
+}
+
+.root:seamless-frame:sidebar-right:nord .layout > .background {
     -fx-background-radius: 0 0 0 0;
     -fx-border-radius: 0 0 0 0;
     -fx-border-width: 1 1 0 0;
-    -fx-padding: 0 0 0 0;
+    -fx-padding: 0;
+}
+
+.root:seamless-frame:sidebar-left:nord .layout > .background {
+    -fx-background-radius: 0 0 0 0;
+    -fx-border-radius: 0 0 0 0;
+    -fx-border-width: 1 0 0 1;
+    -fx-padding: 0;
 }
 
 .root:light:seamless-frame .layout > .background {
@@ -67,9 +79,14 @@
     -fx-border-insets: 0;
 }
 
-.root:seamless-frame .layout > .background > * {
+.root:seamless-frame:sidebar-right .layout > .background > * {
     -fx-background-radius: 0 6 0 0;
     -fx-border-radius: 0 6 0 0;
+}
+
+.root:seamless-frame:sidebar-left .layout > .background > * {
+    -fx-background-radius: 6 0 0 0;
+    -fx-border-radius: 6 0 0 0;
 }
 
 .root:seamless-frame:nord .layout > .background > * {

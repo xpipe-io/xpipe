@@ -18,6 +18,7 @@ public enum WebtopApp {
     KUBECTL("kubectl"),
     HCLOUD("hetznerCloud", "hcloud"),
     NETBIRD("netbird", "netbird", true),
+    WIREGUARD("wireguard", "wireguard", true),
     OPENBAO("openBao", "openbao"),
     PROTON_PASS("protonPass", "proton-pass"),
     TAILSCALE("tailscale", "tailscale", true),

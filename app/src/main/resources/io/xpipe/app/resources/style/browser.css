@@ -50,8 +50,20 @@
     -fx-border-color: -color-border-default;
 }
 
-.root:seamless-frame .browser .top-spacer {
+.root:seamless-frame:sidebar-right .browser .top-spacer {
     -fx-background-radius: 0 6 0 0;
+}
+
+.root:seamless-frame:sidebar-right .browser .tab-header-area {
+    -fx-background-radius: 0 6 0 0;
+}
+
+.root:seamless-frame:sidebar-left .browser .top-spacer {
+    -fx-background-radius: 6 0 0 0;
+}
+
+.root:seamless-frame:sidebar-left .browser .tab-header-area {
+    -fx-background-radius: 6 0 0 0;
 }
 
 .browser .welcome {
@@ -281,10 +293,6 @@
 
 .browser .tab-header-area {
     -fx-background-color:  transparent;
-}
-
-.root:seamless-frame .browser .tab-header-area {
-    -fx-background-radius: 0 6 0 0;
 }
 
 .browser .browser-content {

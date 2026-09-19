@@ -82,6 +82,7 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                 model.getInitialStore().setValue(model.getStore().getValue());
 
                 var valSp = new GraphicDecorationStackPane();
+                valSp.getStyleClass().add("decoration-pane");
                 valSp.setFocusTraversable(false);
 
                 var full = new OptionsBuilder();
@@ -112,11 +113,11 @@ public class StoreCreationComp extends ModalOverlayContentComp {
 
                 var topSep = new Separator();
                 topSep.setPadding(new Insets(10, 0, 0, 0));
-                topSep.visibleProperty().bind(vbar.visibleProperty());
+                topSep.visibleProperty().bind(vbar.visibleProperty().and(vbar.valueProperty().isNotEqualTo(0)));
 
                 var bottomSep = new Separator();
                 bottomSep.setPadding(new Insets(0, 0, 0, 0));
-                bottomSep.visibleProperty().bind(vbar.visibleProperty());
+                bottomSep.visibleProperty().bind(vbar.visibleProperty().and(vbar.valueProperty().isNotEqualTo(1)));
 
                 var vbox = new VBox(topSep, sp, bottomSep);
                 VBox.setVgrow(sp, Priority.ALWAYS);

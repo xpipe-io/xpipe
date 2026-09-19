@@ -108,6 +108,7 @@ public class AppMainWindow {
         content.prefWidthProperty().bind(scene.widthProperty());
         content.prefHeightProperty().bind(scene.heightProperty());
         AppWindowStyle.setSceneFill(scene);
+        AppWindowStyle.setSidebarLocationPseudoClass(scene);
 
         stage.setScene(scene);
         if (AppPrefs.get() != null) {
@@ -117,7 +118,7 @@ public class AppMainWindow {
         AppWindowStyle.addStylesheets(stage.getScene());
         AppWindowStyle.addClickShield(stage);
         AppWindowStyle.addFontSize(scene);
-        AppTheme.initThemeHandlers(stage);
+        AppThemeHandler.initThemeHandlers(stage);
 
         AppWindowTitle.getTitle().subscribe(s -> {
             PlatformThread.runLaterIfNeeded(() -> {
