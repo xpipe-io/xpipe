@@ -188,6 +188,14 @@ public interface StoreEntryBadge {
         return of("mdi2s-server-network-outline", s).withCopyAction();
     }
 
+    static StoreEntryBadge ofStaticAddress(String s, String display) {
+        if (s == null) {
+            return null;
+        }
+
+        return of("mdi2s-server-network-outline", s).withCopyAction(display);
+    }
+
     static StoreEntryBadge ofDynamicAddress(HostAddress addr) {
         if (addr == null) {
             return null;

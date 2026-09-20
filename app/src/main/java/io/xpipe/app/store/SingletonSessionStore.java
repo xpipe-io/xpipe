@@ -84,4 +84,12 @@ public interface SingletonSessionStore<T extends StoreSession>
             }
         }
     }
+
+    default void clearSession() {
+        synchronized (this) {
+            setSessionEnabled(false);
+            onStateChange(false);
+            setCache("session", null);
+        }
+    }
 }

@@ -74,4 +74,16 @@ public class HostHelper {
 
         return inet4Address.isSiteLocalAddress();
     }
+
+    public static Optional<String> getEndpointAddressFromSubnet(String subnet) {
+        if (subnet.endsWith("/32")) {
+            return Optional.of(subnet.substring(0, subnet.length() - 3));
+        }
+
+        if (subnet.endsWith("/128")) {
+            return Optional.of(subnet.substring(0, subnet.length() - 4));
+        }
+
+        return Optional.empty();
+    }
 }
