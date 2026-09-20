@@ -56,12 +56,6 @@ public class AppOpenArguments {
             }
         });
 
-        //        var requiresPlatform = all.stream().anyMatch(launcherInput -> launcherInput.requiresJavaFXPlatform());
-        //        if (requiresPlatform) {
-        //            OperationMode.switchToSyncIfPossible(OperationMode.GUI);
-        //        }
-        //        var hasGui = OperationMode.get() == OperationMode.GUI;
-
         all.forEach(launcherInput -> {
             launcherInput.executeAsync();
         });
@@ -70,6 +64,10 @@ public class AppOpenArguments {
     public static List<? extends AbstractAction> parseActions(String input) {
         if (input == null || input.isBlank()) {
             return List.of();
+        }
+
+        if (input.startsWith("'") && input.endsWith("'")) {
+            input = input.substring(1, input.length() - 1);
         }
 
         if (input.startsWith("\"") && input.endsWith("\"")) {

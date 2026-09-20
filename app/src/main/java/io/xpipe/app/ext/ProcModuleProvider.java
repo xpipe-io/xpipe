@@ -115,4 +115,6 @@ public abstract class ProcModuleProvider {
     public abstract void importRdpFile(Path file) throws Exception;
 
     public abstract BaseRegionBuilder<?, ?> createCustomSshAgentTest();
+
+    public abstract void runElevatedCommand(CommandBuilder b) throws Exception;
 }

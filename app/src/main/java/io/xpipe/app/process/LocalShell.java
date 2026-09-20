@@ -55,6 +55,22 @@ public class LocalShell {
         return local != null;
     }
 
+    public static ShellControl getLocalShell(ShellDialect sc) {
+        if (sc == getDialect()) {
+            return local;
+        }
+
+        if (ShellDialects.isPowershell(sc)) {
+            var pwsh = getLocalPowershell();
+            if (pwsh.isEmpty()) {
+                throw new IllegalStateException("Unable to run " + sc + " commands on this system");
+            }
+            return pwsh.get();
+        } else {
+            throw new IllegalStateException("Unable to run " + sc + " commands on this system");
+        }
+    }
+
     public static synchronized ShellControl init() throws Exception {
         if (local == null) {
             local = ProcModuleProvider.get().createLocalProcessControl(false).start();

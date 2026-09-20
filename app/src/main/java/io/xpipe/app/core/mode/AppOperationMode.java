@@ -196,6 +196,13 @@ public abstract class AppOperationMode {
             AppExtensionManager.init();
             AppI18n.init();
             AppPrefs.initLocal();
+
+            if (AppProperties.get().isElevatedExecMode()) {
+                LocalShell.init();
+                ElevatedExecClient.runLoop();
+                return;
+            }
+
             AppInstance.init();
             // Initialize early to load in parallel
             PlatformInit.init(false);

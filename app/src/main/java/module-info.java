@@ -257,6 +257,8 @@ open module io.xpipe.app {
             TerminalLaunchExchange,
             TerminalExternalLaunchExchange,
             SshLaunchExchange,
+            ElevatedExecQueryExchange,
+            ElevatedExecCallbackExchange,
             FsReadExchange,
             FsBlobExchange,
             FsWriteExchange,

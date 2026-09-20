@@ -13,6 +13,10 @@ public interface LauncherUrlProvider extends ActionProvider {
                 .map(lup -> (LauncherUrlProvider) lup);
     }
 
+    default boolean executeInPlace() {
+        return false;
+    }
+
     String getScheme();
 
     AbstractAction createAction(URI uri) throws Exception;

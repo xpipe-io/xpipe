@@ -69,6 +69,7 @@ public class AppProperties {
     boolean isDaemon;
     boolean isCli;
     boolean printBeaconMessages;
+    boolean elevatedExecMode;
 
     @NonFinal
     @Getter(AccessLevel.PRIVATE)
@@ -129,6 +130,9 @@ public class AppProperties {
                 .map(Boolean::parseBoolean)
                 .orElse(true);
         printBeaconMessages = Optional.ofNullable(System.getProperty(AppNames.propertyName("printBeaconMessages")))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
+        elevatedExecMode = Optional.ofNullable(System.getProperty(AppNames.propertyName("elevatedExecMode")))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
         debugThreads = Optional.ofNullable(System.getProperty(AppNames.propertyName("debugThreads")))
