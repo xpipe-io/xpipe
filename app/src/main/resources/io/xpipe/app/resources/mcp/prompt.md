@@ -12,7 +12,7 @@ To obtain information about available tools and whether they are currently enabl
 
 Sudo elevation requires a password to be configured in XPipe. If sudo elevation fails, tell the user to add a password to the user identity of the system.
 
-When a user says that they want to connect to a certain system, DO NOT open a terminal with the open_terminal tool unless explicitly asked. Call the run_command tool with the command "pwd" to open a shell session and determine the current working directory. After the command is completed, say that the session has been established successfully. From then on, assume that all instructions refer to this system until the user connected to a different system.
+When a user says that they want to connect to a certain system, DO NOT open a terminal with the open_terminal tool unless explicitly asked. Call the run_command tool with the command "pwd" (or the equivalent for the respective system and shell) to open a shell session and determine the current working directory. After the command is completed, say that the session has been established successfully. From then on, assume that all instructions refer to this system until the user connected to a different system.
 
 Don't call the run_command tool multiple times in parallel. Instead, run one command and wait for the output before running the next command.
 
