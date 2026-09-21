@@ -60,13 +60,13 @@ public abstract class AppOperationMode {
 
     public static void externalShutdown() {
         // If we used System.exit(), we don't want to do this
-        if (AppOperationMode.isInShutdown()) {
+        if (isInShutdown()) {
             return;
         }
 
         inShutdownHook = true;
         TrackEvent.info("Received SIGTERM externally");
-        AppOperationMode.shutdown(false);
+        shutdown(false);
     }
 
     private static void setup(String[] args) {
@@ -82,7 +82,7 @@ public abstract class AppOperationMode {
                 Thread.setDefaultUncaughtExceptionHandler((thread, ex) -> {
                     // It seems like a few exceptions are thrown in the quantum renderer
                     // when in shutdown. We can ignore these
-                    if (AppOperationMode.isInShutdown()
+                    if (isInShutdown()
                             && Platform.isFxApplicationThread()
                             && ex instanceof NullPointerException) {
                         return;
@@ -112,19 +112,19 @@ public abstract class AppOperationMode {
                     }
 
                     // Handle any startup uncaught errors
-                    if (AppOperationMode.isInStartup() && thread.threadId() == 1) {
+                    if (isInStartup() && thread.threadId() == 1) {
                         ex.printStackTrace();
-                        AppOperationMode.halt(1);
+                        halt(1);
                     }
 
                     // There are weird NPEs on macOS shutdowns without a stack trace
-                    if (AppOperationMode.isInShutdown() && ex.getStackTrace().length == 0 && OsType.ofLocal() == OsType.MACOS) {
+                    if (isInShutdown() && ex.getStackTrace().length == 0 && OsType.ofLocal() == OsType.MACOS) {
                         return;
                     }
 
                     if (ex instanceof OutOfMemoryError) {
                         ex.printStackTrace();
-                        AppOperationMode.halt(1);
+                        halt(1);
                     }
 
                     ErrorEventFactory.fromThrowable(ex).unhandled(true).build().handle();
@@ -200,6 +200,7 @@ public abstract class AppOperationMode {
             if (AppProperties.get().isElevatedExecMode()) {
                 LocalShell.init();
                 ElevatedExecClient.runLoop();
+                halt(0);
                 return;
             }
 
@@ -208,7 +209,7 @@ public abstract class AppOperationMode {
             PlatformInit.init(false);
             ThreadHelper.runAsync(() -> {
                 PlatformInit.init(true);
-                AppMainWindow.init(AppOperationMode.getStartupMode() == XPipeDaemonMode.GUI);
+                AppMainWindow.init(getStartupMode() == XPipeDaemonMode.GUI);
                 AppSizeBreakpoints.init();
             });
             TrackEvent.info("Finished initial setup");
@@ -250,10 +251,10 @@ public abstract class AppOperationMode {
 
         try {
             if (AppProperties.get().isAotTrainMode()) {
-                AppOperationMode.switchToSyncOrThrow(BACKGROUND);
+                switchToSyncOrThrow(BACKGROUND);
                 inStartup = false;
                 AppAotTrain.runTrainingMode();
-                AppOperationMode.shutdown(false);
+                shutdown(false);
                 return;
             }
 
@@ -335,14 +336,14 @@ public abstract class AppOperationMode {
                 r.run();
             } catch (Throwable ex) {
                 ErrorEventFactory.fromThrowable(ex).handle();
-                AppOperationMode.halt(1);
+                halt(1);
             }
 
             // In case we perform any operations such as opening a terminal
             // give it some time to open while this process is still alive
             // Otherwise it might quit because the parent process is dead already
             ThreadHelper.sleep(500);
-            AppOperationMode.halt(0);
+            halt(0);
         };
 
         // Creates separate non daemon thread to force execution after shutdown even if current thread is a daemon
@@ -374,12 +375,12 @@ public abstract class AppOperationMode {
     public static void shutdown(boolean hasError) {
         if (isInStartup()) {
             TrackEvent.info("Received shutdown request while in startup. Halting ...");
-            AppOperationMode.halt(1);
+            halt(1);
         }
 
         if (isInShutdown()) {
             TrackEvent.info("Received shutdown request while in shutdown. Halting ...");
-            AppOperationMode.halt(1);
+            halt(1);
         }
 
         TrackEvent.info("Starting shutdown ...");
@@ -401,10 +402,10 @@ public abstract class AppOperationMode {
                 CURRENT = null;
             } catch (Throwable t) {
                 ErrorEventFactory.fromThrowable(t).term().handle();
-                AppOperationMode.halt(1);
+                halt(1);
             }
 
-            AppOperationMode.halt(hasError ? 1 : 0);
+            halt(hasError ? 1 : 0);
         });
         thread.start();
 
@@ -413,7 +414,7 @@ public abstract class AppOperationMode {
         var exited = thread.join(Duration.ofMillis(limit));
         if (!exited) {
             TrackEvent.info("Shutdown took too long. Halting ...");
-            AppOperationMode.halt(1);
+            halt(1);
         }
     }
 

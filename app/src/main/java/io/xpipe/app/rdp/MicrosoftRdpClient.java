@@ -9,6 +9,7 @@ import io.xpipe.app.ext.AuthModuleProvider;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
+import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.secret.InPlaceSecretValue;
 import io.xpipe.app.storage.DataStorage;
@@ -71,17 +72,11 @@ public abstract class MicrosoftRdpClient implements ExternalApplicationType.Inst
             return;
         }
 
-        if (val) {
-            sc.get()
-                    .command(
-                            "Start-Process reg -Wait -ArgumentList add, \"`\"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services\\Client`\"\", /t, REG_DWORD , /v, RedirectionWarningDialogVersion, /d, 1, /f -Verb runAs")
-                    .executeAndCheck();
-        } else {
-            sc.get()
-                    .command(
-                            "Start-Process reg -Wait -ArgumentList delete, \"`\"HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services\\Client`\"\", /v, RedirectionWarningDialogVersion, /f -Verb runAs")
-                    .executeAndCheck();
-        }
+        var cmd = val ? CommandBuilder.of().add("reg", "add").addQuoted("HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services\\Client")
+                .add("/t", "REG_DWORD" , "/v", "RedirectionWarningDialogVersion", "/d", "1", "/f") :
+                CommandBuilder.of().add("reg", "delete").addQuoted("HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\Terminal Services\\Client")
+                .add("/v", "RedirectionWarningDialogVersion", "/f");
+        ElevatedExec.runElevated(cmd);
     }
 
     @Value

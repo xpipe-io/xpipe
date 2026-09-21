@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppOpenArguments;
 import io.xpipe.app.core.AppProperties;
@@ -27,7 +28,8 @@ public class ElevatedExec {
         var cmd = AppInstallation.ofCurrent().getDaemonExecutablePath();
         ProcModuleProvider.get().runElevatedCommand(CommandBuilder.of().addFile(cmd)
                 .add("-Dio.xpipe.app.dataDir=\"" + AppProperties.get().getDataDir() + "\"")
-                .add("-Dio.xpipe.app.elevatedExecMode=true"));
+                .add("-Dio.xpipe.app.elevatedExecMode=true")
+                .add("-Dio.xpipe.app.beaconPort=" + AppBeaconServer.get().getPort()));
 
         var exec = scheduleElevated(CommandBuilder.of().add(LocalShell.getDialect().getPrintWorkingDirectoryCommand()));
         var success = exec.getLatch().await(30, TimeUnit.SECONDS);
