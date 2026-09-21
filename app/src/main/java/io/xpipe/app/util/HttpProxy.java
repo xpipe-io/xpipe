@@ -46,6 +46,21 @@ public class HttpProxy {
             }
         }
 
+        if (OsType.ofLocal() == OsType.WINDOWS) {
+            var enabled = WindowsRegistry.local().readIntegerValueIfPresent(WindowsRegistry.HKEY_CURRENT_USER,
+                    "Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", "ProxyEnable");
+            if (enabled.orElse(0) != 0) {
+                var server = WindowsRegistry.local().readStringValueIfPresent(WindowsRegistry.HKEY_CURRENT_USER,
+                        "Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", "ProxyServer");
+                if (server.isPresent()) {
+                    var split = server.get().split(":");
+                    var addr = split[0];
+                    var port = split.length > 1 ? Integer.parseInt(split[1]) : 8080;
+                    return Optional.of(new HttpProxy(addr, port, null, null, false));
+                }
+            }
+        }
+
         return Optional.empty();
     }
 

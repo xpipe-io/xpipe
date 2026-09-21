@@ -134,7 +134,8 @@ def getBaseJvmArgs() {
     // JavaFX performance adjustments
     jvmRunArgs += [
             "-Dprism.scrollcacheopt=true",
-            "-Dprism.cacheshapes=true"
+            "-Dprism.cacheshapes=true",
+            "-Dprism.dirtyregioncount=15",
     ]
 
 
@@ -144,6 +145,7 @@ def getBaseJvmArgs() {
             "--add-opens", "java.base/java.lang=$appPackage",
             "--add-opens", "java.base/java.net=$appPackage",
             "--add-opens", "java.base/java.nio.file=$appPackage",
+            "--add-opens", "java.base/java.util.regex=$appPackage",
             "--add-opens", "java.base/java.io=$appPackage",
             "--add-opens", "jdk.zipfs/jdk.nio.zipfs=io.xpipe.modulefs",
     ]
@@ -164,12 +166,11 @@ def getDaemonJvmArgs() {
     // Use custom JavaFX preloader
     jvmRunArgs += ["-Djavafx.preloader=" + packageName("core.AppPreloader")]
 
-    // Why is this not on by default? ...
+    // Http configuration
     // https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/net/doc-files/net-properties.html
     // https://stackoverflow.com/questions/53333556/proxy-authentication-with-jdk-11-httpclient
     // https://stackoverflow.com/questions/75150081/ioexception-too-many-authentication-attempts-limit-3-when-using-jdk-httpcli
     jvmRunArgs += [
-            '-Djava.net.useSystemProxies=true',
             '-Djdk.http.auth.proxying.disabledSchemes=""',
             '-Djdk.http.auth.tunneling.disabledSchemes=""',
             '-Djdk.httpclient.auth.retrylimit=1'

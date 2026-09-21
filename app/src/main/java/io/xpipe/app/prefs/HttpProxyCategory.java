@@ -140,25 +140,7 @@ public class HttpProxyCategory extends AppPrefsCategory {
                                     DataStore.class,
                                     r -> HttpProxy.canUseAsProxy(r.asNeeded()),
                                     StoreViewState.get().getAllConnectionsCategory(),
-                                    null) {
-                                @Override
-                                protected String toName(DataStoreEntry entry) {
-                                    if (entry == null) {
-                                        return AppI18n.get("systemDefault");
-                                    }
-
-                                    return super.toName(entry);
-                                }
-
-                                @Override
-                                protected String toGraphic(DataStoreEntry entry) {
-                                    if (entry == null) {
-                                        return "proc:networkProxy_icon.svg";
-                                    }
-
-                                    return super.toGraphic(entry);
-                                }
-                            };
+                                    null);
                     return comp.build();
                 }),
                 () -> StoreViewState.get() != null && StoreViewState.get().isInitialized());
