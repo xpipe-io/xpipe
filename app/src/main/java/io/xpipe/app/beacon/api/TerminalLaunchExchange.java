@@ -23,6 +23,7 @@ public class TerminalLaunchExchange extends BeaconInterface<TerminalLaunchExchan
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws BeaconClientException, BeaconServerException {
+        TerminalLauncherManager.verifyPid(msg.getRequest(), msg.getPid());
         var r = TerminalLauncherManager.launchExchange(msg.getRequest());
         return Response.builder().targetFile(r).build();
     }
@@ -38,6 +39,8 @@ public class TerminalLaunchExchange extends BeaconInterface<TerminalLaunchExchan
     public static class Request {
         @NonNull
         UUID request;
+
+        long pid;
     }
 
     @Jacksonized

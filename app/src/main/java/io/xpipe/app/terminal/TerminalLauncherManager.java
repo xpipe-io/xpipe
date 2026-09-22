@@ -89,6 +89,25 @@ public class TerminalLauncherManager {
         req.setShellPid(shell.pid());
     }
 
+    public static void verifyPid(UUID request, long pid) throws BeaconClientException {
+        TerminalLaunchRequest req;
+        synchronized (entries) {
+            req = entries.get(request);
+        }
+
+        if (req.getShellPid() != -1) {
+            ProcessHandle current = ProcessHandle.of(pid).orElseThrow();
+            do {
+                if (current.pid() == req.getShellPid()) {
+                    return;
+                }
+
+                current = current.parent().orElse(null);
+            } while (current != null);
+        }
+        throw new BeaconClientException("Wrong launch context");
+    }
+
     public static void waitExchange(UUID request) throws BeaconServerException {
         TerminalLaunchRequest req;
         synchronized (entries) {
