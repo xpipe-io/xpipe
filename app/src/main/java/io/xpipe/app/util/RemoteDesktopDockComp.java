@@ -230,8 +230,10 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
 
                 if (entry != null && entry.isInternal()) {
                     Region r = map.get(entry);
-                    stack.getChildren().add(r);
-                    r.requestFocus();
+                    if (r != null) {
+                        stack.getChildren().add(r);
+                        r.requestFocus();
+                    }
                 }
             });
         });

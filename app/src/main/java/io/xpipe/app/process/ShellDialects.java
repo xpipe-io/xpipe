@@ -26,6 +26,7 @@ public class ShellDialects {
     public static ShellDialect XONSH;
 
     public static ShellDialect DISABLED_INTERACTION;
+    public static ShellDialect ARISTA_EOS;
     public static ShellDialect JUNOS_OS;
     public static ShellDialect CISCO_IOS;
     public static ShellDialect CISCO_IOS_XE;
@@ -97,6 +98,7 @@ public class ShellDialects {
             XONSH = byId("xonsh");
             DISABLED_INTERACTION = byId("disabledInteraction");
             JUNOS_OS = byId("junosOs");
+            ARISTA_EOS = byId("aristaEos");
             CISCO_IOS = byId("ciscoIos");
             CISCO_IOS_XE = byId("ciscoIosXe");
             CISCO_NXOS = byId("ciscoNxOs");
