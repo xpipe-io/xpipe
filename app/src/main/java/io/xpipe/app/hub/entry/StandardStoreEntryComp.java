@@ -92,6 +92,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
 
         var nameCC = new ColumnConstraints();
         nameCC.setHgrow(Priority.ALWAYS);
+        nameCC.setMinWidth(Region.USE_PREF_SIZE);
         grid.getColumnConstraints().addAll(nameCC);
 
         var contentRegion = content != null ? content.build() : null;

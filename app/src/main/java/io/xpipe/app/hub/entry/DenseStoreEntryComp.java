@@ -128,7 +128,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         infoCC.setHalignment(HPos.LEFT);
 
         var nameCC = new ColumnConstraints();
-        nameCC.setMinWidth(100);
+        nameCC.setMinWidth(Region.USE_PREF_SIZE);
         nameCC.setHgrow(Priority.ALWAYS);
         grid.getColumnConstraints().addAll(nameCC);
 
