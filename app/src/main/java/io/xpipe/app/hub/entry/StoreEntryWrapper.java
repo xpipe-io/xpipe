@@ -350,6 +350,8 @@ public class StoreEntryWrapper {
             this.effectiveBusyProviderBound = true;
             this.effectiveBusy.unbind();
             this.effectiveBusy.bind(busy.or(getEntry().getProvider().busy(this)));
+        } else if (!effectiveBusyProviderBound && !effectiveBusy.isBound()) {
+            effectiveBusy.bind(busy);
         }
 
         // The property values are only registered as changed once they are queried

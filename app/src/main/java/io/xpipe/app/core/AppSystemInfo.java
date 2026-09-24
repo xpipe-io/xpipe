@@ -202,7 +202,7 @@ public abstract class AppSystemInfo {
             } catch (Exception ignored) {
                 userHome = dir;
             }
-            return dir;
+            return userHome;
         }
 
         @Override
