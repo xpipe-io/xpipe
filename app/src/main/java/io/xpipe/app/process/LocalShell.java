@@ -87,6 +87,7 @@ public class LocalShell {
                 localPowershell.kill();
             }
             localPowershell = null;
+            powershellInitialized = false;
         }
     }
 

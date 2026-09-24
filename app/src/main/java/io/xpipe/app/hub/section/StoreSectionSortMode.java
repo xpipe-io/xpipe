@@ -97,8 +97,18 @@ public interface StoreSectionSortMode {
                 public int compare(StoreSection o1, StoreSection o2) {
                     var i1 = o1.getWrapper().getNameIpAddress().getValue();
                     var i2 = o2.getWrapper().getNameIpAddress().getValue();
+
                     if (i1 != null && i2 != null) {
                         return compare(i1, i2);
+                    }
+
+                    // Make sure that sort contract is honored,
+                    // so don't compare two different types of names
+                    if (i1 != null) {
+                        return 1;
+                    }
+                    if (i2 != null) {
+                        return -1;
                     }
 
                     var n1 = o1.getWrapper().getName().getValue();
