@@ -22,7 +22,6 @@ public class TerminalPrepareExchange extends BeaconInterface<TerminalPrepareExch
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws BeaconClientException {
-        TerminalLauncherManager.verifyPid(msg.getRequest(), msg.getPid());
         var term = AppPrefs.get().terminalType().getValue();
         var unicode = term.supportsUnicode();
         var escapes = term.supportsEscapes();

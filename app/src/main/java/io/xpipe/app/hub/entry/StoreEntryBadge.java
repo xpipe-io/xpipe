@@ -49,26 +49,20 @@ public interface StoreEntryBadge {
         static Action providerMenu(String... ids) {
             return new Action() {
 
-                private ContextMenu contextMenu;
-
-                private void buildContextMenu(StoreEntryWrapper wrapper) {
-                    if (contextMenu == null) {
-                        contextMenu = new ContextMenu();
-                    }
-
-                    contextMenu.getItems().clear();
+                private ContextMenu buildContextMenu(StoreEntryWrapper wrapper) {
+                    var contextMenu = new ContextMenu();
                     var provs = getProviders(wrapper);
                     for (var p : provs) {
                         var item = StoreEntryComp.buildMenuItemForAction(wrapper, p);
                         contextMenu.getItems().add(item);
                     }
+                    return contextMenu;
                 }
 
                 @Override
                 public void run(StoreEntryWrapper wrapper, Button button) {
                     var cm = new ContextMenuWrapper(() -> {
-                        buildContextMenu(wrapper);
-                        return contextMenu;
+                        return buildContextMenu(wrapper);
                     });
                     cm.show(button, Side.BOTTOM);
                 }
@@ -247,7 +241,7 @@ public interface StoreEntryBadge {
 
                         Platform.runLater(() -> {
                             var cm = new ContextMenuWrapper(() -> {
-                                return buildContextMenu(addr);
+                                return buildContextMenu(refreshed);
                             });
                             cm.show(b, Side.BOTTOM);
                         });

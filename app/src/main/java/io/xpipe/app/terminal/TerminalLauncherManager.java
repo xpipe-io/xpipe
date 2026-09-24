@@ -127,7 +127,7 @@ public class TerminalLauncherManager {
         }
     }
 
-    public static Path launchExchange(UUID request) throws BeaconClientException, BeaconServerException {
+    public static Path launchExchange(UUID request, Long pid) throws BeaconClientException, BeaconServerException {
         synchronized (entries) {
             var e = entries.values().stream()
                     .filter(entry -> entry.getRequest().equals(request))
@@ -156,6 +156,10 @@ public class TerminalLauncherManager {
                 } catch (Exception ex) {
                     throw new BeaconServerException(ex);
                 }
+            }
+
+            if (pid != null) {
+                TerminalLauncherManager.verifyPid(request, pid);
             }
 
             if (!(e.getResult() instanceof TerminalLaunchResult.ResultSuccess)) {
@@ -190,7 +194,7 @@ public class TerminalLauncherManager {
         var config = new TerminalInitScriptConfig(ref.get().getName(), false, TerminalInitFunction.none());
         submitAsync(request, control, config, null);
         waitExchange(request);
-        var script = launchExchange(request);
+        var script = launchExchange(request, null);
         try (var sc = LocalShell.getShell().start()) {
             var runCommand = ProcModuleProvider.get()
                     .getEffectiveLocalDialect()
