@@ -45,7 +45,7 @@ public class AppPrefsStorageHandler {
                         content = (ObjectNode) read;
                     }
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e)
                         .expected()
                         .description("Settings file " + file + " is corrupt")

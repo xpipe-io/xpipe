@@ -579,9 +579,6 @@ public abstract class DataStorage {
         });
         categoriesToMove.forEach(toMove -> {
             toMove.setParentCategory(breakOut.getUuid());
-            // The update mechanism does not support moves, so readd them
-            listeners.forEach(storageListener -> storageListener.onCategoryRemove(toMove));
-            listeners.forEach(storageListener -> storageListener.onCategoryAdd(toMove));
         });
 
         listeners.forEach(storageListener -> storageListener.onCategoryListUpdate());
@@ -633,9 +630,6 @@ public abstract class DataStorage {
         });
         moveCategories.forEach(toMove -> {
             toMove.setParentCategory(parent.get().getCategoryUuid());
-            // The update mechanism does not support moves, so readd them
-            listeners.forEach(storageListener -> storageListener.onCategoryRemove(toMove));
-            listeners.forEach(storageListener -> storageListener.onCategoryAdd(toMove));
         });
         entry.setCategoryUuid(parent.get().getCategoryUuid());
 
