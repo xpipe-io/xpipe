@@ -388,7 +388,7 @@ public class OptionsBuilder {
     public OptionsBuilder maxWidth(int width) {
         finishCurrent();
         for (OptionsComp.Entry entry : entries) {
-            if (entry.comp() instanceof ButtonComp) {
+            if (entry.comp() instanceof ButtonComp || entry.comp() instanceof TestButtonComp) {
                 continue;
             }
 

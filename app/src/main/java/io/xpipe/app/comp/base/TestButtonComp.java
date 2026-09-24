@@ -3,10 +3,13 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.util.FailableSupplier;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
@@ -22,12 +25,20 @@ import java.util.concurrent.atomic.AtomicReference;
 @AllArgsConstructor
 public class TestButtonComp extends RegionBuilder<Button> {
 
+    private final ObservableValue<String> name;
+    private final ObservableValue<LabelGraphic> graphic;
     private final FailableSupplier<Boolean> run;
+
+    public TestButtonComp(FailableSupplier<Boolean> run) {
+        this.name = AppI18n.observable("test");
+        this.graphic = new ReadOnlyObjectWrapper<>(new LabelGraphic.IconGraphic("mdi2p-play"));
+        this.run = run;
+    }
 
     @Override
     public Button createSimple() {
         AtomicReference<Region> button = new AtomicReference<>();
-        var testButton = new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
+        var testButton = new ButtonComp(name, graphic, () -> {
             ThreadHelper.runAsync(() -> {
                 Platform.runLater(() -> {
                     button.get().getStyleClass().removeAll(Styles.SUCCESS, Styles.DANGER, Styles.ACCENT);
