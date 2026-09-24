@@ -39,13 +39,8 @@ public class AppWindowsShutdown {
         }
     }
 
-    public static void unregisterHook(WinDef.HWND hwnd) {
+    public static void unregisterHook() {
         try {
-            int windowThreadID = User32.INSTANCE.GetWindowThreadProcessId(hwnd, null);
-            if (windowThreadID == 0) {
-                return;
-            }
-
             if (PROC.hhook == null) {
                 return;
             }

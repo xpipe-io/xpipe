@@ -178,7 +178,7 @@ public class AppMainWindow {
             var oldControl = NativeWinWindowControl.MAIN_WINDOW;
             if (oldControl != null && !oldControl.getWindowHandle().equals(currentControl.getWindowHandle())) {
                 AppWindowsLock.unregisterHook(oldControl.getWindowHandle());
-                AppWindowsShutdown.unregisterHook(oldControl.getWindowHandle());
+                AppWindowsShutdown.unregisterHook();
                 NativeWinWindowControl.MAIN_WINDOW = null;
             }
 

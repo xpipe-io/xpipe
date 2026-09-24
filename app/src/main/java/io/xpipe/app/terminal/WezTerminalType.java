@@ -60,7 +60,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
 
     default Path getSocketDir() {
         if (OsType.ofLocal() == OsType.LINUX) {
-            return Path.of(System.getenv("XDG_RUNTIME_DIR"), "wezterm");
+            return AppSystemInfo.ofLinux().getRuntimeDir().resolve("wezterm");
         } else {
             return AppSystemInfo.ofCurrent().getUserHome().resolve(".local", "share", "wezterm");
         }

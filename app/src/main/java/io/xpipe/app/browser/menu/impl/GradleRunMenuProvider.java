@@ -10,6 +10,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fs.FileKind;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.OsType;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -81,11 +82,9 @@ public class GradleRunMenuProvider implements BrowserMenuLeafProvider {
             }
 
             var parent = entries.getFirst().getRawFileEntry().getPath().getParent();
-            var command = model.getFileSystem()
-                    .getShell()
-                    .orElseThrow()
-                    .command(CommandBuilder.of()
-                            .add("sh")
+            var sc = model.getFileSystem().getShell().orElseThrow();
+            var command = sc.command(CommandBuilder.of()
+                            .addIf(sc.getOsType() != OsType.WINDOWS, "sh")
                             .addFile(entries.getFirst().getRawFileEntry().getPath())
                             .add(fixedTasks));
 

@@ -129,7 +129,8 @@ public abstract class AppShellChecker {
     }
 
     private Optional<FailureResult> selfTestErrorCheck() {
-        try (var sc = LocalShell.init()) {
+        try {
+            var sc = LocalShell.init();
             var scriptContent = "echo test";
             var scriptFile = ScriptHelper.createExecScript(sc, scriptContent);
             var out = sc.command(sc.getShellDialect().runScriptCommand(sc, scriptFile.toString()))

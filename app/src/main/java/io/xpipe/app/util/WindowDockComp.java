@@ -119,7 +119,7 @@ public class WindowDockComp<T extends WindowDockListener> extends SimpleRegionBu
                 s.removeEventFilter(WindowEvent.WINDOW_SHOWN, show);
                 s.removeEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, hide);
                 s.removeEventFilter(WindowEvent.WINDOW_HIDDEN, hide);
-                s.outputScaleXProperty().addListener(scale);
+                s.outputScaleXProperty().removeListener(scale);
                 if (parent.get() != null) {
                     parent.get().boundsInParentProperty().removeListener(bounds);
                     parent.set(null);
@@ -132,7 +132,7 @@ public class WindowDockComp<T extends WindowDockListener> extends SimpleRegionBu
                 s.heightProperty().addListener(update);
                 s.maximizedProperty().addListener(maximized);
                 s.iconifiedProperty().addListener(iconified);
-                s.outputScaleXProperty().removeListener(scale);
+                s.outputScaleXProperty().addListener(scale);
                 s.addEventFilter(WindowEvent.WINDOW_SHOWN, show);
                 s.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, hide);
                 s.addEventFilter(WindowEvent.WINDOW_HIDDEN, hide);
