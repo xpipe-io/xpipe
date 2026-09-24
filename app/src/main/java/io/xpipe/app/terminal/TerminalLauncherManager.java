@@ -21,16 +21,16 @@ public class TerminalLauncherManager {
         TerminalView.get().addListener(new TerminalView.Listener() {
             @Override
             public void onSessionClosed(TerminalView.ShellSession session) {
-                var affectedEntry = entries.values().stream()
-                        .filter(terminalLaunchRequest -> {
-                            return terminalLaunchRequest.getRequest().equals(session.getRequest());
-                        })
-                        .findFirst();
-                if (affectedEntry.isEmpty()) {
-                    return;
-                }
+                synchronized (entries) {
+                    var affectedEntry = entries.values().stream().filter(terminalLaunchRequest -> {
+                        return terminalLaunchRequest.getRequest().equals(session.getRequest());
+                    }).findFirst();
+                    if (affectedEntry.isEmpty()) {
+                        return;
+                    }
 
-                affectedEntry.get().abort();
+                    affectedEntry.get().abort();
+                }
             }
         });
     }
@@ -95,8 +95,8 @@ public class TerminalLauncherManager {
             req = entries.get(request);
         }
 
-        if (req.getShellPid() != -1) {
-            ProcessHandle current = ProcessHandle.of(pid).orElseThrow();
+        if (req != null && req.getShellPid() != -1) {
+            ProcessHandle current = ProcessHandle.of(pid).orElseThrow(() -> new BeaconClientException("Unknown process " + pid));
             do {
                 if (current.pid() == req.getShellPid()) {
                     return;

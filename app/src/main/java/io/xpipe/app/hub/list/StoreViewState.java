@@ -796,12 +796,11 @@ public class StoreViewState {
                 .orElseThrow();
     }
 
-    public StoreCategoryWrapper getCategoryWrapper(UUID uuid) {
+    public Optional<StoreCategoryWrapper> getCategoryWrapper(UUID uuid) {
         return categories.getList().stream()
                 .filter(storeCategoryWrapper ->
                         storeCategoryWrapper.getCategory().getUuid().equals(uuid))
-                .findFirst()
-                .orElseThrow();
+                .findFirst();
     }
 
     public StoreCategoryWrapper getCategoryWrapper(DataStoreCategory entry) {

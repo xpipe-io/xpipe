@@ -191,7 +191,7 @@ public class StoreCategoryWrapper {
                         .equals(storeCategoryWrapper.getCategory().getParentCategory()))
                 .sorted(comparator)
                 .toList());
-        parent = category.getParentCategory() != null ? StoreViewState.get().getCategoryWrapper(category.getParentCategory()) : null;
+        parent = category.getParentCategory() != null ? StoreViewState.get().getCategoryWrapper(category.getParentCategory()).orElse(null) : null;
         shownChildren.setContent(children.getList().stream()
                 .filter(wrapper -> {
                     var op = StoreViewState.get().getCategoryDragOperation().getValue();
@@ -376,7 +376,7 @@ public class StoreCategoryWrapper {
         }
 
         var first = l.getFirst();
-        first.insertSiblingCategory(first, false);
+        first.insertSiblingCategory(selection, false);
     }
 
     public Property<String> nameProperty() {

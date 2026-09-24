@@ -201,14 +201,8 @@ public interface StoreEntryBadge {
         var busy = new SimpleBooleanProperty();
         return of("mdi2s-server-network-outline", effective).withAction(new Action() {
 
-            private ContextMenu contextMenu;
-
-            private void buildContextMenu(HostAddress has) {
-                if (contextMenu == null) {
-                    contextMenu = new ContextMenu();
-                }
-
-                contextMenu.getItems().clear();
+            private ContextMenu buildContextMenu(HostAddress has) {
+                var contextMenu = new ContextMenu();
                 for (var a : has.getAvailable()) {
                     var i = new MenuItem();
                     i.setText(a);
@@ -219,6 +213,7 @@ public interface StoreEntryBadge {
                     });
                     contextMenu.getItems().add(i);
                 }
+                return contextMenu;
             }
 
             @Override
@@ -252,8 +247,7 @@ public interface StoreEntryBadge {
 
                         Platform.runLater(() -> {
                             var cm = new ContextMenuWrapper(() -> {
-                                buildContextMenu(addr);
-                                return contextMenu;
+                                return buildContextMenu(addr);
                             });
                             cm.show(b, Side.BOTTOM);
                         });

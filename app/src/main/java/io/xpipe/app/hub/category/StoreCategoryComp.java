@@ -70,8 +70,13 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
                 })
                 .build();
 
-        var contextMenu = new ContextMenuWrapper(() -> createContextMenu());
         var contextMenuShowing = new SimpleBooleanProperty();
+        var contextMenu = new ContextMenuWrapper(() -> {
+            var cm = createContextMenu();
+            contextMenuShowing.unbind();
+            contextMenuShowing.bind(cm.showingProperty());
+            return cm;
+        });
 
         var expandIcon = Bindings.createObjectBinding(
                 () -> {

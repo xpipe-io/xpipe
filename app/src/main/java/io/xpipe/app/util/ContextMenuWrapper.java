@@ -31,7 +31,9 @@ public class ContextMenuWrapper {
     @Getter
     private ContextMenu contextMenu;
 
-    public ContextMenuWrapper(Supplier<ContextMenu> contextMenuSupplier) {this.contextMenuSupplier = contextMenuSupplier;}
+    public ContextMenuWrapper(Supplier<ContextMenu> contextMenuSupplier) {
+        this.contextMenuSupplier = contextMenuSupplier;
+    }
 
     public ContextMenuWrapper withCustomKeyHandling() {
         customKeyHandling = true;
@@ -76,14 +78,11 @@ public class ContextMenuWrapper {
         }
     }
 
-    private ContextMenu getOrCreate() {
-        if (contextMenu == null) {
-            contextMenu = contextMenuSupplier.get();
-            if (contextMenu != null) {
-                applyFixes();
-            }
+    private void create() {
+        contextMenu = contextMenuSupplier.get();
+        if (contextMenu != null) {
+            applyFixes();
         }
-        return contextMenu;
     }
 
     public boolean isHidden() {
@@ -98,16 +97,7 @@ public class ContextMenuWrapper {
         for (ContextMenu cm : allContextMenus) {
             cm.hide();
         }
-    }
-
-    private void hideOthers(boolean includeSelf) {
-        for (ContextMenu cm : allContextMenus) {
-            if (!includeSelf && cm.equals(contextMenu)) {
-                continue;
-            }
-
-            cm.hide();
-        }
+        allContextMenus.clear();
     }
 
     public void hide() {
@@ -121,16 +111,17 @@ public class ContextMenuWrapper {
             return true;
         }
 
-        var cm = getOrCreate();
-        if (cm != null) {
+        create();
+
+        if (contextMenu != null) {
             // Prevent NPE in show()
             if (contextMenu.getScene() == null || r == null || r.getScene() == null) {
                 return false;
             }
 
-            cm.show(r, side, 0, 0);
+            contextMenu.show(r, side, 0, 0);
 
-            allContextMenus.add(cm);
+            allContextMenus.add(contextMenu);
             return true;
         } else {
             return false;
@@ -142,15 +133,16 @@ public class ContextMenuWrapper {
             return true;
         }
 
-        var cm = getOrCreate();
-        if (cm != null) {
+        create();
+
+        if (contextMenu != null) {
             // Prevent NPE in show()
             if (contextMenu.getScene() == null || r == null || r.getScene() == null) {
                 return false;
             }
 
-            cm.show(r, x, y);
-            allContextMenus.add(cm);
+            contextMenu.show(r, x, y);
+            allContextMenus.add(contextMenu);
             return true;
         } else {
             return false;
@@ -168,7 +160,7 @@ public class ContextMenuWrapper {
             }
 
             var showing = isShowing();
-            hideOthers(showing);
+            hideAll();
             if (!showing && show(r, side)) {
                 event.consume();
             }
@@ -178,7 +170,7 @@ public class ContextMenuWrapper {
     public void installOnMouseClick(Region r, Predicate<MouseEvent> mouseEventCheck, boolean showAtLocation) {
         r.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if (mouseEventCheck != null && mouseEventCheck.test(event)) {
-                hideOthers(showAtLocation);
+                hideAll();
                 var shown = (showAtLocation && show(r, event.getScreenX(), event.getScreenY())) || (!showAtLocation && show(r, Side.BOTTOM));
                 if (shown) {
                     event.consume();
@@ -203,7 +195,7 @@ public class ContextMenuWrapper {
             if (keyEventCheck != null) {
                 if (keyEventCheck.test(event)) {
                     var showing = isShowing();
-                    hideOthers(showing);
+                    hideAll();
                     if (!showing && show(r, Side.BOTTOM)) {
                         event.consume();
                     }

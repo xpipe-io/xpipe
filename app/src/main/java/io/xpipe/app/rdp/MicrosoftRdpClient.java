@@ -145,7 +145,6 @@ public abstract class MicrosoftRdpClient implements ExternalApplicationType.Inst
     private final boolean useSystemDisplayScale;
 
     private static final int CRED_TYPE_GENERIC = 1;
-    private static final int CRED_TYPE_DOMAIN_PASSWORD = 2;
     private static final int CRED_PERSIST_SESSION = 1;
     
     private static final Set<String> storedCredentials = new HashSet<String>();
@@ -153,7 +152,7 @@ public abstract class MicrosoftRdpClient implements ExternalApplicationType.Inst
     public static void reset() {
         synchronized (storedCredentials) {
             for (String s : storedCredentials) {
-                AuthModuleProvider.get().deleteWindowsCredential(s, CRED_PERSIST_SESSION);
+                AuthModuleProvider.get().deleteWindowsCredential(s, CRED_TYPE_GENERIC);
             }
         }
     }
@@ -212,7 +211,7 @@ public abstract class MicrosoftRdpClient implements ExternalApplicationType.Inst
 
         for (String storedTarget : storedTargets) {
             GlobalTimer.delay(() -> {
-                AuthModuleProvider.get().deleteWindowsCredential(storedTarget, CRED_PERSIST_SESSION);
+                AuthModuleProvider.get().deleteWindowsCredential(storedTarget, CRED_TYPE_GENERIC);
             }, Duration.ofSeconds(120));
         }
         synchronized (storedCredentials) {
@@ -237,7 +236,7 @@ public abstract class MicrosoftRdpClient implements ExternalApplicationType.Inst
                         return !p.isDialog();
                     }, ignored -> {
                         for (String storedTarget : storedTargets) {
-                            AuthModuleProvider.get().deleteWindowsCredential(storedTarget, CRED_PERSIST_SESSION);
+                            AuthModuleProvider.get().deleteWindowsCredential(storedTarget, CRED_TYPE_GENERIC);
                         }
                     });
         }
