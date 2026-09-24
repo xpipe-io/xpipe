@@ -27,7 +27,7 @@ public class PasswordManagerCustomKeyMap {
         var keySplit = key.split("\\?", 2);
         var keys = Arrays.stream((keySplit.length > 1 ? keySplit[1] : "").split("&"))
                 .filter(s -> s.split("=").length == 2)
-                .collect(Collectors.toMap(s -> s.split("=", 2)[0], s -> s.split("=", 2)[1]));
+                .collect(Collectors.toMap(s -> s.split("=", 2)[0], s -> s.split("=", 2)[1], (a, b) -> b));
         return new PasswordManagerCustomKeyMap(
                 keys.get("user"), keys.get("pass"), keys.get("public-key"), keys.get("private-key"));
     }

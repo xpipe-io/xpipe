@@ -11,11 +11,7 @@ public class LocalFileTracker {
 
     private static final Set<Path> localFiles = new HashSet<>();
 
-    public static void deleteOnExit(Path file) {
-        synchronized (localFiles) {
-            localFiles.add(file);
-        }
-
+    public static void init() {
         GlobalTimer.scheduleUntil(Duration.ofHours(1), false, () -> {
             synchronized (localFiles) {
                 var copy = new HashSet<>(localFiles);
@@ -26,9 +22,16 @@ public class LocalFileTracker {
                             }
                         },
                         Duration.ofMinutes(1));
+                localFiles.clear();
             }
             return false;
         });
+    }
+
+    public static void deleteOnExit(Path file) {
+        synchronized (localFiles) {
+            localFiles.add(file);
+        }
     }
 
     public static void reset() {
@@ -36,6 +39,7 @@ public class LocalFileTracker {
             for (Path localFile : localFiles) {
                 FileUtils.deleteQuietly(localFile.toFile());
             }
+            localFiles.clear();
         }
     }
 }

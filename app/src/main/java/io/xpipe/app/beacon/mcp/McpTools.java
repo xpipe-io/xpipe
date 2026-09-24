@@ -96,11 +96,11 @@ public final class McpTools {
                             .build();
                     var handshakeReq = HttpRequest.newBuilder()
                             .uri(URI.create(
-                                    "http://localhost:" + AppBeaconServer.get().getPort() + "/handshake"))
+                                    "http://127.0.0.1:" + AppBeaconServer.get().getPort() + "/handshake"))
                             .POST(HttpRequest.BodyPublishers.ofString(
                                     JacksonMapper.getDefault().writeValueAsString(handshakeRequest)))
                             .build();
-                    var handshakeRes = HttpHelper.client().send(handshakeReq, HttpResponse.BodyHandlers.ofString());
+                    var handshakeRes = HttpHelper.client(null, true).send(handshakeReq, HttpResponse.BodyHandlers.ofString());
                     var handshakeResJson = JacksonMapper.getDefault().readTree(handshakeRes.body());
                     if (handshakeRes.statusCode() >= 400) {
                         return McpSchema.CallToolResult.builder()
@@ -115,11 +115,11 @@ public final class McpTools {
 
                     var httpReq = HttpRequest.newBuilder()
                             .uri(URI.create(
-                                    "http://localhost:" + AppBeaconServer.get().getPort() + path))
+                                    "http://127.0.0.1:" + AppBeaconServer.get().getPort() + path))
                             .header("Authorization", "Bearer " + token)
                             .POST(HttpRequest.BodyPublishers.ofString(payloadJson.toPrettyString()))
                             .build();
-                    var httpRes = HttpHelper.client().send(httpReq, HttpResponse.BodyHandlers.ofString());
+                    var httpRes = HttpHelper.client(null, true).send(httpReq, HttpResponse.BodyHandlers.ofString());
 
                     var resJson = JacksonMapper.getDefault().readTree(httpRes.body());
                     if (httpRes.statusCode() >= 400) {

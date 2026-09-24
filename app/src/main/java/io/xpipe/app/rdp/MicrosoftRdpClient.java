@@ -53,7 +53,12 @@ public abstract class MicrosoftRdpClient implements ExternalApplicationType.Inst
             return (usesNewSecurityDialog = false);
         }
 
-        return (usesNewSecurityDialog = ("26200".equals(build.get())));
+        try {
+            var buildInt = Integer.parseInt(build.get());
+            return (usesNewSecurityDialog = buildInt >= 26200);
+        } catch (NumberFormatException ignored) {
+            return (usesNewSecurityDialog = false);
+        }
     }
 
     private static boolean isNewSecurityDialogEnabled() {

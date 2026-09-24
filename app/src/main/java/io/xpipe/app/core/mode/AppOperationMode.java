@@ -188,6 +188,7 @@ public abstract class AppOperationMode {
             TrackEvent.info("Initial setup");
             AppMainWindow.loadingText("initializingApp");
             GlobalTimer.init();
+            LocalFileTracker.init();
             PlatformThreadWatcher.init();
             AppLogs.init();
             AppDebugModeCheck.printIfNeeded();

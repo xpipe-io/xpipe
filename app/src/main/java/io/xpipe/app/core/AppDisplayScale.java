@@ -41,7 +41,12 @@ public class AppDisplayScale {
             return input;
         }
 
-        return input - rest;
+        var r = input - rest;
+        if (r == 0) {
+            return 25;
+        } else {
+            return r;
+        }
     }
 
     public static boolean hasOnlyDefaultDisplayScale() {
