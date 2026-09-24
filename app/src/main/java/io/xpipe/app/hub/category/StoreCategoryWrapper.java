@@ -47,7 +47,7 @@ public class StoreCategoryWrapper {
     private final Property<DataStoreColor> color = new SimpleObjectProperty<>();
     private final Property<String> iconFile = new SimpleObjectProperty<>();
     private final Trigger<Void> renameTrigger = Trigger.of();
-    private StoreCategoryWrapper cachedParent;
+    private StoreCategoryWrapper parent;
 
     public StoreCategoryWrapper(DataStoreCategory category) {
         this.root = DataStorage.get().getRootCategory(category);
@@ -70,22 +70,6 @@ public class StoreCategoryWrapper {
 
     public StoreCategoryWrapper getRoot() {
         return StoreViewState.get().getCategoryWrapper(root);
-    }
-
-    public StoreCategoryWrapper getParent() {
-        if (category.getParentCategory() == null) {
-            return null;
-        }
-
-        if (cachedParent == null) {
-            cachedParent = StoreViewState.get().getCategories().getList().stream()
-                    .filter(storeCategoryWrapper ->
-                            storeCategoryWrapper.getCategory().getUuid().equals(category.getParentCategory()))
-                    .findAny()
-                    .orElse(null);
-        }
-
-        return cachedParent;
     }
 
     public boolean isHierarchyExpanded() {
@@ -175,14 +159,12 @@ public class StoreCategoryWrapper {
         }
 
         var d = 0;
-        DataStoreCategory last = category;
         DataStoreCategory p = category;
         while ((p = DataStorage.get()
                 .getStoreCategoryIfPresent(p.getParentCategory())
                 .orElse(null))
                 != null) {
             d++;
-            last = p;
         }
         depth.setValue(d);
 
@@ -209,6 +191,7 @@ public class StoreCategoryWrapper {
                         .equals(storeCategoryWrapper.getCategory().getParentCategory()))
                 .sorted(comparator)
                 .toList());
+        parent = category.getParentCategory() != null ? StoreViewState.get().getCategoryWrapper(category.getParentCategory()) : null;
         shownChildren.setContent(children.getList().stream()
                 .filter(wrapper -> {
                     var op = StoreViewState.get().getCategoryDragOperation().getValue();
