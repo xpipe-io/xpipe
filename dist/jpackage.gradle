@@ -42,7 +42,7 @@ jlink {
             // '--strip-debug',
             '--no-header-files',
             '--no-man-pages',
-            '--compress', 'zip-9',
+            '--compress', '0',
             '--ignore-signing-information'
     ]
 
