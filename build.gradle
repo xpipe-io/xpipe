@@ -131,13 +131,6 @@ def getBaseJvmArgs() {
             "--enable-final-field-mutation=io.xpipe.app"
     ]
 
-    // JavaFX performance adjustments
-    jvmRunArgs += [
-            "-Dprism.scrollcacheopt=true",
-            "-Dprism.cacheshapes=true"
-    ]
-
-
     // Module access fixes
     def appPackage = packageName(null)
     jvmRunArgs += [
@@ -222,6 +215,12 @@ def getDaemonJvmArgs() {
     if (os.isMacOsX()) {
         jvmRunArgs += ["-Dprism.order=mtl,es2,sw"]
     }
+
+    // JavaFX performance adjustments
+    jvmRunArgs += [
+            "-Dprism.scrollcacheopt=true",
+            "-Dprism.cacheshapes=true"
+    ]
 
     // Fix uncontrolled animation framerate issues on Linux, see https://bugs.openjdk.org/browse/JDK-8210547
     if (os.isLinux()) {

@@ -190,36 +190,44 @@ public class AppProperties {
         localWebtopDockerfile = Optional.ofNullable(System.getProperty(AppNames.propertyName("localWebtopDockerfile")))
                 .map(s -> FilePath.parse(s))
                 .orElse(null);
-
-        // We require the user dir from here
-        AppDirectoryPermissionsCheck.checkDirectory(dataDir);
-        AppCache.setBasePath(dataDir.resolve("cache"));
-        dataBinDir = dataDir.resolve("cache", "bin");
-        UUID id = AppCache.getNonNull("uuid", UUID.class, () -> null);
-        if (id == null) {
-            uuid = UUID.randomUUID();
-            AppCache.update("uuid", uuid);
-        } else {
-            uuid = id;
-        }
-        initialLaunch = AppCache.getNonNull("lastBuildId", String.class, () -> null) == null;
-        sessionId = UUID.randomUUID();
-        var cachedBuildId = AppCache.getNonNull("lastBuildId", String.class, () -> null);
-        newBuildSession = !buildUuid.toString().equals(cachedBuildId);
-        AppCache.update("lastBuildId", buildUuid);
         aotTrainMode = Optional.ofNullable(System.getProperty(AppNames.propertyName("aotTrainMode")))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
         explicitMode = XPipeDaemonMode.getIfPresent(System.getProperty(AppNames.propertyName("mode")))
                 .orElse(null);
-        defaultBeaconPort = getDefaultBeaconPort(staging);
-        beaconAuthFile = getLocalBeaconAuthFile(staging);
-        beaconLockFile = beaconAuthFile.getParent().resolve("lock");
-        clearLeftoverAuthFile();
         debugCli = Optional.ofNullable(System.getProperty(AppNames.propertyName("debugCli")))
                 .or(() -> Optional.ofNullable(System.getenv("XPIPE_DEBUG")))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
+        sessionId = UUID.randomUUID();
+        dataBinDir = dataDir.resolve("cache", "bin");
+
+        defaultBeaconPort = getDefaultBeaconPort(staging);
+        beaconAuthFile = getLocalBeaconAuthFile(staging);
+        beaconLockFile = beaconAuthFile.getParent().resolve("lock");
+
+        if (isCli) {
+            AppCache.setBasePath(dataDir.resolve("cache"));
+            uuid = UUID.randomUUID();
+            initialLaunch = false;
+            newBuildSession = false;
+        } else {
+            // We require the user dir from here
+            AppDirectoryPermissionsCheck.checkDirectory(dataDir);
+            AppCache.setBasePath(dataDir.resolve("cache"));
+            UUID id = AppCache.getNonNull("uuid", UUID.class, () -> null);
+            if (id == null) {
+                uuid = UUID.randomUUID();
+                AppCache.update("uuid", uuid);
+            } else {
+                uuid = id;
+            }
+            initialLaunch = AppCache.getNonNull("lastBuildId", String.class, () -> null) == null;
+            var cachedBuildId = AppCache.getNonNull("lastBuildId", String.class, () -> null);
+            newBuildSession = !buildUuid.toString().equals(cachedBuildId);
+            AppCache.update("lastBuildId", buildUuid);
+            clearLeftoverAuthFile();
+        }
     }
 
     public OptionalInt queryEffectiveBeaconPort(boolean reachable) {
