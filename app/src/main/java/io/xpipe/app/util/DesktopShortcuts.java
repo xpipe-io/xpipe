@@ -4,9 +4,7 @@ import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.LocalShell;
-import io.xpipe.app.process.OsFileSystem;
+import io.xpipe.app.process.*;
 import io.xpipe.app.update.AppDistributionType;
 
 import java.io.IOException;
@@ -25,17 +23,19 @@ public class DesktopShortcuts {
         }
 
         var icon = AppInstallation.ofCurrent().getLogoPath();
+        var d = ShellDialects.POWERSHELL;
         var content = String.format("""
-                                    $TARGET="%s"
-                                    $SHORTCUT="%s"
-                                    $ws = New-Object -ComObject WScript.Shell
-                                    $s = $ws.CreateShortcut("$SHORTCUT")
-                                    $S.IconLocation='%s'
+                                    $TARGET=%s
+                                    $SHORTCUT=%s
+                                    $ws=New-Object -ComObject WScript.Shell
+                                    $s=$ws.CreateShortcut("$SHORTCUT")
+                                    $S.IconLocation=%s
                                     $S.WindowStyle=7
-                                    $S.TargetPath = "$TARGET"
-                                    $S.Arguments = '%s'
+                                    $S.TargetPath="$TARGET"
+                                    $S.Arguments=%s
                                     $S.Save()
-                                    """, executable, shortcutPath, icon, args).replaceAll("\n", ";");
+                                    """, d.fileArgument(executable), d.fileArgument(shortcutPath.toString()),
+                d.fileArgument(icon.toString()), d.literalArgument(args)).replace("\n", ";");
         shell.get().command(content).execute();
         return shortcutPath;
     }

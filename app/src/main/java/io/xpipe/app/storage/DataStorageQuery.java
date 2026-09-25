@@ -2,13 +2,14 @@ package io.xpipe.app.storage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DataStorageQuery {
 
     public static List<DataStoreEntry> queryUserInput(String input) {
         var connectionFilter = input != null && !input.isEmpty() && !input.equals("*") && !input.equals("**")
-                ? "**" + input + "**"
+                ? "**" + Pattern.quote(input) + "**"
                 : "**";
         var found = queryEntry("**", connectionFilter, "*");
         if (found.size() > 1) {

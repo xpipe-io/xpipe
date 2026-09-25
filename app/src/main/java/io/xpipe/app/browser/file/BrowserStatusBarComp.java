@@ -106,7 +106,7 @@ public class BrowserStatusBarComp extends SimpleRegionBuilder {
                         return "...";
                     }
 
-                    var elapsed = (p.getTotal() - p.getTransferred() / (double) p.getTotal()) * expected.toMillis();
+                    var elapsed = ((p.getTotal() - p.getTransferred()) / (double) p.getTotal()) * expected.toMillis();
                     var show = elapsed > 3000;
                     if (!show) {
                         return "...";

@@ -7,6 +7,7 @@ import lombok.Getter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.OptionalInt;
 
 @Getter
@@ -20,13 +21,13 @@ public class PasswdFile {
         return passwdFile;
     }
 
-    public OptionalInt getUidForUserIfPresent(String name) {
+    public Optional<Integer> getUidForUserIfPresent(String name) {
         var found = users.entrySet().stream()
                 .filter(e -> e.getValue().equals(name))
                 .findFirst()
                 .map(e -> e.getKey())
                 .orElse(null);
-        return found != null ? OptionalInt.of(found) : OptionalInt.empty();
+        return found != null ? Optional.of(found) : Optional.empty();
     }
 
     public int getUidForUser(String name) {

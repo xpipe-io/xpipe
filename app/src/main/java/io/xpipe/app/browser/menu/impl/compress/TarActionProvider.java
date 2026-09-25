@@ -44,7 +44,7 @@ public class TarActionProvider implements BrowserActionProvider {
                         .add("|", "sed")
                         .addLiteral("s,^" + dir.toDirectory().toUnix() + "*,,")
                         .add("|");
-                command.add(tar).add("-C").addFile(dir.toDirectory().toUnix()).add("-T", "-");
+                command.add(tar).add("--no-recursion").add("-C").addFile(dir.toDirectory().toUnix()).add("-T", "-");
                 sc.command(command).execute();
             } else {
                 var command = CommandBuilder.of().add(tar);

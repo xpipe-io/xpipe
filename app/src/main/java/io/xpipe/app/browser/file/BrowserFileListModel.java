@@ -121,8 +121,9 @@ public final class BrowserFileListModel {
         var newFullPath = fileSystemModel.getCurrentPath().get().join(newName);
 
         // This check will fail on case-insensitive file systems when changing the case of the file
-        // So skip it in this case
-        var skipExistCheck = old.getFileName().equalsIgnoreCase(newName);
+        // So skip it in the case we only change the case and the new target does not exist
+        var skipExistCheck = old.getFileName().equalsIgnoreCase(newName) && all.getValue().stream()
+                .noneMatch(e -> e.getFileName().equals(newName));
         if (!skipExistCheck) {
             boolean exists;
             try {

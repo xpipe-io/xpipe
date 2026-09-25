@@ -44,18 +44,21 @@ public class FsReadExchange extends BeaconInterface<FsReadExchange.Request> {
         var size = fs.getFileSize(msg.getPath());
         if (size > 100_000_000) {
             var file = BlobManager.get().newBlobFile();
-            try (var in = fs.openInput(msg.getPath())) {
-                var fixedIn = new FixedSizeInputStream(new BufferedInputStream(in), size);
-                try (var fileOut = Files.newOutputStream(file)) {
-                    fixedIn.transferTo(fileOut);
+            try {
+                try (var in = fs.openInput(msg.getPath())) {
+                    var fixedIn = new FixedSizeInputStream(new BufferedInputStream(in), size);
+                    try (var fileOut = Files.newOutputStream(file)) {
+                        fixedIn.transferTo(fileOut);
+                    }
+                    in.transferTo(OutputStream.nullOutputStream());
                 }
-                in.transferTo(OutputStream.nullOutputStream());
-            }
 
-            exchange.sendResponseHeaders(200, size);
-            try (var fileIn = Files.newInputStream(file);
-                    var out = exchange.getResponseBody()) {
-                fileIn.transferTo(out);
+                exchange.sendResponseHeaders(200, size);
+                try (var fileIn = Files.newInputStream(file); var out = exchange.getResponseBody()) {
+                    fileIn.transferTo(out);
+                }
+            } finally {
+                Files.deleteIfExists(file);
             }
         } else {
             byte[] bytes;

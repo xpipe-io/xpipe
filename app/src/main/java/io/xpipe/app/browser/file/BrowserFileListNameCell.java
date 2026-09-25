@@ -3,6 +3,7 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.icon.BrowserIconManager;
 import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
+import io.xpipe.app.fs.FileEntry;
 import io.xpipe.app.fs.FileKind;
 import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.platform.MenuHelper;
@@ -212,23 +213,30 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
                 // Visibility seems to be bugged, so use opacity
                 setOpacity(0.0);
             } else {
-                var icon = getTableRow().getItem().getIcon();
+                var i = getTableRow().getItem();
+                var fileEntry = i.getRawFileEntry();
+
+                var icon = i.getIcon();
                 BrowserIconManager.loadIfNecessary(icon);
                 img.set(icon);
 
-                var isDirectory = getTableRow().getItem().getRawFileEntry().getKind() == FileKind.DIRECTORY;
+                var isDirectory = fileEntry.getKind() == FileKind.DIRECTORY;
                 pseudoClassStateChanged(PseudoClass.getPseudoClass("folder"), isDirectory);
 
-                var normalName = getTableRow().getItem().getRawFileEntry().getKind() == FileKind.LINK
-                        ? getTableRow().getItem().getFileName() + " -> "
-                                + getTableRow()
-                                        .getItem()
-                                        .getRawFileEntry()
-                                        .resolved()
-                                        .getPath()
-                        : getTableRow().getItem().getFileName();
-                var fileName = normalName;
-                var info = getTableRow().getItem().getRawFileEntry().getInfo();
+                String fileName;
+                if (fileEntry.getKind() == FileKind.LINK) {
+                    var target = fileEntry
+                            .resolved()
+                            .getPath();
+                    var currentPath = fileList.getFileSystemModel().getCurrentDirectory();
+                    var shownTarget = currentPath != null && target.startsWith(currentPath.getPath()) ?
+                            "./" + target.relativize(currentPath.getPath()) : target;
+                    fileName = i.getFileName() + " -> " + shownTarget;
+                } else {
+                    fileName = i.getFileName();
+                }
+
+                var info = fileEntry.getInfo();
                 var hidden = (info != null && info.explicitlyHidden()) || fileName.startsWith(".");
                 getTableRow().pseudoClassStateChanged(PseudoClass.getPseudoClass("hidden"), hidden);
                 text.set(fileName);

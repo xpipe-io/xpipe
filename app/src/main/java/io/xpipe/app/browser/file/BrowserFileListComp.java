@@ -242,10 +242,10 @@ public final class BrowserFileListComp extends SimpleRegionBuilder {
                 : v != null ? v.getGroupFile().getGroups().getOrDefault(unix.getGid(), "?") : null;
         var uid = unix.getUid() != null
                 ? String.valueOf(unix.getUid())
-                : v != null ? v.getPasswdFile().getUidForUser(user) : null;
+                : v != null ? v.getPasswdFile().getUidForUserIfPresent(user).orElse(null) : null;
         var gid = unix.getGid() != null
                 ? String.valueOf(unix.getGid())
-                : v != null ? v.getGroupFile().getGidForGroup(group) : null;
+                : v != null ? v.getGroupFile().getGidForGroupIfPresent(group).orElse(null) : null;
 
         var userFormat = user + (uid != null ? " [" + uid + "]" : "");
         var groupFormat = group + (gid != null ? " [" + gid + "]" : "");

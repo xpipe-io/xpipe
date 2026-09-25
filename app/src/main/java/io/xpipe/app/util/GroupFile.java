@@ -7,6 +7,7 @@ import lombok.Getter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.OptionalInt;
 
 @Getter
@@ -20,17 +21,13 @@ public class GroupFile {
         return f;
     }
 
-    public OptionalInt getGidForGroupIfPresent(String name) {
+    public Optional<Integer> getGidForGroupIfPresent(String name) {
         var found = groups.entrySet().stream()
                 .filter(e -> e.getValue().equals(name))
                 .findFirst()
                 .map(e -> e.getKey())
                 .orElse(null);
-        return found != null ? OptionalInt.of(found) : OptionalInt.empty();
-    }
-
-    public int getGidForGroup(String name) {
-        return getGidForGroupIfPresent(name).orElse(0);
+        return found != null ? Optional.of(found) : Optional.empty();
     }
 
     private void loadGroups(ShellControl sc) throws Exception {

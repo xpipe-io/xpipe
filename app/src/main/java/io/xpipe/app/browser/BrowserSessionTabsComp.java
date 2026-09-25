@@ -85,7 +85,7 @@ public class BrowserSessionTabsComp extends SimpleRegionBuilder {
             if (keyEvent.getCode().isFunctionKey()) {
                 var start = KeyCode.F1.getCode();
                 var index = keyEvent.getCode().getCode() - start;
-                if (index < tabs.getTabs().size()) {
+                if (index < tabs.getTabs().size() && !keyEvent.isShortcutDown() && !keyEvent.isAltDown() && !keyEvent.isShiftDown()) {
                     tabs.getSelectionModel().select(index);
                     keyEvent.consume();
                     return;
