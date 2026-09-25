@@ -187,19 +187,11 @@ public abstract class DataStorageElement {
     }
 
     public void setLastModified(Instant lastModified) {
-        if (lastModified.equals(this.lastModified)) {
-            return;
-        }
-
-        notifyUpdate(false, true);
+        this.lastModified = lastModified;
     }
 
     public void setLastUsed(Instant lastUsed) {
-        if (lastUsed.equals(this.lastUsed)) {
-            return;
-        }
-
-        notifyUpdate(true, false);
+        this.lastUsed = lastUsed;
     }
 
     public interface Listener {

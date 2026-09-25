@@ -72,7 +72,9 @@ public class ActionJacksonMapper {
 
         var makeMulti = ref != null && ref.isArray() && MultiStoreAction.class.isAssignableFrom(clazz.get());
         if (makeMulti) {
-            validateRef(provider.get(), ref.asString());
+            for (JsonNode singleRef : ref) {
+                validateRef(provider.get(), singleRef.asString());
+            }
             object.remove("ref");
             object.set("refs", ref);
             var action = mapper.treeToValue(object, clazz.get());

@@ -30,7 +30,7 @@ public interface NetworkTunnelStore extends DataStore, SelfReferentialStore {
         return HostAddress.empty();
     }
 
-    default Optional<DataStoreEntryRef<NetworkTunnelStore>> getUnsupportedParent() {
+    default Optional<DataStoreEntryRef<?>> getUnsupportedParent() {
         DataStoreEntryRef<NetworkTunnelStore> current = getSelfEntry().ref();
         while (true) {
             var p = current.getStore().getNetworkParent();
@@ -41,7 +41,7 @@ public interface NetworkTunnelStore extends DataStore, SelfReferentialStore {
             if (p.getStore() instanceof NetworkTunnelStore) {
                 current = p.asNeeded();
             } else {
-                return Optional.of(current);
+                return Optional.of(p);
             }
         }
     }

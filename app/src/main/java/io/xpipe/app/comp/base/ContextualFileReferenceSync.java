@@ -34,6 +34,7 @@ public class ContextualFileReferenceSync {
                     while (true) {
                         var target = dir.resolve(name);
                         if (Files.exists(target)) {
+                            var replace = new AtomicBoolean(false);
                             var rename = new AtomicBoolean(false);
                             var event = ErrorEventFactory.fromMessage(AppI18n.get("syncFileExists", target))
                                     .customAction(new ErrorAction() {
@@ -49,6 +50,7 @@ public class ContextualFileReferenceSync {
 
                                         @Override
                                         public boolean handle(ErrorEvent event) {
+                                            replace.set(true);
                                             return true;
                                         }
                                     })
@@ -80,6 +82,12 @@ public class ContextualFileReferenceSync {
 
                                 name = newName.get();
                                 continue;
+                            }
+
+                            if (replace.get()) {
+                                return target;
+                            } else {
+                                return null;
                             }
                         }
 

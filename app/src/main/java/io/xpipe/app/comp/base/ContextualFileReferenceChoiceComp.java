@@ -117,6 +117,10 @@ public class ContextualFileReferenceChoiceComp extends RegionBuilder<HBox> {
 
                 var source = rawSource.get();
                 var target = sync.getTargetLocation().apply(source);
+                if (target == null) {
+                    return;
+                }
+
                 var shouldCopy = AppDialog.confirm("confirmGitShare");
                 if (!shouldCopy) {
                     return;
@@ -135,7 +139,9 @@ public class ContextualFileReferenceChoiceComp extends RegionBuilder<HBox> {
                         .asLocalPath();
                 if (Files.exists(pubSource)) {
                     var pubTarget = sync.getTargetLocation().apply(pubSource);
-                    handler.addDataFile(pubSource, pubTarget, sync.getScope().get());
+                    if (pubTarget != null) {
+                        handler.addDataFile(pubSource, pubTarget, sync.getScope().get());
+                    }
                 }
 
                 var ppkSource = Path.of(sourceBase + ".ppk");

@@ -87,7 +87,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         return Bindings.createStringBinding(() -> {
             var suffix = fileSystemNameSuffix.get();
             return name.getValue() + (suffix != null ? " [" + suffix + "]" : "");
-        });
+        }, name, fileSystemNameSuffix);
     }
 
     public void updateProgress(BrowserTransferProgress n) {

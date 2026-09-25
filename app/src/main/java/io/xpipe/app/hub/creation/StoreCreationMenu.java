@@ -106,7 +106,7 @@ public class StoreCreationMenu {
                                         .getRoot()
                                         .equals(allCat);
                     },
-                    StoreViewState.get().getAllEntries().getList());
+                    StoreViewState.get().getAllEntries().getList(), StoreViewState.get().getActiveCategory());
             automatically.disableProperty().bind(disableSearch);
 
             items.add(new SeparatorMenuItem());

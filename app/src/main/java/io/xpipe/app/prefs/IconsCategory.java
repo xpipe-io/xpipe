@@ -118,6 +118,15 @@ public class IconsCategory extends AppPrefsCategory {
                         } catch (Exception ignored) {
                         }
 
+                        // Prevent name duplicates
+                        var finalId = id;
+                        var conflict = sources.stream().anyMatch(systemIconSource -> {
+                            return systemIconSource.getId().equals(finalId);
+                        });
+                        if (conflict) {
+                            id = null;
+                        }
+
                         if (id == null) {
                             id = UUID.randomUUID().toString();
                         }

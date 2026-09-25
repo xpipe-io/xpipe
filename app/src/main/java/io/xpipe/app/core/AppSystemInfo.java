@@ -340,7 +340,7 @@ public abstract class AppSystemInfo {
                 ErrorEventFactory.fromThrowable(e).handle();
             }
 
-            var fallback = getUserHome().resolve("Desktop");
+            var fallback = getUserHome().resolve("Downloads");
             return (downloads = fallback);
         }
 
