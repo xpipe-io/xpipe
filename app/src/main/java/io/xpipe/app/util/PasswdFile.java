@@ -30,10 +30,6 @@ public class PasswdFile {
         return found != null ? Optional.of(found) : Optional.empty();
     }
 
-    public int getUidForUser(String name) {
-        return getUidForUserIfPresent(name).orElse(0);
-    }
-
     private void loadUsers(ShellControl sc) throws Exception {
         if (sc.getOsType() == OsType.WINDOWS || sc.getOsType() == OsType.MACOS) {
             return;

@@ -133,7 +133,7 @@ public interface McpToolHandler
         }
 
         public DataStoreEntryRef<?> getDataStoreRef(String name) throws BeaconClientException {
-            var found = DataStorageQuery.queryUserInput(name);
+            var found = DataStorageQuery.queryEntry(name);
             if (found.isEmpty()) {
                 throw new BeaconClientException("No connection found for input " + name);
             }

@@ -157,7 +157,7 @@ public final class McpTools {
                 .tool(tool)
                 .callHandler(McpToolHandler.of((req) -> {
                     var filter = req.getStringArgument("filter");
-                    var entries = DataStorageQuery.queryUserInput(filter);
+                    var entries = DataStorageQuery.queryEntry(filter);
 
                     var list = new ArrayList<ConnectionResource>();
                     for (var e : entries) {

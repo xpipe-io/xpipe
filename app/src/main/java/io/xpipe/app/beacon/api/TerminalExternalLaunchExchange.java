@@ -28,7 +28,7 @@ public class TerminalExternalLaunchExchange extends BeaconInterface<TerminalExte
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws BeaconClientException, BeaconServerException {
-        var found = DataStorageQuery.queryUserInput(msg.getConnection());
+        var found = DataStorageQuery.queryEntry(msg.getConnection());
         if (found.isEmpty()) {
             throw new BeaconClientException("No connection found for input " + msg.getConnection());
         }

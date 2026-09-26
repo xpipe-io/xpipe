@@ -60,7 +60,7 @@ public interface BrowserFileOutput {
             }
 
             var userOwned = info.getUid() != null
-                            && sc.view().getPasswdFile().getUidForUser(sc.view().user()) == info.getUid()
+                            && info.getUid().equals(sc.view().getPasswdFile().getUidForUserIfPresent(sc.view().user()).orElse(null))
                     || info.getUser() != null && sc.view().user().equals(info.getUser());
             var userWrite = info.getPermissions().charAt(1) == 'w';
             if (userOwned && userWrite) {

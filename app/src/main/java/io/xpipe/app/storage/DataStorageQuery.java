@@ -2,30 +2,25 @@ package io.xpipe.app.storage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 public class DataStorageQuery {
 
-    public static List<DataStoreEntry> queryUserInput(String input) {
-        var connectionFilter = input != null && !input.isEmpty() && !input.equals("*") && !input.equals("**")
-                ? "**" + input + "**"
-                : "**";
-        var found = queryEntry("**", connectionFilter, "*");
+    public static List<DataStoreEntry> queryEntry(String globInput) {
+        var found = queryEntry("**", globInput, "*");
         if (found.size() > 1) {
             var narrowPath = found.stream()
                     .filter(dataStoreEntry -> DataStorage.get()
                             .getStorePath(dataStoreEntry)
                             .toString()
-                            .equalsIgnoreCase(input))
+                            .equalsIgnoreCase(globInput))
                     .toList();
             if (narrowPath.size() >= 1) {
                 return narrowPath;
             }
 
             var narrowName = found.stream()
-                    .filter(dataStoreEntry -> dataStoreEntry.getName().equalsIgnoreCase(input))
+                    .filter(dataStoreEntry -> dataStoreEntry.getName().equalsIgnoreCase(globInput))
                     .toList();
             if (narrowName.size() >= 1) {
                 return narrowName;
@@ -34,12 +29,12 @@ public class DataStorageQuery {
         return found;
     }
 
-    public static List<DataStoreCategory> queryCategory(String categoryFilter) {
+    public static List<DataStoreCategory> queryCategory(String categoryGlobFilter) {
         if (DataStorage.get() == null) {
             return List.of();
         }
 
-        var catMatcher = compilePattern(categoryFilter);
+        var catMatcher = compileSearchPattern(categoryGlobFilter);
 
         List<DataStoreCategory> found = new ArrayList<>();
         for (DataStoreCategory cat : DataStorage.get().getStoreCategories()) {
@@ -53,14 +48,14 @@ public class DataStorageQuery {
         return found;
     }
 
-    public static List<DataStoreEntry> queryEntry(String categoryFilter, String connectionFilter, String typeFilter) {
+    public static List<DataStoreEntry> queryEntry(String categoryGlobFilter, String connectionGlobFilter, String typeGlobFilter) {
         if (DataStorage.get() == null) {
             return List.of();
         }
 
-        var catMatcher = compilePattern(categoryFilter);
-        var conMatcher = compilePattern(connectionFilter);
-        var typeMatcher = compilePattern(typeFilter);
+        var catMatcher = compileSearchPattern(categoryGlobFilter);
+        var conMatcher = compileSearchPattern(connectionGlobFilter);
+        var typeMatcher = compileSearchPattern(typeGlobFilter);
 
         List<DataStoreEntry> found = new ArrayList<>();
         for (DataStoreEntry storeEntry : DataStorage.get().getStoreEntries()) {
@@ -96,14 +91,14 @@ public class DataStorageQuery {
         return found;
     }
 
-    public static String toRegex(String pattern) {
-        pattern = pattern.replaceAll("\\*\\*", "#");
+    public static String toRegex(String globPattern) {
+        globPattern = globPattern.replaceAll("\\*\\*", "#");
         // https://stackoverflow.com/a/17369948/6477761
-        StringBuilder sb = new StringBuilder(pattern.length());
+        StringBuilder sb = new StringBuilder(globPattern.length());
         int inGroup = 0;
         int inClass = 0;
         int firstIndexInClass = -1;
-        char[] arr = pattern.toCharArray();
+        char[] arr = globPattern.toCharArray();
         for (int i = 0; i < arr.length; i++) {
             char ch = arr[i];
             switch (ch) {
@@ -199,11 +194,16 @@ public class DataStorageQuery {
         return sb.toString();
     }
 
-    private static Pattern compilePattern(String pattern) {
+    private static Pattern compileSearchPattern(String globPattern) {
+        var complexGlob = !globPattern.isEmpty() && !globPattern.equals("*") && !globPattern.equals("**");
+        if (!complexGlob) {
+            return Pattern.compile(toRegex(globPattern));
+        }
+
         try {
-            return Pattern.compile(toRegex(pattern.toLowerCase()));
+            return Pattern.compile(toRegex("**" + globPattern.toLowerCase() + "**"));
         } catch (Throwable e) {
-            return Pattern.compile(Pattern.quote(pattern));
+            return Pattern.compile(Pattern.quote(globPattern));
         }
     }
 }
