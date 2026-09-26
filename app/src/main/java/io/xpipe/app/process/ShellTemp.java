@@ -12,20 +12,18 @@ public class ShellTemp {
 
     public static FilePath createUserSpecificTempDataDirectory(ShellControl proc, String sub) throws Exception {
         // On Windows and macOS, we already have user specific temp directories
-        // Even on macOS as root it is technically unique as only root will use /tmp
+        // Even on macOS as root is technically unique as only root will use /tmp
         if (proc.getOsType() != OsType.WINDOWS && proc.getOsType() != OsType.MACOS) {
             var temp = proc.getSystemTemporaryDirectory();
-            var base = temp.join(AppNames.ofCurrent().getKebapName());
+            var base = temp.join(AppNames.ofCurrent().getKebapName() + "-" + proc.view().user());
             proc.view().mkdir(base);
-            // We have to make sure that also other users can create files here
+            // We have to make sure that we own this directory, chmod will if not
             // This command should work in all shells
-            proc.command("chmod 1777 " + proc.getShellDialect().fileArgument(base)).execute();
-            var user = proc.view().user();
-            var userDir = base.join(user);
-            // We have to make sure that also other users can create files here
-            // This command should work in all shells
-            proc.command("chmod 700 " + proc.getShellDialect().fileArgument(userDir)).execute();
-            return sub != null ? userDir.join(sub) : userDir;
+            var chmodSuccess = proc.command("chmod 700 " + proc.getShellDialect().fileArgument(base)).executeAndCheck();
+            if (!chmodSuccess) {
+                throw new IOException("Unexpected directory ownership and permissions for " + base);
+            }
+            return sub != null ? base.join(sub) : base;
         } else {
             var temp = proc.getSystemTemporaryDirectory();
             var base = temp.join(AppNames.ofCurrent().getKebapName());
