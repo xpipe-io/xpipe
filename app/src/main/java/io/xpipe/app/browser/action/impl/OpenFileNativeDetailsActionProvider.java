@@ -69,10 +69,12 @@ public class OpenFileNativeDetailsActionProvider implements BrowserActionProvide
                         shell.get().command(content).notComplex().executeAndCheck();
                     }
                     case OsType.Linux ignored -> {
-                        var s = "dbus-send --session --print-reply --dest=org.freedesktop.FileManager1" +
-                                " --type=method_call /org/freedesktop/FileManager1" +
-                                " org.freedesktop.FileManager1.ShowItemProperties array:string:\"%s\" string:\"";
-                        var success = sc.command(s.formatted(localFile.asLocalPath().toUri().toString())).executeAndCheck();
+                        var fileUri = localFile.asLocalPath().toUri().toString();
+                        var args = CommandBuilder.of().add("dbus-send", "--session", "--print-reply", "--dest=org.freedesktop.FileManager1",
+                                "--type=method_call", "/org/freedesktop/FileManager1", "org.freedesktop.FileManager1.ShowItemProperties")
+                                .addLiteralKeyValue("array:string", ":", fileUri)
+                                .addQuotedKeyValue("string", ":", "");
+                        var success = sc.command(args).executeAndCheck();
                         if (success) {
                             return;
                         }

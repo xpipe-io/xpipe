@@ -111,12 +111,26 @@ public class CommandBuilder {
     }
 
     public CommandBuilder addQuotedKeyValue(String key, String value) {
+        return addQuotedKeyValue(key, "=", value);
+    }
+
+    public CommandBuilder addQuotedKeyValue(String key, String delimiter, String value) {
         return add(sc -> {
             var v = sc.getShellDialect().quoteArgument(value);
-            return key + "=" + v;
+            return key + delimiter + v;
         });
     }
 
+    public CommandBuilder addLiteralKeyValue(String key, String value) {
+        return addLiteralKeyValue(key, "=", value);
+    }
+
+    public CommandBuilder addLiteralKeyValue(String key, String delimiter, String value) {
+        return add(sc -> {
+            var v = sc.getShellDialect().literalArgument(value);
+            return key + delimiter + v;
+        });
+    }
     public CommandBuilder add(int index, String... s) {
         for (String s1 : s) {
             elements.add(index++, new Fixed(s1));
