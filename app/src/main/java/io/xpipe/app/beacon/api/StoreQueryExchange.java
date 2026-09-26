@@ -27,7 +27,7 @@ public class StoreQueryExchange extends BeaconInterface<StoreQueryExchange.Reque
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) {
-        var found = DataStorageQuery.queryEntry(msg.getCategoryFilter(), msg.getStoreFilter(), msg.getTypeFilter());
+        var found = DataStorageQuery.queryEntry(msg.getCategoryFilter(), msg.getStoreFilter(), msg.getTypeFilter(), true);
         return Response.builder()
                 .found(found.stream().map(entry -> entry.getUuid()).toList())
                 .build();

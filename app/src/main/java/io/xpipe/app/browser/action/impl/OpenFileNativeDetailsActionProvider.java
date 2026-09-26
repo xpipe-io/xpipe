@@ -8,6 +8,7 @@ import io.xpipe.app.fs.FileKind;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.OsType;
 
 import lombok.experimental.SuperBuilder;
@@ -38,7 +39,7 @@ public class OpenFileNativeDetailsActionProvider implements BrowserActionProvide
 
         @Override
         public void executeImpl() throws Exception {
-            ShellControl sc = model.getFileSystem().getShell().get();
+            ShellControl sc = model.getFileSystem().getShell().orElseThrow();
             for (BrowserEntry entry : getEntries()) {
                 var e = entry.getRawFileEntry().getPath();
                 var localFile = sc.getLocalSystemAccess().translateToLocalSystemPath(e);
@@ -49,15 +50,16 @@ public class OpenFileNativeDetailsActionProvider implements BrowserActionProvide
                             return;
                         }
 
+                        var d = shell.get().getShellDialect();
                         var parent = localFile.getParent();
                         // If we execute this on a drive root there will be no parent, so we have to check for that!
                         var content = parent != null
                                 ? String.format(
-                                        "$shell = New-Object -ComObject Shell.Application; $shell.NameSpace('%s').ParseName('%s').InvokeVerb('Properties')",
-                                        parent, localFile.getFileName())
+                                        "$shell = New-Object -ComObject Shell.Application; $shell.NameSpace(%s).ParseName(%s).InvokeVerb('Properties')",
+                                        d.fileArgument(parent), d.fileArgument(localFile.getFileName()))
                                 : String.format(
-                                        "$shell = New-Object -ComObject Shell.Application; $shell.NameSpace('%s').Self.InvokeVerb('Properties')",
-                                        localFile);
+                                        "$shell = New-Object -ComObject Shell.Application; $shell.NameSpace(%s).Self.InvokeVerb('Properties')",
+                                        d.fileArgument(localFile));
 
                         // The Windows shell invoke verb functionality behaves kinda weirdly and only shows the window
                         // as
@@ -67,10 +69,10 @@ public class OpenFileNativeDetailsActionProvider implements BrowserActionProvide
                         shell.get().command(content).notComplex().executeAndCheck();
                     }
                     case OsType.Linux ignored -> {
-                        var dbus = String.format("""
-                                                 dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItemProperties array:string:"file://%s" string:""
-                                                 """, localFile);
-                        var success = sc.executeSimpleBooleanCommand(dbus);
+                        var s = "dbus-send --session --print-reply --dest=org.freedesktop.FileManager1" +
+                                " --type=method_call /org/freedesktop/FileManager1" +
+                                " org.freedesktop.FileManager1.ShowItemProperties array:string:\"%s\" string:\"";
+                        var success = sc.command(s.formatted(localFile.asLocalPath().toUri().toString())).executeAndCheck();
                         if (success) {
                             return;
                         }
@@ -84,13 +86,14 @@ public class OpenFileNativeDetailsActionProvider implements BrowserActionProvide
                                 .execute();
                     }
                     case OsType.MacOs ignored -> {
+                        var escaped = localFile.toString().replace("\\", "\\\\").replace("\"", "\\\"");
                         sc.osascriptCommand(String.format("""
                                                           set fileEntry to (POSIX file "%s") as text
                                                           tell application "Finder"
                                                               activate
                                                               open information window of alias fileEntry
                                                           end tell
-                                                          """, localFile)).execute();
+                                                          """, escaped)).execute();
                     }
                 }
             }

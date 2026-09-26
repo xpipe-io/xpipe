@@ -31,19 +31,23 @@ public class BooleanScope implements AutoCloseable {
         return this;
     }
 
-    public synchronized BooleanScope start() {
-        if (wait) {
-            while (prop.get()) {
-                ThreadHelper.sleep(50);
+    public BooleanScope start() {
+        synchronized (prop) {
+            if (wait) {
+                while (prop.get()) {
+                    ThreadHelper.sleep(50);
+                }
             }
-        }
-        prop.setValue(true);
+            prop.setValue(true);
 
-        return this;
+            return this;
+        }
     }
 
     @Override
-    public synchronized void close() {
-        prop.setValue(false);
+    public void close() {
+        synchronized (prop) {
+            prop.setValue(false);
+        }
     }
 }

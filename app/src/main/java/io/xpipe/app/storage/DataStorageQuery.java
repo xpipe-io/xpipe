@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 public class DataStorageQuery {
 
     public static List<DataStoreEntry> queryEntry(String globInput) {
-        var found = queryEntry("**", globInput, "*");
+        var found = queryEntry("**", globInput, "*", false);
         if (found.size() > 1) {
             var narrowPath = found.stream()
                     .filter(dataStoreEntry -> DataStorage.get()
@@ -34,7 +34,7 @@ public class DataStorageQuery {
             return List.of();
         }
 
-        var catMatcher = compileSearchPattern(categoryGlobFilter);
+        var catMatcher = compileSearchPattern(categoryGlobFilter, true);
 
         List<DataStoreCategory> found = new ArrayList<>();
         for (DataStoreCategory cat : DataStorage.get().getStoreCategories()) {
@@ -48,14 +48,14 @@ public class DataStorageQuery {
         return found;
     }
 
-    public static List<DataStoreEntry> queryEntry(String categoryGlobFilter, String connectionGlobFilter, String typeGlobFilter) {
+    public static List<DataStoreEntry> queryEntry(String categoryGlobFilter, String connectionGlobFilter, String typeGlobFilter, boolean exact) {
         if (DataStorage.get() == null) {
             return List.of();
         }
 
-        var catMatcher = compileSearchPattern(categoryGlobFilter);
-        var conMatcher = compileSearchPattern(connectionGlobFilter);
-        var typeMatcher = compileSearchPattern(typeGlobFilter);
+        var catMatcher = compileSearchPattern(categoryGlobFilter, exact);
+        var conMatcher = compileSearchPattern(connectionGlobFilter, exact);
+        var typeMatcher = compileSearchPattern(typeGlobFilter, exact);
 
         List<DataStoreEntry> found = new ArrayList<>();
         for (DataStoreEntry storeEntry : DataStorage.get().getStoreEntries()) {
@@ -194,14 +194,14 @@ public class DataStorageQuery {
         return sb.toString();
     }
 
-    private static Pattern compileSearchPattern(String globPattern) {
+    private static Pattern compileSearchPattern(String globPattern, boolean exact) {
         var complexGlob = !globPattern.isEmpty() && !globPattern.equals("*") && !globPattern.equals("**");
         if (!complexGlob) {
             return Pattern.compile(toRegex(globPattern));
         }
 
         try {
-            return Pattern.compile(toRegex("**" + globPattern.toLowerCase() + "**"));
+            return Pattern.compile(toRegex(exact ? globPattern.toLowerCase() : "**" + globPattern.toLowerCase() + "**"));
         } catch (Throwable e) {
             return Pattern.compile(Pattern.quote(globPattern));
         }

@@ -327,48 +327,31 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
     class MacOs implements ExternalApplicationType.MacApplication, WezTerminalType {
 
         @Override
-        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-            try (var sc = LocalShell.getShell()) {
-                var pathOut = sc.command(String.format(
-                                "mdfind -name '%s' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications 2>/dev/null",
-                                getApplicationName()))
-                        .readStdoutOrThrow();
-                var path = Path.of(pathOut);
-
-                boolean runGui = true;
-                if (configuration.isPreferTabs()) {
-                    runGui = !sc.command(CommandBuilder.of()
-                                    .addFile(path.resolve("Contents")
-                                            .resolve("MacOS")
-                                            .resolve("wezterm")
-                                            .toString())
-                                    .add("cli", "spawn", "--pane-id", "0")
-                                    .addFile(configuration.single().getScriptFile()))
-                            .executeAndCheck();
-                }
-                if (runGui) {
-                    ExternalApplicationHelper.startAsync(CommandBuilder.of()
-                            .addFile(path.resolve("Contents")
-                                    .resolve("MacOS")
-                                    .resolve("wezterm-gui")
-                                    .toString())
-                            .add("start")
-                            .addFile(configuration.single().getScriptFile()));
-                }
+        public CommandBuilder getWeztermCommandBase() throws Exception {
+            var app = findApp();
+            if (app.isEmpty()) {
+                throw ErrorEventFactory.expected(new IllegalStateException("Unable to find installed " + getApplicationName() + ".app"));
             }
+
+            var path = app.get();
+            return CommandBuilder.of()
+                    .addFile(path.resolve("Contents").resolve("MacOS").resolve("wezterm"));
         }
 
         @Override
-        public CommandBuilder getWeztermCommandBase() throws Exception {
-            try (var sc = LocalShell.getShell()) {
-                var pathOut = sc.command(String.format(
-                                "mdfind -name '%s' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications 2>/dev/null",
-                                getApplicationName()))
-                        .readStdoutOrThrow();
-                var path = Path.of(pathOut);
-                return CommandBuilder.of()
-                        .addFile(path.resolve("Contents").resolve("MacOS").resolve("wezterm"));
-            }
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
+            // WezTerm does not focus the window
+            var listener = new TerminalView.Listener() {
+                @Override
+                @SneakyThrows
+                public void onSessionOpened(TerminalView.ShellSession session) {
+                    TerminalView.get().removeListener(this);
+                    focus();
+                }
+            };
+            TerminalView.get().addListener(listener);
+
+            WezTerminalType.super.launch(configuration);
         }
 
         @Override

@@ -160,11 +160,12 @@ public interface ShellControl extends ProcessControl {
     FilePath getSystemTemporaryDirectory();
 
     default CommandControl osascriptCommand(String script) {
+        var delimiter = UUID.randomUUID().toString();
         return command(String.format("""
-                                     osascript - "$@" <<EOF
+                                     osascript - "$@" << '%s'
                                      %s
-                                     EOF
-                                     """, script));
+                                     %s
+                                     """, delimiter, script, delimiter));
     }
 
     default String executeSimpleStringCommand(String command) throws Exception {

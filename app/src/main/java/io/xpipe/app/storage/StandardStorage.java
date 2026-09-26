@@ -425,7 +425,7 @@ public class StandardStorage extends DataStorage {
         }
 
         // Wait for sync lock
-        if (forceSync) {
+        if (!dispose && forceSync) {
             busyIo.lock();
         } else if (!dispose && !busyIo.tryLock()) {
             // We don't need to wait on normal saves though

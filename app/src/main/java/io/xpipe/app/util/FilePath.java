@@ -181,9 +181,13 @@ public final class FilePath {
     }
 
     public boolean startsWith(FilePath start) {
+        if (normalize().equals(start.normalize())) {
+            return true;
+        }
+
         return normalize()
                 .toString()
-                .startsWith(start.normalize().removeTrailingSlash().toString());
+                .startsWith(start.normalize().toDirectory().toString());
     }
 
     public FilePath relativize(FilePath base) {
