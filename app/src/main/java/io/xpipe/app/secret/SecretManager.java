@@ -144,11 +144,11 @@ public class SecretManager {
 
     public static synchronized Optional<SecretValue> get(SecretReference ref) {
         var found = secrets.get(ref);
-        if (found.getExpiry() != null && found.getExpiry().isAfter(Instant.now())) {
+        if (found != null && found.getExpiry() != null && found.getExpiry().isBefore(Instant.now())) {
             secrets.remove(ref);
             return Optional.empty();
         }
 
-        return Optional.of(found.getValue());
+        return Optional.ofNullable(found != null ? found.getValue() : null);
     }
 }

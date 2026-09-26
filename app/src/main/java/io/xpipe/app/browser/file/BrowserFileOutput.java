@@ -88,7 +88,7 @@ public interface BrowserFileOutput {
                                 .start()
                         : model.getFileSystem().getShell().orElseThrow().start();
         var fs = elevate ? new ShellFileSystem(sc) : model.getFileSystem();
-        var checkSudoersFile = shell.isPresent() && file.getPath().startsWith("/etc/sudo");
+        var checkSudoersFile = shell.isPresent() && file.getPath().toString().startsWith("/etc/sudo");
         var output = new BrowserFileOutput() {
 
             @Override

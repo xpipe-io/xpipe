@@ -78,7 +78,7 @@ public class ContextualFileReference {
 
     public String serialize() {
         var start = getDataDir();
-        var startString = start.toString();
+        var startString = start.toDirectory().toString();
         var normalizedPath = FilePath.of(path).normalize().toUnix();
         var normalizedString = normalizedPath.toString();
         // This guarantees a case-insensitive check

@@ -26,8 +26,12 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
+import java.util.Set;
 import java.util.function.UnaryOperator;
 
 public class MarkdownComp extends RegionBuilder<StackPane> {
@@ -136,12 +140,14 @@ public class MarkdownComp extends RegionBuilder<StackPane> {
         engine.getLoadWorker()
                 .stateProperty()
                 .addListener((observable, oldValue, newValue) -> Platform.runLater(() -> {
-                    String toBeopen =
-                            engine.getLoadWorker().getMessage().strip().replace("Loading ", "");
-                    if (toBeopen.contains("http://") || toBeopen.contains("https://") || toBeopen.contains("mailto:")) {
-                        engine.getLoadWorker().cancel();
-                        Hyperlinks.open(toBeopen);
-                    }
+                    String toOpen = engine.getLoadWorker().getMessage().strip().replace("Loading ", "");
+                    try {
+                        var uri = URI.create(toOpen);
+                        if (uri.getScheme() != null && Set.of("http", "https", "mailto").contains(uri.getScheme().toLowerCase(Locale.ROOT))) {
+                            engine.getLoadWorker().cancel();
+                            Hyperlinks.open(toOpen);
+                        }
+                    } catch (IllegalArgumentException ignored) {}
                 }));
     }
 

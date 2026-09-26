@@ -22,7 +22,7 @@ public final class BrowserFileSystemHistory {
 
     public List<FilePath> getForwardHistory(int max) {
         var l = new ArrayList<FilePath>();
-        for (var i = cursor.get() + 1; i < Math.min(history.size(), cursor.get() + max); i++) {
+        for (var i = cursor.get() + 1; i < Math.min(history.size(), cursor.get() + max + 1); i++) {
             l.add(history.get(i));
         }
         return l;
@@ -68,7 +68,7 @@ public final class BrowserFileSystemHistory {
 
     public FilePath forth(int i) {
         if (!canGoForth.get()) {
-            return history.getLast();
+            return null;
         }
         cursor.set(Math.min(history.size() - 1, cursor.get() + i));
         return history.get(cursor.get());
