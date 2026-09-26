@@ -11,28 +11,26 @@ import java.io.IOException;
 public class ShellTemp {
 
     public static FilePath createUserSpecificTempDataDirectory(ShellControl proc, String sub) throws Exception {
-        FilePath base;
         // On Windows and macOS, we already have user specific temp directories
         // Even on macOS as root it is technically unique as only root will use /tmp
         if (proc.getOsType() != OsType.WINDOWS && proc.getOsType() != OsType.MACOS) {
             var temp = proc.getSystemTemporaryDirectory();
-            base = temp.join(AppNames.ofCurrent().getKebapName());
+            var base = temp.join(AppNames.ofCurrent().getKebapName());
             proc.view().mkdir(base);
             // We have to make sure that also other users can create files here
             // This command should work in all shells
-            proc.command("chmod 777 " + proc.getShellDialect().fileArgument(base))
-                    .executeAndCheck();
+            proc.command("chmod 1777 " + proc.getShellDialect().fileArgument(base)).execute();
             var user = proc.view().user();
-            base = base.join(user);
+            var userDir = base.join(user);
             // We have to make sure that also other users can create files here
             // This command should work in all shells
-            proc.command("chmod 700 " + proc.getShellDialect().fileArgument(base))
-                    .executeAndCheck();
+            proc.command("chmod 700 " + proc.getShellDialect().fileArgument(userDir)).execute();
+            return sub != null ? userDir.join(sub) : userDir;
         } else {
             var temp = proc.getSystemTemporaryDirectory();
-            base = temp.join(AppNames.ofCurrent().getKebapName());
+            var base = temp.join(AppNames.ofCurrent().getKebapName());
+            return sub != null ? base.join(sub) : base;
         }
-        return sub != null ? base.join(sub) : base;
     }
 
     public static void checkTempDirectory(ShellControl sc) throws Exception {
@@ -117,8 +115,13 @@ public class ShellTemp {
         }
 
         var d = proc.getShellDialect();
-        return proc.executeSimpleBooleanCommand("test -r %s && test -w %s && test -x %s"
-                .formatted(d.fileArgument(dir), d.fileArgument(dir), d.fileArgument(dir)));
+        var fullAccess = proc.command("test -r %s && test -w %s && test -x %s"
+                .formatted(d.fileArgument(dir), d.fileArgument(dir), d.fileArgument(dir))).executeAndCheck();
+        if (!fullAccess) {
+            return false;
+        }
+
+        return true;
     }
 
     public static FilePath getSubDirectory(ShellControl proc, String... sub) throws Exception {

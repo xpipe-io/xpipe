@@ -6,6 +6,7 @@ import io.xpipe.app.util.OsType;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
 
@@ -45,6 +46,13 @@ public class AppLocalTemp {
             }
 
             try {
+                if (Files.isDirectory(temp)) {
+                    var owner = Files.getOwner(temp).getName();
+                    if (!owner.equals(user)) {
+                        throw new IOException("Invalid temp dir ownership for " + temp);
+                    }
+                }
+
                 Files.createDirectories(temp);
                 Files.setPosixFilePermissions(temp, PosixFilePermissions.fromString("rwx------"));
             } catch (Exception e) {

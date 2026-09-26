@@ -28,15 +28,16 @@ public class ClipboardHelper {
         var hasText = map.containsKey(DataFormat.PLAIN_TEXT);
         var hasUrl = map.containsKey(DataFormat.URL);
         Map<DataFormat, Object> contents = Stream.of(
-                        // When we copy textual content, erase RTF and HTML clipboard to
+                        // When we copy textual content, erase other types to
                         // not keep different variants of text in the clipboard
                         hasText || hasUrl ? null : DataFormat.RTF,
-                        hasText || hasUrl  ? null : DataFormat.HTML,
+                        hasText || hasUrl ? null : DataFormat.HTML,
+                        hasText || hasUrl ? null : DataFormat.IMAGE,
+                        hasText || hasUrl ? null : DataFormat.FILES,
                         // Do the same for text and URLs
                         hasUrl && !hasText ? null : DataFormat.PLAIN_TEXT,
-                        hasText && !hasUrl ? null : DataFormat.URL,
-                        DataFormat.IMAGE,
-                        DataFormat.FILES)
+                        hasText && !hasUrl ? null : DataFormat.URL
+                        )
                 .filter(dataFormat -> dataFormat != null)
                 .map(dataFormat -> {
                     try {
