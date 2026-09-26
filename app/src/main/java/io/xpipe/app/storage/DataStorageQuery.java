@@ -203,7 +203,7 @@ public class DataStorageQuery {
         try {
             return Pattern.compile(toRegex(exact ? globPattern.toLowerCase() : "**" + globPattern.toLowerCase() + "**"));
         } catch (Throwable e) {
-            return Pattern.compile(Pattern.quote(globPattern));
+            return Pattern.compile(Pattern.quote(globPattern.toLowerCase()));
         }
     }
 }

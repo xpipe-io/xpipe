@@ -25,13 +25,19 @@ public class ClipboardHelper {
 
     private static void apply(Map<DataFormat, Object> map, boolean showNotification) {
         Clipboard clipboard = Clipboard.getSystemClipboard();
+        var hasText = map.containsKey(DataFormat.PLAIN_TEXT);
+        var hasUrl = map.containsKey(DataFormat.URL);
         Map<DataFormat, Object> contents = Stream.of(
-                        DataFormat.PLAIN_TEXT,
-                        DataFormat.URL,
-                        DataFormat.RTF,
-                        DataFormat.HTML,
+                        // When we copy textual content, erase RTF and HTML clipboard to
+                        // not keep different variants of text in the clipboard
+                        hasText || hasUrl ? null : DataFormat.RTF,
+                        hasText || hasUrl  ? null : DataFormat.HTML,
+                        // Do the same for text and URLs
+                        hasUrl && !hasText ? null : DataFormat.PLAIN_TEXT,
+                        hasText && !hasUrl ? null : DataFormat.URL,
                         DataFormat.IMAGE,
                         DataFormat.FILES)
+                .filter(dataFormat -> dataFormat != null)
                 .map(dataFormat -> {
                     try {
                         // This can fail if the clipboard data is invalid

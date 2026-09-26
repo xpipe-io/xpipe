@@ -69,6 +69,12 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
 
         t.setCustomVisibility(Bindings.createBooleanBinding(
                 () -> {
+                    // This can be called while reloading the storage
+                    // where an entry is made invalid
+                    if (sec.getEntry().getStore() == null) {
+                        return false;
+                    }
+
                     SingletonSessionStore<?> s =
                             sec.getWrapper().getEntry().getStore().asNeeded();
                     return supportsSession(s) && (showToggleWhenInactive(s) || s.isSessionEnabled());

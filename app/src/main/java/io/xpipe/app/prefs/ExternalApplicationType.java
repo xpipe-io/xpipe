@@ -65,7 +65,7 @@ public interface ExternalApplicationType extends PrefsValue {
                                 getApplicationName()))
                         .readStdoutIfPossible();
                 return out.isPresent() && !out.get().isBlank() && out.get().contains(getApplicationName() + ".app")
-                        ? out.map(s -> Path.of(s))
+                        ? out.map(s -> Path.of(s.lines().toList().getFirst()))
                         : Optional.empty();
             }
         }
