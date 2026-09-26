@@ -78,8 +78,13 @@ public class ContextualFileReference {
 
     public String serialize() {
         var start = getDataDir();
+        var startString = start.toString();
         var normalizedPath = FilePath.of(path).normalize().toUnix();
-        if (normalizedPath.startsWith(start) && !normalizedPath.equals(start)) {
+        var normalizedString = normalizedPath.toString();
+        // This guarantees a case-insensitive check
+        var startsWith = normalizedString.length() > startString.length() && normalizedString
+                .substring(0, startString.length()).equalsIgnoreCase(startString);
+        if (startsWith) {
             return "<DATA>" + "/" + normalizedPath.relativize(start);
         }
         return path;

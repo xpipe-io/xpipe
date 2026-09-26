@@ -1,5 +1,6 @@
 package io.xpipe.app.action;
 
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.ProcModuleProvider;
@@ -26,12 +27,20 @@ public class XPipeUrlProvider implements LauncherUrlProvider {
         }
 
         if ("action".equals(a)) {
+            if (!checkPermission()) {
+                return null;
+            }
+
             var query = uri.getQuery();
             var action = ActionUrls.parse(query);
             return action.orElse(null);
         }
 
         if ("sync".equals(a)) {
+            if (!checkPermission()) {
+                return null;
+            }
+
             var repo = new String(Base64Helper.fromBase64UrlString(uri.getPath()), StandardCharsets.UTF_8);
             var alreadySynced = AppPrefs.get().storageGitRemote().getValue() != null;
             if (alreadySynced && !repo.equals(AppPrefs.get().storageGitRemote().getValue())) {
@@ -46,5 +55,18 @@ public class XPipeUrlProvider implements LauncherUrlProvider {
         }
 
         return null;
+    }
+
+    private boolean checkPermission() {
+        var cache = AppCache.getBoolean("externalUrlsPermitted", false);
+        if (cache) {
+            return true;
+        }
+
+        var r = AppDialog.confirm("externalUrl");
+        if (r) {
+            AppCache.update("externalUrlsPermitted", true);
+        }
+        return r;
     }
 }

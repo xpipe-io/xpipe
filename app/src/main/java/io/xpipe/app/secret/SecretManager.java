@@ -5,14 +5,23 @@ import io.xpipe.app.process.CountDown;
 import io.xpipe.app.process.SecretReference;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.SecretValue;
+import lombok.Value;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class SecretManager {
 
-    private static final Map<SecretReference, SecretValue> secrets = new HashMap<>();
+    @Value
+    private static class CachedValue {
+
+        SecretValue value;
+        Instant expiry;
+    }
+
+    private static final Map<SecretReference, CachedValue> secrets = new HashMap<>();
     private static final Set<SecretQueryProgress> progress = new HashSet<>();
 
     public static synchronized Optional<SecretQueryProgress> getProgress(UUID requestId, UUID storeId) {
@@ -119,7 +128,7 @@ public class SecretManager {
                 .collect(Collectors.toSet());
         secrets.entrySet().removeAll(oldSecrets);
 
-        for (Map.Entry<SecretReference, SecretValue> e : oldSecrets) {
+        for (Map.Entry<SecretReference, CachedValue> e : oldSecrets) {
             var newRef = new SecretReference(newId, e.getKey().getSubId());
             secrets.put(newRef, e.getValue());
         }
@@ -130,19 +139,16 @@ public class SecretManager {
     }
 
     public static synchronized void cache(SecretReference ref, SecretValue value, Duration duration) {
-        secrets.put(ref, value);
-        if (duration != null && duration.isPositive()) {
-            GlobalTimer.delay(
-                    () -> {
-                        synchronized (SecretManager.class) {
-                            secrets.remove(ref);
-                        }
-                    },
-                    duration);
-        }
+        secrets.put(ref, new CachedValue(value, duration != null && duration.isPositive() ? Instant.now().plus(duration) : null));
     }
 
     public static synchronized Optional<SecretValue> get(SecretReference ref) {
-        return Optional.ofNullable(secrets.get(ref));
+        var found = secrets.get(ref);
+        if (found.getExpiry() != null && found.getExpiry().isAfter(Instant.now())) {
+            secrets.remove(ref);
+            return Optional.empty();
+        }
+
+        return Optional.of(found.getValue());
     }
 }

@@ -84,7 +84,8 @@ public class AppInstance {
                 client.get()
                         .performRequest(DaemonOpenExchange.Request.builder()
                                 .arguments(inputs)
-                                .directory(AppProperties.get().getDataDir())
+                                // Don't change dir when opening inputs
+                                .directory(inputs.isEmpty() ? AppProperties.get().getDataDir() : null)
                                 .build());
             }
         } catch (Exception ex) {
@@ -115,7 +116,6 @@ public class AppInstance {
                     client.get()
                             .performRequest(DaemonOpenExchange.Request.builder()
                                     .arguments(List.of(e.getURI().toString()))
-                                    .directory(AppProperties.get().getDataDir())
                                     .build());
                 } catch (Exception ex) {
                     ErrorEventFactory.fromThrowable(ex).expected().omit().handle();

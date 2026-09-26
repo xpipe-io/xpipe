@@ -97,7 +97,7 @@ public class AppOpenArguments {
 
         try {
             var path = Path.of(input);
-            if (Files.isRegularFile(path)) {
+            if (Files.isRegularFile(path) && path.isAbsolute() && path.getParent() != null) {
                 path = path.getParent();
             }
 
