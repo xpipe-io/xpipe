@@ -304,7 +304,7 @@ public class AppProperties {
     private static Path getLocalBeaconAuthFile(boolean staging) {
         if (OsType.ofLocal() == OsType.LINUX) {
             var name = AppSystemInfo.ofCurrent().getUser();
-            return AppSystemInfo.ofCurrent().getTemp().resolve(staging ? "xpipe-ptb" : "xpipe", name, "beacon-auth");
+            return AppSystemInfo.ofCurrent().getTemp().resolve((staging ? "xpipe-ptb" : "xpipe") + "-" + AppSystemInfo.ofLinux().getUser(), name, "beacon-auth");
         } else {
             var path = AppSystemInfo.ofCurrent().getTemp().resolve(staging ? "xpipe-ptb" : "xpipe", "beacon-auth");
             return path;

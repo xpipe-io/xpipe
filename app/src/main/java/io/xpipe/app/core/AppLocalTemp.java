@@ -34,6 +34,11 @@ public class AppLocalTemp {
 
             try {
                 if (Files.isDirectory(temp)) {
+                    var owner = Files.getOwner(temp).getName();
+                    if (!owner.equals(AppSystemInfo.ofLinux().getUser())) {
+                        throw new IOException("Invalid temp dir owner for " + temp);
+                    }
+
                     Files.setPosixFilePermissions(temp, PosixFilePermissions.fromString("rwx------"));
                 }
                 return temp;

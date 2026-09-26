@@ -17,11 +17,38 @@ public class ShellTemp {
             var temp = proc.getSystemTemporaryDirectory();
             var base = temp.join(AppNames.ofCurrent().getKebapName() + "-" + proc.view().user());
             proc.view().mkdir(base);
-            // We have to make sure that we own this directory, chmod will if not
-            // This command should work in all shells
-            var chmodSuccess = proc.command("chmod 700 " + proc.getShellDialect().fileArgument(base)).executeAndCheck();
-            if (!chmodSuccess) {
-                throw new IOException("Unexpected directory ownership and permissions for " + base);
+            if (!proc.view().isRoot()) {
+                // We have to make sure that we own this directory, chmod will fail if not
+                // This command should work in all shells
+                var hasChmod = proc.view().findProgram("chmod").isPresent();
+                if (hasChmod) {
+                    var chmodSuccess = proc.command("chmod 700 " + proc.getShellDialect().fileArgument(base)).executeAndCheck();
+                    if (!chmodSuccess) {
+                        throw new IOException("Unexpected directory ownership and permissions for " + base);
+                    }
+                }
+            } else {
+                var hasLs = proc.view().findProgram("ls").isPresent();
+                if (hasLs) {
+                    var lsOut = proc.command("ls -ldn " + proc.getShellDialect().fileArgument(base)).readStdoutIfPossible();
+                    if (lsOut.isPresent()) {
+                        var split = lsOut.get().split("\\s+");
+                        if (split.length >= 3) {
+                            if (!split[2].equals("0")) {
+                                throw new IOException("Unexpected directory ownership for " + base);
+                            }
+
+                            var hasChmod = proc.view().findProgram("chmod").isPresent();
+                            if (hasChmod) {
+                                var chmodSuccess = proc.command("chmod 700 " + proc.getShellDialect().fileArgument(base)).executeAndCheck();
+                                if (!chmodSuccess) {
+                                    throw new IOException("Unexpected directory ownership and permissions for " + base);
+                                }
+                            }
+                        }
+                    }
+                }
+
             }
             return sub != null ? base.join(sub) : base;
         } else {
