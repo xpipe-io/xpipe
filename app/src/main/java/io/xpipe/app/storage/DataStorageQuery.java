@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public class DataStorageQuery {
 
     public static List<DataStoreEntry> queryUserInput(String input) {
         var connectionFilter = input != null && !input.isEmpty() && !input.equals("*") && !input.equals("**")
-                ? "**" + Pattern.quote(input) + "**"
+                ? "**" + input + "**"
                 : "**";
         var found = queryEntry("**", connectionFilter, "*");
         if (found.size() > 1) {
@@ -38,7 +39,7 @@ public class DataStorageQuery {
             return List.of();
         }
 
-        var catMatcher = Pattern.compile(toRegex(categoryFilter.toLowerCase()));
+        var catMatcher = compilePattern(categoryFilter);
 
         List<DataStoreCategory> found = new ArrayList<>();
         for (DataStoreCategory cat : DataStorage.get().getStoreCategories()) {
@@ -57,9 +58,9 @@ public class DataStorageQuery {
             return List.of();
         }
 
-        var catMatcher = Pattern.compile(toRegex(categoryFilter.toLowerCase()));
-        var conMatcher = Pattern.compile(toRegex(connectionFilter.toLowerCase()));
-        var typeMatcher = Pattern.compile(toRegex(typeFilter.toLowerCase()));
+        var catMatcher = compilePattern(categoryFilter);
+        var conMatcher = compilePattern(connectionFilter);
+        var typeMatcher = compilePattern(typeFilter);
 
         List<DataStoreEntry> found = new ArrayList<>();
         for (DataStoreEntry storeEntry : DataStorage.get().getStoreEntries()) {
@@ -196,5 +197,13 @@ public class DataStorageQuery {
             }
         }
         return sb.toString();
+    }
+
+    private static Pattern compilePattern(String pattern) {
+        try {
+            return Pattern.compile(toRegex(pattern.toLowerCase()));
+        } catch (Throwable e) {
+            return Pattern.compile(Pattern.quote(pattern));
+        }
     }
 }

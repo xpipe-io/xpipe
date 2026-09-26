@@ -14,6 +14,7 @@ import io.xpipe.app.identity.SshIdentityStrategy;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.DataStorageAccessType;
 import io.xpipe.app.secret.DataStorageAccessHandler;
 import io.xpipe.app.secret.OptionalEncryptedValue;
@@ -73,7 +74,7 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
                 .map(entry -> entry.getStore() instanceof SyncedIdentityStore p ? p : null)
                 .filter(s -> s != null)
                 .findFirst();
-        if (synced.isPresent()) {
+        if (synced.isPresent() && AppPrefs.get().enableGitStorage().get()) {
             var pass = OptionalEncryptedValue.of(password.getValue(), DataStoreAccessScope.encryption());
             if (pass == null) {
                 pass = OptionalEncryptedValue.of(new SecretNoneStrategy(), DataStoreAccessScope.encryption());

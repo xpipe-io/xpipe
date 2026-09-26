@@ -29,7 +29,9 @@ public class FsBlobExchange extends BeaconInterface<FsBlobExchange.Request> {
     public Object handle(HttpExchange exchange, Request msg) {
         var id = UUID.randomUUID();
 
-        var size = exchange.getRequestBody().available();
+        var contentLength = exchange.getRequestHeaders().getFirst("Content-Length");
+        // Store it as a blob if we don't know the size
+        var size = contentLength != null ? Long.parseLong(contentLength) : Long.MAX_VALUE;
         if (size > 100_000_000) {
             BlobManager.get().store(id, exchange.getRequestBody());
         } else {
