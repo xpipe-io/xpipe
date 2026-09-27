@@ -40,7 +40,7 @@ public class CustomTerminalType implements ExternalApplicationType, ExternalTerm
                     format, "CMD", configuration.single().getScriptFile().toString(), true);
             // We can't be sure whether the command is blocking or not, so always make it not blocking
             if (sc.getOsType() == OsType.WINDOWS) {
-                toExecute = "start \"" + configuration.getCleanTitle() + "\" " + toExecute;
+                toExecute = CommandBuilder.of().add("start").addQuoted(configuration.getCleanTitle()).add(toExecute).buildFull(sc);
             } else {
                 var async = sc.getShellDialect().launchAsync(CommandBuilder.of().add(toExecute), true);
                 toExecute = async.buildFull(sc);

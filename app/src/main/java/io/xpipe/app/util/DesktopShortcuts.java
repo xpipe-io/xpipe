@@ -105,12 +105,12 @@ public class DesktopShortcuts {
 
         try (var pc = LocalShell.getShell()) {
             pc.getShellDialect().deleteFileOrDirectory(pc, base.toString()).executeAndCheck();
-            pc.view().mkdir(FilePath.of(base.resolve("/Contents/MacOS")));
-            pc.view().mkdir(FilePath.of(base.resolve("/Contents/Resources")));
+            pc.view().mkdir(FilePath.of(base.resolve("Contents", "MacOS")));
+            pc.view().mkdir(FilePath.of(base.resolve("Contents", "Resources")));
 
-            var macExec = base + "/Contents/MacOS/" + name;
+            var macExec = base.resolve("Contents", "MacOS", name);
             pc.view().writeScriptFile(FilePath.of(macExec), content);
-            pc.executeSimpleCommand("chmod ugo+x \"" + macExec + "\"");
+            pc.command(CommandBuilder.of().add("chmod", "ugo+x").addFile(macExec)).execute();
 
             pc.view().writeTextFile(FilePath.of(base + "/Contents/PkgInfo"), "APPL????");
             pc.view().writeTextFile(FilePath.of(base + "/Contents/Info.plist"), """
@@ -125,10 +125,8 @@ public class DesktopShortcuts {
                                                                                 </dict>
                                                                                 </plist>
                                                                                 """);
-            pc.command("cp \"" + icon + "\" \"" + base + "/Contents/Resources/xpipe.icns\"")
-                    .execute();
-            pc.command("cp \"" + assets + "\" \"" + base + "/Contents/Resources/Assets.car\"")
-                    .execute();
+            pc.command(CommandBuilder.of().add("cp").addFile(icon).addFile(base.resolve("Contents", "Resources", "xpipe.icns"))).execute();
+            pc.command(CommandBuilder.of().add("cp").addFile(assets).addFile(base.resolve("Contents", "Resources", "Assets.car"))).execute();
         }
         return base;
     }

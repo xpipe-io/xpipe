@@ -62,10 +62,17 @@ public class ShellTemp {
                     }
                 }
             }
+        } else {
+            proc.view().mkdir(base);
         }
     }
 
     public static boolean checkSystemTempDirectory(ShellControl sc) throws Exception {
+        // We can't do anything in a TTY
+        if (sc.getTtyState() != ShellTtyState.NONE) {
+            return false;
+        }
+
         var d = sc.getShellDialect();
         var systemTemp = sc.getSystemTemporaryDirectory();
         var hasValidTemp = d.directoryExists(sc, systemTemp.toString()).executeAndCheck()
@@ -83,7 +90,7 @@ public class ShellTemp {
 
     public static FilePath createSubTempDirectory(ShellControl sc, boolean hasValidTemp) throws Exception {
         if (!hasValidTemp) {
-            return null;
+            return sc.getSystemTemporaryDirectory();
         }
 
         // When starting up multiple sessions to the same system, there might be race conditions here
