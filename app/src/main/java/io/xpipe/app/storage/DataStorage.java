@@ -1161,6 +1161,9 @@ public abstract class DataStorage {
             toDelete.add(cat);
         }
 
+        // Delete bottom ones first, then move up
+        toDelete.sort(Comparator.<DataStoreCategory>comparingInt(delCat -> getCategoryParentHierarchy(delCat).size()).reversed());
+
         for (DataStoreCategory delCat : toDelete) {
             if (deleteEntries) {
                 var toDeleteEntries = new ArrayList<DataStoreEntry>();

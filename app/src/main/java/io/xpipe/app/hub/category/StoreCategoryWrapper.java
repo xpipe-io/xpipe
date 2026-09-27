@@ -95,7 +95,7 @@ public class StoreCategoryWrapper {
     }
 
     private void deleteImpl() {
-        for (var c : children.getList()) {
+        for (var c : new ArrayList<>(children.getList())) {
             c.deleteImpl();
         }
         DataStorage.get().deleteStoreCategory(category, false, false);
