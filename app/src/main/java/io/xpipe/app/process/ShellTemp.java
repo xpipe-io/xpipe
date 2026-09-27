@@ -10,19 +10,32 @@ import java.io.IOException;
 
 public class ShellTemp {
 
-    public static FilePath createUserSpecificTempDataDirectory(ShellControl proc, String sub) throws Exception {
+    private static FilePath getUserSpecificTempDataDirectoryPath(ShellControl proc) throws Exception {
         // On Windows and macOS, we already have user specific temp directories
         // Even on macOS as root is technically unique as only root will use /tmp
         if (proc.getOsType() != OsType.WINDOWS && proc.getOsType() != OsType.MACOS) {
             var temp = proc.getSystemTemporaryDirectory();
             var base = temp.join(AppNames.ofCurrent().getKebapName() + "-" + proc.view().user());
+            return base;
+        } else {
+            var temp = proc.getSystemTemporaryDirectory();
+            var base = temp.join(AppNames.ofCurrent().getKebapName());
+            return base;
+        }
+    }
+
+    public static FilePath createUserSpecificTempDataDirectory(ShellControl proc) throws Exception {
+        var base = getUserSpecificTempDataDirectoryPath(proc);
+        // On Windows and macOS, we already have user specific temp directories
+        // Even on macOS as root is technically unique as only root will use /tmp
+        if (proc.getOsType() != OsType.WINDOWS && proc.getOsType() != OsType.MACOS) {
             proc.view().mkdir(base);
             if (!proc.view().isRoot()) {
                 // We have to make sure that we own this directory, chmod will fail if not
                 // This command should work in all shells
                 var hasChmod = proc.view().findProgram("chmod").isPresent();
                 if (hasChmod) {
-                    var chmodSuccess = proc.command("chmod 700 " + proc.getShellDialect().fileArgument(base)).executeAndCheck();
+                    var chmodSuccess = proc.executeRobustBootstrapCommand("chmod 700 " + proc.getShellDialect().fileArgument(base)).isPresent();
                     if (!chmodSuccess) {
                         throw new IOException("Unexpected directory ownership and permissions for " + base);
                     }
@@ -50,15 +63,13 @@ public class ShellTemp {
                 }
 
             }
-            return sub != null ? base.join(sub) : base;
+            return base;
         } else {
-            var temp = proc.getSystemTemporaryDirectory();
-            var base = temp.join(AppNames.ofCurrent().getKebapName());
-            return sub != null ? base.join(sub) : base;
+            return base;
         }
     }
 
-    public static void checkTempDirectory(ShellControl sc) throws Exception {
+    public static boolean checkSystemTempDirectory(ShellControl sc) throws Exception {
         var d = sc.getShellDialect();
         var systemTemp = sc.getSystemTemporaryDirectory();
         var hasValidTemp = d.directoryExists(sc, systemTemp.toString()).executeAndCheck()
@@ -71,12 +82,18 @@ public class ShellTemp {
                     new IOException("No permissions to access system temporary directory %s".formatted(systemTemp)));
         }
 
+        return hasValidTemp;
+    }
+
+
+    public static void checkSubTempDirectory(ShellControl sc, boolean hasValidTemp) throws Exception {
+        var subTemp = sc.getSubTemporaryDirectory();
         if (hasValidTemp) {
             // When starting up multiple sessions to the same system, there might be race conditions here
             // This is quite inefficient but there is no way to synchronize access on a
             // specific system when multiple shell controls access it
             synchronized (ShellTemp.class) {
-                var sessionFile = systemTemp.join("xpipe-session-"
+                var sessionFile = subTemp.join("xpipe-session-"
                         + AppProperties.get().getSessionId().toString().substring(0, 8));
                 var newSession = !sc.view().fileExists(sessionFile);
                 if (newSession) {
@@ -93,43 +110,28 @@ public class ShellTemp {
         }
     }
 
-    public static void clearTemp(ShellControl sc) throws Exception {
-        var systemTemp = sc.getSystemTemporaryDirectory();
-
-        // The temp dir is a lot to clean on Windows potentially
-        // Also, the wildcard remove is very slow in PowerShell
-        var skipClear = OsType.ofLocal() == OsType.WINDOWS && sc.isLocal();
-        if (!skipClear) {
-            clearFiles(sc, systemTemp.join("xpipe-"));
+    private static void clearTemp(ShellControl sc) throws Exception {
+        var subTemp = getUserSpecificTempDataDirectoryPath(sc);
+        if (sc.view().directoryExists(subTemp)) {
+            clearFiles(sc, subTemp);
         }
     }
 
-    private static void clearFiles(ShellControl sc, FilePath prefix) throws Exception {
+    private static void clearFiles(ShellControl sc, FilePath dir) throws Exception {
         var d = sc.getShellDialect();
         if (d == ShellDialects.CMD) {
-            sc.command(CommandBuilder.of().add("DEL", "/Q", "/F").addQuoted(prefix.toString() + "*"))
-                    .executeAndCheck();
+            sc.command(CommandBuilder.of().add("DEL", "/Q", "/F").addFile(dir)).executeAndCheck();
         } else if (ShellDialects.isPowershell(d)) {
             sc.command(CommandBuilder.of()
-                            .add("Get-ChildItem")
-                            .addFile(prefix.getParent())
-                            .add(
-                                    "|",
-                                    "Where-Object",
-                                    "{-not $_.PSIsContainer}",
-                                    "|",
-                                    "Where-Object",
-                                    "{$_.Name.StartsWith(\"" + prefix.getFileName() + "\")}",
-                                    "|",
-                                    "Remove-Item",
+                            .add("Remove-Item",
                                     "-Recurse",
-                                    "-Force"))
+                                    "-Force")
+                            .addFile(dir))
                     .executeAndCheck();
         } else {
             sc.command(CommandBuilder.of()
-                            .add("rm", "-f")
-                            .add("\"" + prefix.toString() + "\"*")
-                            .add("2>/dev/null"))
+                            .add("rm", "-rf")
+                            .addFile(dir))
                     .executeAndCheck();
         }
     }
@@ -150,10 +152,9 @@ public class ShellTemp {
     }
 
     public static FilePath getSubDirectory(ShellControl proc, String... sub) throws Exception {
-        var base = proc.getSystemTemporaryDirectory();
+        var base = proc.getSubTemporaryDirectory();
         var dir = base.join(sub);
-        // We assume that this directory does not exist yet and therefore don't perform any checks
-        proc.getShellDialect().prepareUserTempDirectory(proc, dir.toString()).execute();
+        proc.view().mkdir(dir);
         return dir;
     }
 }

@@ -38,7 +38,7 @@ public interface SshIdentityStrategy {
         }
 
         try {
-            var base = sc.getSystemTemporaryDirectory().join("key.pub");
+            var base = sc.getSubTemporaryDirectory().join("key.pub");
             var file = sc.view().writeTextFileDeterministic(base, publicKey.strip() + "\n");
 
             if (sc.getOsType() != OsType.WINDOWS) {

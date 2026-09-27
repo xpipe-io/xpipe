@@ -126,8 +126,7 @@ public class ScriptStoreSetup {
                 .mapToInt(value ->
                         value.get().getName().hashCode() + value.getStore().hashCode())
                 .sum();
-        var targetDir = ShellTemp.createUserSpecificTempDataDirectory(sc, "scripts")
-                .join(sc.getShellDialect().getId());
+        var targetDir = ShellTemp.getSubDirectory(sc, "scripts", sc.getShellDialect().getId());
         var hashFile = targetDir.join("hash");
         if (sc.view().fileExists(hashFile)) {
             var read = sc.view().readTextFile(hashFile);

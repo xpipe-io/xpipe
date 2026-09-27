@@ -33,8 +33,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
 
     private static FilePath getSocket() throws Exception {
         try (var sc = LocalShell.getShell().start()) {
-            var temp = ShellTemp.createUserSpecificTempDataDirectory(sc, null);
-            return temp.join(AppNames.ofCurrent().getSnakeName() + "_kitty");
+            return sc.getSubTemporaryDirectory().join(AppNames.ofCurrent().getSnakeName() + "_kitty");
         }
     }
 

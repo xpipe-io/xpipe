@@ -10,7 +10,7 @@ import java.nio.file.FileSystems;
 public class ClinkHelper {
 
     public static FilePath getTargetDir(ShellControl sc) throws Exception {
-        var targetDir = ShellTemp.createUserSpecificTempDataDirectory(sc, null).join("bin", "clink");
+        var targetDir = ShellTemp.getSubDirectory(sc, "bin", "clink");
         return targetDir;
     }
 

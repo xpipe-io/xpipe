@@ -321,6 +321,11 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
+    public FilePath getSubTemporaryDirectory() {
+        return parent.getSubTemporaryDirectory();
+    }
+
+    @Override
     public ShellControl withSecurityPolicy(ShellSecurityPolicy policy) {
         return parent.withSecurityPolicy(policy);
     }

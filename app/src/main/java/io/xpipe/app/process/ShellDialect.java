@@ -48,8 +48,6 @@ public interface ShellDialect {
 
     long queryDirectorySize(ShellControl shellControl, String file) throws Exception;
 
-    CommandControl prepareUserTempDirectory(ShellControl shellControl, String directory);
-
     FilePath getInitFileName(ShellControl sc, int hash) throws Exception;
 
     CommandControl directoryExists(ShellControl shellControl, String directory);

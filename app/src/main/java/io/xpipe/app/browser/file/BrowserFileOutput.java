@@ -116,7 +116,7 @@ public interface BrowserFileOutput {
             @Override
             public void beforeTransfer() throws Exception {
                 if (checkSudoersFile) {
-                    fs.copy(file.getPath(), sc.getSystemTemporaryDirectory().join(file.getName()));
+                    fs.copy(file.getPath(), sc.getSubTemporaryDirectory().join(file.getName()));
                 }
             }
 
@@ -131,7 +131,7 @@ public interface BrowserFileOutput {
                                     .execute();
                         } catch (ProcessOutputException ex) {
                             ErrorEventFactory.fromThrowable(ex).expected().handle();
-                            fs.copy(sc.getSystemTemporaryDirectory().join(file.getName()), file.getPath());
+                            fs.copy(sc.getSubTemporaryDirectory().join(file.getName()), file.getPath());
                         }
                     }
                 }

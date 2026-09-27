@@ -18,10 +18,10 @@ public class ExternalApplicationHelper {
         // Support for legacy variables that were not upper case
         variable = variable.toUpperCase(Locale.ROOT);
         format = format.replace("$" + variable.toLowerCase(Locale.ROOT), "$" + variable.toUpperCase(Locale.ROOT));
-
-        var fileString = value.contains(" ") ? "\"" + value + "\"" : value;
+        var fileString = LocalShell.getDialect().fileArgument(value);
         // Check if the variable is already quoted
-        return format.replace("\"$" + variable + "\"", fileString).replace("$" + variable, fileString);
+        var quotedFormatString = format.contains("\"$" + variable + "\"");
+        return format.replace(quotedFormatString ? ("\"$" + variable + "\"") : ("$" + variable), fileString);
     }
 
     public static void startAsync(String raw) throws Exception {

@@ -105,6 +105,7 @@ public class SshLocalBridge {
             var command = get().getRemoteCommand(sc);
             var pidFile = bridgeDir.resolve("sshd.pid");
             var content = """
+                          ListenAddress 127.0.0.1
                           ForceCommand %s
                           PidFile "%s"
                           StrictModes no

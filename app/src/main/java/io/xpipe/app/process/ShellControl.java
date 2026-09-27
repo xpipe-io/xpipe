@@ -159,6 +159,8 @@ public interface ShellControl extends ProcessControl {
 
     FilePath getSystemTemporaryDirectory();
 
+    FilePath getSubTemporaryDirectory();
+
     default CommandControl osascriptCommand(String script) {
         var delimiter = UUID.randomUUID().toString();
         return command(String.format("""
@@ -275,8 +277,12 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl subShell();
 
+    default Optional<String> executeRobustBootstrapCommand(String command) throws Exception {
+        return getShellDialect().executeRobustBootstrapOutputCommand(this, command);
+    }
+
     default CommandControl command(String command) {
-        return command(CommandBuilder.ofFunction(shellProcessControl -> command));
+        return command(CommandBuilder.ofFunction(ignored -> command));
     }
 
     default CommandControl command(ShellScript command) {

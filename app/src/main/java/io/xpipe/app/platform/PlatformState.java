@@ -32,13 +32,9 @@ public enum PlatformState {
     private static PlatformState current = PlatformState.NOT_INITIALIZED;
 
     private static Throwable lastError;
-    private static boolean expectedError;
     private static boolean restartQueued;
 
     public static Throwable getLastError() {
-        if (expectedError) {
-            ErrorEventFactory.expected(lastError);
-        }
         return lastError;
     }
 
@@ -126,8 +122,8 @@ public enum PlatformState {
         } catch (HeadlessException | AWTError e) {
             var msg = getErrorMessage(e.getMessage());
             PlatformState.setCurrent(PlatformState.EXITED);
-            expectedError = true;
             lastError = new UnsupportedOperationException(msg, e);
+            ErrorEventFactory.expected(lastError);
             return;
         } catch (Throwable t) {
             PlatformState.setCurrent(PlatformState.EXITED);

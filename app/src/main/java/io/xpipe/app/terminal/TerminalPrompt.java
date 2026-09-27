@@ -28,14 +28,12 @@ public interface TerminalPrompt {
     String getDocsLink();
 
     default FilePath getConfigurationDirectory(ShellControl sc) throws Exception {
-        var d = ShellTemp.createUserSpecificTempDataDirectory(sc, null).join(getId());
-        sc.view().mkdir(d);
+        var d = ShellTemp.getSubDirectory(sc, getId());
         return d;
     }
 
     default FilePath getBinaryDirectory(ShellControl sc) throws Exception {
-        var d = ShellTemp.createUserSpecificTempDataDirectory(sc, "bin").join(getId());
-        sc.view().mkdir(d);
+        var d = ShellTemp.getSubDirectory(sc, "bin", getId());
         return d;
     }
 
