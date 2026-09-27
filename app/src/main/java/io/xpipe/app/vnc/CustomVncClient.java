@@ -44,7 +44,7 @@ public class CustomVncClient implements ExternalVncClient {
 
         var address = configuration.getHost() + ":" + configuration.getPort();
         var format = command.toLowerCase(Locale.ROOT).contains("$address") ? command : command + " $ADDRESS";
-        var toExecute = ExternalApplicationHelper.replaceVariableArgument(format, "ADDRESS", address);
+        var toExecute = ExternalApplicationHelper.replaceVariableArgument(format, "ADDRESS", address, true);
         ExternalApplicationHelper.startAsync(CommandBuilder.of().add(toExecute));
     }
 

@@ -99,6 +99,7 @@ public class ShellTemp {
                 if (newSession) {
                     clearTemp(sc);
                     try {
+                        sc.view().mkdir(subTemp);
                         sc.view().touch(sessionFile);
                     } catch (ProcessOutputException pex) {
                         if (!pex.getOutput().toLowerCase().contains("no space left on device")) {
@@ -111,9 +112,13 @@ public class ShellTemp {
     }
 
     private static void clearTemp(ShellControl sc) throws Exception {
-        var subTemp = getUserSpecificTempDataDirectoryPath(sc);
-        if (sc.view().directoryExists(subTemp)) {
-            clearFiles(sc, subTemp);
+        var toClean = getUserSpecificTempDataDirectoryPath(sc);
+        // Only clear local shell dir to not interfere with AppLocalTemp too much
+        if (sc.isLocal()) {
+            toClean = toClean.join("shell");
+        }
+        if (sc.view().directoryExists(toClean)) {
+            clearFiles(sc, toClean);
         }
     }
 

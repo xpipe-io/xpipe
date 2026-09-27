@@ -35,7 +35,7 @@ public class ScriptHelper {
             ShellDialect type, ShellControl processControl, String content, boolean log) {
         content = type.prepareScriptContent(processControl, content);
         var fileName = "xpipe-" + getScriptHash(processControl, content);
-        var temp = processControl.getSubTemporaryDirectory();
+        var temp = ShellTemp.getSubDirectory(processControl, "shell");
         var file = temp.join(fileName + "." + type.getScriptFileEnding());
         return createExecScriptRaw(processControl, file, content, log);
     }

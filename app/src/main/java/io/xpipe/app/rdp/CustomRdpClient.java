@@ -50,7 +50,8 @@ public class CustomRdpClient implements ExternalApplicationType, ExternalRdpClie
                         format,
                         "FILE",
                         writeRdpConfigFile(configuration.getTitle(), configuration.getConfig())
-                                .toString())));
+                                .toString(),
+                        true)));
     }
 
     @Override

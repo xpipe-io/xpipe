@@ -148,7 +148,7 @@ public interface ServiceProtocolType {
             var format = commandTemplate.toLowerCase(Locale.ROOT).contains("$port")
                     ? commandTemplate
                     : commandTemplate + " localhost:$PORT";
-            var toExecute = ExternalApplicationHelper.replaceVariableArgument(format, "PORT", port);
+            var toExecute = ExternalApplicationHelper.replaceVariableArgument(format, "PORT", port, false);
             // We can't be sure whether the command is blocking or not, so always make it not blocking
             ExternalApplicationHelper.startAsync(toExecute);
         }

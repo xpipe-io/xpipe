@@ -29,7 +29,7 @@ public class AppLocalTemp {
                 ErrorEventFactory.fromThrowable(new IOException("Invalid file type for " + temp))
                         .term()
                         .handle();
-                return null;
+                return temp;
             }
 
             try {
@@ -44,7 +44,7 @@ public class AppLocalTemp {
                 return temp;
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).description("Unable to set temp dir permissions " + temp).term().handle();
-                return null;
+                return temp;
             }
         } else {
             var temp =

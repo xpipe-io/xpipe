@@ -14,14 +14,14 @@ import java.util.stream.Collectors;
 
 public class ExternalApplicationHelper {
 
-    public static String replaceVariableArgument(String format, String variable, String value) {
+    public static String replaceVariableArgument(String format, String variable, String value, boolean quoteLiteral) {
         // Support for legacy variables that were not upper case
         variable = variable.toUpperCase(Locale.ROOT);
         format = format.replace("$" + variable.toLowerCase(Locale.ROOT), "$" + variable.toUpperCase(Locale.ROOT));
-        var fileString = LocalShell.getDialect().fileArgument(value);
+        var substitute = quoteLiteral ? LocalShell.getDialect().literalArgument(value) : value;
         // Check if the variable is already quoted
         var quotedFormatString = format.contains("\"$" + variable + "\"");
-        return format.replace(quotedFormatString ? ("\"$" + variable + "\"") : ("$" + variable), fileString);
+        return format.replace(quotedFormatString ? ("\"$" + variable + "\"") : ("$" + variable), substitute);
     }
 
     public static void startAsync(String raw) throws Exception {

@@ -503,7 +503,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             var format =
                     customCommand.toLowerCase(Locale.ROOT).contains("$file") ? customCommand : customCommand + " $FILE";
             var command = CommandBuilder.of()
-                    .add(ExternalApplicationHelper.replaceVariableArgument(format, "FILE", file.toString()));
+                    .add(ExternalApplicationHelper.replaceVariableArgument(format, "FILE", file.toString(), true));
             if (AppPrefs.get().customEditorCommandInTerminal().get()) {
                 TerminalLaunch.builder()
                         .title(file.toString())

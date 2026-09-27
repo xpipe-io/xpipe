@@ -37,7 +37,7 @@ public class CustomTerminalType implements ExternalApplicationType, ExternalTerm
         var format = custom.toLowerCase(Locale.ROOT).contains("$cmd") ? custom : custom + " $CMD";
         try (var sc = LocalShell.getShell()) {
             var toExecute = ExternalApplicationHelper.replaceVariableArgument(
-                    format, "CMD", configuration.single().getScriptFile().toString());
+                    format, "CMD", configuration.single().getScriptFile().toString(), false);
             // We can't be sure whether the command is blocking or not, so always make it not blocking
             if (sc.getOsType() == OsType.WINDOWS) {
                 toExecute = "start \"" + configuration.getCleanTitle() + "\" " + toExecute;
