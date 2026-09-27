@@ -24,7 +24,7 @@ public class ShellTemp {
         }
     }
 
-    public static FilePath createUserSpecificTempDataDirectory(ShellControl proc) throws Exception {
+    private static void initUserSpecificTempDataDirectory(ShellControl proc) throws Exception {
         var base = getUserSpecificTempDataDirectoryPath(proc);
         // On Windows and macOS, we already have user specific temp directories
         // Even on macOS as root is technically unique as only root will use /tmp
@@ -35,7 +35,7 @@ public class ShellTemp {
                 // This command should work in all shells
                 var hasChmod = proc.view().findProgram("chmod").isPresent();
                 if (hasChmod) {
-                    var chmodSuccess = proc.executeRobustBootstrapCommand("chmod 700 " + proc.getShellDialect().fileArgument(base)).isPresent();
+                    var chmodSuccess = proc.command("chmod 700 " + proc.getShellDialect().fileArgument(base)).executeAndCheck();
                     if (!chmodSuccess) {
                         throw new IOException("Unexpected directory ownership and permissions for " + base);
                     }
@@ -61,11 +61,7 @@ public class ShellTemp {
                         }
                     }
                 }
-
             }
-            return base;
-        } else {
-            return base;
         }
     }
 
@@ -85,29 +81,31 @@ public class ShellTemp {
         return hasValidTemp;
     }
 
+    public static FilePath createSubTempDirectory(ShellControl sc, boolean hasValidTemp) throws Exception {
+        if (!hasValidTemp) {
+            return null;
+        }
 
-    public static void checkSubTempDirectory(ShellControl sc, boolean hasValidTemp) throws Exception {
-        var subTemp = sc.getSubTemporaryDirectory();
-        if (hasValidTemp) {
-            // When starting up multiple sessions to the same system, there might be race conditions here
-            // This is quite inefficient but there is no way to synchronize access on a
-            // specific system when multiple shell controls access it
-            synchronized (ShellTemp.class) {
-                var sessionFile = subTemp.join("xpipe-session-"
-                        + AppProperties.get().getSessionId().toString().substring(0, 8));
-                var newSession = !sc.view().fileExists(sessionFile);
-                if (newSession) {
-                    clearTemp(sc);
-                    try {
-                        sc.view().mkdir(subTemp);
-                        sc.view().touch(sessionFile);
-                    } catch (ProcessOutputException pex) {
-                        if (!pex.getOutput().toLowerCase().contains("no space left on device")) {
-                            throw pex;
-                        }
+        // When starting up multiple sessions to the same system, there might be race conditions here
+        // This is quite inefficient but there is no way to synchronize access on a
+        // specific system when multiple shell controls access it
+        synchronized (ShellTemp.class) {
+            var subTemp = getUserSpecificTempDataDirectoryPath(sc);
+            var sessionFile = subTemp.join("xpipe-session-"
+                    + AppProperties.get().getSessionId().toString().substring(0, 8));
+            var newSession = !sc.view().fileExists(sessionFile);
+            if (newSession) {
+                clearTemp(sc);
+                initUserSpecificTempDataDirectory(sc);
+                try {
+                    sc.view().touch(sessionFile);
+                } catch (ProcessOutputException pex) {
+                    if (!pex.getOutput().toLowerCase().contains("no space left on device")) {
+                        throw pex;
                     }
                 }
             }
+            return subTemp;
         }
     }
 

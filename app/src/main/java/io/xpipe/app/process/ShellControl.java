@@ -108,7 +108,7 @@ public interface ShellControl extends ProcessControl {
             var oldState = store.getState();
             var newState = oldState.toBuilder()
                     .shellDialect(or.isMarkerDialect() ? oldState.getShellDialect() : or)
-                    .ttyState(shellControl.getTtyState())
+                    .ttyState(or.isMarkerDialect() ? oldState.getTtyState() : shellControl.getTtyState())
                     .running(true);
             if (shellControl.getOsType() != null) {
                 newState.osType(shellControl.getOsType());

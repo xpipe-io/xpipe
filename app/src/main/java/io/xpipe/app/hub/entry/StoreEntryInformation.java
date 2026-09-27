@@ -59,7 +59,7 @@ public class StoreEntryInformation {
         }
 
         if (s.getTtyState() != null && s.getTtyState() != ShellTtyState.NONE) {
-            l.add(StoreEntryBadge.ofConnectionType("TTY"));
+            l.add(StoreEntryBadge.ofFailure("TTY"));
         }
 
         return StoreEntryInformation.of(l);
