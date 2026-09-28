@@ -24,6 +24,10 @@ public class ProcessOutputException extends Exception {
         this.command = command;
     }
 
+    public ProcessOutputException stripped() {
+        return new ProcessOutputException(command, exitCode, "", null, null, (Exception) getCause());
+    }
+
     public void replaceOutput(String newOutput) {
         this.output = newOutput;
         if (getCause() instanceof ProcessOutputException p) {

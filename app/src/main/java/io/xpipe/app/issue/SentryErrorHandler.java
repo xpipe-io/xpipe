@@ -118,18 +118,8 @@ public class SentryErrorHandler implements ErrorHandler {
                 patternField.set(copy, "");
             }
 
-            if (copy instanceof ProcessOutputException) {
-                var prefixField = ProcessOutputException.class.getDeclaredField("prefix");
-                prefixField.setAccessible(true);
-                prefixField.set(copy, null);
-
-                var suffixField = ProcessOutputException.class.getDeclaredField("suffix");
-                suffixField.setAccessible(true);
-                suffixField.set(copy, null);
-
-                var outputField = ProcessOutputException.class.getDeclaredField("output");
-                outputField.setAccessible(true);
-                outputField.set(copy, "");
+            if (copy instanceof ProcessOutputException pex) {
+                throwable = pex.stripped();
             }
 
             var causeField = Throwable.class.getDeclaredField("cause");

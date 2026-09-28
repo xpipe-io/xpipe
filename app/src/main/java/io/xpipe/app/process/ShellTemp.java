@@ -118,8 +118,10 @@ public class ShellTemp {
 
     private static void clearTemp(ShellControl sc) throws Exception {
         var toClean = getUserSpecificTempDataDirectoryPath(sc);
-        // Only clear local shell dir to not interfere with AppLocalTemp too much
-        if (sc.isLocal()) {
+        // Check whether the dir looks like a local dir in case we connect
+        // to a remote system that is also running xpipe
+        if (sc.isLocal() || sc.view().fileExists(toClean.join("beacon-auth"))) {
+            // Only clear local shell dir to not interfere with AppLocalTemp too much
             toClean = toClean.join("shell");
         }
         if (sc.view().directoryExists(toClean)) {
