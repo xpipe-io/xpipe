@@ -147,7 +147,7 @@ public class StoreSectionComp extends StoreSectionBaseComp {
     private RegionBuilder<HBox> buildContent(StoreEntryComp entryButton) {
         entryButton.hgrow();
         entryButton.apply(struc -> {
-            struc.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            struc.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
                 if (event.getCode() == KeyCode.SPACE) {
                     section.getWrapper().toggleExpanded();
                     event.consume();

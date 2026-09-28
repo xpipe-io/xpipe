@@ -30,9 +30,9 @@ public class ShellTemp {
         // Even on macOS as root is technically unique as only root will use /tmp
         if (proc.getOsType() != OsType.WINDOWS && proc.getOsType() != OsType.MACOS) {
             proc.view().mkdir(base);
+            // We have to make sure that we own this directory, chmod will fail if not
+            // This command should work in all shells
             if (!proc.view().isRoot()) {
-                // We have to make sure that we own this directory, chmod will fail if not
-                // This command should work in all shells
                 var hasChmod = proc.view().findProgram("chmod").isPresent();
                 if (hasChmod) {
                     var chmodSuccess = proc.command("chmod 700 " + proc.getShellDialect().fileArgument(base)).executeAndCheck();
@@ -68,7 +68,7 @@ public class ShellTemp {
     }
 
     public static boolean checkSystemTempDirectory(ShellControl sc) throws Exception {
-        // We can't do anything in a TTY
+        // We can't do anything in a TTY as we use normal commands for the temp init
         if (sc.getTtyState() != ShellTtyState.NONE) {
             return false;
         }

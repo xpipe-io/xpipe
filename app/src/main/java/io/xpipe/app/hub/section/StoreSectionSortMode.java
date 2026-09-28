@@ -105,10 +105,10 @@ public interface StoreSectionSortMode {
                     // Make sure that sort contract is honored,
                     // so don't compare two different types of names
                     if (i1 != null) {
-                        return 1;
+                        return -1;
                     }
                     if (i2 != null) {
-                        return -1;
+                        return 1;
                     }
 
                     var n1 = o1.getWrapper().getName().getValue();

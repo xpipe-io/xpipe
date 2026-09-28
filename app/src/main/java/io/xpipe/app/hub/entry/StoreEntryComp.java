@@ -287,6 +287,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
 
     protected BaseRegionBuilder<?, ?> createTemplateIcon() {
         var button = new IconButtonComp("mdal-content_copy");
+        button.disable();
         button.style("template-icon");
         button.describe(d -> d.nameKey("template"));
         button.apply(struc -> {

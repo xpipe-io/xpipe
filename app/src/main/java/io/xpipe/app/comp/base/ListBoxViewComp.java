@@ -140,7 +140,13 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
         };
 
         if (fixScrollReset) {
+            var normalNavigationState = PseudoClass.getPseudoClass("normal-navigation");
             scroll.vvalueProperty().addListener((observable, oldValue, newValue) -> {
+                var normalNavigation = scroll.getScene().getRoot().getPseudoClassStates().contains(normalNavigationState);
+                if (!normalNavigation) {
+                    return;
+                }
+
                 // Fix scrollbar resetting on fast scroll
                 // If one node within has focus and moves out of focus fast,
                 // the scrollbar will try to focus another one and move it into view
