@@ -6,6 +6,7 @@ import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.fs.FileEntry;
 import io.xpipe.app.fs.FileKind;
 import io.xpipe.app.platform.InputHelper;
+import io.xpipe.app.platform.Listeners;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
@@ -39,16 +40,13 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
     private final StringProperty text = new SimpleStringProperty();
 
     private final BooleanProperty updating = new SimpleBooleanProperty();
-    private final Property<BrowserEntry> editing;
 
     private final ContextMenuWrapper contextMenu;
 
     public BrowserFileListNameCell(
             BrowserFileListModel fileList,
             ObservableStringValue typedSelection,
-            Property<BrowserEntry> editing,
             TableView<BrowserEntry> tableView) {
-        this.editing = editing;
         this.fileList = fileList;
         this.typedSelection = typedSelection;
         this.contextMenu = new ContextMenuWrapper(() -> new BrowserContextMenu(
@@ -146,7 +144,7 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
 
             getTableRow().requestFocus();
             var it = getTableRow().getItem();
-            editing.setValue(null);
+            fileList.getEditing().setValue(null);
             ThreadHelper.runFailableAsync(() -> {
                 if (it == null) {
                     return;
@@ -161,9 +159,9 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
         };
         text.addListener(listener);
 
-        editing.addListener((observable, oldValue, newValue) -> {
+        Listeners.attachWithScene(this, fileList.getEditing(), e -> {
             var item = getTableRow().getItem();
-            if (item != null && item.equals(newValue)) {
+            if (item != null && item.equals(e)) {
                 PlatformThread.runLaterIfNeeded(() -> {
                     textField.setDisable(false);
                     textField.requestFocus();
@@ -187,7 +185,7 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
         textField.disabledProperty().addListener((observable, oldValue, newValue) -> {
             if (!oldValue && newValue) {
                 Platform.runLater(() -> {
-                    editing.setValue(null);
+                    fileList.getEditing().setValue(null);
                 });
             }
         });
@@ -196,7 +194,7 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
     @Override
     protected void updateItem(String newName, boolean empty) {
         // Cancel rename on any change
-        editing.setValue(null);
+        fileList.getEditing().setValue(null);
 
         if (updating.get()) {
             super.updateItem(newName, empty);

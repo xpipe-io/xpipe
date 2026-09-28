@@ -589,14 +589,14 @@ public class AppTheme {
 
         protected String getPlatformPreferencesStylesheet() {
             var s = """
-                    * {
+                    .root {
                         -color-context-menu: %s;
                     }
                     """.formatted(ColorHelper.toWeb(contextMenuColor.get()));
             var accentColor = emphasisColor.get();
             if (accentColor != null) {
                 s += """
-                             * {
+                             .root {
                                  -color-accent-fg: %s;
                                  -color-accent-emphasis: %s;
                                  -color-accent-muted: %s;

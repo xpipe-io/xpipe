@@ -116,7 +116,7 @@ public class StoreSectionState {
     }
 
     private void addListeners() {
-        Listeners.attach(enabled, all, (change) -> {
+        Listeners.attachList(enabled, all, (change) -> {
             if (change != null) {
                 while (change.next()) {
                     if (change.wasAdded()) {
@@ -127,7 +127,7 @@ public class StoreSectionState {
             updateAll();
         });
 
-        Listeners.attach(enabled, selected, () -> {
+        Listeners.attachList(enabled, selected, () -> {
             updateShown(false);
         });
 

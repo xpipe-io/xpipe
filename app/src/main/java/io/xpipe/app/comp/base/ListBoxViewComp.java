@@ -5,6 +5,7 @@ import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.platform.DerivedObservableList;
+import io.xpipe.app.platform.Listeners;
 import io.xpipe.app.util.GlobalTimer;
 
 import javafx.animation.AnimationTimer;
@@ -183,11 +184,12 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
 
         // We can't directly listen to any parent element changing visibility, so this is a compromise
         if (AppLayoutModel.get() != null) {
-            AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
+            Listeners.listenWeak(scroll, AppLayoutModel.get().getSelected(), (scrollPane, entry) -> {
                 dirty.set(true);
             });
         }
-        BrowserFullSessionModel.DEFAULT.getSelectedEntry().addListener((observable, oldValue, newValue) -> {
+
+        Listeners.listenWeak(scroll, BrowserFullSessionModel.DEFAULT.getSelectedEntry(), (scrollPane, entry) -> {
             dirty.set(true);
         });
 
@@ -205,7 +207,7 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
                 var minY = new SimpleDoubleProperty();
                 var maxY = new SimpleDoubleProperty();
 
-                c.boundsInParentProperty().subscribe(v -> {
+                Listeners.attachWithScene(vbox, c.boundsInParentProperty(), v -> {
                     if (Math.abs(minY.get() - v.getMinY()) > 5.0) {
                         minY.set(v.getMinY());
                     }

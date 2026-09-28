@@ -9,6 +9,7 @@ import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.fs.FileEntry;
 import io.xpipe.app.fs.FileInfo;
 import io.xpipe.app.fs.FileKind;
+import io.xpipe.app.platform.Listeners;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.*;
 
@@ -69,7 +70,7 @@ public final class BrowserFileListComp extends SimpleRegionBuilder {
         filenameCol.setComparator(Comparator.comparing(String::toLowerCase));
         filenameCol.setSortType(ASCENDING);
         filenameCol.setCellFactory(col ->
-                new BrowserFileListNameCell(fileList, typedSelection, fileList.getEditing(), col.getTableView()));
+                new BrowserFileListNameCell(fileList, typedSelection, col.getTableView()));
         filenameCol.setReorderable(false);
         filenameCol.setResizable(false);
 
@@ -350,7 +351,8 @@ public final class BrowserFileListComp extends SimpleRegionBuilder {
                         fileList.getSelection().add(browserEntry);
                     }
                 });
-                fileList.getSelection().removeIf(browserEntry -> !c.getList().contains(browserEntry));
+                var hashed = new HashSet<>(c.getList());
+                fileList.getSelection().removeIf(browserEntry -> !hashed.contains(browserEntry));
             }
         });
 
@@ -491,11 +493,11 @@ public final class BrowserFileListComp extends SimpleRegionBuilder {
                         FOLDER, newValue != null && newValue.getRawFileEntry().getKind() == FileKind.DIRECTORY);
             });
 
-            fileList.getDraggedOverDirectory().addListener((observable, oldValue, newValue) -> {
+            Listeners.attachWithScene(row, fileList.getDraggedOverDirectory(), newValue -> {
                 row.pseudoClassStateChanged(DRAG_OVER, newValue != null && newValue == row.getItem());
             });
 
-            fileList.getDraggedOverEmpty().addListener((observable, oldValue, newValue) -> {
+            Listeners.attachWithScene(row, fileList.getDraggedOverEmpty(), newValue -> {
                 table.pseudoClassStateChanged(DRAG_INTO_CURRENT, newValue);
             });
 

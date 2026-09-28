@@ -48,7 +48,7 @@ public class AppPrefsStorageHandler {
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e)
                         .expected()
-                        .description("Settings file " + file + " is corrupt")
+                        .description("Settings file " + file + " is corrupted, its content will be discarded")
                         .handle();
             }
         }
