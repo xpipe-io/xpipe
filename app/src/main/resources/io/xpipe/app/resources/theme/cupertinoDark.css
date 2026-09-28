@@ -2,7 +2,7 @@
 
 .root:linux { -color-bg-default-transparent: #1C1C1ED5; }
 
-.root:macos { -color-bg-default-transparent: #0d0d10E6; }
+.root:macos { -color-bg-default-transparent: #0d0d10E5; }
 
 .root .button, .root .toggle-button {
     -fx-effect: NONE;
