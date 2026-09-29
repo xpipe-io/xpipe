@@ -97,8 +97,8 @@ public class StoreEntryWrapper {
         ThreadHelper.runAsync(() -> {
             DataStorage.get().moveEntryToCategory(entry, category);
             Platform.runLater(() -> {
-                oldCat.update();
-                newCat.update();
+                oldCat.updateHierarchy();
+                newCat.updateHierarchy();
             });
         });
     }

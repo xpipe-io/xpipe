@@ -201,7 +201,7 @@ public class StoreViewState {
         var drag = new StoreCategoryDrag(category, dragTarget);
         this.categoryDragOperation.setValue(drag);
 
-        categories.getList().forEach(c -> c.update());
+        categories.getList().forEach(c -> c.updateSingle());
 
         Dragboard db = r.startDragAndDrop(TransferMode.ANY);
         db.setContent(Map.of(SECTION_DRAG_DATA_FORMAT, "dummy"));
@@ -229,7 +229,7 @@ public class StoreViewState {
     public void stopCategoryDrag() {
         this.categoryDragOperation.setValue(null);
 
-        categories.getList().forEach(c -> c.update());
+        categories.getList().forEach(c -> c.updateSingle());
     }
 
     public ObservableIntegerValue entriesCount(Predicate<StoreEntryWrapper> filter, ObservableValue<?>... observables) {
@@ -304,7 +304,7 @@ public class StoreViewState {
     }
 
     public void updateWrappers() {
-        categories.getList().forEach(c -> c.update());
+        categories.getList().forEach(c -> c.updateSingle());
         allEntries.getList().forEach(e -> e.update());
     }
 
@@ -360,7 +360,7 @@ public class StoreViewState {
     private void onFilterUpdate(StoreFilter newValue) {
         var all = getActiveCategory().getValue().getRoot();
         categories.getList().forEach(e -> {
-            e.update();
+            e.updateSingle();
         });
         var matchingCats = categories.getList().stream()
                 .filter(storeCategoryWrapper -> storeCategoryWrapper.getRoot().equals(all))
@@ -549,7 +549,7 @@ public class StoreViewState {
                                                 .equals(storeCategoryWrapper
                                                         .getCategory()
                                                         .getUuid())))
-                                .forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
+                                .forEach(storeCategoryWrapper -> storeCategoryWrapper.updateHierarchy());
                     }
                     wrappers.forEach(storeEntryWrapper -> storeEntryWrapper.update());
                 });
@@ -578,7 +578,7 @@ public class StoreViewState {
                     synchronized (this) {
                         allEntries.getList().removeAll(l);
                     }
-                    categories.getList().forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
+                    categories.getList().forEach(storeCategoryWrapper -> storeCategoryWrapper.updateSingle());
                 });
             }
 
@@ -591,11 +591,11 @@ public class StoreViewState {
                         return;
                     }
 
-                    l.update();
+                    l.updateHierarchy();
                     synchronized (this) {
                         categories.getList().add(l);
                     }
-                    l.update();
+                    l.updateHierarchy();
                 });
             }
 
@@ -627,7 +627,7 @@ public class StoreViewState {
                     }
                     var p = found.get().getParent();
                     if (p != null) {
-                        p.update();
+                        p.updateHierarchy();
                     }
                 });
             }
@@ -636,7 +636,7 @@ public class StoreViewState {
             public void onCategoryListUpdate() {
                 Platform.runLater(() -> {
                     synchronized (this) {
-                        categories.getList().forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
+                        categories.getList().forEach(storeCategoryWrapper -> storeCategoryWrapper.updateSingle());
                     }
                 });
             }

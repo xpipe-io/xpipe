@@ -121,15 +121,15 @@ public class StoreCategoryWrapper {
         });
 
         category.addListener(() -> PlatformThread.runLaterIfNeeded(() -> {
-            update();
+            updateSingle();
         }));
 
         Listeners.listenWeak(this, AppPrefs.get().showChildCategoriesInParentCategory(), (wrapper, ignored) -> {
-            wrapper.update();
+            wrapper.updateSingle();
         });
 
         Listeners.listenWeak(this, AppI18n.activeLanguage(), (wrapper, ignored) -> {
-            wrapper.update();
+            wrapper.updateSingle();
         });
     }
 
@@ -142,7 +142,15 @@ public class StoreCategoryWrapper {
         StoreViewState.get().updateWrappers();
     }
 
-    public synchronized void update() {
+    public void updateSingle() {
+        updateImpl(false);
+    }
+
+    public void updateHierarchy() {
+        updateImpl(true);
+    }
+
+    private synchronized void updateImpl(boolean bubbleUp) {
         // We are probably in shutdown then
         if (AppOperationMode.isInShutdown() || StoreViewState.get() == null) {
             return;
@@ -177,8 +185,7 @@ public class StoreCategoryWrapper {
         color.setValue(DataStorage.get().getEffectiveCategoryConfig(category).getColor());
         iconFile.setValue(category.getEffectiveIconFile());
 
-        var allEntries = new ArrayList<>(StoreViewState.get().getAllEntries().getList());
-        directContainedEntries.setContent(allEntries.stream()
+        directContainedEntries.setContent(StoreViewState.get().getAllEntries().getList().stream()
                 .filter(entry -> {
                     return entry.getEntry().getCategoryUuid().equals(category.getUuid());
                 })
@@ -225,9 +232,12 @@ public class StoreCategoryWrapper {
                 .mapToInt(value -> value.shownContainedEntriesCount.get())
                 .sum();
         shownContainedEntriesCount.setValue(directFiltered + subFiltered);
-        Optional.ofNullable(getParent()).ifPresent(storeCategoryWrapper -> {
-            storeCategoryWrapper.update();
-        });
+
+        if (bubbleUp) {
+            Optional.ofNullable(getParent()).ifPresent(storeCategoryWrapper -> {
+                storeCategoryWrapper.updateSingle();
+            });
+        }
 
         StoreViewState.get().refreshActiveCategory();
     }
@@ -365,8 +375,8 @@ public class StoreCategoryWrapper {
                 .moveCategoryToParent(selection.getCategory(), getParent().getCategory());
         selection.getCategory().setOrderIndex(min + inc);
 
-        update();
-        selection.update();
+        updateHierarchy();
+        selection.updateHierarchy();
     }
 
     public void insertSubCategory(StoreCategoryWrapper selection) {
