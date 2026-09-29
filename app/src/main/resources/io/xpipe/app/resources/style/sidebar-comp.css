@@ -33,10 +33,6 @@
     -fx-padding: 1.1em 0.85em;
 }
 
-.sidebar-comp .icon-button-comp .vbox {
-    -fx-spacing: 0.5em;
-}
-
 .sidebar-comp .sidebar-button:hover .indicator {
     -fx-background-radius: 8;
     -fx-background-insets: 17 1 15 2;

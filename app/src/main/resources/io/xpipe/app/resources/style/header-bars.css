@@ -93,15 +93,6 @@
     -fx-border-width: 4;
 }
 
-.store-creation-bar, .store-sort-bar, .store-category-bar {
-    -fx-spacing: 0;
-}
-
-.root:nord .store-creation-bar, .root:nord .store-sort-bar, .root:nord .store-category-bar {
-    -fx-background-radius: 0;
-    -fx-border-radius: 0;
-}
-
 .store-category-bar > .viewport > .view > .scroll-comp-content {
     -fx-padding: 0.5em 0.0em 0.2em 0.5em;
 }

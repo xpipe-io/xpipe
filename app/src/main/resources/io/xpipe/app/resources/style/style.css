@@ -114,10 +114,6 @@
     -fx-cursor: hand;
 }
 
-.error-overlay-comp {
-    -fx-font-size: 0.9em;
-}
-
 .store-creator > .choice-comp {
     -fx-opacity: 0.9;
 }
@@ -235,10 +231,6 @@
 
 .root .label.danger .ikonli-font-icon.graphic {
     -fx-icon-color: -color-danger-fg;
-}
-
-.monospace {
-    -fx-font-family: Monospace;
 }
 
 .ikonli-font-icon.graphic.accent-icon {

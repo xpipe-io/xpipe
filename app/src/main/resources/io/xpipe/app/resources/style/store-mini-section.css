@@ -1,8 +1,3 @@
-.store-mini-list-comp:root {
-    -fx-border-color: transparent;
-    -fx-background-color: transparent;
-}
-
 .store-section-mini-comp .item:disabled {
     -fx-opacity: 0.8;
 }

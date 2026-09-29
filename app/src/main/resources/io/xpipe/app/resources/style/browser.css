@@ -246,18 +246,6 @@
     -fx-background-radius: 2;
 }
 
-.browser .singular {
-    -fx-tab-max-height: 0;
-}
-
-.browser .singular .tab-header-area {
-    visibility: hidden;
-}
-
-.browser .tab-header-area, .browser .headers-region {
-
-}
-
 .browser .tab-header-area .control-buttons-tab {
     -fx-opacity: 0;
 }
