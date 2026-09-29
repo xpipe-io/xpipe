@@ -12,14 +12,14 @@
     -color-cell-bg-odd: derive(-color-bg-subtle, 35%);
 }
 
-.root:dark * {
+.root:dark {
     -color-foreground-base: derive(-color-bg-default-transparent, 13%);
 }
 
-.root:light * {
+.root:light {
     -color-foreground-base: derive(-color-bg-default-transparent, -3%);
 }
 
-.root * {
+.root:light, .root:dark {
     -color-fg-default: #24292f;
 }

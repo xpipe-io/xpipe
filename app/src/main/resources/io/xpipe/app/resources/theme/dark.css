@@ -9,10 +9,10 @@
     -color-cell-bg: derive(-color-bg-subtle, -30%);
 }
 
-.root:dark * {
+.root:dark {
     -color-foreground-base: derive(-color-bg-default, 10%);
 }
 
-.root:light * {
+.root:light {
     -color-foreground-base: derive(-color-bg-default, -3%);
 }

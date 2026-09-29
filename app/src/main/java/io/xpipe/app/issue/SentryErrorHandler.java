@@ -119,7 +119,7 @@ public class SentryErrorHandler implements ErrorHandler {
             }
 
             if (copy instanceof ProcessOutputException pex) {
-                throwable = pex.stripped();
+                copy = pex.stripped();
             }
 
             var causeField = Throwable.class.getDeclaredField("cause");

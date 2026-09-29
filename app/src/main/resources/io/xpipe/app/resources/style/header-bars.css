@@ -106,7 +106,7 @@
     -fx-padding: 0.5em 0.0em 0.2em 0.5em;
 }
 
-.store-category-bar * {
+.store-category-bar .ikonli-font-icon {
     -fx-icon-color: -color-fg-default;
 }
 

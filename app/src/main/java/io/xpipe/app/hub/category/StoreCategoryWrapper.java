@@ -6,6 +6,7 @@ import io.xpipe.app.hub.entry.StoreEntryWrapper;
 import io.xpipe.app.hub.list.StoreFilterState;
 import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.platform.DerivedObservableList;
+import io.xpipe.app.platform.Listeners;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -123,12 +124,12 @@ public class StoreCategoryWrapper {
             update();
         }));
 
-        AppPrefs.get().showChildCategoriesInParentCategory().addListener((observable, oldValue, newValue) -> {
-            update();
+        Listeners.listenWeak(this, AppPrefs.get().showChildCategoriesInParentCategory(), (wrapper, ignored) -> {
+            wrapper.update();
         });
 
-        AppI18n.activeLanguage().addListener((observable, oldValue, newValue) -> {
-            update();
+        Listeners.listenWeak(this, AppI18n.activeLanguage(), (wrapper, ignored) -> {
+            wrapper.update();
         });
     }
 

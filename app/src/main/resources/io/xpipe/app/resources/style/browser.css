@@ -100,7 +100,7 @@
     -fx-padding: 8px;
 }
 
-.selected-file-list * {
+.selected-file-list .list-box-content {
     -fx-spacing: 5px;
 }
 

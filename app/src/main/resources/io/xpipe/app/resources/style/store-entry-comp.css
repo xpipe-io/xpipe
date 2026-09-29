@@ -21,7 +21,7 @@
     -fx-border-width: 1;
 }
 
-.store-list-comp.scroll-pane * {
+.store-list-comp.scroll-pane .ikonli-font-icon {
     -fx-icon-color: -color-fg-default;
 }
 
