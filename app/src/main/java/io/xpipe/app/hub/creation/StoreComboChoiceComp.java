@@ -46,6 +46,7 @@ public class StoreComboChoiceComp<T extends DataStore> extends SimpleRegionBuild
     private final Property<ComboValue<T>> selected;
     private final Function<T, String> stringConverter;
     private final StoreChoicePopover<T> popover;
+    private final Class<?> storeClass;
 
     public StoreComboChoiceComp(
             Function<T, String> stringConverter,
@@ -55,6 +56,7 @@ public class StoreComboChoiceComp<T extends DataStore> extends SimpleRegionBuild
             Predicate<DataStoreEntryRef<T>> applicableCheck,
             StoreCategoryWrapper initialCategory,
             boolean requireComplete) {
+        this.storeClass = storeClass;
         this.stringConverter = stringConverter;
         this.selected = selected;
 
@@ -93,6 +95,10 @@ public class StoreComboChoiceComp<T extends DataStore> extends SimpleRegionBuild
     private String toName(DataStoreEntry entry) {
         if (entry == null) {
             return null;
+        }
+
+        if (entry.getStore() == null || !(storeClass.isAssignableFrom(entry.getStore().getClass()))) {
+            return entry.getName();
         }
 
         var converted =

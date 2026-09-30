@@ -109,7 +109,7 @@ public abstract class AbstractServiceStore
             return false;
         }
 
-        if (getHost().asNeeded().getStore() instanceof LocalStore) {
+        if (!(getHost().asNeeded().getStore() instanceof HostAddressStore)) {
             return false;
         }
 

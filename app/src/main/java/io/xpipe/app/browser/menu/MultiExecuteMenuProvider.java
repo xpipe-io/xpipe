@@ -9,6 +9,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 
+import io.xpipe.app.util.FilePath;
 import javafx.beans.value.ObservableValue;
 
 import lombok.SneakyThrows;
@@ -28,7 +29,8 @@ public abstract class MultiExecuteMenuProvider implements BrowserMenuBranchProvi
                     @Override
                     @SneakyThrows
                     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        if (model.getCurrentPath().getValue() == null) {
+                        var currentPath = model.getCurrentPath().getValue();
+                        if (currentPath == null) {
                             return;
                         }
 
@@ -36,7 +38,7 @@ public abstract class MultiExecuteMenuProvider implements BrowserMenuBranchProvi
                         for (CommandBuilder command : commands) {
                             var builder = RunCommandInTerminalActionProvider.Action.builder();
                             builder.initFiles(
-                                    model, List.of(model.getCurrentPath().getValue()));
+                                    model, List.of(currentPath));
                             builder.command(command.buildFull(
                                     model.getFileSystem().getShell().orElseThrow()));
                             builder.build().executeAsync();
@@ -62,11 +64,16 @@ public abstract class MultiExecuteMenuProvider implements BrowserMenuBranchProvi
                     @Override
                     @SneakyThrows
                     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                        var currentPath = model.getCurrentPath().getValue();
+                        if (currentPath == null) {
+                            return;
+                        }
+
                         var commands = createCommand(model, entries);
                         for (CommandBuilder command : commands) {
                             var builder = RunCommandInBrowserActionProvider.Action.builder();
                             builder.initFiles(
-                                    model, List.of(model.getCurrentPath().getValue()));
+                                    model, List.of(currentPath));
                             builder.command(command.buildFull(
                                     model.getFileSystem().getShell().orElseThrow()));
                             builder.build().executeAsync();

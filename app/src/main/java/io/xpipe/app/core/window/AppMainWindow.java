@@ -88,7 +88,13 @@ public class AppMainWindow {
             return;
         }
 
-        var stage = App.getApp().getStage();
+        // We could have failed to init
+        var app = App.getApp();
+        if (app == null) {
+            return;
+        }
+
+        var stage = app.getStage();
         stage.setMinWidth(300);
         stage.setMinHeight(300);
         INSTANCE = new AppMainWindow(stage);

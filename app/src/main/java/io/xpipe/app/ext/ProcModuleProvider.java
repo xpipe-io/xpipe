@@ -38,7 +38,7 @@ public abstract class ProcModuleProvider {
             INSTANCE = ServiceLoader.load(layer, ProcModuleProvider.class).stream()
                     .map(p -> p.get())
                     .findFirst()
-                    .orElseThrow();
+                    .orElseThrow(() -> ExtensionException.corrupt("Missing proc provider"));
         }
 
         @Override

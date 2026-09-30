@@ -20,7 +20,7 @@ public abstract class AuthModuleProvider {
             INSTANCE = ServiceLoader.load(layer, AuthModuleProvider.class).stream()
                     .map(p -> p.get())
                     .findFirst()
-                    .orElseThrow();
+                    .orElseThrow(() -> ExtensionException.corrupt("Missing auth provider"));
         }
 
         @Override
