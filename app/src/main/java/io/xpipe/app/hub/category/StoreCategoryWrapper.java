@@ -237,7 +237,7 @@ public class StoreCategoryWrapper {
 
         if (bubbleUp) {
             Optional.ofNullable(getParent()).ifPresent(storeCategoryWrapper -> {
-                storeCategoryWrapper.updateSingle();
+                storeCategoryWrapper.updateHierarchy();
             });
         }
 

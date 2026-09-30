@@ -97,12 +97,18 @@
     -fx-padding: 0.5em 0.0em 0.2em 0.5em;
 }
 
-.store-category-bar .ikonli-font-icon {
-    -fx-icon-color: -color-fg-default;
+.store-category-bar {
+    -fx-spacing: 0;
 }
 
-.store-sort-bar {
-    -fx-spacing: 0.2em;
+.root:nord .store-category-bar {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+
+
+.store-category-bar .ikonli-font-icon {
+    -fx-icon-color: -color-fg-default;
 }
 
 .filler-bar {

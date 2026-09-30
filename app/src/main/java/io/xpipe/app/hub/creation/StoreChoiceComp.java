@@ -149,8 +149,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
                         event.consume();
                     });
                 })
-                .style("choice-comp")
-                .style(Styles.LEFT_PILL);
+                .style("choice-comp");
 
         var r = button.build();
 

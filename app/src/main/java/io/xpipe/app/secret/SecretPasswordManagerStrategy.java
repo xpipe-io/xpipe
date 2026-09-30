@@ -30,7 +30,7 @@ public class SecretPasswordManagerStrategy implements SecretRetrievalStrategy {
         var prefs = AppPrefs.get();
         var keyProperty = options.map(p, SecretPasswordManagerStrategy::getKey);
         var field = new PasswordManagerTestComp(keyProperty, false, true, true);
-        return options.nameAndDescription("passwordManagerKey")
+        return options.nameAndDescription("passwordManagerPasswordKey")
                 .addComp(field, keyProperty)
                 .nonNull()
                 .bind(
