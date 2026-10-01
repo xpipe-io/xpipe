@@ -13,8 +13,8 @@ import java.util.regex.Pattern;
 
 public final class HumanReadableFormat {
 
-    public static final DateTimeFormatter DAY_MONTH_YEAR = DateTimeFormatter.ofPattern("d LLL yyyy");
-    public static final DateTimeFormatter DAY_MONTH = DateTimeFormatter.ofPattern("d LLL");
+    public static final DateTimeFormatter DAY_MONTH_YEAR = DateTimeFormatter.ofPattern("dd LLL yyyy");
+    public static final DateTimeFormatter DAY_MONTH = DateTimeFormatter.ofPattern("dd LLL");
     public static final DateTimeFormatter HOUR_MINUTE = DateTimeFormatter.ofPattern("HH:mm");
 
     public static String byteCount(long bytes) {
