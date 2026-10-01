@@ -88,7 +88,6 @@ public class StoreSection {
         var applicable = wrapper != null
                 ? DataStorage.get().getStoreChildren(wrapper.getEntry()).stream()
                         .map(entry -> StoreViewState.get().getEntryWrapper(entry))
-                        .filter(Objects::nonNull)
                         .filter(other -> withParentConfig.isChild(this, other))
                         .toList()
                 : all.stream().filter(withParentConfig::isTop).toList();
