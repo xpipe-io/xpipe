@@ -89,7 +89,7 @@ public class PodmanCommandView extends CommandViewBase {
 
         public String queryState(String container) throws Exception {
             return build(commandBuilder -> commandBuilder.add(
-                            "ls", "-a", "-f", "name=\"^" + container + "$\"", "--format=\"{{.Status}}\""))
+                            "ls", "-a", "-f").addQuotedKeyValue("name", "^" + container + "$").addQuotedKeyValue("--format", "{{.Status}}"))
                     .readStdoutOrThrow();
         }
 
@@ -118,7 +118,7 @@ public class PodmanCommandView extends CommandViewBase {
             }
 
             try (var c = build(commandBuilder ->
-                            commandBuilder.add("ls -a --format=\"{{.Names}};{{.Image}};{{.Status}}\""))
+                            commandBuilder.add("ls", "-a").addQuotedKeyValue("--format", "{{.Names}};{{.Image}};{{.Status}}"))
                     .start()) {
                 var output = c.readStdoutOrThrow();
                 var l = new ArrayList<ContainerEntry>();

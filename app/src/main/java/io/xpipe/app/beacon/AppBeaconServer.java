@@ -37,7 +37,6 @@ public class AppBeaconServer {
     @Getter
     private final int port;
 
-    @Getter
     private final Set<BeaconSession> sessions = new HashSet<>();
 
     @Getter
@@ -99,7 +98,15 @@ public class AppBeaconServer {
     }
 
     public void addSession(BeaconSession session) {
-        this.sessions.add(session);
+        synchronized (sessions) {
+            this.sessions.add(session);
+        }
+    }
+
+    public Set<BeaconSession> getSessions() {
+        synchronized (sessions) {
+            return new HashSet<>(this.sessions);
+        }
     }
 
     private void stop() {

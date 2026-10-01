@@ -1,7 +1,5 @@
 package io.xpipe.app.issue;
 
-import org.apache.commons.io.IOUtils;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -13,9 +11,9 @@ import java.util.zip.ZipOutputStream;
 public class AttachmentHelper {
 
     public static Path compressZipfile(Path sourceDir, Path outputFile) throws IOException {
-        ZipOutputStream zipFile = new ZipOutputStream(new FileOutputStream(outputFile.toFile()));
-        compressDirectoryToZipfile(sourceDir, sourceDir, zipFile);
-        IOUtils.closeQuietly(zipFile);
+        try (ZipOutputStream zipFile = new ZipOutputStream(new FileOutputStream(outputFile.toFile()))) {
+            compressDirectoryToZipfile(sourceDir, sourceDir, zipFile);
+        }
         return outputFile;
     }
 
@@ -34,10 +32,9 @@ public class AttachmentHelper {
                         rootDir.relativize(sourceDir).resolve(file.getName()).toString());
                 out.putNextEntry(entry);
 
-                FileInputStream in =
-                        new FileInputStream(sourceDir.resolve(file.getName()).toString());
-                IOUtils.copy(in, out);
-                IOUtils.closeQuietly(in);
+                try (FileInputStream in = new FileInputStream(sourceDir.resolve(file.getName()).toString())) {
+                    in.transferTo(out);
+                }
             }
         }
     }

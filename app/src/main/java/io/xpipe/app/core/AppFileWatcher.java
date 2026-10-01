@@ -130,7 +130,9 @@ public class AppFileWatcher {
 
             try {
                 dir.register(AppFileWatcher.this.watchService, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
-                Files.list(dir).filter(Files::isDirectory).forEach(this::createRecursiveWatchers);
+                try (var stream = Files.list(dir)) {
+                    stream.filter(Files::isDirectory).forEach(this::createRecursiveWatchers);
+                }
             } catch (IOException e) {
                 ErrorEventFactory.fromThrowable(e).omit().handle();
             }

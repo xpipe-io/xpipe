@@ -123,7 +123,7 @@ public interface OsFileSystem {
             var r = pc.view().getEnvironmentVariable("HOME");
             if (r.isEmpty()) {
                 var user = pc.view().user();
-                var eval = pc.command("eval echo ~" + user).readStdoutIfPossible();
+                var eval = pc.command(CommandBuilder.of().add("eval", "echo").addLiteral("~" + user)).readStdoutIfPossible();
                 if (eval.isPresent() && !eval.get().isBlank()) {
                     return eval.get();
                 }

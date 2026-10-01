@@ -488,9 +488,10 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                                     },
                                     AppI18n.activeLanguage(),
                                     getWrapper().getTemplate()));
-                    template.setOnAction(event -> getWrapper()
-                            .getEntry()
-                            .setTemplate(!getWrapper().getTemplate().get()));
+                    template.setOnAction(event -> {
+                        getWrapper().getEntry().setTemplate(!getWrapper().getTemplate().get());
+                        event.consume();
+                    });
                     items.add(template);
                 }
             }
@@ -499,15 +500,19 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                 if (AppPrefs.get().developerMode().getValue()) {
                     var browse = new MenuItem(
                             AppI18n.get("browseInternalStorage"), new FontIcon("mdi2f-folder-open-outline"));
-                    browse.setOnAction(event ->
-                            DesktopHelper.browseFile(getWrapper().getEntry().getDirectory()));
+                    browse.setOnAction(event -> {
+                        DesktopHelper.browseFile(getWrapper().getEntry().getDirectory());
+                        event.consume();
+                    });
                     items.add(browse);
                 }
 
                 if (AppPrefs.get().enableHttpApi().get()) {
                     var copyId = new MenuItem(AppI18n.get("copyId"), new FontIcon("mdi2c-content-copy"));
-                    copyId.setOnAction(event -> ClipboardHelper.copyText(
-                            getWrapper().getEntry().getUuid().toString()));
+                    copyId.setOnAction(event -> {
+                        ClipboardHelper.copyText(getWrapper().getEntry().getUuid().toString());
+                        event.consume();
+                    });
                     items.add(copyId);
                 }
             }
