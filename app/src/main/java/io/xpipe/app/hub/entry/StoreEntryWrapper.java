@@ -2,12 +2,9 @@ package io.xpipe.app.hub.entry;
 
 import io.xpipe.app.action.*;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.core.mode.AppOperationMode;
-import io.xpipe.app.hub.action.HubBranchProvider;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.HubMenuItemProvider;
-import io.xpipe.app.hub.action.impl.EditHubLeafProvider;
 import io.xpipe.app.hub.category.StoreCategoryWrapper;
 import io.xpipe.app.hub.creation.StoreCreationDialog;
 import io.xpipe.app.hub.list.StoreFilter;
@@ -41,7 +38,6 @@ import org.int4.fx.values.util.Trigger;
 import java.net.Inet4Address;
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Getter
 public class StoreEntryWrapper {
@@ -83,6 +79,7 @@ public class StoreEntryWrapper {
     private final Property<Inet4Address> nameIpAddress = new SimpleObjectProperty<>();
     private final Trigger<Void> renameTrigger = Trigger.of();
     private boolean effectiveBusyProviderBound = false;
+    private StoreEntryActionProviderSelectionState providerSelectionState;
 
     public StoreEntryWrapper(DataStoreEntry entry) {
         this.entry = entry;
@@ -105,10 +102,6 @@ public class StoreEntryWrapper {
 
     public boolean includeInConnectionCount() {
         return getEntry().getProvider() != null && getEntry().getProvider().includeInConnectionCount();
-    }
-
-    public boolean isInStorage() {
-        return DataStorage.get() != null && DataStorage.get().getStoreEntries().contains(entry);
     }
 
     public void editDialog() {
@@ -274,68 +267,18 @@ public class StoreEntryWrapper {
             }
         }
 
-        if (!isInStorage()) {
-            minorActionProviders.clear();
-            majorActionProviders.clear();
-            defaultActionProvider.setValue(null);
-        } else {
+        var actionRelevantState = StoreEntryActionProviderSelectionState.of(entry);
+        var actionProvidersNeedUpdate = !actionRelevantState.equals(providerSelectionState);
+        if (actionProvidersNeedUpdate) {
+            providerSelectionState = actionRelevantState;
             try {
-                if (!template.get()) {
-                    var defaultProvider = ActionProvider.ALL.stream()
-                            .filter(e -> entry.getStore() != null
-                                    && e instanceof HubLeafProvider<?> def
-                                    && (entry.getValidity().isUsable()
-                                            || (!def.requiresValidStore() && entry.getProvider() != null))
-                                    && def.getApplicableClass()
-                                            .isAssignableFrom(entry.getStore().getClass())
-                                    && def.isApplicable(entry.ref())
-                                    && def.isDefault())
-                            .findFirst()
-                            .or(() -> {
-                                if (entry.getStore() instanceof GroupStore<?>) {
-                                    return Optional.empty();
-                                } else if (entry.getProvider() != null
-                                        && entry.getProvider().canConfigure()) {
-                                    return Optional.of(new EditHubLeafProvider());
-                                } else {
-                                    return Optional.empty();
-                                }
-                            })
-                            .orElse(null);
-                    this.defaultActionProvider.setValue(defaultProvider);
-
-                    var newMajorProviders = ActionProvider.ALL.stream()
-                            .map(actionProvider -> actionProvider instanceof HubMenuItemProvider<?> sa ? sa : null)
-                            .filter(Objects::nonNull)
-                            .filter(dataStoreActionProvider -> {
-                                return showActionProvider(dataStoreActionProvider, true);
-                            })
-                            .toList();
-                    if (!majorActionProviders.equals(newMajorProviders)) {
-                        majorActionProviders.setAll(newMajorProviders);
-                    }
-
-                    var newMinorProviders = ActionProvider.ALL.stream()
-                            .map(actionProvider -> actionProvider instanceof HubMenuItemProvider<?> sa ? sa : null)
-                            .filter(Objects::nonNull)
-                            .filter(dataStoreActionProvider -> {
-                                return showActionProvider(dataStoreActionProvider, false);
-                            })
-                            .collect(Collectors.toCollection(ArrayList::new));
-                    newMinorProviders.removeIf(storeActionProvider -> {
-                        return newMajorProviders.stream().anyMatch(mj -> {
-                            return mj instanceof HubBranchProvider<?> branch
-                                    && branch.getChildren(entry.ref()).stream()
-                                            .anyMatch(c -> c.getClass().equals(storeActionProvider.getClass()));
-                        });
-                    });
-                    if (!minorActionProviders.equals(newMinorProviders)) {
-                        minorActionProviders.setAll(newMinorProviders);
-                    }
-                } else {
-                    minorActionProviders.clear();
-                    majorActionProviders.clear();
-                    this.defaultActionProvider.setValue(new EditHubLeafProvider());
+                var selection = StoreEntryActionProviderSelection.of(entry, actionRelevantState);
+                this.defaultActionProvider.setValue(selection.getDefaultProvider());
+                if (!majorActionProviders.equals(selection.getMajorProviders())) {
+                    majorActionProviders.setAll(selection.getMajorProviders());
+                }
+                if (!minorActionProviders.equals(selection.getMinorProviders())) {
+                    minorActionProviders.setAll(selection.getMinorProviders());
                 }
             } catch (Exception ex) {
                 ErrorEventFactory.fromThrowable(ex).omit().handle();
@@ -365,27 +308,8 @@ public class StoreEntryWrapper {
     }
 
     public boolean showActionProvider(ActionProvider p, boolean major) {
-        if (p instanceof HubLeafProvider<?> leaf) {
-            return (entry.getValidity().isUsable() || (!leaf.requiresValidStore() && entry.getProvider() != null))
-                    && leaf.getApplicableClass()
-                            .isAssignableFrom(entry.getStore().getClass())
-                    && leaf.isApplicable(entry.ref())
-                    && ((!AppSizeBreakpoints.compactMode().get() && major == leaf.isMajor())
-                            || (AppSizeBreakpoints.compactMode().get() && !major));
-        }
-
-        if (p instanceof HubBranchProvider<?> branch
-                && entry.getStore() != null
-                && branch.getApplicableClass().isAssignableFrom(entry.getStore().getClass())
-                && branch.isApplicable(entry.ref())
-                && ((!AppSizeBreakpoints.compactMode().get() && major == branch.isMajor())
-                        || (AppSizeBreakpoints.compactMode().get() && !major))) {
-            return branch.getChildren(entry.ref()).stream().anyMatch(child -> {
-                return showActionProvider(child, false);
-            });
-        }
-
-        return false;
+        return StoreEntryActionProviderSelection.showActionProvider(
+                entry, StoreEntryActionProviderSelectionState.of(entry).isCompact(), p, major);
     }
 
     public boolean canToggleBreakOutCategory() {
@@ -498,9 +422,5 @@ public class StoreEntryWrapper {
         l.add(notes.getValue());
         l.addAll(tags);
         return filter.matches(l);
-    }
-
-    public Property<String> nameProperty() {
-        return name;
     }
 }
