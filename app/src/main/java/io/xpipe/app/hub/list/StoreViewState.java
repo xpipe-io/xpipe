@@ -94,6 +94,10 @@ public class StoreViewState {
                 return true;
             });
 
+    private final Map<DataStoreEntry, StoreEntryWrapper> entryWrapperMap = new HashMap<>();
+
+    private final Map<DataStoreCategory, StoreCategoryWrapper> categoryWrapperMap = new HashMap<>();
+
     @Getter
     private boolean initialized = false;
 
@@ -418,16 +422,17 @@ public class StoreViewState {
     }
 
     private void initContent() {
-        allEntries
-                .getList()
-                .setAll(FXCollections.observableArrayList(DataStorage.get().getStoreEntries().stream()
-                        .map(StoreEntryWrapper::new)
-                        .toList()));
-        categories
-                .getList()
-                .setAll(FXCollections.observableArrayList(DataStorage.get().getStoreCategories().stream()
-                        .map(StoreCategoryWrapper::new)
-                        .toList()));
+        for (DataStoreEntry e : DataStorage.get().getStoreEntries()) {
+            var w = new StoreEntryWrapper(e);
+            allEntries.getList().add(w);
+            entryWrapperMap.put(e, w);
+        }
+
+        for (DataStoreCategory c : DataStorage.get().getStoreCategories()) {
+            var w = new StoreCategoryWrapper(c);
+            categories.getList().add(w);
+            categoryWrapperMap.put(c, w);
+        }
 
         var selected = AppCache.getNonNull("selectedCategory", UUID.class, () -> DataStorage.DEFAULT_CATEGORY_UUID);
         activeCategory.setValue(categories.getList().stream()
@@ -524,22 +529,24 @@ public class StoreViewState {
             @Override
             public void onStoreAdd(DataStoreEntry... entry) {
                 Platform.runLater(() -> {
-                    // Some entries might already be removed again
-                    var wrappers = Arrays.stream(entry)
-                            .map(StoreEntryWrapper::new)
-                            .filter(storeEntryWrapper ->
-                                    DataStorage.get().getStoreEntries().contains(storeEntryWrapper.getEntry()))
-                            .toList();
-                    wrappers.forEach(StoreEntryWrapper::update);
-
                     // Don't update anything if we have already reset
                     if (INSTANCE == null) {
                         return;
                     }
 
+                    // Some entries might already be removed again
+                    var wrappers = Arrays.stream(entry)
+                            .map(StoreEntryWrapper::new)
+                            .filter(storeEntryWrapper ->
+                                    DataStorage.get().getStoreEntries().contains(storeEntryWrapper.getEntry()))
+                            .collect(Collectors.toMap(w -> w.getEntry(), w -> w, (a, b) -> a));
+                    wrappers.forEach((key, value) -> value.update());
+
                     synchronized (this) {
-                        allEntries.getList().addAll(wrappers);
+                        entryWrapperMap.putAll(wrappers);
+                        allEntries.getList().addAll(wrappers.values());
                     }
+
                     synchronized (this) {
                         categories.getList().stream()
                                 .filter(storeCategoryWrapper -> allEntries.getList().stream()
@@ -551,7 +558,8 @@ public class StoreViewState {
                                                         .getUuid())))
                                 .forEach(storeCategoryWrapper -> storeCategoryWrapper.updateHierarchy());
                     }
-                    wrappers.forEach(storeEntryWrapper -> storeEntryWrapper.update());
+
+                    wrappers.forEach((key, value) -> value.update());
                 });
             }
 
@@ -577,7 +585,11 @@ public class StoreViewState {
 
                     synchronized (this) {
                         allEntries.getList().removeAll(l);
+                        for (StoreEntryWrapper w : l) {
+                            entryWrapperMap.remove(w.getEntry());
+                        }
                     }
+
                     categories.getList().forEach(storeCategoryWrapper -> storeCategoryWrapper.updateSingle());
                 });
             }
@@ -592,9 +604,12 @@ public class StoreViewState {
                     }
 
                     l.updateHierarchy();
+
                     synchronized (this) {
+                        categoryWrapperMap.put(category, l);
                         categories.getList().add(l);
                     }
+
                     l.updateHierarchy();
                 });
             }
@@ -624,7 +639,9 @@ public class StoreViewState {
 
                     synchronized (this) {
                         categories.getList().remove(found.get());
+                        categoryWrapperMap.remove(found.get().getCategory());
                     }
+
                     var p = found.get().getParent();
                     if (p != null) {
                         p.updateHierarchy();
@@ -765,14 +782,6 @@ public class StoreViewState {
                 .orElseThrow();
     }
 
-    public StoreCategoryWrapper getCustomScriptsCategory() {
-        return categories.getList().stream()
-                .filter(storeCategoryWrapper ->
-                        storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.CUSTOM_SCRIPTS_CATEGORY_UUID))
-                .findFirst()
-                .orElseThrow();
-    }
-
     public StoreCategoryWrapper getScriptSourcesCategory() {
         return categories.getList().stream()
                 .filter(storeCategoryWrapper ->
@@ -790,10 +799,11 @@ public class StoreViewState {
     }
 
     public StoreEntryWrapper getEntryWrapper(DataStoreEntry entry) {
-        return allEntries.getList().stream()
-                .filter(storeCategoryWrapper -> storeCategoryWrapper.getEntry().equals(entry))
-                .findFirst()
-                .orElseThrow();
+        var r = entryWrapperMap.get(entry);
+        if (r == null) {
+            throw new IllegalStateException("Entry wrapper for " + entry.getName() + " not found");
+        }
+        return r;
     }
 
     public Optional<StoreCategoryWrapper> getCategoryWrapper(UUID uuid) {
@@ -804,10 +814,10 @@ public class StoreViewState {
     }
 
     public StoreCategoryWrapper getCategoryWrapper(DataStoreCategory entry) {
-        return categories.getList().stream()
-                .filter(storeCategoryWrapper ->
-                        storeCategoryWrapper.getCategory().equals(entry))
-                .findFirst()
-                .orElseThrow();
+        var r = categoryWrapperMap.get(entry);
+        if (r == null) {
+            throw new IllegalStateException("Category wrapper for " + entry.getName() + " not found");
+        }
+        return r;
     }
 }

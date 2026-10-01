@@ -7,6 +7,7 @@ import io.xpipe.app.hub.list.StoreSectionDrag;
 import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.Listeners;
+import io.xpipe.app.storage.DataStoreEntry;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -20,6 +21,8 @@ import org.int4.fx.values.util.Trigger;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class StoreSectionState {
 
@@ -98,7 +101,7 @@ public class StoreSectionState {
                 new HashSet<>(added));
         rootSection.refreshAll(all, config, 0, orderUpdateIndex.get());
         rootSection.refreshShown(config);
-        rootSection.apply(true);
+        rootSection.apply(false);
     }
 
     private void updateShown(boolean alwaysUpdateAll) {

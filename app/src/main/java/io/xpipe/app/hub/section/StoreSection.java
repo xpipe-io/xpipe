@@ -12,6 +12,7 @@ import lombok.Getter;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Getter
 public class StoreSection {
@@ -65,7 +66,10 @@ public class StoreSection {
     }
 
     public void refreshAll(
-            ObservableList<StoreEntryWrapper> all, StoreSectionConfig config, int depth, int orderUpdateIndex) {
+            ObservableList<StoreEntryWrapper> all,
+            StoreSectionConfig config,
+            int depth,
+            int orderUpdateIndex) {
         if (wrapper != null) {
             if (wrapper.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
                 allChildrenToApply.setContent(List.of());
@@ -81,19 +85,20 @@ public class StoreSection {
         }
 
         var withParentConfig = config.withParent(wrapper);
-        var applicable = all.stream()
-                .filter(other -> {
-                    return wrapper != null ? withParentConfig.isChild(this, other) : withParentConfig.isTop(other);
-                })
-                .toList();
+        var applicable = wrapper != null
+                ? DataStorage.get().getStoreChildren(wrapper.getEntry()).stream()
+                        .map(entry -> StoreViewState.get().getEntryWrapper(entry))
+                        .filter(Objects::nonNull)
+                        .filter(other -> withParentConfig.isChild(this, other))
+                        .toList()
+                : all.stream().filter(withParentConfig::isTop).toList();
 
+        var existingByEntry = allChildren.getList().stream()
+                .collect(Collectors.toMap(StoreSection::getEntry, s -> s, (a, b) -> a));
         var newAll = applicable.stream()
-                .map(wrapper -> {
-                    var found = allChildren.getList().stream()
-                            .filter(child -> child.getEntry().equals(wrapper.getEntry()))
-                            .findFirst();
-                    var sec = found.isPresent() ? found.get() : new StoreSection(wrapper, depth + 1);
-                    return sec;
+                .map(w -> {
+                    var existing = existingByEntry.get(w.getEntry());
+                    return existing != null ? existing : new StoreSection(w, depth + 1);
                 })
                 .toList();
 
