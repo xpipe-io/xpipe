@@ -66,23 +66,17 @@ public class AppFileWatcher {
             while (active) {
                 WatchKey key;
                 try {
-                    key = AppFileWatcher.this.watchService.poll(10, TimeUnit.MILLISECONDS);
-                    if (key == null) {
-                        continue;
-                    }
-
+                    key = AppFileWatcher.this.watchService.take();
                     for (var wd : new HashSet<>(watchedDirectories)) {
                         wd.update(key);
                     }
-                } catch (ClosedWatchServiceException ex) {
+                } catch (ClosedWatchServiceException | InterruptedException ex) {
                     // Exit loop if watch service is closed
                     break;
                 } catch (Exception ex) {
                     // Catch all other exceptions to not terminate this thread if an error occurs!
                     ErrorEventFactory.fromThrowable(ex).handle();
                 }
-
-                // Don't sleep, since polling the directories always sleeps for some ms
             }
         });
         watcherThread.start();
