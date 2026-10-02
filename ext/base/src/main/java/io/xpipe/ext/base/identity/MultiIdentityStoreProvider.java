@@ -5,6 +5,7 @@ import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.hub.creation.StoreCreationDialog;
 import io.xpipe.app.hub.creation.StoreCreationModel;
 import io.xpipe.app.hub.entry.StoreEntryBadge;
 import io.xpipe.app.hub.entry.StoreEntryInformation;
@@ -23,6 +24,7 @@ import io.xpipe.app.util.ObservableSubscriber;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -141,7 +143,16 @@ public class MultiIdentityStoreProvider extends IdentityStoreProvider {
                         select.disable(ref.get().getProvider() == null || inaccessible);
                         select.hide(selected.isEqualTo(ref));
                         select.describe(d -> d.nameKey("makeActive"));
-                        return new HorizontalComp(List.of(select, RegionBuilder.hspacer(5)));
+
+                        var edit = new IconButtonComp("mdi2a-account-edit", () -> {
+                            StoreCreationDialog.showEdit(ref.get(), (ignored) -> {
+                                listUpdate.trigger();
+                            });
+                        });
+                        edit.hide(new ReadOnlyObjectWrapper<>(ref.get().getProvider() == null || inaccessible));
+                        edit.describe(d -> d.nameKey("edit"));
+
+                        return new HorizontalComp(List.of(select, edit));
                     }
                 };
         var roleBased = DataStorageAccessHandler.getInstance().isAccessRestricted()

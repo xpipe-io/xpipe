@@ -18,7 +18,10 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.Value;
+import lombok.experimental.NonFinal;
 import org.int4.fx.builders.pane.HBoxBuilder;
 
 import java.util.ArrayList;
@@ -27,16 +30,18 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-@Value
-@EqualsAndHashCode(callSuper = true)
+@RequiredArgsConstructor
 public class ListSelectorComp<T> extends SimpleRegionBuilder {
 
-    ObservableList<T> values;
-    Function<T, String> toString;
-    Function<T, LabelGraphic> toGraphic;
-    ObservableList<T> selected;
-    Predicate<T> disable;
-    Supplier<Boolean> showAllSelector;
+    private final ObservableList<T> values;
+    private final Function<T, String> toString;
+    private final Function<T, LabelGraphic> toGraphic;
+    private final ObservableList<T> selected;
+    private final Predicate<T> disable;
+    private final Supplier<Boolean> showAllSelector;
+
+    @Setter
+    private String selectAllTranslationKey = "selectAll";
 
     @Override
     protected Region createSimple() {
@@ -123,7 +128,7 @@ public class ListSelectorComp<T> extends SimpleRegionBuilder {
                 });
             });
             var l = new Label(null, allSelector);
-            l.textProperty().bind(AppI18n.observable("selectAll"));
+            l.textProperty().bind(AppI18n.observable(selectAllTranslationKey));
             l.setGraphicTextGap(9);
             l.setOnMouseClicked(event -> allSelector.setSelected(!allSelector.isSelected()));
             vbox.getChildren().add(new Separator(Orientation.HORIZONTAL));

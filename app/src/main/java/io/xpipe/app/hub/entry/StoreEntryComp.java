@@ -28,6 +28,7 @@ import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -270,13 +271,18 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
     protected BaseRegionBuilder<?, ?> createScopeIcon() {
         var button = new IconButtonComp("mdi2a-account");
         button.style("user-icon");
+
         var identity = getWrapper().getEntry().getProvider() != null
                 && getWrapper().getEntry().getProvider().getCreationCategory() == DataStoreCreationCategory.IDENTITY;
-        var list = getWrapper().getEntry().getAccessScope().getPrincipals().stream()
-                .map(p -> "- " + p.getName())
-                .collect(Collectors.joining("\n"));
+        var text = Bindings.createStringBinding(() -> {
+            var list = getWrapper().getAccessScope().getValue().getPrincipals().stream()
+                    .map(p -> "- " + p.getName())
+                    .collect(Collectors.joining("\n"));
+            return AppI18n.get(identity ? "restrictedIdentity" : "restrictedConnection", list);
+        }, getWrapper().getAccessScope(), AppI18n.activeLanguage());
+
         button.describe(
-                d -> d.name(AppI18n.observable(identity ? "restrictedIdentity" : "restrictedConnection", list)));
+                d -> d.name(text));
         button.apply(struc -> {
             AppFontSizes.base(struc);
         });

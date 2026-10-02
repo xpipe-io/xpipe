@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 import javax.crypto.SecretKey;
+import java.util.UUID;
 
 @EqualsAndHashCode
 @Builder
@@ -31,6 +32,10 @@ public class EncryptionToken {
 
     public boolean matches(EncryptionPrincipal c) {
         var name = c.getUuid().toString();
-        return decode(c.getSecretKey()).equals(name);
+        return matches(name, c.getSecretKey());
+    }
+
+    public boolean matches(String name, SecretKey secretKey) {
+        return decode(secretKey).equals(name);
     }
 }

@@ -179,13 +179,11 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
                 ? AppI18n.get("localIdentity")
                 : id.getClass().getSimpleName().equals("PasswordManagerIdentityStore")
                         ? AppI18n.get("passwordManagerIdentity")
-                        : id instanceof SyncedIdentityStore
-                                        && storeEntry.getAccessScope().isAccessSubRestricted()
-                                ? (DataStorageAccessHandler.getInstance().getType() == DataStorageAccessType.ROLE
-                                        ? AppI18n.get("roleIdentity")
-                                        : AppI18n.get("userIdentity"))
-                                : AppI18n.get("syncedIdentity");
-        return storeEntry.getName() + " (" + suffix + ")";
+                        : id.getClass().getSimpleName().equals("MultiIdentityStore") ?
+                AppI18n.get("multiIdentity") : AppI18n.get("syncedIdentity");
+        var restricted = storeEntry.getAccessScope().isAccessSubRestricted();
+        var restrictedSuffix = restricted ? " [" + AppI18n.get("restrictedAccess") + "]" : suffix;
+        return storeEntry.getName() + " [" + suffix + "]" + restrictedSuffix;
     }
 
     private void applyRef(DataStoreEntryRef<IdentityStore> newRef) {
@@ -266,29 +264,7 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
 
         var combo = new ComboTextFieldComp(
                 prop, FXCollections.observableList(map.keySet().stream().toList()), () -> {
-                    return new ListCell<>() {
-                        @Override
-                        protected void updateItem(String item, boolean empty) {
-                            super.updateItem(item, empty);
-                            if (empty) {
-                                return;
-                            }
-
-                            setText(item);
-
-                            if (item != null) {
-                                var store = map.get(item);
-                                if (store != null) {
-                                    var provider = store.get().getProvider();
-                                    var image = provider.getDisplayIconFileName(store.getStore());
-                                    setGraphic(PrettyImageHelper.ofFixedSize(image, 16, 16)
-                                            .build());
-                                }
-                            } else {
-                                setGraphic(null);
-                            }
-                        }
-                    };
+                    return new ListCell<>();
                 });
         combo.apply(struc -> struc.setEditable(allowUserInput));
         combo.style(Styles.LEFT_PILL);

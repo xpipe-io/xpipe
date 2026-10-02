@@ -65,6 +65,7 @@ public class StoreEntryWrapper {
     private final BooleanProperty sessionActive = new SimpleBooleanProperty();
     private final Property<DataStore> store = new SimpleObjectProperty<>();
     private final Property<StoreEntryInformation> information = new SimpleObjectProperty<>();
+    private final Property<DataStoreAccessScope> accessScope = new SimpleObjectProperty<>();
     private final BooleanProperty accessScopeRestricted = new SimpleBooleanProperty();
     private final Property<String> shownName = new SimpleObjectProperty<>();
     private final Property<String> shownSummary = new SimpleObjectProperty<>();
@@ -200,6 +201,7 @@ public class StoreEntryWrapper {
                 && entry.getStore() instanceof ShellStore
                 && ss.isSessionRunning());
         category.setValue(newCat.get());
+        accessScope.setValue(entry.getAccessScope());
         accessScopeRestricted.setValue(DataStorageAccessHandler.getInstance().getType() == DataStorageAccessType.ROLE
                 && entry.getAccessScope().isAccessSubRestricted());
         pinToTop.setValue(entry.isPinToTop());

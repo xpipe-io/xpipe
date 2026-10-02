@@ -101,6 +101,7 @@ public class DataStoreAccessScopeComp extends SimpleRegionBuilder {
                         selectedPrincipals,
                         r -> !handler.getCurrentEncryptionPrincipals().contains(r),
                         () -> true);
+                selector.setSelectAllTranslationKey("selectAvailableRoles");
                 var header = new LabelComp(AppI18n.observable("restrictAccessTo")).style(Styles.TEXT_BOLD);
                 var content = new VerticalComp(List.of(header, selector)).spacing(10);
                 var popover = new Popover();

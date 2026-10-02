@@ -71,8 +71,7 @@ public class ComboTextFieldComp extends RegionBuilder<ComboBox<String>> {
         });
 
         if (customCellFactory != null) {
-            text.setCellFactory(param -> customCellFactory.get());
-            text.setButtonCell(customCellFactory.get());
+            text.setCellFactory(ignored -> customCellFactory.get());
         }
 
         text.setOnKeyPressed(ke -> {
