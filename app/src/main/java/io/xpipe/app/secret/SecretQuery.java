@@ -56,12 +56,12 @@ public interface SecretQuery {
 
             @Override
             public Duration cacheDuration() {
-                return null;
+                return original.cacheDuration();
             }
 
             @Override
             public boolean retryOnFail() {
-                return true;
+                return original.retryOnFail();
             }
 
             @Override

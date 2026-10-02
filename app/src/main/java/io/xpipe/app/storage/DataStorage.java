@@ -476,9 +476,11 @@ public abstract class DataStorage {
 
         for (DataStoreEntry other : otherToFinalize) {
             other.finalizeEntry();
+            SecretManager.clearAll(other.getUuid());
         }
 
         entry.finalizeEntry();
+        SecretManager.clearAll(entry.getUuid());
     }
 
     public Set<DataStoreEntryRef<?>> getDependencies(DataStoreEntry entry) {

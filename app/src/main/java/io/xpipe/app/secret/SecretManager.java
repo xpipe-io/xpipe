@@ -123,6 +123,10 @@ public class SecretManager {
     }
 
     public static synchronized void moveReferences(UUID oldId, UUID newId) {
+        if (oldId.equals(newId)) {
+            return;
+        }
+
         var oldSecrets = secrets.entrySet().stream()
                 .filter(e -> e.getKey().getSecretId().equals(oldId))
                 .collect(Collectors.toSet());

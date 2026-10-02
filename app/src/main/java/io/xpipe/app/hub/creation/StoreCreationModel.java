@@ -49,7 +49,8 @@ public class StoreCreationModel {
     boolean staticDisplay;
     StoreCreationConsumer consumer;
     ObservableBooleanValue syncable;
-    UUID uuid;
+    UUID newEntryUuid;
+    UUID cacheTargetUuid;
     String defaultName;
 
     public StoreCreationModel(
@@ -74,9 +75,10 @@ public class StoreCreationModel {
                 : null;
         this.staticDisplay = staticDisplay;
         this.consumer = consumer;
-        this.uuid = existingEntry != null && !DataStorage.get().getEffectiveReadOnlyState(existingEntry)
+        this.newEntryUuid = UUID.randomUUID();
+        this.cacheTargetUuid = existingEntry != null && !DataStorage.get().getEffectiveReadOnlyState(existingEntry)
                 ? existingEntry.getUuid()
-                : UUID.randomUUID();
+                : newEntryUuid;
 
         this.provider.addListener((c, o, n) -> {
             store.unbind();
@@ -107,12 +109,12 @@ public class StoreCreationModel {
                     }
 
                     var initial = DataStoreEntry.createNew(
-                            uuid, DataStorage.get().getSelectedCategory().getUuid(), effectiveName, store.getValue());
+                            newEntryUuid, DataStorage.get().getSelectedCategory().getUuid(), effectiveName, store.getValue());
                     var entryRef = existingEntry != null
                             ? existingEntry
                             : DataStorage.get().getDefaultDisplayParent(initial).orElse(initial);
                     var targetCategory = getTargetCategory(entryRef.getCategoryUuid());
-                    var e = DataStoreEntry.createNew(uuid, targetCategory.getUuid(), effectiveName, store.getValue());
+                    var e = DataStoreEntry.createNew(newEntryUuid, targetCategory.getUuid(), effectiveName, store.getValue());
 
                     if (!store.getValue().equals(e.getStore())) {
                         ErrorEventFactory.fromMessage("Store serialization mismatch")
