@@ -197,6 +197,18 @@ public class RemoteDesktopWindow {
         }
     }
 
+    public void reconnect() {
+        var toRestart = getSelected().getValue();
+        if (toRestart == null) {
+            return;
+        }
+
+        ThreadHelper.runFailableAsync(() -> {
+            close(toRestart, false);
+            toRestart.getEntry().getProvider().launch(toRestart.getEntry()).run();
+        });
+    }
+
     public void reconnectResize() {
         var rect = getDockBounds();
         var toRestart = getProcesses().stream()

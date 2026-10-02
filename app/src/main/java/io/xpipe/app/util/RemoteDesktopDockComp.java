@@ -11,6 +11,7 @@ import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.ListChangeListener;
@@ -149,11 +150,17 @@ public class RemoteDesktopDockComp extends SimpleRegionBuilder {
         buttons.setSpacing(6);
         bar.getItems().add(buttons);
 
-        var restartButton =
-                new ButtonComp(AppI18n.observable("reloadSizes"), new LabelGraphic.IconGraphic("mdi2r-restart"), () -> {
-                    w.reconnectResize();
-                });
-        restartButton.visible(requiresRestart);
+        var restartName = Bindings.createStringBinding(() -> {
+            return requiresRestart.get() ? AppI18n.get("reloadSizes") : AppI18n.get("reconnect");
+        }, requiresRestart, AppI18n.activeLanguage());
+        var restartButton = new ButtonComp(restartName, new LabelGraphic.IconGraphic("mdi2r-restart"), () -> {
+            if (requiresRestart.get()) {
+                w.reconnectResize();
+            } else {
+                w.reconnect();
+            }
+        });
+        restartButton.visible(w.getSelected().isNotNull());
         buttons.getChildren().add(restartButton.build());
     }
 
