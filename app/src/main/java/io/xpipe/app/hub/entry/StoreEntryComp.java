@@ -120,7 +120,6 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
     @Override
     protected final Region createSimple() {
         var r = createContent();
-        var name = (Region) r.lookup(".name");
 
         r.getStyleClass().add("store-entry-comp");
         r.setPadding(Insets.EMPTY);

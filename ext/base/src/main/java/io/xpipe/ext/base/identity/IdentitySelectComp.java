@@ -182,7 +182,7 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
                         : id.getClass().getSimpleName().equals("MultiIdentityStore") ?
                 AppI18n.get("multiIdentity") : AppI18n.get("syncedIdentity");
         var restricted = storeEntry.getAccessScope().isAccessSubRestricted();
-        var restrictedSuffix = restricted ? " [" + AppI18n.get("restrictedAccess") + "]" : suffix;
+        var restrictedSuffix = restricted ? " [" + AppI18n.get("restrictedAccess") + "]" : "";
         return storeEntry.getName() + " [" + suffix + "]" + restrictedSuffix;
     }
 
