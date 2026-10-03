@@ -19,6 +19,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -174,9 +175,12 @@ public class BrowserFileTransferOperation {
         var same = files.getFirst().getFileSystem().equals(target.getFileSystem());
         var doesMove = transferMode == BrowserFileTransferMode.MOVE
                 || (same && transferMode == BrowserFileTransferMode.NORMAL);
+        // Only sources that were fully transferred should be deleted when moving
+        // Keep track of them for later
+        var fullyTransferred = new ArrayList<FileEntry>();
         try {
             for (var file : files) {
-                if (cancelled()) {
+                if (cancelled() || lastConflictChoice == BrowserDialogs.FileConflictChoice.CANCEL) {
                     break;
                 }
 
@@ -185,7 +189,10 @@ public class BrowserFileTransferOperation {
                 } else {
                     // Transfers might change the working directory
                     var currentDir = file.getFileSystem().pwd();
-                    handleSingleAcrossFileSystems(file);
+                    var complete = handleSingleAcrossFileSystems(file);
+                    if (complete) {
+                        fullyTransferred.add(file);
+                    }
 
                     // Expect a kill
                     if (currentDir.isPresent() && !file.getFileSystem().requiresReinit()) {
@@ -195,7 +202,7 @@ public class BrowserFileTransferOperation {
             }
 
             if (!same && doesMove) {
-                for (var file : files) {
+                for (var file : fullyTransferred) {
                     if (cancelled()) {
                         break;
                     }
@@ -251,13 +258,13 @@ public class BrowserFileTransferOperation {
         }
     }
 
-    private void handleSingleAcrossFileSystems(FileEntry source) throws Exception {
+    private boolean handleSingleAcrossFileSystems(FileEntry source) throws Exception {
         var flatFiles = new LinkedHashMap<FileEntry, FilePath>();
 
         // Prevent dropping directory into itself
         if (source.getFileSystem().equals(target.getFileSystem())
                 && source.getPath().startsWith(target.getPath())) {
-            return;
+            return false;
         }
 
         AtomicLong totalSize = new AtomicLong();
@@ -266,7 +273,7 @@ public class BrowserFileTransferOperation {
             var exists = source.getFileSystem().directoryExists(source.getPath());
             if (!exists) {
                 updateProgress(BrowserTransferProgress.finished(source.getName(), 0));
-                return;
+                return false;
             }
 
             var directoryName = source.getPath().getFileName();
@@ -302,7 +309,7 @@ public class BrowserFileTransferOperation {
             var exists = source.getFileSystem().fileExists(source.getPath());
             if (!exists) {
                 updateProgress(BrowserTransferProgress.finished(source.getName(), 0));
-                return;
+                return false;
             }
 
             flatFiles.put(source, FilePath.of(source.getPath().getFileName()));
@@ -311,7 +318,7 @@ public class BrowserFileTransferOperation {
         } else {
             // Unsupported type, e.g. a socket
             updateProgress(BrowserTransferProgress.finished(source.getName(), 0));
-            return;
+            return false;
         }
 
         var originalSourceFs = flatFiles.keySet().iterator().next().getFileSystem();
@@ -325,9 +332,10 @@ public class BrowserFileTransferOperation {
 
         try {
             AtomicLong transferred = new AtomicLong();
+            var skipped = false;
             for (var e : flatFiles.entrySet()) {
                 if (cancelled()) {
-                    return;
+                    return false;
                 }
 
                 var sourceFile = e.getKey();
@@ -345,8 +353,12 @@ public class BrowserFileTransferOperation {
                     if (checkConflicts) {
                         var fileConflictChoice =
                                 handleChoice(targetFs, targetFile, files.size() > 1 || flatFiles.size() > 1);
-                        if (fileConflictChoice == BrowserDialogs.FileConflictChoice.SKIP
-                                || fileConflictChoice == BrowserDialogs.FileConflictChoice.CANCEL) {
+                        if (fileConflictChoice == BrowserDialogs.FileConflictChoice.CANCEL) {
+                            return false;
+                        }
+
+                        if (fileConflictChoice == BrowserDialogs.FileConflictChoice.SKIP) {
+                            skipped = true;
                             continue;
                         }
 
@@ -411,6 +423,8 @@ public class BrowserFileTransferOperation {
                     }
                 }
             }
+
+            return !skipped && !cancelled();
         } finally {
             updateProgress(BrowserTransferProgress.finished(source.getName(), totalSize.get()));
 
