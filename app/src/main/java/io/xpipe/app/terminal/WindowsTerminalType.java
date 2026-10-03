@@ -77,7 +77,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
                         splitIterator.getSplitDirection() == TerminalSplitStrategy.SplitDirection.HORIZONTAL,
                         "--vertical");
             }
-            cmd.add("--title").addQuoted(getFixedTitle(configuration.getColoredTitle()));
+            cmd.add("--title").addLiteral(getFixedTitle(configuration.getColoredTitle()));
             cmd.add("--profile").addQuoted("{021eff0f-b38a-45f9-895d-41467e9d510f}");
             cmd.add(scriptOpenCommand);
 

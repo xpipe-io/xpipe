@@ -37,7 +37,7 @@ public class GnomeTerminalType implements ExternalApplicationType.PathApplicatio
 
             var toExecute = CommandBuilder.of()
                     .add(getExecutable(), "-v", "--title")
-                    .addQuoted(configuration.getColoredTitle())
+                    .addLiteral(configuration.getColoredTitle())
                     .add("--")
                     .addFile(configuration.single().getScriptFile())
                     // In order to fix this bug which also affects us:

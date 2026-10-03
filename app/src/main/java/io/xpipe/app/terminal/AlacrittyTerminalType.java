@@ -57,7 +57,7 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
             var b = CommandBuilder.of()
                     .add("alacritty")
                     .add("-t")
-                    .addQuoted(configuration.getCleanTitle())
+                    .addLiteral(configuration.getCleanTitle())
                     .add("-e")
                     .add(scriptOpenCommand);
 
@@ -109,7 +109,7 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             var b = CommandBuilder.of()
                     .add("-t")
-                    .addQuoted(configuration.getCleanTitle())
+                    .addLiteral(configuration.getCleanTitle())
                     .add("-e")
                     .addFile(configuration.single().getScriptFile());
             launch(b);
@@ -140,7 +140,7 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
                             .add("open", "-a")
                             .addQuoted("Alacritty.app")
                             .add("-n", "--args", "-t")
-                            .addQuoted(configuration.getCleanTitle())
+                            .addLiteral(configuration.getCleanTitle())
                             .add("-e")
                             .addFile(configuration.single().getScriptFile()));
         }

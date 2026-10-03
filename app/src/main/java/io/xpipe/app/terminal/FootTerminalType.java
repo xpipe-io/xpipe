@@ -35,7 +35,7 @@ public class FootTerminalType implements ExternalTerminalType, ExternalApplicati
     public void launch(TerminalLaunchConfiguration configuration) throws Exception {
         var toExecute = CommandBuilder.of()
                 .add("--title")
-                .addQuoted(configuration.getColoredTitle())
+                .addLiteral(configuration.getColoredTitle())
                 .addFile(configuration.single().getScriptFile());
         launch(toExecute);
     }

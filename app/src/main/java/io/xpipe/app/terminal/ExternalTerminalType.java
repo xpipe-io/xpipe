@@ -92,7 +92,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return CommandBuilder.of()
                     .add("-T")
-                    .addQuoted(configuration.getCleanTitle())
+                    .addLiteral(configuration.getCleanTitle())
                     .add("-e")
                     .add(configuration.single().getDialectLaunchCommand());
         }
@@ -124,7 +124,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return CommandBuilder.of()
                     .addIf(configuration.isPreferTabs(), "--tab")
                     .add("--title")
-                    .addQuoted(configuration.getColoredTitle())
+                    .addLiteral(configuration.getColoredTitle())
                     .add("--command")
                     .addFile(configuration.single().getScriptFile());
         }
@@ -154,7 +154,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return CommandBuilder.of()
                     .add("-t")
-                    .addQuoted(configuration.getColoredTitle())
+                    .addLiteral(configuration.getColoredTitle())
                     .add("-e")
                     .addFile(configuration.single().getScriptFile());
         }
@@ -215,7 +215,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return CommandBuilder.of()
                     .add("-t")
-                    .addQuoted(configuration.getColoredTitle())
+                    .addLiteral(configuration.getColoredTitle())
                     .add("-e")
                     .addFile(configuration.single().getScriptFile());
         }
@@ -247,7 +247,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .add("-e")
                     .addFile(configuration.single().getScriptFile())
                     .add("-T")
-                    .addQuoted(configuration.getColoredTitle())
+                    .addLiteral(configuration.getColoredTitle())
                     .addIf(configuration.isPreferTabs(), "--new-tab");
         }
     };
@@ -277,7 +277,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return CommandBuilder.of()
                     .addIf(!configuration.isPreferTabs(), "-s")
                     .add("-T")
-                    .addQuoted(configuration.getColoredTitle())
+                    .addLiteral(configuration.getColoredTitle())
                     .add("-2")
                     .add("-e")
                     .addFile(configuration.single().getScriptFile());
@@ -315,7 +315,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return CommandBuilder.of()
                     .add("-n", "~")
                     .add("-r")
-                    .addQuoted(configuration.getColoredTitle())
+                    .addLiteral(configuration.getColoredTitle())
                     .add("-e")
                     .addFile(configuration.single().getScriptFile());
         }
@@ -402,7 +402,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return CommandBuilder.of()
                     .add("-title")
-                    .addQuoted(configuration.getColoredTitle())
+                    .addLiteral(configuration.getColoredTitle())
                     .add("-e")
                     .addFile(configuration.single().getScriptFile());
         }

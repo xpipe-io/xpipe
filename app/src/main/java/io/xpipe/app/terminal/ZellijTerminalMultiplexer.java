@@ -74,8 +74,8 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                 config.getPanes().getFirst().getDialectLaunchCommand().buildSimple();
         l.addAll(List.of(
                 "zellij attach --create-background xpipe",
-                "zellij -s xpipe action new-tab --name \"" + escape(control, config.getColoredTitle(), false, true)
-                        + "\"",
+                "zellij -s xpipe action new-tab --name "
+                        + control.getShellDialect().literalArgument(config.getColoredTitle()),
                 "zellij -s xpipe action write-chars -- " + escape(control, " " + firstCommand, true, true)
                         + getCommandExitLiteral(control),
                 "zellij -s xpipe action clear",
@@ -95,9 +95,8 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                         : "--direction down";
                 l.addAll(List.of(
                         "zellij -s xpipe action new-pane " + directionString
-                                + " --name \""
-                                + escape(control, config.getPanes().get(i).getTitle(), false, true)
-                                + "\"",
+                                + " --name "
+                                + control.getShellDialect().literalArgument(config.getPanes().get(i).getTitle()),
                         "zellij -s xpipe action write-chars -- " + escape(control, " " + iCommand, true, true)
                                 + getCommandExitLiteral(control),
                         "zellij -s xpipe action clear",
@@ -158,8 +157,8 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
         var pause = getPauseTiming();
         asyncLines.addAll(List.of(
                 "sleep " + pause,
-                "zellij -s xpipe action new-tab --name \"" + escape(control, config.getColoredTitle(), false, true)
-                        + "\"",
+                "zellij -s xpipe action new-tab --name "
+                        + control.getShellDialect().literalArgument(config.getColoredTitle()),
                 "sleep " + pause,
                 "zellij -s xpipe action go-to-tab 2",
                 "sleep " + pause,
@@ -182,8 +181,8 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                         ? "--direction right"
                         : "--direction down";
                 asyncLines.addAll(List.of(
-                        "zellij -s xpipe action new-pane " + directionString + " --name \""
-                                + escape(control, config.getPanes().get(i).getTitle(), false, true) + "\"",
+                        "zellij -s xpipe action new-pane " + directionString + " --name "
+                                + control.getShellDialect().literalArgument(config.getPanes().get(i).getTitle()),
                         "zellij -s xpipe action write-chars -- " + escape(control, " " + iCommand, true, true)
                                 + getCommandExitLiteral(control),
                         "zellij -s xpipe action clear",

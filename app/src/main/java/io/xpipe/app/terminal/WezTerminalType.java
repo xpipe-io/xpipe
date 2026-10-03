@@ -166,7 +166,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                 .add(base)
                 .add("cli", "set-tab-title")
                 .add("--pane-id", paneId)
-                .addQuoted(configuration.getColoredTitle());
+                .addLiteral(configuration.getColoredTitle());
         titleCommand.fixedEnvironment("WEZTERM_UNIX_SOCKET", activeSocket.get().toString());
         LocalShell.getShell()
                 .command(titleCommand)
