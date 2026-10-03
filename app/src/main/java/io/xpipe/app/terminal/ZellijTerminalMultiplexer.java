@@ -76,8 +76,7 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                 "zellij attach --create-background xpipe",
                 "zellij -s xpipe action new-tab --name "
                         + control.getShellDialect().literalArgument(config.getColoredTitle()),
-                "zellij -s xpipe action write-chars -- " + escape(control, " " + firstCommand, true, true)
-                        + getCommandExitLiteral(control),
+                "zellij -s xpipe action write-chars -- " + control.getShellDialect().literalArgument(" " + firstCommand + ";exit"),
                 "zellij -s xpipe action clear",
                 "zellij -s xpipe action write 10"));
 
@@ -97,8 +96,7 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                         "zellij -s xpipe action new-pane " + directionString
                                 + " --name "
                                 + control.getShellDialect().literalArgument(config.getPanes().get(i).getTitle()),
-                        "zellij -s xpipe action write-chars -- " + escape(control, " " + iCommand, true, true)
-                                + getCommandExitLiteral(control),
+                        "zellij -s xpipe action write-chars -- " + control.getShellDialect().literalArgument(" " + iCommand + ";exit"),
                         "zellij -s xpipe action clear",
                         "zellij -s xpipe action write 10",
                         "zellij -s xpipe action focus-next-pane"));
@@ -162,8 +160,7 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                 "sleep " + pause,
                 "zellij -s xpipe action go-to-tab 2",
                 "sleep " + pause,
-                "zellij -s xpipe action write-chars -- " + escape(control, " " + firstCommand, true, true)
-                        + getCommandExitLiteral(control),
+                "zellij -s xpipe action write-chars -- " + control.getShellDialect().literalArgument(" " + firstCommand + ";exit"),
                 "zellij -s xpipe action clear",
                 "zellij -s xpipe action write 10",
                 "zellij -s xpipe action go-to-tab 1",
@@ -183,8 +180,7 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                 asyncLines.addAll(List.of(
                         "zellij -s xpipe action new-pane " + directionString + " --name "
                                 + control.getShellDialect().literalArgument(config.getPanes().get(i).getTitle()),
-                        "zellij -s xpipe action write-chars -- " + escape(control, " " + iCommand, true, true)
-                                + getCommandExitLiteral(control),
+                        "zellij -s xpipe action write-chars -- " + control.getShellDialect().literalArgument(" " + iCommand + ";exit"),
                         "zellij -s xpipe action clear",
                         "zellij -s xpipe action write 10",
                         "zellij -s xpipe action focus-next-pane"));
@@ -221,10 +217,6 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
         return ShellScript.lines(l);
     }
 
-    private String getCommandExitLiteral(ShellControl sc) {
-        return sc.getOsType() == OsType.WINDOWS ? "`;exit" : "\\;exit";
-    }
-
     private FilePath getConfigFile(ShellControl sc) throws Exception {
         if (sc.getOsType() == OsType.MACOS) {
             return sc.view()
@@ -239,17 +231,5 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                     .orElse(sc.view().userHome().join(".config"))
                     .join("zellij", "config.kdl");
         }
-    }
-
-    private String escape(ShellControl sc, String s, boolean spaces, boolean quotes) {
-        var escapeString = sc.getOsType() == OsType.WINDOWS ? "`" : "\\\\";
-        var r = s.replaceAll(escapeString, escapeString + escapeString);
-        if (quotes) {
-            r = r.replaceAll("\"", escapeString + "'");
-        }
-        if (spaces) {
-            r = r.replaceAll(" ", escapeString + " ");
-        }
-        return r;
     }
 }
