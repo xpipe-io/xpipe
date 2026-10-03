@@ -68,6 +68,7 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
                 .bind(
                         () -> {
                             return LxdContainerStore.builder()
+                                    .projectName(st.getProjectName())
                                     .containerName(st.getContainerName())
                                     .cmd(st.getCmd())
                                     .identity(identity.getValue())

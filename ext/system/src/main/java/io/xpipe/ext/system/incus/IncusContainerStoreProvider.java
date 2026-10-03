@@ -68,6 +68,7 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
                 .bind(
                         () -> {
                             return IncusContainerStore.builder()
+                                    .projectName(st.getProjectName())
                                     .containerName(st.getContainerName())
                                     .install(st.getInstall())
                                     .identity(identity.getValue())
