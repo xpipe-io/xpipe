@@ -15,6 +15,7 @@ import tools.jackson.databind.node.StringNode;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -61,7 +62,9 @@ public class AppPrefsStorageHandler {
     void save() {
         try {
             FileUtils.forceMkdir(file.getParent().toFile());
-            JacksonMapper.getDefault().writeValue(file.toFile(), content);
+            var temp = file.resolveSibling(file.getFileName() + ".tmp");
+            JacksonMapper.getDefault().writeValue(temp.toFile(), content);
+            Files.move(temp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
         } catch (IOException e) {
             ErrorEventFactory.fromThrowable(e).expected().handle();
         }
