@@ -159,18 +159,18 @@ public class FreeRdpClient implements ExternalRdpClient {
             });
         }
 
-        b.add(argument("/v", configuration.getHost()));
+        b.addLiteral(argument("/v", configuration.getHost()));
 
         if (configuration.getUsername() != null) {
-            b.add(argument("/u", configuration.getUsernameWithoutDomain()));
-        }
+            b.addLiteral(argument("/u", configuration.getUsernameWithoutDomain()));
 
-        if (configuration.getDomain().isPresent()) {
-            b.add(argument("/d", configuration.getDomain().get()));
+            if (configuration.getDomain().isPresent()) {
+                b.addLiteral(argument("/d", configuration.getDomain().get()));
+            }
         }
 
         if (configuration.getPassword() != null) {
-            b.add(argument("/p", configuration.getPassword().getSecretValue()));
+            b.addLiteral(argument("/p", configuration.getPassword().getSecretValue()));
         }
 
         var gateway = configuration.getGateway();
@@ -180,21 +180,22 @@ public class FreeRdpClient implements ExternalRdpClient {
                 String s = "g:" + gateway.getHost();
                 if (gateway.getUsername() != null) {
                     s += "," + gatewayArgument("u", gateway.getUsernameWithoutDomain());
-                }
-                if (gateway.getDomain().isPresent()) {
-                    s += "," + gatewayArgument("d", gateway.getDomain().get());
+
+                    if (gateway.getDomain().isPresent()) {
+                        s += "," + gatewayArgument("d", gateway.getDomain().get());
+                    }
                 }
                 if (gateway.getPassword() != null) {
                     s += "," + gatewayArgument("p", gateway.getPassword().getSecretValue());
                 }
-                b.add(gatewayArgument("/gateway", s));
+                b.addLiteral(argument("/gateway", s));
             } else {
-                b.add(argument("/g", gateway.getHost()));
+                b.addLiteral(argument("/g", gateway.getHost()));
                 if (gateway.getUsername() != null) {
-                    b.add(argument("/gu", gateway.getUsername()));
+                    b.addLiteral(argument("/gu", gateway.getUsername()));
                 }
                 if (gateway.getPassword() != null) {
-                    b.add(argument("/gp", gateway.getPassword().getSecretValue()));
+                    b.addLiteral(argument("/gp", gateway.getPassword().getSecretValue()));
                 }
             }
         }
@@ -210,13 +211,12 @@ public class FreeRdpClient implements ExternalRdpClient {
     }
 
     private String gatewayArgument(String key, String value) {
-        var escaped = value.replaceAll("\"", "\\\\\"");
+        var escaped = value.replace("\"", "\\\"");
         return "\"" + key + ":" + escaped + "\"";
     }
 
     private String argument(String key, String value) {
-        var escaped = value.replaceAll("'", "\\\\'");
-        return key + ":'" + escaped + "'";
+        return key + ":" + value;
     }
 
     @Override
