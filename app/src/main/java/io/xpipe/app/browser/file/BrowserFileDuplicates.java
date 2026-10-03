@@ -18,7 +18,7 @@ public class BrowserFileDuplicates {
         return target;
     }
 
-    private static FilePath renameFile(FilePath target, boolean dir) {
+    static FilePath renameFile(FilePath target, boolean dir) {
         var name = dir || target.isDotFile()
                 ? target.getFileName()
                 : target.getBaseName().getFileName();

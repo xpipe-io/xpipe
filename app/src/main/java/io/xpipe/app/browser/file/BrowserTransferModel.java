@@ -13,6 +13,7 @@ import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.DesktopHelper;
+import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;
@@ -217,9 +218,9 @@ public class BrowserTransferModel {
                 }
 
                 var target = downloads.resolve(file.getFileName());
-                // Prevent DirectoryNotEmptyException
-                if (Files.exists(target) && Files.isDirectory(target)) {
-                    FileUtils.deleteDirectory(target.toFile());
+                while (Files.exists(target)) {
+                    target = BrowserFileDuplicates.renameFile(FilePath.of(target), Files.isDirectory(file))
+                            .asLocalPath();
                 }
                 if (Files.isDirectory(file)) {
                     FileUtils.moveDirectory(file.toFile(), target.toFile());
