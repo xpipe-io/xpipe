@@ -65,14 +65,14 @@ public class TmuxTerminalMultiplexer implements TerminalMultiplexer {
         var l = new ArrayList<String>();
         var firstCommand =
                 config.getPanes().getFirst().getDialectLaunchCommand().buildSimple();
-        l.add("tmux new-window -t xpipe -n \"" + escape(config.getColoredTitle(), true) + "\" "
-                + escape(firstCommand, false));
+        l.add("tmux new-window -t xpipe -n " + control.getShellDialect().literalArgument(config.getColoredTitle()) + " "
+                + escape(firstCommand));
 
         if (config.getPanes().size() > 1) {
             for (int i = 1; i < config.getPanes().size(); i++) {
                 var iCommand =
                         config.getPanes().get(i).getDialectLaunchCommand().buildSimple();
-                l.add("tmux split-window -t xpipe " + escape(iCommand, false));
+                l.add("tmux split-window -t xpipe " + escape(iCommand));
             }
 
             var splitStrategy = AppPrefs.get().terminalSplitStrategy().getValue();
@@ -93,14 +93,14 @@ public class TmuxTerminalMultiplexer implements TerminalMultiplexer {
         l.addAll(List.of(
                 "tmux kill-session -t xpipe >/dev/null 2>&1",
                 "tmux new-session -d -s xpipe",
-                "tmux rename-window \"" + escape(config.getColoredTitle(), true) + "\"",
-                "tmux send-keys -t xpipe ' clear; " + escape(firstCommand, false) + "; exit' Enter"));
+                "tmux rename-window " + control.getShellDialect().literalArgument(config.getColoredTitle()),
+                "tmux send-keys -t xpipe ' clear; " + escape(firstCommand) + "; exit' Enter"));
 
         if (config.getPanes().size() > 1) {
             for (int i = 1; i < config.getPanes().size(); i++) {
                 var iCommand =
                         config.getPanes().get(i).getDialectLaunchCommand().buildSimple();
-                l.add("tmux split-window -t xpipe " + escape(iCommand, false));
+                l.add("tmux split-window -t xpipe " + escape(iCommand));
             }
 
             var splitStrategy = AppPrefs.get().terminalSplitStrategy().getValue();
@@ -115,11 +115,7 @@ public class TmuxTerminalMultiplexer implements TerminalMultiplexer {
         return ShellScript.lines(l);
     }
 
-    private String escape(String s, boolean quotes) {
-        var r = s.replaceAll("\\\\", "\\\\\\\\");
-        if (quotes) {
-            r = r.replaceAll("\"", "\\\\\"");
-        }
-        return r;
+    private String escape(String s) {
+        return s.replaceAll("\\\\", "\\\\\\\\");
     }
 }

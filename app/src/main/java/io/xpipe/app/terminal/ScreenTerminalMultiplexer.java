@@ -60,8 +60,8 @@ public class ScreenTerminalMultiplexer implements TerminalMultiplexer {
         var l = new ArrayList<String>();
         var firstCommand =
                 getCommand(control, config.single().getDialectLaunchCommand().buildSimple());
-        l.add("screen -S xpipe -X screen -t \"" + escape(config.getCleanTitle(), true) + "\" "
-                + escape(firstCommand, false));
+        l.add("screen -S xpipe -X screen -t " + control.getShellDialect().literalArgument(config.getCleanTitle()) + " "
+                + escape(firstCommand));
         return ShellScript.lines(l);
     }
 
@@ -72,7 +72,7 @@ public class ScreenTerminalMultiplexer implements TerminalMultiplexer {
 
         var firstCommand =
                 getCommand(control, config.single().getDialectLaunchCommand().buildSimple());
-        list.add("screen -S xpipe -t \"" + escape(config.getCleanTitle(), true) + "\" " + escape(firstCommand, false));
+        list.add("screen -S xpipe -t " + control.getShellDialect().literalArgument(config.getCleanTitle()) + " " + escape(firstCommand));
         return ShellScript.lines(list);
     }
 
@@ -84,11 +84,7 @@ public class ScreenTerminalMultiplexer implements TerminalMultiplexer {
         return effectiveCommand;
     }
 
-    private String escape(String s, boolean quotes) {
-        var r = s.replaceAll("\\\\", "\\\\\\\\");
-        if (quotes) {
-            r = r.replaceAll("\"", "\\\\\"");
-        }
-        return r;
+    private String escape(String s) {
+        return s.replaceAll("\\\\", "\\\\\\\\");
     }
 }

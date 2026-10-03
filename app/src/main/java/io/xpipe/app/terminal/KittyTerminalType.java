@@ -59,10 +59,11 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
                 json.set("payload", payload);
                 json.putArray("version").add(0).add(14).add(2);
                 var jsonString = json.toString();
-                var echoString = "'\\eP@kitty-cmd" + jsonString + "\\e\\\\'";
 
                 sc.command(CommandBuilder.of()
-                                .add("printf", echoString, "|")
+                                .add("printf", "'\\eP@kitty-cmd%s\\e\\\\'")
+                                .addLiteral(jsonString)
+                                .add("|")
                                 .add(socketWrite)
                                 .addFile(getSocket()))
                         .execute();
