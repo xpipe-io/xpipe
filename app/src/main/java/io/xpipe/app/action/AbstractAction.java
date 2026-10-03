@@ -125,7 +125,12 @@ public abstract class AbstractAction {
             return false;
         }
 
-        checkLicense();
+        try {
+            checkLicense();
+        } catch (Throwable t) {
+            ErrorEventFactory.fromThrowable(t).handle();
+            return false;
+        }
 
         synchronized (active) {
             active.add(this);

@@ -186,17 +186,6 @@ public class StoreChoicePopover<T extends DataStore> {
 
             var top = new InputGroupComp(List.of(category, filter, addButton))
                     .setMainReference(category)
-                    .style("top")
-                    .apply(struc -> struc.setFillHeight(true))
-                    .apply(struc -> {
-                        var first = ((Region) struc.getChildren().get(0));
-                        var second = ((Region) struc.getChildren().get(1));
-                        var third = ((Region) struc.getChildren().get(1));
-                        second.prefHeightProperty().bind(first.heightProperty());
-                        second.minHeightProperty().bind(first.heightProperty());
-                        second.maxHeightProperty().bind(first.heightProperty());
-                        third.prefHeightProperty().bind(first.heightProperty());
-                    })
                     .apply(struc -> {
                         // Ugly solution to focus the text field
                         // Somehow this does not work through the normal on shown listeners

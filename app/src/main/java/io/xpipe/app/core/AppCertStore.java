@@ -104,11 +104,11 @@ public class AppCertStore {
             var dir = getDir();
             Files.createDirectories(dir);
             var compatName = OsFileSystem.ofLocal().makeFileSystemCompatible(name);
-            var pemFile = dir.resolve(name + ".pem");
+            var pemFile = dir.resolve(compatName + ".pem");
             var pem = convertToPem(certificate);
             Files.writeString(pemFile, pem);
 
-            var cerFile = dir.resolve(name + ".cer");
+            var cerFile = dir.resolve(compatName + ".cer");
             var cer = certificate.getEncoded();
             Files.write(cerFile, cer);
 

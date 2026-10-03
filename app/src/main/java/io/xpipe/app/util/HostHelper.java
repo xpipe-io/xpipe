@@ -11,7 +11,7 @@ public class HostHelper {
 
     public static int randomPort() {
         var p = 40000 + portCounter;
-        portCounter = portCounter + 1 % 1000;
+        portCounter = (portCounter + 1) % 1000;
         return p;
     }
 

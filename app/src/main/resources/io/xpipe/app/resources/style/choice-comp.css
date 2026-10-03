@@ -28,13 +28,6 @@
     -fx-border-radius: 0;
 }
 
-.choice-comp-content > .top {
-    -fx-padding: 0.4em;
-    -fx-background-color: -color-neutral-subtle;
-    -fx-border-width: 1 0 1 0;
-    -fx-border-color: -color-border-default;
-}
-
 .choice-comp .filter-comp {
     -fx-border-width: 1px;
     -fx-background-color: -color-bg-default-transparent;

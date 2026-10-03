@@ -53,11 +53,10 @@ public class StreamCharset {
     // ======
     public static final StreamCharset UTF32_LE = new StreamCharset(Charset.forName("utf-32le"), null);
     public static final StreamCharset UTF32_LE_BOM =
-            new StreamCharset(Charset.forName("utf-32le"), new byte[] {0x00, 0x00, (byte) 0xFE, (byte) 0xFF});
+            new StreamCharset(Charset.forName("utf-32le"), new byte[] {(byte) 0xFF, (byte) 0xFE, 0x00, 0x00});
     public static final StreamCharset UTF32_BE = new StreamCharset(Charset.forName("utf-32be"), null);
-    public static final StreamCharset UTF32_BE_BOM = new StreamCharset(Charset.forName("utf-32be"), new byte[] {
-        (byte) 0xFF, (byte) 0xFE, 0x00, 0x00,
-    });
+    public static final StreamCharset UTF32_BE_BOM =
+            new StreamCharset(Charset.forName("utf-32be"), new byte[] {0x00, 0x00, (byte) 0xFE, (byte) 0xFF});
     private static final List<StreamCharset> RARE =
             List.of(UTF16_LE, UTF16_LE_BOM, UTF16_BE, UTF16_BE_BOM, UTF32_LE, UTF32_LE_BOM, UTF32_BE, UTF32_BE_BOM);
 

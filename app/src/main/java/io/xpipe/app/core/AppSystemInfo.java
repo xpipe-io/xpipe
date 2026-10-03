@@ -267,6 +267,7 @@ public abstract class AppSystemInfo {
         private Path downloads;
         private Path desktop;
         private Path config;
+        private Path runtime;
         private Boolean vm;
 
         public boolean isDebianBased() {
@@ -376,15 +377,15 @@ public abstract class AppSystemInfo {
         }
 
         public Path getRuntimeDir() {
-            if (config != null) {
-                return config;
+            if (runtime != null) {
+                return runtime;
             }
 
             if (System.getenv("XDG_RUNTIME_DIR") != null) {
-                return (config = Path.of(System.getenv("XDG_RUNTIME_DIR")));
+                return (runtime = Path.of(System.getenv("XDG_RUNTIME_DIR")));
             } else {
                 // Bad fallback, but we don't want to run any commands to retrieve uids here
-                return (config = Path.of("/run/user/1000"));
+                return (runtime = Path.of("/run/user/1000"));
             }
         }
 
