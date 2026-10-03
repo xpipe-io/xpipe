@@ -211,20 +211,26 @@ done
 if [ "$(uname -s)" = "Linux" ]; then
   if [ -x "$(command -v pacman)" ]; then
     info "Installing from AUR at $aur"
-    rm -rf "/tmp/xpipe_aur" || true
-    if [[ -z "$version" ]] ; then
-      git clone "$aur" /tmp/xpipe_aur
-      if [ "$?" != 0 ]; then
-        return 1
-      fi
-    else
-      git clone --branch "$version" "$aur" /tmp/xpipe_aur
-      if [ "$?" != 0 ]; then
-        return 1
-      fi
+    aur_dir="$(mktemp -d)"
+    if [ "$?" != 0 ] || [ -z "$aur_dir" ]; then
+      error "Could not create temporary directory."
+      exit 1
     fi
-    cd "/tmp/xpipe_aur"
+    if [[ -z "$version" ]] ; then
+      git clone "$aur" "$aur_dir"
+    else
+      git clone --branch "$version" "$aur" "$aur_dir"
+    fi
+    if [ "$?" != 0 ]; then
+      error "Could not clone AUR repository $aur."
+      exit 1
+    fi
+    cd "$aur_dir" || exit 1
     makepkg -si
+    if [ "$?" != 0 ]; then
+      error "Installation failed."
+      exit 1
+    fi
     launch
     exit 0
   fi
