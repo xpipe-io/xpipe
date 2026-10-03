@@ -42,6 +42,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
@@ -192,7 +193,8 @@ public interface ScriptTextSource {
         private String getName() {
             var name = FilePath.of(url).getFileName();
             if (!name.isEmpty()) {
-                return name;
+                // Prevent cache issues with duplicate names
+                return name + "-" + UuidHelper.generateFromObject(url);
             }
 
             return UuidHelper.generateFromObject(url).toString();
