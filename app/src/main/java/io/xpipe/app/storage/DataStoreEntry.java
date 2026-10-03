@@ -597,13 +597,15 @@ public class DataStoreEntry extends DataStorageElement {
 
         var normalNotesFile = directory.resolve("notes.md");
         var encryptedNotesFile = directory.resolve("notes.json");
-        Files.deleteIfExists(normalNotesFile);
-        Files.deleteIfExists(encryptedNotesFile);
         this.notesNode = this.notesNode != null ? this.notesNode.prepareForWrite(this, true, getNotes()) : null;
         if (this.notesNode != null && this.notesNode.requiresWrite()) {
             var file = this.notesNode.isEncrypted() ? encryptedNotesFile : normalNotesFile;
-            Files.writeString(
-                    file, this.notesNode.isEncrypted() ? this.notesNode.getWriteString() : this.notesNode.getValue());
+            var fileToDelete = this.notesNode.isEncrypted() ? normalNotesFile : encryptedNotesFile;
+            Files.deleteIfExists(fileToDelete);
+            Files.writeString(file, this.notesNode.isEncrypted() ? this.notesNode.getWriteString() : this.notesNode.getValue());
+        } else if (this.notesNode == null) {
+            Files.deleteIfExists(normalNotesFile);
+            Files.deleteIfExists(encryptedNotesFile);
         }
 
         this.storeNode = this.storeNode.prepareForWrite(this, true, getStore());
