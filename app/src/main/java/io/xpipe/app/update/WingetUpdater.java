@@ -66,14 +66,14 @@ public class WingetUpdater extends UpdateHandler {
                     var pkgId = "xpipe-io.xpipe";
                     if (systemWide) {
                         return ShellScript.lines(
-                                "powershell -Command \"Start-Process -Verb runAs -FilePath winget -ArgumentList upgrade, --id, "
+                                "powershell -Command \"Start-Process -Wait -Verb runAs -FilePath winget -ArgumentList upgrade, --id, "
                                         + pkgId + "\"",
                                 AppRestart.getTerminalRestartCommand());
                     } else {
                         return ShellScript.lines(
                                 "winget upgrade --id " + pkgId, AppRestart.getTerminalRestartCommand());
                     }
-                });
+                }).launch();
             });
         } catch (Throwable t) {
             ErrorEventFactory.fromThrowable(t).handle();
@@ -85,10 +85,12 @@ public class WingetUpdater extends UpdateHandler {
         var rel = AppDownloads.queryLatestVersion(first, securityOnly);
         event("Determined latest suitable release " + rel.getTag());
 
-        var wingetRelease = getOutdatedPackageUpdateVersion();
-        // Use current release if the update is not available for winget yet
-        if (wingetRelease.isPresent() && !wingetRelease.get().equals(rel.getTag())) {
-            rel = AppRelease.ofInstaller(AppProperties.get().getVersion());
+        if (!AppProperties.get().isStaging()) {
+            var wingetRelease = getOutdatedPackageUpdateVersion();
+            // Use current release if the update is not available for winget yet
+            if (wingetRelease.isEmpty() || !wingetRelease.get().equals(rel.getTag())) {
+                rel = AppRelease.ofInstaller(AppProperties.get().getVersion());
+            }
         }
 
         var isUpdate = isUpdate(rel.getTag());
@@ -106,10 +108,6 @@ public class WingetUpdater extends UpdateHandler {
     }
 
     private Optional<String> getOutdatedPackageUpdateVersion() throws Exception {
-        if (AppProperties.get().isStaging()) {
-            return Optional.empty();
-        }
-
         var pkgId = "xpipe-io.xpipe";
         var out = LocalShell.getShell()
                 .command(CommandBuilder.of()
@@ -119,22 +117,14 @@ public class WingetUpdater extends UpdateHandler {
             return Optional.empty();
         }
 
-        var line = out.get()
-                .lines()
-                .filter(s -> {
-                    var split = s.split("\\s+");
-                    if (split.length != 4) {
-                        return false;
-                    } else {
-                        return split[1].equals(pkgId);
-                    }
-                })
-                .findFirst();
-        if (line.isEmpty()) {
-            return Optional.empty();
+        // Columns are Name, Id, Version, Available. The name can contain spaces
+        for (var line : out.get().lines().toList()) {
+            var split = List.of(line.strip().split("\\s+"));
+            var idIndex = split.indexOf(pkgId);
+            if (idIndex != -1 && idIndex + 2 < split.size()) {
+                return Optional.of(split.get(idIndex + 2));
+            }
         }
-
-        var v = line.get().split("\\s+")[3];
-        return Optional.of(v);
+        return Optional.empty();
     }
 }
