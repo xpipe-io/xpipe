@@ -193,8 +193,7 @@ public interface ScriptTextSource {
         private String getName() {
             var name = FilePath.of(url).getFileName();
             if (!name.isEmpty()) {
-                // Prevent cache issues with duplicate names
-                return name + "-" + UuidHelper.generateFromObject(url);
+                return name;
             }
 
             return UuidHelper.generateFromObject(url).toString();
