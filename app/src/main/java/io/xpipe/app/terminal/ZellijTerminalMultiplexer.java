@@ -226,7 +226,8 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
             return sc.view().userHome().join(".config", "zellij", "config.kdl");
         } else {
             return sc.view()
-                    .getEnvironmentVariable("XDG_HOME")
+                    .getEnvironmentVariable("XDG_CONFIG_HOME")
+                    .filter(s -> !s.isBlank())
                     .map(FilePath::of)
                     .orElse(sc.view().userHome().join(".config"))
                     .join("zellij", "config.kdl");
