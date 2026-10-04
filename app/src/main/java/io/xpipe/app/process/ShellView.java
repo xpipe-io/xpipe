@@ -150,7 +150,10 @@ public class ShellView {
         } else {
             var uname =
                     shellControl.command(CommandBuilder.of().add("uname", "-m")).readStdoutIfPossible();
-            return recognized = "arm64".equals(uname.orElse("x86_64")) ? "arm64" : "x86_64";
+            var machine = uname.orElse("x86_64").strip();
+            // macOS reports arm64, Linux reports aarch64
+            var arm = machine.equals("arm64") || machine.equals("aarch64");
+            return recognized = arm ? "arm64" : "x86_64";
         }
     }
 
