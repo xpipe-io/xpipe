@@ -15,6 +15,7 @@ import io.xpipe.app.hub.section.StoreSectionSelector;
 import io.xpipe.app.hub.section.StoreSectionState;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.Listeners;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -238,7 +239,7 @@ public class StoreChoicePopover<T extends DataStore> {
             });
 
             // Hide on connection creation dialog
-            AppDialog.getModalOverlaysRaw().addListener((ListChangeListener<? super ModalOverlay>) c -> {
+            Listeners.listenList(AppDialog.getModalOverlaysRaw(), () -> {
                 popover.hide();
             });
 
