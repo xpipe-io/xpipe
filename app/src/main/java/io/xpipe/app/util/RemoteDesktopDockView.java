@@ -11,7 +11,6 @@ import java.util.function.UnaryOperator;
 
 public class RemoteDesktopDockView implements WindowDockListener {
 
-    @Getter
     private final List<RemoteDesktopDockEntry> entries = new ArrayList<>();
 
     @Getter
@@ -26,6 +25,10 @@ public class RemoteDesktopDockView implements WindowDockListener {
     public RemoteDesktopDockView(UnaryOperator<Rect> windowBoundsFunction, Supplier<NativeWinWindowControl> parent) {
         this.windowBoundsFunction = windowBoundsFunction;
         this.parent = parent;
+    }
+
+    public synchronized List<RemoteDesktopDockEntry> getEntries() {
+        return new ArrayList<>(entries);
     }
 
     public synchronized void clearDead() {
@@ -46,7 +49,7 @@ public class RemoteDesktopDockView implements WindowDockListener {
             return;
         }
 
-        synchronized (entries) {
+        synchronized (this) {
             entries.add(p);
             select(p);
         }
