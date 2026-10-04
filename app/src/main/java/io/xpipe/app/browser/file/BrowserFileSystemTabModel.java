@@ -166,32 +166,37 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     public void init() throws Exception {
         BooleanScope.executeExclusive(busy, () -> {
             var fs = new WrapperFileSystem(fileSystemFactory.apply(getEntry().asNeeded()));
-            Platform.runLater(() -> {
-                getFileSystemNameSuffix().set(fs.getSuffix());
-            });
-            if (fs.getShell().isPresent()) {
-                ProcModuleProvider.get().withDefaultScripts(fs.getShell().get());
-            }
-            fs.open();
-
-            // Listen to kill after init as the shell might get killed during init for certain reasons
-            if (fs.getRawShellControl().isPresent()) {
-                fs.getRawShellControl().get().onKill(() -> {
-                    browserModel.closeAsync(this);
+            try {
+                Platform.runLater(() -> {
+                    getFileSystemNameSuffix().set(fs.getSuffix());
                 });
-            }
-            this.fileSystem = fs;
-
-            // Cache for later usage
-            if (fs.getShell().isPresent()) {
-                fs.getShell().get().view().getPasswdFile();
-                fs.getShell().get().view().getGroupFile();
-            }
-
-            for (var a : ActionProvider.ALL) {
-                if (a instanceof BrowserMenuItemProvider ba) {
-                    ba.init(this);
+                if (fs.getShell().isPresent()) {
+                    ProcModuleProvider.get().withDefaultScripts(fs.getShell().get());
                 }
+                fs.open();
+
+                // Listen to kill after init as the shell might get killed during init for certain reasons
+                if (fs.getRawShellControl().isPresent()) {
+                    fs.getRawShellControl().get().onKill(() -> {
+                        browserModel.closeAsync(this);
+                    });
+                }
+                this.fileSystem = fs;
+
+                // Cache for later usage
+                if (fs.getShell().isPresent()) {
+                    fs.getShell().get().view().getPasswdFile();
+                    fs.getShell().get().view().getGroupFile();
+                }
+
+                for (var a : ActionProvider.ALL) {
+                    if (a instanceof BrowserMenuItemProvider ba) {
+                        ba.init(this);
+                    }
+                }
+            } catch (Exception e) {
+                fs.close();
+                throw e;
             }
         });
         this.savedState = BrowserFileSystemSavedState.loadForStore(this);

@@ -247,6 +247,7 @@ public class ShellFileSystem implements FileSystem {
 
         if (!shellControl.getTtyState().isPreservesOutput()
                 || !shellControl.getTtyState().isSupportsInput()) {
+            shellControl.close();
             var ex = new UnsupportedOperationException(
                     "Shell has a PTY allocated and as a result does not support file system operations.");
             ErrorEventFactory.preconfigure(
