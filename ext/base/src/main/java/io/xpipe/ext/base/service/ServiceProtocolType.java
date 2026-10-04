@@ -144,11 +144,10 @@ public interface ServiceProtocolType {
                 return;
             }
 
-            var port = url.split(":")[1];
-            var format = commandTemplate.toLowerCase(Locale.ROOT).contains("$port")
+            var format = commandTemplate.toLowerCase(Locale.ROOT).contains("$address")
                     ? commandTemplate
-                    : commandTemplate + " localhost:$PORT";
-            var toExecute = ExternalApplicationHelper.replaceVariableArgument(format, "PORT", port, false);
+                    : commandTemplate + " $ADDRESS";
+            var toExecute = ExternalApplicationHelper.replaceVariableArgument(format, "ADDRESS", url, false);
             // We can't be sure whether the command is blocking or not, so always make it not blocking
             ExternalApplicationHelper.startAsync(toExecute);
         }
