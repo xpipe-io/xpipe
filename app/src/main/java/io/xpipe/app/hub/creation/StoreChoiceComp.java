@@ -151,6 +151,10 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
                 })
                 .style("choice-comp");
 
+        if (editable) {
+            button.style(Styles.LEFT_PILL);
+        }
+
         var r = button.build();
 
         var dropdownIcon = new FontIcon("mdal-keyboard_arrow_down");

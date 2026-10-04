@@ -1111,6 +1111,7 @@ public abstract class DataStorage {
             storeEntryMapCache.remove(entry.getStore());
         }
         getDefaultDisplayParent(entry).ifPresent(p -> p.setChildrenCache(null));
+        deleteStoreEntryFromDisk(entry);
         this.listeners.forEach(l -> l.onStoreRemove(entry));
         refreshStoreEntries();
         saveAsync();
