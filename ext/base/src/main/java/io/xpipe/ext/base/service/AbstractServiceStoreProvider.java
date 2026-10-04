@@ -91,7 +91,8 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
 
     public String displayName(DataStoreEntry entry) {
         AbstractServiceStore s = entry.getStore().asNeeded();
-        return DataStorage.get().getStoreEntryDisplayName(s.getHost().get()) + " - Port " + s.getRemotePort();
+        var host = s.getHost() != null ? DataStorage.get().getStoreEntryDisplayName(s.getHost().get()) : entry.getName();
+        return host + " - Port " + s.getRemotePort();
     }
 
     @Override
