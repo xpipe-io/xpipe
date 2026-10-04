@@ -98,12 +98,14 @@ public class ActionUrls {
         for (var entry : query.entrySet()) {
             var list = new ArrayList<>();
             for (String s : entry.getValue()) {
-                if (s.startsWith("~")) {
+                if (s == null) {
+                    // Don't add anything
+                } else if (s.startsWith("~")) {
                     var json = Base64Helper.fromBase64UrlString(s.substring(1));
                     var node = JacksonMapper.getDefault().readTree(json);
                     list.add(node);
                 } else {
-                    list.add(s);
+                    list.add(URLDecoder.decode(s, StandardCharsets.UTF_8));
                 }
             }
 
@@ -133,8 +135,7 @@ public class ActionUrls {
         final int idx = it.indexOf("=");
         final String key = idx > 0 ? it.substring(0, idx) : it;
         final String value = idx > 0 && it.length() > idx + 1 ? it.substring(idx + 1) : null;
-        return new AbstractMap.SimpleImmutableEntry<>(
-                URLDecoder.decode(key, StandardCharsets.UTF_8),
-                value != null ? URLDecoder.decode(value, StandardCharsets.UTF_8) : null);
+        // Values are decoded later
+        return new AbstractMap.SimpleImmutableEntry<>(URLDecoder.decode(key, StandardCharsets.UTF_8), value);
     }
 }
