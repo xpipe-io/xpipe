@@ -77,7 +77,7 @@ public class StoreSection {
                 return;
             }
 
-            if (!DataStorage.get().getStoreEntries().contains(wrapper.getEntry())) {
+            if (!StoreViewState.get().contains(wrapper)) {
                 allChildrenToApply.setContent(List.of());
                 shownChildrenToApply.setContent(List.of());
                 return;
@@ -86,8 +86,7 @@ public class StoreSection {
 
         var withParentConfig = config.withParent(wrapper);
         var applicable = wrapper != null
-                ? DataStorage.get().getStoreChildren(wrapper.getEntry()).stream()
-                        .map(entry -> StoreViewState.get().getEntryWrapper(entry))
+                ? StoreViewState.get().getAllEntries().getList().stream()
                         .filter(other -> withParentConfig.isChild(this, other))
                         .toList()
                 : all.stream().filter(withParentConfig::isTop).toList();
@@ -117,7 +116,7 @@ public class StoreSection {
                 return;
             }
 
-            if (!DataStorage.get().getStoreEntries().contains(wrapper.getEntry())) {
+            if (!StoreViewState.get().contains(wrapper)) {
                 allChildrenToApply.setContent(List.of());
                 shownChildrenToApply.setContent(List.of());
                 return;
