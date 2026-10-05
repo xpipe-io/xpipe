@@ -16,45 +16,53 @@ import org.apache.commons.io.FileUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.time.Duration;
 import java.util.Optional;
+import java.util.UUID;
 
 public abstract class RemoteViewerVncClient implements ExternalVncClient {
 
-    protected CommandBuilder createBuilder(VncLaunchConfig configuration) throws Exception {
-        var vv = """
-                 [virt-viewer]
-                 type=vnc
-                 host=%s
-                 port=%s
-                 title=%s
-                 """.formatted(configuration.getHost(), configuration.getPort(), configuration.getTitle());
+    private static String escapeValue(String value) {
+        // Values are read with GLib key files
+        return value.replace("\\", "\\\\")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
+    }
+
+    protected abstract void launchApplication(CommandBuilder builder) throws Exception;
+
+    @Override
+    public void launch(VncLaunchConfig configuration) throws Exception {
+        var file = writeVncConfigFile(configuration);
+        launchApplication(CommandBuilder.of().addFile(file));
+    }
+
+    private Path writeVncConfigFile(VncLaunchConfig configuration) throws Exception {
+        var vv = new StringBuilder();
+        vv.append("[virt-viewer]\n");
+        vv.append("type=vnc\n");
+        vv.append("host=").append(escapeValue(configuration.getHost())).append("\n");
+        vv.append("port=").append(configuration.getPort()).append("\n");
+        vv.append("title=").append(escapeValue(configuration.getTitle())).append("\n");
+        vv.append("delete-this-file=1\n");
 
         var user = configuration.retrieveUsername();
         if (user.isPresent()) {
-            vv += "username=" + user.get() + "\n";
+            vv.append("username=").append(escapeValue(user.get())).append("\n");
         }
 
         var pass = configuration.retrievePassword();
         if (pass.isPresent()) {
-            vv += "password=" + pass.get().getSecretValue() + "\n";
+            vv.append("password=")
+                    .append(escapeValue(pass.get().getSecretValue()))
+                    .append("\n");
         }
 
-        var file = writeVncConfigFile(configuration.getTitle(), vv);
-        var builder = CommandBuilder.of().addFile(file);
-        return builder;
-    }
-
-    private Path writeVncConfigFile(String title, String content) throws Exception {
-        var file = getFilePath(title);
-        Files.createDirectories(file.getParent());
-        Files.writeString(file, content);
-        return file;
-    }
-
-    protected Path getFilePath(String title) {
-        var name = OsFileSystem.ofLocal().makeFileSystemCompatible(title);
+        var name = OsFileSystem.ofLocal().makeFileSystemCompatible(configuration.getTitle());
         var file = AppLocalTemp.getLocalTempDataDirectory("vnc").resolve(name + ".vv");
+        Files.writeString(file, vv.toString());
         return file;
     }
 
@@ -102,15 +110,8 @@ public abstract class RemoteViewerVncClient implements ExternalVncClient {
         }
 
         @Override
-        public void launch(VncLaunchConfig configuration) throws Exception {
-            var builder = createBuilder(configuration);
+        protected void launchApplication(CommandBuilder builder) throws Exception {
             launch(builder);
-            GlobalTimer.delay(
-                    () -> {
-                        FileUtils.deleteQuietly(
-                                getFilePath(configuration.getTitle()).toFile());
-                    },
-                    Duration.ofSeconds(5));
         }
     }
 
@@ -120,15 +121,8 @@ public abstract class RemoteViewerVncClient implements ExternalVncClient {
     public static class Linux extends RemoteViewerVncClient implements ExternalApplicationType.LinuxApplication {
 
         @Override
-        public void launch(VncLaunchConfig configuration) throws Exception {
-            var builder = createBuilder(configuration);
+        protected void launchApplication(CommandBuilder builder) throws Exception {
             launch(builder);
-            GlobalTimer.delay(
-                    () -> {
-                        FileUtils.deleteQuietly(
-                                getFilePath(configuration.getTitle()).toFile());
-                    },
-                    Duration.ofSeconds(5));
         }
 
         @Override
@@ -153,15 +147,8 @@ public abstract class RemoteViewerVncClient implements ExternalVncClient {
     public static class MacOs extends RemoteViewerVncClient implements ExternalApplicationType.PathApplication {
 
         @Override
-        public void launch(VncLaunchConfig configuration) throws Exception {
-            var builder = createBuilder(configuration);
+        protected void launchApplication(CommandBuilder builder) throws Exception {
             launch(builder);
-            GlobalTimer.delay(
-                    () -> {
-                        FileUtils.deleteQuietly(
-                                getFilePath(configuration.getTitle()).toFile());
-                    },
-                    Duration.ofSeconds(5));
         }
 
         @Override
