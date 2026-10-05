@@ -5,6 +5,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.Region;
+import org.int4.fx.values.util.Trigger;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -145,6 +146,16 @@ public class Listeners {
                 value.addListener(listener);
             } else {
                 value.removeListener(listener);
+            }
+        });
+    }
+
+    public static <T, V> void triggerWeak(Trigger<T> trigger, V value, BiConsumer<V, T> consumer) {
+        var ref = new WeakReference<>(value);
+        trigger.onFire((t) -> {
+            var v = ref.get();
+            if (v != null) {
+                consumer.accept(v, t);
             }
         });
     }

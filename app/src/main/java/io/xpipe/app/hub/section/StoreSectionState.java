@@ -157,21 +157,21 @@ public class StoreSectionState {
             updateAll();
         });
 
-        entriesListVisibilityTrigger.onFire(() -> {
-            if (!enabled.get()) {
+        Listeners.triggerWeak(entriesListVisibilityTrigger, this, (sec, unused) -> {
+            if (!sec.enabled.get()) {
                 return;
             }
 
-            updateShown(true);
+            sec.updateShown(true);
         });
 
-        entriesListRefreshTrigger.onFire(() -> {
-            if (!enabled.get()) {
+        Listeners.triggerWeak(entriesListRefreshTrigger, this, (sec, unused) -> {
+            if (!sec.enabled.get()) {
                 return;
             }
 
-            orderUpdateIndex.setValue(orderUpdateIndex.get() + 1);
-            updateAll();
+            sec.orderUpdateIndex.setValue(sec.orderUpdateIndex.get() + 1);
+            sec.updateAll();
         });
     }
 }
