@@ -26,7 +26,7 @@ public class FsScriptExchange extends BeaconInterface<FsScriptExchange.Request> 
     @Override
     @SneakyThrows
     public Object handle(HttpExchange exchange, Request msg) {
-        var shell = AppBeaconServer.get().getCache().getShellSession(msg.getStore());
+        var shell = AppBeaconServer.get().getCache().getRunningShellSession(msg.getStore());
         String data;
         try (var in = BlobManager.get().getBlob(msg.getBlob())) {
             data = new String(in.readAllBytes(), StandardCharsets.UTF_8);

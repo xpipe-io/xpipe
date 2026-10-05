@@ -22,9 +22,8 @@ public class ShellStopExchange extends BeaconInterface<ShellStopExchange.Request
     @Override
     @SneakyThrows
     public Object handle(HttpExchange exchange, Request msg) {
-        var e = AppBeaconServer.get().getCache().getShellSession(msg.getStore());
-        e.getControl().close();
-        AppBeaconServer.get().getCache().getShellSessions().remove(e);
+        var cache = AppBeaconServer.get().getCache();
+        cache.removeAndCloseShellSession(msg.getStore());
         return Response.builder().build();
     }
 

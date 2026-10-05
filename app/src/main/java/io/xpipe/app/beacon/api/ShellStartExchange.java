@@ -3,7 +3,7 @@ package io.xpipe.app.beacon.api;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BeaconClientException;
 import io.xpipe.app.beacon.BeaconInterface;
-import io.xpipe.app.beacon.BeaconShellSession;
+import io.xpipe.app.process.ShellTtyState;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.store.ShellStore;
 import io.xpipe.app.util.FilePath;
@@ -32,30 +32,14 @@ public class ShellStartExchange extends BeaconInterface<ShellStartExchange.Reque
         var e = DataStorage.get()
                 .getStoreEntryIfPresent(msg.getStore())
                 .orElseThrow(() -> new BeaconClientException("Unknown connection"));
-        if (!(e.getStore() instanceof ShellStore s)) {
+        if (!(e.getStore() instanceof ShellStore)) {
             throw new BeaconClientException("Not a shell connection");
         }
 
-        var existing = AppBeaconServer.get().getCache().getShellSessions().stream()
-                .filter(beaconShellSession -> beaconShellSession.getEntry().equals(e))
-                .findFirst();
-        var control = (existing.isPresent()
-                ? existing.get().getControl()
-                : s.standaloneControl().start());
-        control.setNonInteractive();
-        control.start();
+        var cache = AppBeaconServer.get().getCache();
+        var control = cache.getOrStart(e.ref()).getControl();
+        var ttyState = JacksonMapper.getDefault().valueToTree(control.getTtyState()).asString();
 
-        var d = control.getShellDialect().getDumbMode();
-        if (!d.supportsAnyPossibleInteraction()) {
-            control.close();
-            d.throwIfUnsupported();
-        }
-
-        if (existing.isEmpty()) {
-            AppBeaconServer.get().getCache().getShellSessions().add(new BeaconShellSession(e, control));
-        }
-        var ttyState =
-                JacksonMapper.getDefault().valueToTree(control.getTtyState()).asString();
         return Response.builder()
                 .shellDialect(control.getShellDialect().getId())
                 .osType(control.getOsType())

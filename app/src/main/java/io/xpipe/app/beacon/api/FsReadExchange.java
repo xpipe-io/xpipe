@@ -30,7 +30,7 @@ public class FsReadExchange extends BeaconInterface<FsReadExchange.Request> {
     @Override
     @SneakyThrows
     public Object handle(HttpExchange exchange, Request msg) {
-        var shell = AppBeaconServer.get().getCache().getShellSession(msg.getStore());
+        var shell = AppBeaconServer.get().getCache().getRunningShellSession(msg.getStore());
         var fs = new ShellFileSystem(shell.getControl());
 
         if (!msg.getPath().isAbsolute()) {
