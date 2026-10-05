@@ -15,6 +15,7 @@ import io.xpipe.app.util.OsType;
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Stream;
 
 public class RunFileMenuProvider extends MultiExecuteMenuProvider {
@@ -34,18 +35,20 @@ public class RunFileMenuProvider extends MultiExecuteMenuProvider {
             return true;
         }
 
-        if (os == OsType.WINDOWS
-                && Stream.of("exe", "bat", "ps1", "cmd")
-                        .anyMatch(s -> e.getPath().toString().endsWith(s))) {
+        var ext = e.getPath().getExtension().map(s -> s.toLowerCase(Locale.ROOT)).orElse(null);
+        if (ext == null) {
+            return false;
+        }
+
+        if (os == OsType.WINDOWS && Stream.of("exe", "bat", "ps1", "cmd").anyMatch(s -> s.equals(ext))) {
             return true;
         }
 
-        if (ShellDialects.isPowershell(shell.get())
-                && Stream.of("ps1").anyMatch(s -> e.getPath().toString().endsWith(s))) {
+        if (ShellDialects.isPowershell(shell.get()) && ext.equals("ps1")) {
             return true;
         }
 
-        if (Stream.of("sh", "command").anyMatch(s -> e.getPath().toString().endsWith(s))) {
+        if (Stream.of("sh", "command").anyMatch(s -> s.equals(ext))) {
             return true;
         }
 
