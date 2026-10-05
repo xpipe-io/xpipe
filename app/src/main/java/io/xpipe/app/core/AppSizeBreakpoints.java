@@ -2,6 +2,7 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.core.window.AppMainWindow;
 
+import io.xpipe.app.platform.GlobalBooleanProperty;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -9,8 +10,8 @@ import javafx.beans.value.ObservableBooleanValue;
 
 public class AppSizeBreakpoints {
 
-    private static final BooleanProperty compactMode = new SimpleBooleanProperty();
-    private static final BooleanProperty portraitMode = new SimpleBooleanProperty();
+    private static final BooleanProperty compactMode = new GlobalBooleanProperty();
+    private static final BooleanProperty portraitMode = new GlobalBooleanProperty();
 
     public static ObservableBooleanValue compactMode() {
         return compactMode;

@@ -170,13 +170,11 @@ public class AppMainWindowContentComp extends SimpleRegionBuilder {
                 } else if (!pane.getChildren().contains(vbox)) {
                     loadingTextCounter.set(3);
                     TrackEvent.info("Window content node removed");
-                    PlatformThread.runNestedLoopIteration();
                     pane.getChildren().clear();
                     pane.getStyleClass().add("background");
                     pane.getChildren().add(vbox);
                     sidebarPresent.set(false);
                     loadingAnimation.start();
-                    PlatformThread.runNestedLoopIteration();
                 }
             });
 

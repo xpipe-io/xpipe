@@ -8,11 +8,11 @@ import java.util.stream.Collectors;
 @Getter
 public class ProcessOutputException extends Exception {
 
-    private final String command;
-    private final long exitCode;
+    private String command;
+    private long exitCode;
     private String output;
-    private final String prefix;
-    private final String suffix;
+    private String prefix;
+    private String suffix;
 
     private ProcessOutputException(
             String command, long exitCode, String output, String prefix, String suffix, Exception cause) {
@@ -22,10 +22,6 @@ public class ProcessOutputException extends Exception {
         this.prefix = prefix;
         this.suffix = suffix;
         this.command = command;
-    }
-
-    public ProcessOutputException stripped() {
-        return new ProcessOutputException(command, exitCode, "", null, null, (Exception) getCause());
     }
 
     public void replaceOutput(String newOutput) {
