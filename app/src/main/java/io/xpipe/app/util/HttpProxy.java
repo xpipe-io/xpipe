@@ -14,6 +14,9 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.net.URI;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +39,18 @@ public class HttpProxy {
                     var isSocks = parsed.getScheme() != null && parsed.getScheme().equals("socks5");
                     var host = parsed.getHost();
                     var port = parsed.getPort() != -1 ? parsed.getPort() : isSocks ? 1080 : 8080;
-                    var userInfo = parsed.getUserInfo();
-                    var user = userInfo != null ? userInfo.split(":")[0] : null;
-                    var pass = userInfo != null && userInfo.contains(":") ? userInfo.split(":")[1] : null;
+                    var userInfo = parsed.getRawUserInfo();
+                    var separatorIndex = userInfo != null ? userInfo.indexOf(':') : -1;
+                    var user = userInfo != null
+                            ? decodeUserInfo(separatorIndex != -1 ? userInfo.substring(0, separatorIndex) : userInfo)
+                            : null;
+                    if (user != null && user.isBlank()) {
+                        user = null;
+                    }
+                    var pass = separatorIndex != -1 ? decodeUserInfo(userInfo.substring(separatorIndex + 1)) : null;
+                    if (pass != null && pass.isBlank()) {
+                        pass = null;
+                    }
                     return Optional.of(new HttpProxy(
                             host, port, user, pass != null ? InPlaceSecretValue.of(pass) : null, isSocks));
                 } catch (IllegalArgumentException ignored) {
@@ -109,10 +121,28 @@ public class HttpProxy {
         }
     }
 
+    private static String encodeUserInfo(String s) {
+        // URLEncoder and URLDecoder are meant for form data which treats + as a space
+        return URLEncoder.encode(s, StandardCharsets.UTF_8).replace("+", "%20");
+    }
+
+    private static String decodeUserInfo(String s) {
+        // URLEncoder and URLDecoder are meant for form data which treats + as a space
+        return URLDecoder.decode(s.replace("+", "%2B"), StandardCharsets.UTF_8);
+    }
+
     public String toUrl() {
-        return (socks5 ? "socks5" : "http") + "://"
-                + (user != null && password != null ? user + ":" + password.getSecretValue() + "@" : "") + host + ":"
-                + port;
+        var userInfo = "";
+        if (user != null && !user.isBlank()) {
+            userInfo = encodeUserInfo(user);
+            if (password != null && !password.getSecretValue().isBlank()) {
+                userInfo += ":" + encodeUserInfo(password.getSecretValue());
+            }
+            userInfo += "@";
+        }
+
+        var scheme = socks5 ? "socks5" : "http";
+        return scheme + "://" + userInfo + host + ":" + port;
     }
 
     String host;
