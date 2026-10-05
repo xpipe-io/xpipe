@@ -134,11 +134,18 @@ public class BrowserTransferModel {
         }
     }
 
+    private void removeItem(Item item) {
+        synchronized (items) {
+            items.remove(item);
+        }
+    }
+
     public void downloadSingle(Item item) {
         try {
             FileUtils.forceMkdir(TEMP.toFile());
         } catch (IOException e) {
             ErrorEventFactory.fromThrowable(e).handle();
+            removeItem(item);
             return;
         }
 
@@ -147,11 +154,8 @@ public class BrowserTransferModel {
         }
 
         var itemModel = item.getOpenFileSystemModel();
-        if (itemModel == null) {
-            return;
-        }
-
-        if (AppOperationMode.isInShutdown()) {
+        if (itemModel == null || AppOperationMode.isInShutdown()) {
+            removeItem(item);
             return;
         }
 
@@ -181,15 +185,11 @@ public class BrowserTransferModel {
                     .download(true)
                     .build();
             if (!action.executeSync()) {
-                synchronized (items) {
-                    items.remove(item);
-                }
+                BrowserTransferModel.this.removeItem(item);
             }
         } catch (Throwable t) {
             ErrorEventFactory.fromThrowable(t).handle();
-            synchronized (items) {
-                items.remove(item);
-            }
+            BrowserTransferModel.this.removeItem(item);
         } finally {
             transferring.setValue(false);
         }
