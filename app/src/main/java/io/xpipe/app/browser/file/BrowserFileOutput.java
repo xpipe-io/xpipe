@@ -27,7 +27,7 @@ public interface BrowserFileOutput {
 
         var sc = model.getFileSystem().getShell().orElseThrow();
         var requiresSudo =
-                sc.getOsType() != OsType.WINDOWS && requiresSudo(model, (FileInfo.Unix) file.getInfo(), file.getPath());
+                sc.getOsType() != OsType.WINDOWS && requiresSudo(model, file.getInfo() instanceof FileInfo.Unix u ? u : null, file.getPath());
 
         if (!requiresSudo) {
             return defOutput;
@@ -53,8 +53,9 @@ public interface BrowserFileOutput {
             return false;
         }
 
-        if (info != null) {
-            var otherWrite = info.getPermissions().charAt(7) == 'w';
+        var perms = info != null ? info.getPermissions() : null;
+        if (perms != null && perms.length() >= 9) {
+            var otherWrite = perms.charAt(7) == 'w';
             if (otherWrite) {
                 return false;
             }
@@ -62,7 +63,7 @@ public interface BrowserFileOutput {
             var userOwned = info.getUid() != null
                             && info.getUid().equals(sc.view().getPasswdFile().getUidForUserIfPresent(sc.view().user()).orElse(null))
                     || info.getUser() != null && sc.view().user().equals(info.getUser());
-            var userWrite = info.getPermissions().charAt(1) == 'w';
+            var userWrite = perms.charAt(1) == 'w';
             if (userOwned && userWrite) {
                 return false;
             }
