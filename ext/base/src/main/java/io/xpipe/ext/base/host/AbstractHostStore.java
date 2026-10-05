@@ -37,7 +37,7 @@ public class AbstractHostStore implements DataStore, io.xpipe.app.store.HostAddr
 
     @Override
     public HostAddress getHostAddress() {
-        return HostAddress.of(host);
+        return host != null && !host.isBlank() ? HostAddress.of(host) : HostAddress.empty();
     }
 
     @Override
