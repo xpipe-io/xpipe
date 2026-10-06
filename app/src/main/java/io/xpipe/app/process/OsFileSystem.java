@@ -4,6 +4,7 @@ import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.OsType;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public interface OsFileSystem {
@@ -36,7 +37,7 @@ public interface OsFileSystem {
         var split = name.split();
         var needsReplacement = split.stream()
                 .skip(hasMultipleRoots() && name.isAbsolute() ? 1 : 0)
-                .anyMatch(s -> !s.equals(makeFileSystemCompatible(s)));
+                .anyMatch(s -> !s.equals(makeSegmentCompatible(s)));
         if (!needsReplacement) {
             return name;
         }
@@ -46,12 +47,21 @@ public interface OsFileSystem {
         var first = new AtomicBoolean(true);
         var replaced = m.replaceAll(matchResult -> {
             if (first.getAndSet(false) && hasMultipleRoots() && name.isAbsolute()) {
-                return matchResult.group();
+                return Matcher.quoteReplacement(matchResult.group());
             }
 
-            return makeFileSystemCompatible(matchResult.group());
+            return Matcher.quoteReplacement(makeSegmentCompatible(matchResult.group()));
         });
         return FilePath.of(replaced);
+    }
+
+    private String makeSegmentCompatible(String segment) {
+        var r = makeFileSystemCompatible(segment);
+        // Names like .. can come from remote systems and would allow navigating out of the target directory
+        if (r.isEmpty() || r.chars().allMatch(c -> c == '.')) {
+            return "_";
+        }
+        return r;
     }
 
     boolean isProbableFilePath(String s);
