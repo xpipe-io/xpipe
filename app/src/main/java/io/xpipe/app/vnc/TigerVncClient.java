@@ -13,6 +13,8 @@ import lombok.extern.jackson.Jacksonized;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -140,6 +142,14 @@ public abstract class TigerVncClient implements ExternalVncClient {
             return "VNCViewer";
         }
 
+        private static FileTime getModifiedTime(Path app) {
+            try {
+                return Files.getLastModifiedTime(app);
+            } catch (IOException e) {
+                return FileTime.fromMillis(0);
+            }
+        }
+
         @Override
         public Optional<Path> determineInstallation() {
             try (var appsStream = Files.list(Path.of("/Applications"))) {
@@ -150,7 +160,8 @@ public abstract class TigerVncClient implements ExternalVncClient {
                                 .toString()
                                 .toLowerCase(Locale.ROOT)
                                 .startsWith("tigervnc viewer"))
-                        .findFirst();
+                        // Prefer the most recently modified one if multiple versions are installed
+                        .max(Comparator.comparing(MacOs::getModifiedTime));
             } catch (IOException e) {
                 ErrorEventFactory.fromThrowable(e).handle();
                 return Optional.empty();
