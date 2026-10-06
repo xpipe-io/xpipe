@@ -8,6 +8,7 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.platform.Listeners;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.terminal.*;
@@ -22,6 +23,7 @@ import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.util.Subscription;
 
 import java.time.Duration;
 import java.util.UUID;
@@ -29,12 +31,11 @@ import java.util.function.UnaryOperator;
 
 public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
 
-    private final BrowserSessionTab origin;
     private final ObservableList<UUID> terminalRequests;
     private final TerminalDockView dockModel = new TerminalDockView(UnaryOperator.identity());
     private final BooleanProperty opened = new SimpleBooleanProperty();
     private TerminalView.Listener listener;
-    private ObservableBooleanValue viewActive;
+    private final ObservableBooleanValue viewActive;
     private boolean closed;
 
     public BrowserTerminalDockTabModel(
@@ -42,8 +43,19 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
             BrowserSessionTab origin,
             ObservableList<UUID> terminalRequests) {
         super(browserModel);
-        this.origin = origin;
         this.terminalRequests = terminalRequests;
+        this.viewActive = Bindings.createBooleanBinding(
+                () -> {
+                    return this.browserModel.getSelectedEntry().getValue() == origin
+                            && AppLayoutModel.get()
+                            .getEntries()
+                            .indexOf(AppLayoutModel.get()
+                                    .getSelected()
+                                    .getValue())
+                            == 1;
+                },
+                this.browserModel.getSelectedEntry(),
+                AppLayoutModel.get().getSelected());
     }
 
     @Override
@@ -115,21 +127,14 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
             }
         });
 
-        viewActive = Bindings.createBooleanBinding(
-                () -> {
-                    return this.browserModel.getSelectedEntry().getValue() == origin
-                            && AppLayoutModel.get()
-                                            .getEntries()
-                                            .indexOf(AppLayoutModel.get()
-                                                    .getSelected()
-                                                    .getValue())
-                                    == 1;
-                },
-                this.browserModel.getSelectedEntry(),
-                AppLayoutModel.get().getSelected());
-        viewActive.subscribe(aBoolean -> {
+        viewActive.subscribe(active -> {
+            // This can in theory be called if this session is closed but not gced yet
+            if (!browserModel.getSessionEntries().contains(this)) {
+                return;
+            }
+
             Platform.runLater(() -> {
-                if (aBoolean) {
+                if (active) {
                     dockModel.activateView();
                 } else {
                     dockModel.deactivateView();
@@ -137,6 +142,11 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
             });
         });
         AppDialog.getModalOverlaysRaw().addListener((ListChangeListener<? super ModalOverlay>) c -> {
+            // This can in theory be called if this session is closed but not gced yet
+            if (!browserModel.getSessionEntries().contains(this)) {
+                return;
+            }
+
             if (c.getList().size() > 0) {
                 dockModel.deactivateView();
             } else {

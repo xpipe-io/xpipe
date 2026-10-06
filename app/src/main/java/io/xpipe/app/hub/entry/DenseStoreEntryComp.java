@@ -6,6 +6,7 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.hub.section.StoreSection;
+import io.xpipe.app.platform.Listeners;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -64,7 +65,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         var selection = createBatchSelection().build();
         grid.add(selection, 0, 0, 1, 2);
         grid.getColumnConstraints().add(new ColumnConstraints(25));
-        StoreViewState.get().getBatchMode().subscribe(batch -> {
+        Listeners.attachWithScene(grid, StoreViewState.get().getBatchMode(), batch -> {
             if (batch) {
                 grid.getColumnConstraints().set(0, new ColumnConstraints(25));
             } else {

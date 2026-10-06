@@ -3,6 +3,7 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.platform.Listeners;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.FilePath;
@@ -15,7 +16,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
-import java.lang.ref.WeakReference;
 import java.util.function.Consumer;
 
 public class PrettyImageComp extends SimpleRegionBuilder {
@@ -112,15 +112,10 @@ public class PrettyImageComp extends SimpleRegionBuilder {
             });
         };
 
-        value.subscribe(update);
+        update.accept(value.getValue());
+        Listeners.attachWithScene(stack, value, update);
         if (AppPrefs.get() != null) {
-            var ref = new WeakReference<>(update);
-            AppPrefs.get().theme().addListener((observable, oldValue, newValue) -> {
-                var v = ref.get();
-                if (v != null) {
-                    v.accept(value.getValue());
-                }
-            });
+            Listeners.attachWithScene(stack, AppPrefs.get().theme(), ignored -> update.accept(value.getValue()));
         }
 
         stack.setFocusTraversable(false);
