@@ -6,6 +6,8 @@ import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.util.OsType;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.ConnectException;
+import java.nio.channels.UnresolvedAddressException;
 import java.nio.file.*;
 import java.util.*;
 
@@ -98,6 +100,18 @@ public class ErrorEventFactory {
             }
 
             return "Class definition not found: " + t.getMessage().replace('/', '.');
+        }
+
+        if (t instanceof UnresolvedAddressException) {
+            return "Unable to resolve host address";
+        }
+
+        if (t instanceof ConnectException ce && t.getMessage() == null) {
+            if (ce.getCause() != t && ce.getCause() instanceof ConnectException sce && sce.getCause() != null && sce.getCause() != t) {
+                return "Connection failed: " + formatThrowableMessage(sce.getCause());
+            } else {
+                return "Connection failed";
+            }
         }
 
         if (t.getMessage() == null) {

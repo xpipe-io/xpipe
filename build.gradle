@@ -163,6 +163,12 @@ def getDaemonJvmArgs() {
             '-Djdk.httpclient.auth.retrylimit=1'
     ]
 
+    // Include host info in HTTP exceptions
+    // https://docs.oracle.com/en/java/javase/22/core/java-networking.htm
+    jvmRunArgs += [
+            '-Djdk.includeInExceptions=hostInfo'
+    ]
+
     // Disable JDK24 warnings
     jvmRunArgs += [
             "--enable-native-access=com.sun.jna",

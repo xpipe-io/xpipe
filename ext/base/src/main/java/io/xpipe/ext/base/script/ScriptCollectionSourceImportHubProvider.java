@@ -49,7 +49,8 @@ public class ScriptCollectionSourceImportHubProvider implements HubLeafProvider<
     public static class Action extends StoreAction<ScriptCollectionSourceStore> {
 
         @Override
-        public void executeImpl() {
+        public void executeImpl() throws Exception {
+            ref.getStore().refresh();
             var dialog = new ScriptCollectionSourceImportDialog(ref);
             dialog.show();
         }

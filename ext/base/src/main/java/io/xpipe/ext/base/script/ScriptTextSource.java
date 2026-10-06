@@ -8,6 +8,7 @@ import io.xpipe.app.hub.creation.StoreChoiceComp;
 import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialectChoiceComp;
 import io.xpipe.app.process.ShellScript;
@@ -15,7 +16,6 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.store.DataStoreCreationCategory;
 import io.xpipe.app.store.DataStoreDependencies;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.HttpHelper;
 import io.xpipe.app.util.UuidHelper;
 import io.xpipe.app.util.ValidationException;
@@ -191,12 +191,33 @@ public interface ScriptTextSource {
         }
 
         private String getName() {
-            var name = FilePath.of(url).getFileName();
-            if (!name.isEmpty()) {
-                return name;
+            var id = UuidHelper.generateFromObject(url).toString();
+
+            String name = null;
+            try {
+                // Only use the path, without any query string or fragment
+                var path = URI.create(url).getPath();
+                name = path != null ? path.substring(path.lastIndexOf('/') + 1) : null;
+            } catch (IllegalArgumentException ignored) {}
+
+            if (name == null) {
+                return id;
             }
 
-            return UuidHelper.generateFromObject(url).toString();
+            name = OsFileSystem.ofLocal().makeFileSystemCompatible(name);
+            if (name.isEmpty()) {
+                return id;
+            }
+
+            // Keep the file extension at the end
+            var dot = name.lastIndexOf('.');
+            var base = dot > 0 ? name.substring(0, dot) : name;
+            var extension = dot > 0 ? name.substring(dot) : "";
+            // Prevent file names that are too long
+            if (base.length() > 64) {
+                base = base.substring(0, 64);
+            }
+            return base + "-" + id + extension;
         }
 
         @Override

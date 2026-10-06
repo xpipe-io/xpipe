@@ -169,4 +169,13 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
     public void validate() throws Exception {
         getTextSource().validate();
     }
+
+    public void enable() throws Exception {
+        validate();
+        setState(getState().toBuilder().enabled(true).build());
+    }
+
+    public void disable() {
+        setState(getState().toBuilder().enabled(false).build());
+    }
 }

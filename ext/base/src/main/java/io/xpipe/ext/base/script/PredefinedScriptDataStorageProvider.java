@@ -6,7 +6,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 
-public class ScriptDataStorageProvider extends DataStorageExtensionProvider {
+public class PredefinedScriptDataStorageProvider extends DataStorageExtensionProvider {
 
     @Override
     public void storageInit() {

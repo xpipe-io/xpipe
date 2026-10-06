@@ -7,6 +7,7 @@ import io.xpipe.app.hub.entry.*;
 import io.xpipe.app.hub.list.StoreListChoiceComp;
 import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.hub.section.StoreSection;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.platform.Validator;
@@ -18,6 +19,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.store.*;
 import io.xpipe.app.util.*;
 
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 
@@ -45,9 +47,20 @@ public class ScriptStoreProvider implements DataStoreProvider {
         });
 
         var toggle = StoreToggleComp.<StatefulDataStore<EnabledStoreState>>enableToggle(
-                null, sec, enabled, (s, aBoolean) -> {
-                    var state = s.getState().toBuilder().enabled(aBoolean).build();
-                    s.setState(state);
+                null, sec, enabled, (s, v) -> {
+                    var st = (ScriptStore) s;
+                    if (v) {
+                        try {
+                            st.enable();
+                        } catch (Exception ex) {
+                            Platform.runLater(() -> {
+                                enabled.set(false);
+                            });
+                            ErrorEventFactory.fromThrowable(ex).handle();
+                        }
+                    } else {
+                        st.disable();
+                    }
                 });
         toggle.describe(d -> d.nameKey("toggleEnabled"));
 

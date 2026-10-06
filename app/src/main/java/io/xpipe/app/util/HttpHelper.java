@@ -88,7 +88,7 @@ public class HttpHelper {
             });
         }
 
-        return builder.build();
+        return new TargetReportingHttpClient(builder.build(), proxy);
     }
 
     public static void checkOrThrow(HttpResponse<?> res) throws IOException {
