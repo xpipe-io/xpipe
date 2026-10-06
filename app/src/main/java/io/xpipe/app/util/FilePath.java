@@ -177,17 +177,17 @@ public final class FilePath {
     }
 
     public boolean startsWith(String start) {
-        return startsWith(FilePath.of(start));
+        return value.startsWith(start);
     }
 
     public boolean startsWith(FilePath start) {
-        if (normalize().equals(start.normalize())) {
+        var path = toUnix().removeTrailingSlash().toString();
+        var prefix = start.toUnix();
+        if (path.equals(prefix.removeTrailingSlash().toString())) {
             return true;
         }
 
-        return normalize()
-                .toString()
-                .startsWith(start.normalize().toDirectory().toString());
+        return path.startsWith(prefix.toDirectory().toString());
     }
 
     public FilePath relativize(FilePath base) {
