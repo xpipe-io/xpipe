@@ -1,6 +1,5 @@
 package io.xpipe.app.hub.entry;
 
-import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.storage.DataStoreEntry;
 
@@ -11,12 +10,20 @@ import java.util.Map;
 @Value
 public class StoreEntryActionProviderSelectionState {
 
+    private static int externalChangeCounter;
+
+
     DataStoreEntry.Validity validity;
     Map<String, Object> cache;
     Object state;
     Class<?> storeClass;
     boolean compact;
     boolean template;
+    int changeCounter;
+
+    public static void externalChange() {
+        externalChangeCounter++;
+    }
 
     public static StoreEntryActionProviderSelectionState of(DataStoreEntry entry) {
         return new StoreEntryActionProviderSelectionState(
@@ -25,6 +32,7 @@ public class StoreEntryActionProviderSelectionState {
                 entry.getStorePersistentState(),
                 entry.getStore() != null ? entry.getStore().getClass() : null,
                 AppSizeBreakpoints.compactMode().get(),
-                entry.isTemplate());
+                entry.isTemplate(),
+                externalChangeCounter);
     }
 }
