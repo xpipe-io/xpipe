@@ -1,5 +1,6 @@
 package io.xpipe.app.beacon.mcp;
 
+import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -157,8 +158,8 @@ public class AppMcpServer {
                             return;
                         }
 
-                        var correct = apiKey.replace("Bearer ", "")
-                                .equals(AppPrefs.get().apiKey().get());
+                        var correct = AppBeaconServer.secretEquals(
+                                AppPrefs.get().apiKey().get(), apiKey.replace("Bearer ", ""));
                         if (!correct) {
                             transportProvider.sendError(exchange, 403, "Invalid API key");
                             if (exchange.getRequestMethod().equals("POST")) {

@@ -23,8 +23,10 @@ import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -54,6 +56,15 @@ public class AppBeaconServer {
 
     private AppBeaconServer(int port) {
         this.port = port;
+    }
+
+    public static boolean secretEquals(String expected, String actual) {
+        if (expected == null || actual == null) {
+            return false;
+        }
+
+        return MessageDigest.isEqual(
+                expected.getBytes(StandardCharsets.UTF_8), actual.getBytes(StandardCharsets.UTF_8));
     }
 
     public static void init() {

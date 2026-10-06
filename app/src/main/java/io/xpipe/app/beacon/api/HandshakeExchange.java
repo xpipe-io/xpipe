@@ -11,8 +11,6 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.util.UUID;
 
 public class HandshakeExchange extends BeaconInterface<HandshakeExchange.Request> {
@@ -60,19 +58,15 @@ public class HandshakeExchange extends BeaconInterface<HandshakeExchange.Request
     private boolean checkAuth(io.xpipe.app.beacon.BeaconAuthMethod authMethod) {
         if (authMethod instanceof BeaconAuthMethod.Local local) {
             var c = local.getAuthFileContent().strip();
-            return checkEqualsConstant(AppBeaconServer.get().getLocalAuthSecret(), c);
+            return AppBeaconServer.secretEquals(AppBeaconServer.get().getLocalAuthSecret(), c);
         }
 
         if (authMethod instanceof BeaconAuthMethod.ApiKey key) {
             var c = key.getKey().strip();
-            return checkEqualsConstant(AppPrefs.get().apiKey().get(), c);
+            return AppBeaconServer.secretEquals(AppPrefs.get().apiKey().get(), c);
         }
 
         return false;
-    }
-
-    private boolean checkEqualsConstant(String s1, String s2) {
-        return MessageDigest.isEqual(s1.getBytes(StandardCharsets.UTF_8), s2.getBytes(StandardCharsets.UTF_8));
     }
 
     @Jacksonized

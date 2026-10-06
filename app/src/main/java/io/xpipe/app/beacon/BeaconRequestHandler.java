@@ -55,7 +55,7 @@ public class BeaconRequestHandler<T> implements HttpHandler {
 
             var token = auth.replace("Bearer ", "");
             var session = AppBeaconServer.get().getSessions().stream()
-                    .filter(s -> s.getToken().equals(token))
+                    .filter(s -> AppBeaconServer.secretEquals(s.getToken(), token))
                     .findFirst()
                     .orElse(null);
             if (session == null) {
