@@ -41,7 +41,8 @@ public class KonsoleTerminalType
         // This is not the case for production where it works as expected
         var toExecute = CommandBuilder.of()
                 .add("-p")
-                .add("tabtitle='" + configuration.single().getTitle() + "'")
+                // Konsole splits profile properties on semicolons, so don't allow the title to add other ones
+                .addLiteralKeyValue("tabtitle", configuration.single().getTitle().replace(";", ""))
                 .addIf(configuration.isPreferTabs(), "--new-tab")
                 .add("-e")
                 .addFile(configuration.single().getScriptFile());

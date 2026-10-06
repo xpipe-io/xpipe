@@ -147,7 +147,7 @@ public interface ServiceProtocolType {
             var format = commandTemplate.toLowerCase(Locale.ROOT).contains("$address")
                     ? commandTemplate
                     : commandTemplate + " $ADDRESS";
-            var toExecute = ExternalApplicationHelper.replaceVariableArgument(format, "ADDRESS", url, false);
+            var toExecute = ExternalApplicationHelper.replaceVariableArgument(format, "ADDRESS", url, true);
             // We can't be sure whether the command is blocking or not, so always make it not blocking
             ExternalApplicationHelper.startAsync(toExecute);
         }

@@ -101,7 +101,7 @@ public final class ExclusiveValidator<T> implements Validator {
     public StringBinding createStringBinding(String prefix, String separator) {
         var bindingMap = new LinkedHashMap<T, ObservableValue<String>>();
         validators.forEach((k, v) -> {
-            bindingMap.put(k, v.createStringBinding());
+            bindingMap.put(k, v.createStringBinding(prefix, separator));
         });
 
         var list = new ArrayList<Observable>();

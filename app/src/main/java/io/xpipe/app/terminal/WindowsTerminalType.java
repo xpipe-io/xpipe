@@ -29,12 +29,13 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
     AtomicInteger windowCounter = new AtomicInteger(101);
 
     private static String getFixedTitle(String s) {
-        // A weird behavior in Windows Terminal causes the trailing
-        // backslash of a filepath to escape the closing quote in the title argument
-        // So just remove that slash
-        var fixedName = FilePath.of(s).removeTrailingSlash().toString();
+        var fixedName = s;
         // To fix https://github.com/microsoft/terminal/issues/13264
-        fixedName = fixedName.replaceAll(";", "_");
+        fixedName = fixedName.replace(";", "_");
+        // The title is parsed with the C runtime argument rules, where a quote or backslashes before a quote
+        // could end the title argument early and inject additional arguments
+        // This also breaks any file paths with a trailing backwards slash as titles
+        fixedName = fixedName.replace("\"", "'").replaceAll("\\\\+$", "");
         return fixedName;
     }
 

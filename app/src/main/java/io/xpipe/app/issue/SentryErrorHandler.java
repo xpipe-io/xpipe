@@ -1,9 +1,6 @@
 package io.xpipe.app.issue;
 
-import io.xpipe.app.core.AppCertStore;
-import io.xpipe.app.core.AppLogs;
-import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.AppSystemInfo;
+import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.ProcessOutputException;
@@ -188,8 +185,7 @@ public class SentryErrorHandler implements ErrorHandler {
                             if (Files.isDirectory(d)) {
                                 toUse = AttachmentHelper.compressZipfile(
                                         d,
-                                        AppSystemInfo.ofCurrent()
-                                                .getTemp()
+                                        AppLocalTemp.getLocalTempDataDirectory()
                                                 .resolve(d.getFileName().toString() + ".zip"));
                             }
                             return new Attachment(toUse.toString());

@@ -90,7 +90,7 @@ public class ActionUrls {
         }
 
         var stores = query.get("ref");
-        if (stores == null || stores.isEmpty()) {
+        if (stores == null || stores.stream().allMatch(s -> s == null)) {
             return Optional.empty();
         }
 
