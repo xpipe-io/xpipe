@@ -175,11 +175,20 @@ public class PodmanCommandView extends CommandViewBase {
 
         public void restart(String container, String service) throws Exception {
             if (shellControl.getOsType() == OsType.LINUX && service != null) {
-                shellControl
+                // Units of rootless quadlets are managed by the user instance, rootful ones by the system instance
+                var userLoadState = shellControl
                         .command(CommandBuilder.of()
-                                .add("systemctl", "restart", "--user")
+                                .add("systemctl", "--user", "show", "--property=LoadState", "--value")
                                 .addQuoted(service))
-                        .execute();
+                        .readStdoutIfPossible();
+                var userUnit = userLoadState.map(s -> s.strip().equals("loaded")).orElse(false);
+
+                var b = CommandBuilder.of().add("systemctl", "restart");
+                if (userUnit) {
+                    b.add("--user");
+                }
+                b.addQuoted(service);
+                shellControl.command(b).execute();
                 return;
             }
 
