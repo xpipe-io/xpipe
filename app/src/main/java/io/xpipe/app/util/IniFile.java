@@ -49,12 +49,4 @@ public class IniFile {
         }
         return kv.get(key);
     }
-
-    public String getOrDefault(String section, String key, String defaultvalue) {
-        Map<String, String> kv = entries.get(section);
-        if (kv == null) {
-            return defaultvalue;
-        }
-        return kv.get(key);
-    }
 }

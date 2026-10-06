@@ -172,10 +172,6 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public boolean requiresReinit() {
-        if (!runningCheck.get()) {
-            return false;
-        }
-
         return fs.requiresReinit();
     }
 

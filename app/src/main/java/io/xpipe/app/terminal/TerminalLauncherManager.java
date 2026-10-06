@@ -95,7 +95,7 @@ public class TerminalLauncherManager {
             req = entries.get(request);
         }
 
-        if (req != null && req.getShellPid() != -1) {
+        if (req != null && req.getShellPid() != -1 && req.getShellPid() != 0) {
             ProcessHandle current = ProcessHandle.of(pid).orElseThrow(() -> new BeaconClientException("Unknown process " + pid));
             while ((current = current.parent().orElse(null)) != null) {
                 if (current.pid() == req.getShellPid()) {

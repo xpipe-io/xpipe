@@ -211,6 +211,7 @@ public class SshLocalBridge {
 
         var file = AppSystemInfo.ofCurrent().getUserHome().resolve(".ssh", "config");
         if (!Files.exists(file)) {
+            Files.createDirectories(file.getParent());
             Files.writeString(file, hostEntry);
             return;
         }

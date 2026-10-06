@@ -69,7 +69,7 @@ public class ActionUrls {
         var query = splitQuery(queryString);
 
         var id = query.get("id");
-        if (id == null || id.size() != 1) {
+        if (id == null || id.size() != 1 || id.getFirst() == null) {
             return Optional.empty();
         }
 

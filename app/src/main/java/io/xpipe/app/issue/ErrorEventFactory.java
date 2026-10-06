@@ -84,6 +84,22 @@ public class ErrorEventFactory {
             return formatThrowableMessage(ite.getCause());
         }
 
+        if (t instanceof ExceptionInInitializerError eiie && eiie.getCause() != null && eiie.getCause() != t) {
+            return "Failed to initialize class: " + formatThrowableMessage(eiie.getCause());
+        }
+
+        if (t instanceof ClassNotFoundException && t.getMessage() != null) {
+            return "Class not found: " + t.getMessage();
+        }
+
+        if (t instanceof NoClassDefFoundError && t.getMessage() != null) {
+            if (t.getMessage().startsWith("Could not initialize class")) {
+                return t.getMessage();
+            }
+
+            return "Class definition not found: " + t.getMessage().replace('/', '.');
+        }
+
         if (t.getMessage() == null) {
             return AppI18n.get("errorTypeOccurred", t.getClass().getSimpleName());
         }

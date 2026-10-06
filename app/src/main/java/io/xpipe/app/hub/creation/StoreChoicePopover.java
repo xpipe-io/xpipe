@@ -217,6 +217,7 @@ public class StoreChoicePopover<T extends DataStore> {
 
             var r = listStack.build();
             var content = new VBox(top, r);
+            content.setSpacing(6);
             content.setFillWidth(true);
             content.getStyleClass().add("choice-comp-content");
             content.setPrefWidth(480);

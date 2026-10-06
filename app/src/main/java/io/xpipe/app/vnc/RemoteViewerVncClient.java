@@ -61,7 +61,7 @@ public abstract class RemoteViewerVncClient implements ExternalVncClient {
         }
 
         var name = OsFileSystem.ofLocal().makeFileSystemCompatible(configuration.getTitle());
-        var file = AppLocalTemp.getLocalTempDataDirectory("vnc").resolve(name + ".vv");
+        var file = AppLocalTemp.getLocalTempDataDirectory("spice").resolve(name + ".vv");
         Files.writeString(file, vv.toString());
         return file;
     }
