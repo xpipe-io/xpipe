@@ -13,6 +13,7 @@ import lombok.extern.jackson.Jacksonized;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Optional;
 
 public abstract class TigerVncClient implements ExternalVncClient {
@@ -123,7 +124,8 @@ public abstract class TigerVncClient implements ExternalVncClient {
         public void launch(VncLaunchConfig configuration) throws Exception {
             var loc = findExecutable();
             var builder = createBuilder(configuration);
-            var open = CommandBuilder.of().add("open", "-a").addFile(loc).add("--args");
+            // Open a new instance, otherwise the arguments are dropped if the viewer is already running
+            var open = CommandBuilder.of().add("open", "-n", "-a").addFile(loc).add("--args");
             builder.add(0, open);
             LocalShell.getShell().command(builder).execute();
         }
@@ -143,7 +145,11 @@ public abstract class TigerVncClient implements ExternalVncClient {
             try (var appsStream = Files.list(Path.of("/Applications"))) {
                 var dirs = appsStream.toList();
                 return dirs.stream()
-                        .filter(path -> path.toString().contains("TigerVNC viewer"))
+                        // The app is named like "TigerVNC Viewer 1.15.0.app"
+                        .filter(path -> path.getFileName()
+                                .toString()
+                                .toLowerCase(Locale.ROOT)
+                                .startsWith("tigervnc viewer"))
                         .findFirst();
             } catch (IOException e) {
                 ErrorEventFactory.fromThrowable(e).handle();
