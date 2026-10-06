@@ -21,6 +21,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.skin.ScrollPaneSkin;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.util.Subscription;
 
 import lombok.Setter;
 
@@ -199,44 +200,43 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
             dirty.set(true);
         });
 
+        var sceneSubscriptions = new ArrayList<Subscription>();
         vbox.sceneProperty().addListener((observable, oldValue, newValue) -> {
             dirty.set(true);
 
-            if (newValue != null) {
-                animationTimer.start();
-            } else {
+            // Clear all listeners for nodes on any scene change
+            sceneSubscriptions.forEach(Subscription::unsubscribe);
+            sceneSubscriptions.clear();
+
+            if (newValue == null) {
                 animationTimer.stop();
+                return;
             }
+
+            animationTimer.start();
 
             Node c = vbox;
             do {
                 var minY = new SimpleDoubleProperty();
                 var maxY = new SimpleDoubleProperty();
 
-                Listeners.attachWithScene(vbox, c.boundsInParentProperty(), v -> {
+                sceneSubscriptions.add(c.boundsInParentProperty().subscribe(v -> {
                     if (Math.abs(minY.get() - v.getMinY()) > 5.0) {
                         minY.set(v.getMinY());
+                        dirty.set(true);
                     }
                     if (Math.abs(maxY.get() - v.getMaxY()) > 5.0) {
                         maxY.set(v.getMaxY());
+                        dirty.set(true);
                     }
-                });
-
-                minY.addListener((observable1, oldValue1, newValue1) -> {
-                    dirty.set(true);
-                });
-                maxY.addListener((observable1, oldValue1, newValue1) -> {
-                    dirty.set(true);
-                });
+                }));
 
                 // Don't listen to root node changes, we don't need that
             } while ((c = c.getParent()) != null && c.getParent() != null);
 
-            if (newValue != null) {
-                newValue.heightProperty().addListener((observable1, oldValue1, newValue1) -> {
-                    dirty.set(true);
-                });
-            }
+            sceneSubscriptions.add(newValue.heightProperty().subscribe((oldHeight, newHeight) -> {
+                dirty.set(true);
+            }));
         });
     }
 
