@@ -42,13 +42,15 @@ public class XPipeUrlProvider implements LauncherUrlProvider {
             }
 
             var repo = new String(Base64Helper.fromBase64UrlString(uri.getPath()), StandardCharsets.UTF_8);
-            var alreadySynced = AppPrefs.get().storageGitRemote().getValue() != null;
-            if (alreadySynced && !repo.equals(AppPrefs.get().storageGitRemote().getValue())) {
+            var currentRepo = AppPrefs.get().storageGitRemote().getValue();
+            var alreadySynced = currentRepo != null && !currentRepo.isBlank();
+            if (alreadySynced && !repo.equals(currentRepo)) {
                 AppDialog.information("syncUrlAlreadySynced");
                 return null;
             }
 
             AppPrefs.get().setFromExternal(AppPrefs.get().storageGitRemote(), repo);
+            AppPrefs.get().setFromExternal(AppPrefs.get().enableGitStorage(), true);
             AppPrefs.get().save();
             AppRestart.restart();
             return null;
