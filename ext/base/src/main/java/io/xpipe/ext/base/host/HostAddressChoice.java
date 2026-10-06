@@ -32,8 +32,8 @@ public class HostAddressChoice {
 
     public OptionsBuilder build() {
         var existing = addressProperty.getValue();
-        var val = new SimpleObjectProperty<>(existing != null ? existing.get() : null);
-        var list = FXCollections.observableArrayList(existing != null ? existing.getAvailable() : new ArrayList<>());
+        var val = new SimpleObjectProperty<>(existing != null && !existing.isEmpty() ? existing.get() : null);
+        var list = FXCollections.observableArrayList(existing != null && !existing.isEmpty() ? existing.getAvailable() : new ArrayList<>());
         // For updating the options builder binding on list change, it doesn't support observable lists
         var listHashProp = new SimpleIntegerProperty(0);
         list.addListener((ListChangeListener<? super String>) c -> {

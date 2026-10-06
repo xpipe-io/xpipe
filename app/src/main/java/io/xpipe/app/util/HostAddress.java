@@ -114,6 +114,6 @@ public class HostAddress {
     }
 
     public boolean isEmpty() {
-        return available.isEmpty() || available.getFirst().equals("unknown");
+        return available.isEmpty() || (available.size() == 1 && available.getFirst().equals("unknown"));
     }
 }
