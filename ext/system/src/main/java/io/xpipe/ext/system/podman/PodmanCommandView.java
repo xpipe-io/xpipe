@@ -188,7 +188,14 @@ public class PodmanCommandView extends CommandViewBase {
                     b.add("--user");
                 }
                 b.addQuoted(service);
-                shellControl.command(b).execute();
+                // System units require root privileges to restart
+                shellControl
+                        .command(b)
+                        .elevated(
+                                userUnit
+                                        ? ElevationFunction.none()
+                                        : ElevationFunction.ifNotRoot(ElevationFunction.elevated("podman")))
+                        .execute();
                 return;
             }
 
