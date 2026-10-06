@@ -74,6 +74,10 @@ public class OpenHubMenuLeafProvider implements HubLeafProvider<DataStore>, Batc
         @Override
         public void executeImpl() throws Exception {
             var r = ref.get().getProvider().launch(ref.get());
+            if (r == null) {
+                return;
+            }
+
             r.run();
 
             // Terminal launching is done async, so to show the busy marker, just wait here

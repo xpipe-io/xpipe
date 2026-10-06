@@ -91,11 +91,16 @@ public abstract class MultiExecuteMenuProvider implements BrowserMenuBranchProvi
                     @Override
                     @SneakyThrows
                     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                        var currentPath = model.getCurrentPath().getValue();
+                        if (currentPath == null) {
+                            return;
+                        }
+
                         var commands = createCommand(model, entries);
                         for (CommandBuilder command : commands) {
                             var builder = RunCommandInBackgroundActionProvider.Action.builder();
                             builder.initFiles(
-                                    model, List.of(model.getCurrentPath().getValue()));
+                                    model, List.of(currentPath));
                             builder.command(command.buildFull(
                                     model.getFileSystem().getShell().orElseThrow()));
                             builder.build().executeAsync();
