@@ -1,6 +1,7 @@
 package io.xpipe.app.action;
 
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.ProcModuleProvider;
@@ -27,17 +28,25 @@ public class XPipeUrlProvider implements LauncherUrlProvider {
         }
 
         if ("action".equals(a)) {
-            if (!checkPermission()) {
+            if (!checkEnabled()) {
                 return null;
             }
 
             var query = uri.getQuery();
             var action = ActionUrls.parse(query);
+
+            if (action.isPresent() && !action.get().requiresConfirmation()) {
+                var r = ActionConfirmation.confirmAction(action.get());
+                if (!r) {
+                    return null;
+                }
+            }
+
             return action.orElse(null);
         }
 
         if ("sync".equals(a)) {
-            if (!checkPermission()) {
+            if (!checkEnabled()) {
                 return null;
             }
 
@@ -46,6 +55,11 @@ public class XPipeUrlProvider implements LauncherUrlProvider {
             var alreadySynced = currentRepo != null && !currentRepo.isBlank();
             if (alreadySynced && !repo.equals(currentRepo)) {
                 AppDialog.information("syncUrlAlreadySynced");
+                return null;
+            }
+
+            var confirm = AppDialog.confirm("syncUrlSetTitle", AppI18n.observable("syncUrlSetContent", repo));
+            if (!confirm) {
                 return null;
             }
 
@@ -59,7 +73,7 @@ public class XPipeUrlProvider implements LauncherUrlProvider {
         return null;
     }
 
-    private boolean checkPermission() {
+    private boolean checkEnabled() {
         var cache = AppCache.getBoolean("externalUrlsPermitted", false);
         if (cache) {
             return true;

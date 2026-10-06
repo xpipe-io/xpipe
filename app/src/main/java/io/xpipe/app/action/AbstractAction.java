@@ -9,6 +9,8 @@ import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.LicensedFeature;
 import io.xpipe.app.util.ThreadHelper;
@@ -116,9 +118,32 @@ public abstract class AbstractAction {
         });
     }
 
-    public boolean executeSyncImpl(boolean confirm) {
-        if (confirm && !ActionConfirmation.confirmAction(this)) {
-            return false;
+    private List<DataStoreEntry> getEntryContext() {
+        if (this instanceof StoreContextAction ca) {
+            return ca.getStoreEntryContext();
+        }
+
+        return List.of();
+    }
+
+    private boolean hasEnabledConfirmAllModifications() {
+        var context = getEntryContext();
+        return context.stream().anyMatch(dataStoreEntry -> {
+            var config = DataStorage.get().getEffectiveCategoryConfig(dataStoreEntry);
+            return config.getConfirmAllModifications() != null && config.getConfirmAllModifications();
+        });
+    }
+
+    public boolean requiresConfirmation() {
+        return forceConfirmation() || (isMutation() && hasEnabledConfirmAllModifications());
+    }
+
+    public boolean executeSyncImpl(boolean checkConfirm) {
+        if (checkConfirm && requiresConfirmation()) {
+            var r = ActionConfirmation.confirmAction(this);
+            if (!r) {
+                return false;
+            }
         }
 
         if (closed) {
