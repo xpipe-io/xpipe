@@ -63,9 +63,9 @@ public enum TerminalSplitStrategy implements PrefsChoiceValue {
                         return null;
                     }
 
-                    var multiplexer = AppPrefs.get().terminalMultiplexer().getValue();
-                    if (multiplexer != null && multiplexer.supportsSplitView()) {
-                        return prefsValue;
+                    var multiplexer = TerminalMultiplexerManager.getEffectiveMultiplexer();
+                    if (multiplexer.isPresent() && AppPrefs.get().preferTerminalTabs().get()) {
+                        return multiplexer.get().supportsSplitView() ? prefsValue : null;
                     }
 
                     var term = AppPrefs.get().terminalType().getValue();
@@ -77,7 +77,8 @@ public enum TerminalSplitStrategy implements PrefsChoiceValue {
                 },
                 AppPrefs.get().terminalSplitStrategy(),
                 AppPrefs.get().terminalMultiplexer(),
-                AppPrefs.get().terminalType());
+                AppPrefs.get().terminalType(),
+                AppPrefs.get().preferTerminalTabs());
         return splitStrategy;
     }
 
