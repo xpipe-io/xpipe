@@ -33,7 +33,7 @@ public class VncLaunchConfig {
 
     public Optional<SecretValue> retrievePassword() {
         var strat = entry.getStore().getPassword();
-        if (!strat.expectsQuery()) {
+        if (strat == null || !strat.expectsQuery()) {
             return Optional.empty();
         }
 
