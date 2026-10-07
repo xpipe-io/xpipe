@@ -208,7 +208,8 @@ public final class FilePath {
     }
 
     public FilePath resolveTildeHome(FilePath dir) {
-        return value.startsWith("~") ? FilePath.of(value.replace("~", dir.toString())) : this;
+        var resolve = value.equals("~") || value.startsWith("~/") || value.startsWith("~\\");
+        return resolve ? FilePath.of(dir.toString() + value.substring(1)) : this;
     }
 
     public List<String> split() {
