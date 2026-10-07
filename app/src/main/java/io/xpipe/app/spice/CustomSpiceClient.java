@@ -45,7 +45,7 @@ public class CustomSpiceClient implements ExternalSpiceClient {
         var format = command.toLowerCase(Locale.ROOT).contains("$file") ? command : command + " $FILE";
         var toExecute = ExternalApplicationHelper.replaceVariableArgument(
                 format, "FILE", configuration.getFile().toString(), true);
-        ExternalApplicationHelper.startAsync(CommandBuilder.of().add(toExecute));
+        ExternalApplicationHelper.startAsync(toExecute);
     }
 
     @Override

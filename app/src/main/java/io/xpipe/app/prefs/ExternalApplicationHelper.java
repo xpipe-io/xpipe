@@ -6,11 +6,13 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.OsType;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Locale;
-import java.util.stream.Collectors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ExternalApplicationHelper {
 
@@ -30,27 +32,43 @@ public class ExternalApplicationHelper {
         }
 
         raw = raw.strip();
-        var split = Arrays.asList(raw.split("\\s+"));
-        if (split.size() == 0) {
+        if (raw.isEmpty()) {
             return;
         }
 
+        var split = Arrays.asList(raw.split("\\s+"));
+
         String exec;
         String args;
-        if (raw.startsWith("\"")) {
-            var end = raw.substring(1).indexOf("\"");
+        // The executable can be quoted with either double or single quotes
+        if (raw.startsWith("\"") || raw.startsWith("'")) {
+            var quote = raw.charAt(0);
+            var end = raw.indexOf(quote, 1);
             if (end == -1) {
                 return;
             }
-            end++;
             exec = raw.substring(1, end);
             args = raw.substring(end + 1).strip();
         } else {
             exec = split.getFirst();
-            args = split.stream().skip(1).collect(Collectors.joining(" "));
+            // Keep the original spacing, as it might be part of quoted arguments
+            args = raw.substring(exec.length()).strip();
         }
 
-        startAsync(CommandBuilder.of().addFile(exec).add(args));
+        // On Windows, the arguments are passed as-is to the program, which only understands double quotes
+        if (OsType.ofLocal() == OsType.WINDOWS) {
+            args = convertSingleQuotedArguments(args);
+        }
+
+        startAsync(CommandBuilder.of().addFile(exec).addIf(!args.isEmpty(), args));
+    }
+
+    private static final Pattern SINGLE_QUOTED_ARGUMENT = Pattern.compile("'((?:[^']|'')*)'");
+
+    private static String convertSingleQuotedArguments(String args) {
+        return SINGLE_QUOTED_ARGUMENT
+                .matcher(args)
+                .replaceAll(m -> Matcher.quoteReplacement("\"" + m.group(1).replace("''", "'") + "\""));
     }
 
     public static void startAsync(CommandBuilder b) throws Exception {

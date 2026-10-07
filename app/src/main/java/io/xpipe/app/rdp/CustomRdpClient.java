@@ -45,13 +45,12 @@ public class CustomRdpClient implements ExternalApplicationType, ExternalRdpClie
         }
 
         var format = command.toLowerCase(Locale.ROOT).contains("$file") ? command : command + " $FILE";
-        ExternalApplicationHelper.startAsync(CommandBuilder.of()
-                .add(ExternalApplicationHelper.replaceVariableArgument(
+        ExternalApplicationHelper.startAsync(ExternalApplicationHelper.replaceVariableArgument(
                         format,
                         "FILE",
                         writeRdpConfigFile(configuration.getTitle(), configuration.getConfig())
                                 .toString(),
-                        true)));
+                        true));
     }
 
     @Override
