@@ -26,6 +26,8 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public interface WezTerminalType extends ExternalTerminalType, TrackableTerminalType {
 
@@ -66,15 +68,11 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         }
     }
 
-    default Optional<Path> waitForInstanceStart(int count) {
-        Path dir = getSocketDir();
-        if (!Files.exists(dir)) {
-            return Optional.empty();
-        }
-
+    default Optional<Path> waitForInstanceStart(int count, Set<Path> excludedSockets) {
+        // The socket directory might not exist yet on the first launch, so keep waiting for it
         for (int i = 0; i < count; i++) {
             ThreadHelper.sleep(100);
-            var active = getActiveSocket();
+            var active = getActiveSocket(excludedSockets);
             if (active.isPresent()) {
                 return active;
             }
@@ -83,7 +81,21 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         return Optional.empty();
     }
 
-    default Optional<Path> getActiveSocket() {
+    default Set<Path> listSockets() {
+        Path dir = getSocketDir();
+        if (!Files.exists(dir)) {
+            return Set.of();
+        }
+
+        try (var stream = Files.list(dir)) {
+            return stream.filter(path -> path.getFileName().toString().contains("gui-sock"))
+                    .collect(Collectors.toSet());
+        } catch (IOException ignored) {
+            return Set.of();
+        }
+    }
+
+    default Optional<Path> getActiveSocket(Set<Path> excludedSockets) {
         Path dir = getSocketDir();
         if (!Files.exists(dir)) {
             return Optional.empty();
@@ -100,7 +112,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                             .reversed())
                     .toList();
             for (Path file : files) {
-                if (file.getFileName().toString().contains("gui-sock")) {
+                if (file.getFileName().toString().contains("gui-sock") && !excludedSockets.contains(file)) {
                     try (SocketChannel channel = SocketChannel.open(StandardProtocolFamily.UNIX)) {
                         if (channel.connect(UnixDomainSocketAddress.of(file))) {
                             if (channel.isConnected()) {
@@ -120,7 +132,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
     @Override
     default void launch(TerminalLaunchConfiguration configuration) throws Exception {
         var base = getWeztermCommandBase();
-        var activeSocket = waitForInstanceStart(1);
+        var activeSocket = waitForInstanceStart(1, Set.of());
         var paneId = "0";
         // Always start a new window for split panes as we can't find the pane index to start with
         if (activeSocket.isEmpty() || configuration.getPanes().size() > 1 || !configuration.isPreferTabs()) {
@@ -145,8 +157,11 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
 
             command.add("--always-new-process")
                     .add(configuration.getPanes().getFirst().getDialectLaunchCommand());
+            // Each process creates its own socket, so we have to find the one of our new process
+            // Otherwise we would send the following commands to an already running instance
+            var existingSockets = listSockets();
             ExternalApplicationHelper.startAsync(command);
-            activeSocket = waitForInstanceStart(50);
+            activeSocket = waitForInstanceStart(50, existingSockets);
             if (activeSocket.isEmpty()) {
                 return;
             }
