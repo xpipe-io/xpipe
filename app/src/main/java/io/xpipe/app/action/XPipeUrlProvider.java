@@ -22,7 +22,7 @@ public class XPipeUrlProvider implements LauncherUrlProvider {
     public AbstractAction createAction(URI uri) throws Exception {
         var a = uri.getHost();
 
-        if (a.equals("webtop")) {
+        if ("webtop".equals(a)) {
             ProcModuleProvider.get().openWebtopUrl(uri);
             return null;
         }
@@ -32,7 +32,7 @@ public class XPipeUrlProvider implements LauncherUrlProvider {
                 return null;
             }
 
-            var query = uri.getQuery();
+            var query = uri.getRawQuery();
             var action = ActionUrls.parse(query);
 
             if (action.isPresent() && !action.get().requiresConfirmation()) {
