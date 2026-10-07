@@ -102,13 +102,13 @@ public class BrowserFileTransferOperation {
             return BrowserDialogs.FileConflictChoice.REPLACE;
         }
 
-        if (lastConflictChoice == BrowserDialogs.FileConflictChoice.RENAME_ALL) {
-            return BrowserDialogs.FileConflictChoice.RENAME;
-        }
-
         if (fileSystem.fileExists(target)) {
             if (lastConflictChoice == BrowserDialogs.FileConflictChoice.SKIP_ALL) {
                 return BrowserDialogs.FileConflictChoice.SKIP;
+            }
+
+            if (lastConflictChoice == BrowserDialogs.FileConflictChoice.RENAME_ALL) {
+                return BrowserDialogs.FileConflictChoice.RENAME;
             }
 
             var choice = BrowserDialogs.showFileConflictDialog(target, multiple);
