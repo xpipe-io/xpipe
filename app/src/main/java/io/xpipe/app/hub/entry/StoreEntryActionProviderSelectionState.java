@@ -26,6 +26,7 @@ public class StoreEntryActionProviderSelectionState {
     }
 
     public static StoreEntryActionProviderSelectionState of(DataStoreEntry entry) {
+
         return new StoreEntryActionProviderSelectionState(
                 entry.getValidity(),
                 entry.getStoreCache(),
