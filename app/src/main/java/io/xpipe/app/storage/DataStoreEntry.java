@@ -392,6 +392,9 @@ public class DataStoreEntry extends DataStorageElement {
                 || !Objects.equals(getName(), other.getName())
                 || !Objects.equals(getNotes(), other.getNotes())
                 || !Objects.equals(getColor(), other.getColor())
+                || !Objects.equals(isPinToTop(), other.isPinToTop())
+                || !Objects.equals(getBreakOutCategory(), other.getBreakOutCategory())
+                || !Objects.equals(tags, other.tags)
                 || !Objects.equals(getCategoryUuid(), other.getCategoryUuid())
                 || !Objects.equals(getOrderIndex(), other.getOrderIndex())
                 || !Objects.equals(isTemplate(), other.isTemplate())
@@ -660,6 +663,14 @@ public class DataStoreEntry extends DataStorageElement {
         categoryUuid = e.categoryUuid;
         orderIndex = e.orderIndex;
         template = e.template;
+        color = e.color;
+        notesNode = e.notesNode;
+        pinToTop = e.pinToTop;
+        breakOutCategory = e.breakOutCategory;
+        if (!Objects.equals(tags, e.tags)) {
+            tags.clear();
+            tags.addAll(e.tags);
+        }
         notifyUpdate(false, true);
     }
 

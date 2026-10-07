@@ -366,6 +366,26 @@ public abstract class DataStorage {
             newEntry.setOrderIndex(orderIndex);
         }
 
+        if (entry.getColor() != null && newEntry.getColor() == null) {
+            newEntry.setColor(entry.getColor());
+        }
+
+        if (entry.getNotes() != null && newEntry.getNotes() == null) {
+            newEntry.setNotes(entry.getNotes());
+        }
+
+        if (entry.isPinToTop() && !newEntry.isPinToTop()) {
+            newEntry.setPinToTop(true);
+        }
+
+        if (!entry.getTags().isEmpty() && newEntry.getTags().isEmpty()) {
+            newEntry.getTags().addAll(entry.getTags());
+        }
+
+        if (entry.getBreakOutCategory() != null && newEntry.getBreakOutCategory() == null && entry.getCategoryUuid().equals(newEntry.getCategoryUuid())) {
+            getStoreCategoryIfPresent(entry.getBreakOutCategory()).ifPresent(newEntry::setBreakOutCategory);
+        }
+
         var syntheticParent = getSyntheticParent(newEntry);
         if (syntheticParent.isPresent()) {
             addStoreEntryIfNotPresent(syntheticParent.get());
