@@ -36,7 +36,7 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
     private final BooleanProperty opened = new SimpleBooleanProperty();
     private TerminalView.Listener listener;
     private final ObservableBooleanValue viewActive;
-    private boolean closed;
+    private volatile boolean closed;
 
     public BrowserTerminalDockTabModel(
             BrowserAbstractSessionModel<?> browserModel,
@@ -129,7 +129,7 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
 
         viewActive.subscribe(active -> {
             // This can in theory be called if this session is closed but not gced yet
-            if (!browserModel.getSessionEntries().contains(this)) {
+            if (closed) {
                 return;
             }
 
@@ -143,7 +143,7 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
         });
         AppDialog.getModalOverlaysRaw().addListener((ListChangeListener<? super ModalOverlay>) c -> {
             // This can in theory be called if this session is closed but not gced yet
-            if (!browserModel.getSessionEntries().contains(this)) {
+            if (closed) {
                 return;
             }
 
