@@ -125,7 +125,7 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
                     return;
                 }
 
-                if (!fixedName.endsWith(getExtension())) {
+                if (!fixedName.endsWith("." + getExtension())) {
                     fixedName = fixedName + "." + getExtension();
                 }
 
