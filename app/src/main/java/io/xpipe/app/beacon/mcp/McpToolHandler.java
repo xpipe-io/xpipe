@@ -123,6 +123,14 @@ public interface McpToolHandler
             return b;
         }
 
+        public Optional<FilePath> getOptionalFilePath(ShellControl sc, String key) throws Exception {
+            if (getOptionalStringArgument(key).isEmpty()) {
+                return Optional.empty();
+            }
+
+            return Optional.of(getFilePath(sc, key));
+        }
+
         public FilePath getFilePath(ShellControl sc, String key) throws Exception {
             var s = getStringArgument(key);
             var path = FilePath.parse(s);

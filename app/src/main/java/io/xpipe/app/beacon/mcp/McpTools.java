@@ -434,12 +434,13 @@ public final class McpTools {
                 .tool(tool)
                 .callHandler(McpToolHandler.of((req) -> {
                     var system = req.getStringArgument("system");
-                    var script = req.getDataStoreRef("script");
-                    var arguments = req.getStringArgument("arguments");
+                    var script = req.getDataStoreRef(req.getStringArgument("script"));
+                    var arguments = req.getOptionalStringArgument("arguments").orElse(null);
 
                     var shellStore = req.getShellStoreRef(system, true);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
-                    var directory = req.getFilePath(shellSession.getControl(), "directory");
+                    var directory = req.getOptionalFilePath(shellSession.getControl(), "directory")
+                            .orElse(null);
 
                     var clazz = Class.forName(
                             AppExtensionManager.getInstance()
