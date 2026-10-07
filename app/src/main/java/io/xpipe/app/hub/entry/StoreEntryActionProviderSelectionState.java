@@ -5,6 +5,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 
 import lombok.Value;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Value
@@ -26,10 +27,15 @@ public class StoreEntryActionProviderSelectionState {
     }
 
     public static StoreEntryActionProviderSelectionState of(DataStoreEntry entry) {
+        // The store cache is mutated in place, so copy it
+        Map<String, Object> cache;
+        synchronized (entry.getStoreCache()) {
+            cache = new HashMap<>(entry.getStoreCache());
+        }
 
         return new StoreEntryActionProviderSelectionState(
                 entry.getValidity(),
-                entry.getStoreCache(),
+                cache,
                 entry.getStorePersistentState(),
                 entry.getStore() != null ? entry.getStore().getClass() : null,
                 AppSizeBreakpoints.compactMode().get(),
