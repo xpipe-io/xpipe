@@ -123,6 +123,7 @@ public enum PlatformState {
             var msg = getErrorMessage(e.getMessage());
             PlatformState.setCurrent(PlatformState.EXITED);
             lastError = new UnsupportedOperationException(msg, e);
+            ErrorEventFactory.expected(e);
             ErrorEventFactory.expected(lastError);
             return;
         } catch (Throwable t) {

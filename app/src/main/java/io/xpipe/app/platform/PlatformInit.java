@@ -66,10 +66,10 @@ public class PlatformInit {
             loadingThread = null;
         });
         if (wait) {
+            latch.await();
             if (error != null) {
                 throw error;
             }
-            latch.await();
         }
     }
 
