@@ -2,6 +2,7 @@ package io.xpipe.app.hub.entry;
 
 import io.xpipe.app.core.AppSizeBreakpoints;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.store.DataStore;
 
 import lombok.Value;
 
@@ -17,7 +18,7 @@ public class StoreEntryActionProviderSelectionState {
     DataStoreEntry.Validity validity;
     Map<String, Object> cache;
     Object state;
-    Class<?> storeClass;
+    DataStore store;
     boolean compact;
     boolean template;
     int changeCounter;
@@ -37,7 +38,7 @@ public class StoreEntryActionProviderSelectionState {
                 entry.getValidity(),
                 cache,
                 entry.getStorePersistentState(),
-                entry.getStore() != null ? entry.getStore().getClass() : null,
+                entry.getStore(),
                 AppSizeBreakpoints.compactMode().get(),
                 entry.isTemplate(),
                 externalChangeCounter);
