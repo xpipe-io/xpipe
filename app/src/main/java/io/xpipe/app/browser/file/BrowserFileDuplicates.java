@@ -1,6 +1,7 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.fs.FileSystem;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.FilePath;
 
 import java.util.regex.Pattern;
@@ -8,14 +9,17 @@ import java.util.regex.Pattern;
 public class BrowserFileDuplicates {
 
     public static FilePath renameFileDuplicate(FileSystem fileSystem, FilePath target, boolean dir) throws Exception {
-        // Who has more than 10 copies?
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 50; i++) {
             target = renameFile(target, dir);
-            if ((dir && !fileSystem.directoryExists(target)) || (!dir && !fileSystem.fileExists(target))) {
+            // A file and a directory can't share a name, so check for both
+            if (!fileSystem.fileExists(target) && !fileSystem.directoryExists(target)) {
                 return target;
             }
         }
-        return target;
+
+        // How tf has more than 50 duplicates anyway
+        throw ErrorEventFactory.expected(
+                new IllegalStateException("Unable to find a free name for a copy of " + target.getFileName()));
     }
 
     static FilePath renameFile(FilePath target, boolean dir) {
