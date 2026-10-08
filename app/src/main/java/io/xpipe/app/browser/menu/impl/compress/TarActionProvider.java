@@ -42,7 +42,7 @@ public class TarActionProvider implements BrowserActionProvider {
                         .add("find")
                         .addFile(dir.removeTrailingSlash().toUnix())
                         .add("|", "sed")
-                        .addLiteral("s,^" + dir.toDirectory().toUnix() + "*,,")
+                        .addLiteral("s,^" + escapeSedRegex(dir.removeTrailingSlash().toUnix().toString()) + "/*,,")
                         .add("|");
                 command.add(tar).add("--no-recursion").add("-C").addFile(dir.toDirectory().toUnix()).add("-T", "-");
                 sc.command(command).execute();
@@ -55,6 +55,11 @@ public class TarActionProvider implements BrowserActionProvider {
                 sc.command(command).execute();
             }
             model.refreshSync();
+        }
+
+        private static String escapeSedRegex(String s) {
+            // Escape all characters that are special in a basic regex, including the , delimiter
+            return s.replaceAll("[\\\\.\\[\\]*^$,]", "\\\\$0");
         }
 
         @Override
