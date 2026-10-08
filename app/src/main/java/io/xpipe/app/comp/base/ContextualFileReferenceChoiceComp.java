@@ -146,8 +146,10 @@ public class ContextualFileReferenceChoiceComp extends RegionBuilder<HBox> {
 
                 var ppkSource = Path.of(sourceBase + ".ppk");
                 if (Files.exists(ppkSource)) {
-                    var ppkTarget = Path.of(target.toString() + ".ppk");
-                    handler.addDataFile(ppkSource, ppkTarget, sync.getScope().get());
+                    var ppkTarget = sync.getTargetLocation().apply(ppkSource);
+                    if (ppkTarget != null) {
+                        handler.addDataFile(ppkSource, ppkTarget, sync.getScope().get());
+                    }
                 }
 
                 Platform.runLater(() -> {
