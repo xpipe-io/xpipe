@@ -959,7 +959,7 @@ public abstract class DataStorage {
         this.listeners.forEach(l -> l.onStoreRemove(toDelete.toArray(DataStoreEntry[]::new)));
 
         for (var td : toDelete) {
-            td.finalizeEntry();
+            finalizeWithDependencies(td);
             this.storeEntriesSet.remove(td);
             synchronized (identityStoreEntryMapCache) {
                 identityStoreEntryMapCache.remove(td.getStore());
