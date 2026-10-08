@@ -55,7 +55,7 @@ public class WrapperShellControl implements ShellControl {
 
     @Override
     public boolean isRunning(boolean refresh) {
-        return parent.isRunning(true);
+        return parent.isRunning(refresh);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class WrapperShellControl implements ShellControl {
 
     @Override
     public boolean isInactive(Duration max) {
-        return false;
+        return parent.isInactive(max);
     }
 
     @Override

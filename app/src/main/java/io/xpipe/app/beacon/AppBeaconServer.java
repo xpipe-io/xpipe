@@ -82,7 +82,10 @@ public class AppBeaconServer {
         } catch (Exception ex) {
             // Not terminal!
             // We can still continue without the running server
-            ErrorEventFactory.fromThrowable("Unable to start local http server on port " + INSTANCE.getPort(), ex)
+            // The instance is not set if the constructor itself failed
+            var message = "Unable to start local http server"
+                    + (INSTANCE != null ? " on port " + INSTANCE.getPort() : "");
+            ErrorEventFactory.fromThrowable(message, ex)
                     .documentationLink(DocumentationLink.BEACON_PORT_BIND)
                     .build()
                     .handle();

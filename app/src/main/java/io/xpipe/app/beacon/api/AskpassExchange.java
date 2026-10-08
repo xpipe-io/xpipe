@@ -71,7 +71,7 @@ public class AskpassExchange extends BeaconInterface<AskpassExchange.Request> {
             return Response.builder().value(InPlaceSecretValue.of("")).build();
         }
 
-        var prompt = msg.getPrompt();
+        var prompt = msg.getPrompt() != null ? msg.getPrompt() : "Enter secret";
         // sudo-rs uses a different prefix which we don't really need
         prompt = prompt.replace("[sudo: authenticate]", "[sudo]");
 

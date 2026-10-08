@@ -121,7 +121,7 @@ public class BrowserFileListCompEntry {
                 tv.getSelectionModel().getSelectedIndices().stream()
                         .mapToInt(value -> value)
                         .min()
-                        .orElse(1));
+                        .orElse(0));
         var max = Math.max(
                 index,
                 tv.getSelectionModel().getSelectedIndices().stream()
