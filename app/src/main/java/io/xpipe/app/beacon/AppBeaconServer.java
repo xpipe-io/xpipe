@@ -229,6 +229,13 @@ public class AppBeaconServer {
                 var mcpServer = AppMcpServer.get();
                 if (mcpServer != null) {
                     mcpServer.getHttpHandler().handle(exchange);
+                } else {
+                    var body = "MCP server is not initialized yet".getBytes(StandardCharsets.UTF_8);
+                    exchange.sendResponseHeaders(503, body.length);
+                    try (var out = exchange.getResponseBody()) {
+                        out.write(body);
+                    }
+                    exchange.close();
                 }
             }
         });
