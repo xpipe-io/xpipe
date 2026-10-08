@@ -6,26 +6,30 @@ import io.xpipe.app.issue.TrackEvent;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 public class LocalExec {
 
+    public static List<String> getEnvironmentVariablesToReset() {
+        return List.of(
+                // https://bugs.openjdk.org/browse/JDK-8360500
+                "_JPACKAGE_LAUNCHER",
+                // Debug mode vars
+                "JAVA_EXEC",
+                "CDS_JVM_OPTS",
+                // Custom java vars
+                "_JAVA_OPTIONS",
+                "JAVA_TOOL_OPTIONS",
+                "JDK_JAVA_OPTIONS",
+                // Dev vars
+                "XPIPE_MAPPING"
+        );
+    }
+
     public static void prepareLocalProcessEnvironment(Map<String, String> env) {
-        // https://bugs.openjdk.org/browse/JDK-8360500
-        env.remove("_JPACKAGE_LAUNCHER");
-
-        // Remove debug mode vars
-        env.remove("JAVA_EXEC");
-        env.remove("CDS_JVM_OPTS");
-
-        // Remove any custom java vars
-        env.remove("_JAVA_OPTIONS");
-        env.remove("JAVA_TOOL_OPTIONS");
-        env.remove("JDK_JAVA_OPTIONS");
-
-        // Remove dev vars
-        env.remove("XPIPE_MAPPING");
+        getEnvironmentVariablesToReset().forEach(env::remove);
 
         // Add proxy vars
         var proxyMap = HttpProxy.getEnvironmentVariables();

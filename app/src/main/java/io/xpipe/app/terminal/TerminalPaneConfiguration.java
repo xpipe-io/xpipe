@@ -9,6 +9,7 @@ import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.OsType;
 
 import lombok.AllArgsConstructor;
@@ -23,6 +24,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Value
 @RequiredArgsConstructor
@@ -54,6 +56,12 @@ public class TerminalPaneConfiguration {
         return logDir.resolve(logName);
     }
 
+    private static String getEnvOptionsResetCommand(ShellDialect dialect) {
+        return LocalExec.getEnvironmentVariablesToReset().stream()
+                .map(dialect::unsetEnvironmentVariableCommand)
+                .collect(Collectors.joining("\n"));
+    }
+
     public static TerminalPaneConfiguration create(
             UUID request,
             DataStoreEntry entry,
@@ -69,7 +77,8 @@ public class TerminalPaneConfiguration {
         if (!enableLogging || !AppPrefs.get().enableTerminalLogging().get()) {
             var sc = LocalShell.getShell();
             var register = TerminalLauncher.getTerminalRegisterCommand(request, sc);
-            var launcherScript = (debugMode ? sc.getShellDialect().getSetEnvironmentVariableCommand("XPIPE_DEBUG", "true") + "\n" : "") +
+            var launcherScript = getEnvOptionsResetCommand(sc.getShellDialect()) + "\n" +
+                    (debugMode ? sc.getShellDialect().getSetEnvironmentVariableCommand("XPIPE_DEBUG", "true") + "\n" : "") +
                     register + "\n" + sc.getShellDialect().terminalLauncherScript(sc, request, title, alwaysPromptRestart);
             var config = new TerminalPaneConfiguration(request, title, paneIndex, launcherScript, sc.getShellDialect());
             return config;
@@ -92,12 +101,14 @@ public class TerminalPaneConfiguration {
             var content = """
                           %s
                           %s
+                          %s
                           echo 'Session logging is active, output file is "sessions\\%s"'
                           Start-Transcript -Force -LiteralPath "%s" | Out-Null
                           & "%s"
                           Stop-Transcript | Out-Null
                           echo 'Session logging is finished, output file is "sessions\\%s"'
                           """.formatted(
+                            getEnvOptionsResetCommand(ShellDialects.POWERSHELL),
                             debugMode ? ShellDialects.POWERSHELL.getSetEnvironmentVariableCommand("XPIPE_DEBUG", "true") : "",
                             TerminalLauncher.getTerminalRegisterCommand(
                                     request, LocalShell.getLocalPowershell().orElseThrow()),
@@ -139,11 +150,13 @@ public class TerminalPaneConfiguration {
             var content = """
                           %s
                           %s
+                          %s
                           echo "Session logging is active, output file is sessions/%s"
                           %s
                           echo "Session logging is finished, output file is sessions/%s"
                           cat "%s" | "%s" terminal-clean > "%s.txt"
                           """.formatted(
+                            getEnvOptionsResetCommand(sc.getShellDialect()),
                             debugMode ? LocalShell.getShell()
                                         .getShellDialect().getSetEnvironmentVariableCommand("XPIPE_DEBUG", "true") : "",
                             TerminalLauncher.getTerminalRegisterCommand(request, sc),
