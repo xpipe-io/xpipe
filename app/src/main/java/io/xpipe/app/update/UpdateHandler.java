@@ -161,29 +161,34 @@ public abstract class UpdateHandler {
     }
 
     public final void prepareUpdate() {
-        if (busy.getValue()) {
-            return;
-        }
-
-        if (lastUpdateCheckResult.getValue() == null) {
-            return;
-        }
-
-        if (!lastUpdateCheckResult.getValue().isUpdate()) {
-            return;
-        }
-
-        if (preparedUpdate.getValue() != null) {
-            if (lastUpdateCheckResult
-                    .getValue()
-                    .getVersion()
-                    .equals(preparedUpdate.getValue().getVersion())) {
-                event("Update is already prepared ...");
+        BooleanScope busyScope;
+        synchronized (this) {
+            if (busy.getValue()) {
                 return;
             }
+
+            if (lastUpdateCheckResult.getValue() == null) {
+                return;
+            }
+
+            if (!lastUpdateCheckResult.getValue().isUpdate()) {
+                return;
+            }
+
+            if (preparedUpdate.getValue() != null) {
+                if (lastUpdateCheckResult
+                        .getValue()
+                        .getVersion()
+                        .equals(preparedUpdate.getValue().getVersion())) {
+                    event("Update is already prepared ...");
+                    return;
+                }
+            }
+
+            busyScope = new BooleanScope(busy).start();
         }
 
-        try (var ignored = new BooleanScope(busy).start()) {
+        try (var ignored = busyScope) {
             event("Performing update download ...");
             prepareUpdateImpl();
 

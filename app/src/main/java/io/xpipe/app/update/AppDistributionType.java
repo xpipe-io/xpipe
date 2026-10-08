@@ -267,7 +267,7 @@ public enum AppDistributionType implements Translatable {
         return AppDistributionType.NATIVE_INSTALLATION;
     }
 
-    public UpdateHandler getUpdateHandler() {
+    public synchronized UpdateHandler getUpdateHandler() {
         if (updateHandler == null) {
             updateHandler = updateHandlerSupplier.get();
         }
