@@ -98,8 +98,10 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
                     try {
                         list = PasswordManagerKeyList.queryList(false);
                     } catch (Exception e) {
-                        struc.setDisable(false);
-                        status.set(null);
+                        Platform.runLater(() -> {
+                            struc.setDisable(false);
+                            status.set(null);
+                        });
                         ErrorEventFactory.fromThrowable(e).handle();
                         return;
                     }
@@ -129,7 +131,14 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
                                         struc.setDisable(true);
                                         popover.hide();
                                         ThreadHelper.runAsync(() -> {
-                                            PasswordManagerKeyList.queryList(true);
+                                            try {
+                                                PasswordManagerKeyList.queryList(true);
+                                            } catch (Exception e) {
+                                                ErrorEventFactory.fromThrowable(e).handle();
+                                                Platform.runLater(() -> struc.setDisable(false));
+                                                return;
+                                            }
+
                                             Platform.runLater(() -> {
                                                 struc.setDisable(false);
                                                 struc.fire();
