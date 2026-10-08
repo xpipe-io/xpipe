@@ -49,10 +49,11 @@ public class TerminalPaneConfiguration {
         var suffix = index > 0 ? "-" + (index + 1) : "";
         var name = DataStorage.get().getStoreEntryDisplayName(entry) + "_" + DATE_FORMATTER.format(Instant.now())
                 + suffix + ".log";
+        // The file name is used in the logging shell scripts, so only keep basic chars
         var logName = OsFileSystem.ofLocal()
                 .makeFileSystemCompatible(FilePath.of(name))
                 .toString()
-                .replaceAll(" ", "_");
+                .replaceAll("[^\\p{L}\\p{N}._\\-]", "_");
         return logDir.resolve(logName);
     }
 
