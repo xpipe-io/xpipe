@@ -6,6 +6,7 @@ import io.xpipe.app.util.JacksonMapper;
 
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JavaType;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.JsonNodeFactory;
@@ -65,7 +66,7 @@ public class AppPrefsStorageHandler {
             var temp = file.resolveSibling(file.getFileName() + ".tmp");
             JacksonMapper.getDefault().writeValue(temp.toFile(), content);
             Files.move(temp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-        } catch (IOException e) {
+        } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).expected().handle();
         }
     }

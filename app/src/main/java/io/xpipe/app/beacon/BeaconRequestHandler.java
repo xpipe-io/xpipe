@@ -11,6 +11,7 @@ import io.xpipe.app.util.ThreadHelper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import lombok.SneakyThrows;
+import tools.jackson.core.JacksonException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,15 +86,21 @@ public class BeaconRequestHandler<T> implements HttpHandler {
                     if (!new String(read, StandardCharsets.US_ASCII).strip().startsWith("{") && rawDataRequestClass) {
                         object = createRawDataRequest(beaconInterface, read);
                     } else {
-                        var tree = JacksonMapper.getDefault().readTree(read);
-                        if (AppProperties.get().isPrintBeaconMessages()) {
-                            TrackEvent.trace("Parsed raw request:\n" + tree.toPrettyString());
+                        try {
+                            var tree = JacksonMapper.getDefault().readTree(read);
+                            if (AppProperties.get().isPrintBeaconMessages()) {
+                                TrackEvent.trace("Parsed raw request:\n" + tree.toPrettyString());
+                            }
+                            var emptyRequestClass = tree.isEmpty()
+                                    && beaconInterface.getRequestClass().getDeclaredFields().length == 0;
+                            object = emptyRequestClass
+                                    ? createDefaultRequest(beaconInterface)
+                                    : JacksonMapper.getDefault()
+                                            .treeToValue(tree, beaconInterface.getRequestClass());
+                        } catch (JacksonException ex) {
+                            // Jackson exceptions are unchecked, so convert any parsing issue into a client error here
+                            throw new BeaconClientException(formatRequestParseError(ex));
                         }
-                        var emptyRequestClass = tree.isEmpty()
-                                && beaconInterface.getRequestClass().getDeclaredFields().length == 0;
-                        object = emptyRequestClass
-                                ? createDefaultRequest(beaconInterface)
-                                : JacksonMapper.getDefault().treeToValue(tree, beaconInterface.getRequestClass());
                         if (AppProperties.get().isPrintBeaconMessages()) {
                             TrackEvent.trace("Parsed request object:\n" + object);
                         }
@@ -136,14 +143,7 @@ public class BeaconRequestHandler<T> implements HttpHandler {
                 ErrorEventFactory.fromThrowable(ex).omit().expected().handle();
             } else {
                 ErrorEventFactory.fromThrowable(ex).omit().expected().handle();
-                // Make deserialization error message more readable
-                var message = ex.getMessage()
-                        .replace("$RequestBuilder", "")
-                        .replace("Exchange$Request", "Request")
-                        .replace("at [Source: UNKNOWN; byte offset: #UNKNOWN]", "")
-                        .replaceAll("(\\w+) is marked non-null but is null", "field $1 is missing from object")
-                        .strip();
-                writeError(exchange, new BeaconClientErrorResponse(message), 400);
+                writeError(exchange, new BeaconClientErrorResponse(formatRequestParseError(ex)), 400);
             }
             return;
         } catch (Throwable other) {
@@ -186,6 +186,18 @@ public class BeaconRequestHandler<T> implements HttpHandler {
             var link = event.getLink();
             writeError(exchange, new BeaconServerErrorResponse(other, link), 500);
         }
+    }
+
+    private static String formatRequestParseError(Exception ex) {
+        // Make deserialization error message more readable
+        var message = ex.getMessage() != null ? ex.getMessage() : ex.getClass().getSimpleName();
+        return message.replace("$RequestBuilder", "")
+                .replace("Exchange$Request", "Request")
+                .replaceAll("(?s)\\s*at \\[No location information]", "")
+                .replaceAll("(?s)\\s*at \\[Source: .*?; (line: \\d+, column: \\d+)]", " ($1)")
+                .replaceAll("(?s)\\s*at \\[Source: .*?; byte offset: #\\S+]", "")
+                .replaceAll("(\\w+) is marked non-null but is null", "field $1 is missing from object")
+                .strip();
     }
 
     private void writeError(HttpExchange exchange, Object errorMessage, int code) {
