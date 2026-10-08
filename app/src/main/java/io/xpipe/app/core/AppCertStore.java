@@ -261,9 +261,15 @@ public class AppCertStore {
                     continue;
                 }
 
-                var cert = parseCertificate(f);
-                var name = FilenameUtils.getBaseName(f.getFileName().toString());
-                list.add(new Entry(name, f, cert));
+                try {
+                    var cert = parseCertificate(f);
+                    var name = FilenameUtils.getBaseName(f.getFileName().toString());
+                    list.add(new Entry(name, f, cert));
+                } catch (Exception e) {
+                    ErrorEventFactory.fromThrowable("Unable to load certificate file " + f, e)
+                            .expected()
+                            .handle();
+                }
             }
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).expected().handle();
