@@ -86,6 +86,10 @@ public class AppMcpServer {
     }
 
     public static void reset() {
+        if (INSTANCE == null) {
+            return;
+        }
+
         INSTANCE.mcpSyncServer.close();
         INSTANCE = null;
     }
