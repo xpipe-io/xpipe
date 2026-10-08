@@ -423,10 +423,13 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 && fileSystem.getShell().isPresent()) {
             var directory = currentPath.get();
             var name = adjustedPath;
+            // Only match whole executable names, e.g. shutdown should not be treated as sh
+            var firstWord = adjustedPath.strip().split("\\s+", 2)[0].toLowerCase();
             ThreadHelper.runFailableAsync(() -> {
-                if (ShellDialects.getStartableDialects().stream().anyMatch(dialect -> adjustedPath
-                        .toLowerCase()
-                        .startsWith(dialect.getExecutableName().toLowerCase()))) {
+                if (ShellDialects.getStartableDialects().stream().anyMatch(dialect -> {
+                    var executable = dialect.getExecutableName().toLowerCase();
+                    return firstWord.equals(executable) || firstWord.equals(executable + ".exe");
+                })) {
                     var sub = fileSystem.getShell().get().subShell();
                     var open = new ShellOpenFunction() {
 
