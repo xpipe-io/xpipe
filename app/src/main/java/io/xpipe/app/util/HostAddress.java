@@ -40,7 +40,12 @@ public class HostAddress {
             return null;
         }
 
-        return new HostAddress(host.strip(), List.of(host));
+        var stripped = host.strip();
+        if (stripped.isEmpty()) {
+            return null;
+        }
+
+        return new HostAddress(stripped, List.of(stripped));
     }
 
     public static HostAddress of(@NonNull List<String> addresses) {
