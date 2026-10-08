@@ -65,21 +65,21 @@ public class TmuxTerminalMultiplexer implements TerminalMultiplexer {
         var l = new ArrayList<String>();
         var firstCommand =
                 config.getPanes().getFirst().getDialectLaunchCommand().buildSimple();
-        l.add("tmux new-window -t xpipe -n " + control.getShellDialect().literalArgument(config.getColoredTitle()) + " "
+        l.add("tmux new-window -t '=xpipe:' -n " + control.getShellDialect().literalArgument(config.getColoredTitle()) + " "
                 + control.getShellDialect().literalArgument(firstCommand));
 
         if (config.getPanes().size() > 1) {
             for (int i = 1; i < config.getPanes().size(); i++) {
                 var iCommand =
                         config.getPanes().get(i).getDialectLaunchCommand().buildSimple();
-                l.add("tmux split-window -t xpipe " + control.getShellDialect().literalArgument(iCommand));
+                l.add("tmux split-window -t '=xpipe:' " + control.getShellDialect().literalArgument(iCommand));
             }
 
             var splitStrategy = AppPrefs.get().terminalSplitStrategy().getValue();
             var layoutName = splitStrategy == TerminalSplitStrategy.HORIZONTAL
                     ? "even-horizontal"
                     : splitStrategy == TerminalSplitStrategy.VERTICAL ? "even-vertical" : "tiled";
-            l.add("tmux select-layout -t xpipe " + layoutName);
+            l.add("tmux select-layout -t '=xpipe:' " + layoutName);
         }
 
         return ShellScript.lines(l);
@@ -91,27 +91,27 @@ public class TmuxTerminalMultiplexer implements TerminalMultiplexer {
         var firstCommand =
                 config.getPanes().getFirst().getDialectLaunchCommand().buildSimple();
         l.addAll(List.of(
-                "tmux kill-session -t xpipe >/dev/null 2>&1",
+                "tmux kill-session -t '=xpipe' >/dev/null 2>&1",
                 "tmux new-session -d -s xpipe",
-                "tmux rename-window " + control.getShellDialect().literalArgument(config.getColoredTitle()),
-                "tmux send-keys -t xpipe "
+                "tmux rename-window -t '=xpipe:' " + control.getShellDialect().literalArgument(config.getColoredTitle()),
+                "tmux send-keys -t '=xpipe:' "
                         + control.getShellDialect().literalArgument(" clear; " + firstCommand + "; exit") + " Enter"));
 
         if (config.getPanes().size() > 1) {
             for (int i = 1; i < config.getPanes().size(); i++) {
                 var iCommand =
                         config.getPanes().get(i).getDialectLaunchCommand().buildSimple();
-                l.add("tmux split-window -t xpipe " + control.getShellDialect().literalArgument(iCommand));
+                l.add("tmux split-window -t '=xpipe:' " + control.getShellDialect().literalArgument(iCommand));
             }
 
             var splitStrategy = AppPrefs.get().terminalSplitStrategy().getValue();
             var layoutName = splitStrategy == TerminalSplitStrategy.HORIZONTAL
                     ? "even-horizontal"
                     : splitStrategy == TerminalSplitStrategy.VERTICAL ? "even-vertical" : "tiled";
-            l.add("tmux select-layout -t xpipe " + layoutName);
+            l.add("tmux select-layout -t '=xpipe:' " + layoutName);
         }
 
-        l.add("tmux attach -d -t xpipe");
+        l.add("tmux attach -d -t '=xpipe'");
 
         return ShellScript.lines(l);
     }
