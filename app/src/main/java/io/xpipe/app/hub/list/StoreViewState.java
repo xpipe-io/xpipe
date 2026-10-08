@@ -481,9 +481,14 @@ public class StoreViewState {
         // Ugly solution to ensure that the category is added to the scene
         GlobalTimer.delay(
                 () -> {
-                    var wrapper = getCategoryWrapper(cat);
                     Platform.runLater(() -> {
-                        wrapper.getRenameTrigger().fire(null);
+                        StoreCategoryWrapper wrapper;
+                        synchronized (this) {
+                            wrapper = categoryWrapperMap.get(cat);
+                        }
+                        if (wrapper != null) {
+                            wrapper.getRenameTrigger().fire(null);
+                        }
                     });
                 },
                 Duration.ofMillis(500));
@@ -610,17 +615,17 @@ public class StoreViewState {
 
             @Override
             public void onCategoryRemove(DataStoreCategory category) {
-                Optional<StoreCategoryWrapper> found;
-                synchronized (StoreViewState.this) {
-                    found = Optional.ofNullable(categoryWrapperMap.get(category));
-                }
-                if (found.isEmpty()) {
-                    return;
-                }
-
                 Platform.runLater(() -> {
                     // Don't update anything if we have already reset
                     if (INSTANCE == null) {
+                        return;
+                    }
+
+                    Optional<StoreCategoryWrapper> found;
+                    synchronized (StoreViewState.this) {
+                        found = Optional.ofNullable(categoryWrapperMap.get(category));
+                    }
+                    if (found.isEmpty()) {
                         return;
                     }
 
