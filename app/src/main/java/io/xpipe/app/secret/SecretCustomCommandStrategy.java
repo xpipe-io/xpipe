@@ -59,7 +59,10 @@ public class SecretCustomCommandStrategy implements SecretRetrievalStrategy {
             @Override
             public SecretQueryResult query(String prompt, boolean forceFocus) {
                 if (command == null || command.getValue().isBlank()) {
-                    throw ErrorEventFactory.expected(new IllegalStateException("No custom command specified"));
+                    ErrorEventFactory.fromMessage("No custom command specified")
+                            .expected()
+                            .handle();
+                    return new SecretQueryResult(null, SecretQueryState.RETRIEVAL_FAILURE);
                 }
 
                 try (var sc =
