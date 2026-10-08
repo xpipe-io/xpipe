@@ -6,9 +6,9 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcModuleProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ContextualFileReference;
-import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.UuidHelper;
 import io.xpipe.app.util.ValidationException;
 import io.xpipe.app.util.Validators;
@@ -23,6 +23,7 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
@@ -123,12 +124,31 @@ public interface ScriptCollectionSource {
         }
 
         private String getName() {
-            var name = FilePath.of(url).getFileName();
-            if (!name.isEmpty()) {
-                return name;
+            var id = UuidHelper.generateFromObject(url).toString();
+
+            // We want to support any kind of git URLs here, not only HTTPS
+
+            String path;
+            try {
+                path = URI.create(url).getPath();
+            } catch (IllegalArgumentException e) {
+                path = null;
+            }
+            if (path == null) {
+                path = url;
             }
 
-            return UuidHelper.generateFromObject(url).toString();
+            var segments = path.split("[/\\\\:]");
+            var lastSegment = segments.length > 0 ? segments[segments.length - 1] : "";
+            var name = OsFileSystem.ofLocal().makeFileSystemCompatible(lastSegment);
+            if (name.isEmpty()) {
+                return id;
+            }
+
+            if (name.length() > 64) {
+                name = name.substring(0, 64);
+            }
+            return name + "-" + id.substring(0, 8);
         }
 
         @Override
