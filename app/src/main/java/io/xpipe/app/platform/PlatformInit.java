@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class PlatformInit {
 
@@ -97,11 +98,20 @@ public class PlatformInit {
 
             // Must not be called on platform thread
             // This will not finish until the platform exits, so we use a platform thread to not lose a virtual one
+            var launchError = new AtomicReference<Throwable>();
             ThreadHelper.createPlatformThread("app-wait", false, () -> {
-                        Application.launch(App.class);
+                        try {
+                            Application.launch(App.class);
+                        } catch (Throwable t) {
+                            launchError.set(t);
+                        }
                     })
                     .start();
             while (App.getApp() == null) {
+                if (launchError.get() != null) {
+                    throw launchError.get();
+                }
+
                 ThreadHelper.sleep(10);
             }
             NativeBridge.init();
