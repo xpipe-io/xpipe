@@ -124,6 +124,17 @@ public class HttpHelper {
                         ? new String(b, StandardCharsets.UTF_8)
                         : "Received HTTP " + res.statusCode() + " without further details";
                 throw new IOException(msg);
+            } else if (res.body() instanceof InputStream in) {
+                byte[] b;
+                try (in) {
+                    b = in.readAllBytes();
+                }
+                var msg = b.length > 0
+                        ? new String(b, StandardCharsets.UTF_8)
+                        : "Received HTTP " + res.statusCode() + " without further details";
+                throw new IOException(msg);
+            } else {
+                throw new IOException("Received HTTP " + res.statusCode() + " without further details");
             }
         }
     }
