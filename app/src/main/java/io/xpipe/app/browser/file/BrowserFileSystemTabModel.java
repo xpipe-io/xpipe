@@ -512,7 +512,15 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         // Assume that the path is normalized to improve performance!
         // path = FileSystemHelper.normalizeDirectoryPath(this, path);
 
-        loadFilesSync(path);
+        var loaded = loadFilesSync(path);
+        if (loaded && path != null) {
+            try {
+                getFileSystem().cd(path);
+            } catch (Exception e) {
+                // This shouldn't happen as we checked the dir before
+                ErrorEventFactory.fromThrowable(e).handle();
+            }
+        }
         filter.setValue(null);
         savedState.cd(path);
         history.updateCurrent(path);
