@@ -116,6 +116,12 @@ public class BrowserFileListCompEntry {
 
         var all = tv.getItems();
         var index = item != null ? all.indexOf(item) : all.size() - 1;
+        // The list is empty or the item is no longer shown
+        if (index < 0) {
+            t.consume();
+            return;
+        }
+
         var min = Math.min(
                 index,
                 tv.getSelectionModel().getSelectedIndices().stream()
