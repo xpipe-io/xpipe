@@ -7,6 +7,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.store.DataStore;
 import io.xpipe.app.store.ShellStore;
+import io.xpipe.app.util.ThreadHelper;
 
 import lombok.Value;
 
@@ -61,11 +62,13 @@ public class TerminalProxyManager {
         var hasCustomTerminalShell =
                 uuid != null && !DataStorage.get().local().getUuid().equals(uuid);
         if (!hasCustomTerminalShell) {
+            setActiveSession(null);
             return Optional.empty();
         }
 
         var foundEntry = DataStorage.get().getStoreEntryIfPresent(uuid);
         if (foundEntry.isEmpty()) {
+            setActiveSession(null);
             return Optional.empty();
         }
 
@@ -81,7 +84,7 @@ public class TerminalProxyManager {
                 return Optional.of(matchingSession.getControl());
             } catch (Exception ex) {
                 ErrorEventFactory.fromThrowable(ex).handle();
-                activeSession = new ActiveSession(uuid, null);
+                setActiveSession(new ActiveSession(uuid, null));
                 return Optional.empty();
             }
         }
@@ -90,14 +93,30 @@ public class TerminalProxyManager {
             var control = createControl(foundEntry.get().ref());
             if (control.isPresent()) {
                 control.get().start();
-                activeSession = new ActiveSession(uuid, control.get());
+                setActiveSession(new ActiveSession(uuid, control.get()));
                 return control;
             }
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();
         }
-        activeSession = new ActiveSession(uuid, null);
+        setActiveSession(new ActiveSession(uuid, null));
         return Optional.empty();
+    }
+
+    private static synchronized void setActiveSession(ActiveSession session) {
+        var previous = activeSession;
+        activeSession = session;
+
+        var close = previous != null && previous.getControl() != null && (session == null || previous.getControl() != session.getControl());
+        if (close) {
+            ThreadHelper.runAsync(() -> {
+                try {
+                    previous.getControl().close();
+                } catch (Exception e) {
+                    ErrorEventFactory.fromThrowable(e).omit().handle();
+                }
+            });
+        }
     }
 
     private static Optional<ShellControl> createControl(DataStoreEntryRef<DataStore> ref) throws Exception {
