@@ -118,7 +118,7 @@ public class RemminaHelper {
                         h,
                         maximize,
                         !gateway.isEmpty() ? "\n" + String.join("\n", gateway) : "",
-                        optionsString);
+                        !optionsString.isEmpty() ? "\n" + optionsString : "");
         Files.createDirectories(file.getParent());
         Files.writeString(file, string);
         return file;
@@ -157,7 +157,7 @@ public class RemminaHelper {
                         w,
                         h,
                         maximize,
-                        optionsString);
+                        !optionsString.isEmpty() ? "\n" + optionsString : "");
         Files.createDirectories(file.getParent());
         Files.writeString(file, string);
         return file;
