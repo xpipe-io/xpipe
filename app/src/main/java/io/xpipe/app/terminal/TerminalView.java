@@ -23,7 +23,7 @@ public class TerminalView {
     private final List<Listener> listeners = new ArrayList<>();
     private final Map<UUID, UUID> substitutions = new HashMap<>();
 
-    public void addSubstitution(UUID request, UUID target) {
+    public synchronized void addSubstitution(UUID request, UUID target) {
         substitutions.put(request, target);
     }
 
@@ -204,6 +204,7 @@ public class TerminalView {
             var alive = session.shell.isAlive() && session.getTerminal().isRunning();
             if (!alive) {
                 sessions.remove(session);
+                substitutions.remove(session.getRequest());
                 forListeners(listener -> listener.onSessionClosed(session));
             }
         }

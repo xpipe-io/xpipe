@@ -10,9 +10,11 @@ import java.util.*;
 
 public class TerminalMultiplexerManager {
 
-    private static final Map<UUID, TerminalMultiplexer> connectionHubRequests = new HashMap<>();
-    private static UUID pendingMultiplexerLaunch;
-    private static UUID runningMultiplexerContainer;
+    // Values can be null, so we can't use a concurrent map
+    private static final Map<UUID, TerminalMultiplexer> connectionHubRequests =
+            Collections.synchronizedMap(new HashMap<>());
+    private static volatile UUID pendingMultiplexerLaunch;
+    private static volatile UUID runningMultiplexerContainer;
     private static Boolean availableOnWindows;
 
     public static void registerMultiplexerContainerLaunch(UUID uuid) {
