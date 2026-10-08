@@ -144,10 +144,11 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
         @Override
         public void launch(TerminalLaunchConfiguration configuration) {
             var pane = configuration.single();
+            var scriptArg = URLEncoder.encode(pane.getScriptFile().toString(), StandardCharsets.UTF_8);
             if (!configuration.isPreferTabs()) {
-                DesktopHelper.openAssociatedApplication("warp://action/new_window?path=" + pane.getScriptFile());
+                DesktopHelper.openAssociatedApplication("warp://action/new_window?path=" + scriptArg);
             } else {
-                DesktopHelper.openAssociatedApplication("warp://action/new_tab?path=" + pane.getScriptFile());
+                DesktopHelper.openAssociatedApplication("warp://action/new_tab?path=" + scriptArg);
             }
         }
     }
