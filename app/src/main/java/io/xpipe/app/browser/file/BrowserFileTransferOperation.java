@@ -509,7 +509,7 @@ public class BrowserFileTransferOperation {
             inputStream = new BufferedInputStream(sourceFs.openInput(sourceFile), 1024);
             inputStream.mark(1024);
             var streamStart = new byte[1024];
-            var streamStartLength = inputStream.read(streamStart, 0, 1024);
+            var streamStartLength = inputStream.readNBytes(streamStart, 0, 1024);
             if (streamStartLength < 1024) {
                 inputStream.close();
                 inputStream = new ByteArrayInputStream(streamStart, 0, streamStartLength);
@@ -615,6 +615,7 @@ public class BrowserFileTransferOperation {
                     }
 
                     if (!checkTransferValidity()) {
+                        exception.set(new IOException("Connection was interrupted during the transfer of " + sourceFile));
                         killStreams.set(true);
                         break;
                     }
