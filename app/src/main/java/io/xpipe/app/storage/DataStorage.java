@@ -1344,8 +1344,14 @@ public abstract class DataStorage {
         }
 
         var current = entry;
+        var visited = new HashSet<DataStoreEntry>();
+        visited.add(current);
         Optional<DataStoreEntry> parent;
         while ((parent = getDefaultDisplayParent(current)).isPresent()) {
+            if (!visited.add(parent.get())) {
+                break;
+            }
+
             current = parent.get();
             if (isRootEntry(current, cat)) {
                 break;
