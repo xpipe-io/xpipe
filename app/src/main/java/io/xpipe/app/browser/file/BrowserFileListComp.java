@@ -241,12 +241,13 @@ public final class BrowserFileListComp extends SimpleRegionBuilder {
         var group = unix.getGroup() != null
                 ? unix.getGroup()
                 : v != null ? v.getGroupFile().getGroups().getOrDefault(unix.getGid(), "?") : null;
-        var uid = unix.getUid() != null
+        // Always use strings so that the ids can be compared below
+        String uid = unix.getUid() != null
                 ? String.valueOf(unix.getUid())
-                : v != null ? v.getPasswdFile().getUidForUserIfPresent(user).orElse(null) : null;
-        var gid = unix.getGid() != null
+                : v != null ? v.getPasswdFile().getUidForUserIfPresent(user).map(String::valueOf).orElse(null) : null;
+        String gid = unix.getGid() != null
                 ? String.valueOf(unix.getGid())
-                : v != null ? v.getGroupFile().getGidForGroupIfPresent(group).orElse(null) : null;
+                : v != null ? v.getGroupFile().getGidForGroupIfPresent(group).map(String::valueOf).orElse(null) : null;
 
         var userFormat = user + (uid != null ? " [" + uid + "]" : "");
         var groupFormat = group + (gid != null ? " [" + gid + "]" : "");
