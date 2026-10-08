@@ -129,11 +129,6 @@ public class TerminalMultiplexerManager {
         var mult = getEffectiveMultiplexer();
 
         for (TerminalPaneConfiguration pane : configuration.getPanes()) {
-            if (mult.isEmpty()) {
-                connectionHubRequests.put(pane.getRequest(), null);
-                return;
-            }
-
             connectionHubRequests.put(pane.getRequest(), mult.orElse(null));
         }
     }
