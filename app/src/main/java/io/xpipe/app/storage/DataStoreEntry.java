@@ -792,21 +792,16 @@ public class DataStoreEntry extends DataStorageElement {
             return;
         }
 
-        DataStoreAccessScope newAccessScope = null;
-        try {
-            if (newStore instanceof AccessScopeStore u) {
-                newAccessScope = u.getAccessScope();
-            }
-        } catch (Exception ignored) {
-        }
+        var oldAccessScope = getAccessScope();
         var storeChanged = !Objects.equals(getStore(), newStore);
         if (storeChanged) {
             storeNode = storeNode.with(newStore);
             provider = DataStoreProvider.byStore(getStore());
             dirty = storeNode.requiresWrite();
         }
+        var newAccessScope = getAccessScope();
         var changed =
-                storeChanged || validity != Validity.COMPLETE || !Objects.equals(getAccessScope(), newAccessScope);
+                storeChanged || validity != Validity.COMPLETE || !Objects.equals(oldAccessScope, newAccessScope);
         validity = Validity.COMPLETE;
         if (changed) {
             notifyUpdate(false, false);
