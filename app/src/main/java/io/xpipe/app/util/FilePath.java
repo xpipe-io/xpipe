@@ -173,7 +173,13 @@ public final class FilePath {
             return value.startsWith("/") && !value.equals("/") ? FilePath.of("/") : this;
         }
 
-        return FilePath.of(value.substring(0, value.length() - getFileName().length() - 1));
+        var parent = value.substring(0, value.length() - getFileName().length() - 1);
+        // Without the trailing slash for a Windows root drive, many programs struggle
+        if (parent.length() == 2 && parent.charAt(1) == ':') {
+            // So add a slash in all cases
+            return FilePath.of(value.substring(0, 3));
+        }
+        return FilePath.of(parent);
     }
 
     public boolean startsWith(String start) {
