@@ -166,6 +166,9 @@ public abstract class AbstractAction {
         try {
             beforeExecute();
         } catch (Throwable t) {
+            synchronized (active) {
+                active.remove(this);
+            }
             ErrorEventFactory.fromThrowable(t).handle();
             return false;
         }
