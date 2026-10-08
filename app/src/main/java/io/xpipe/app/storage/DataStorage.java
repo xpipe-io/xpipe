@@ -540,11 +540,12 @@ public abstract class DataStorage {
             synchronized (storeMoveCache) {
                 storeMoveCache.put(entry.getStore(), store);
             }
-            synchronized (storeDependencyCache) {
-                storeDependencyCache.put(entry, getDependencies(entry));
-            }
         }
         entry.setStoreInternal(store, false);
+
+        synchronized (storeDependencyCache) {
+            storeDependencyCache.clear();
+        }
 
         var syntheticParent = getSyntheticParent(entry);
         if (syntheticParent.isPresent()) {
