@@ -27,6 +27,10 @@ public class DateTimeParseHelper {
     }
 
     public Instant parse(String text) {
+        return parse(text, ZoneId.systemDefault());
+    }
+
+    public Instant parse(String text, ZoneId zone) {
         var parsed = formatter.parse(text, new ParsePosition(0));
         var date = parsed.query(TemporalQueries.localDate());
         if (date == null) {
@@ -35,7 +39,7 @@ public class DateTimeParseHelper {
 
         var time = parsed.query(TemporalQueries.localTime());
         return date.atTime(time != null ? time : LocalTime.MIDNIGHT)
-                .atZone(ZoneId.systemDefault())
+                .atZone(zone)
                 .toInstant();
     }
 }
