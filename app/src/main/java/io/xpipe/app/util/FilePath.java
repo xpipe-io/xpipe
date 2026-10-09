@@ -197,6 +197,10 @@ public final class FilePath {
     }
 
     public FilePath relativize(FilePath base) {
+        if (equals(base)) {
+            return FilePath.of(".");
+        }
+
         return FilePath.of(normalize()
                 .toString()
                 .substring(base.normalize().toDirectory().toString().length()));

@@ -227,8 +227,11 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
                             .resolved()
                             .getPath();
                     var currentPath = fileList.getFileSystemModel().getCurrentDirectory();
-                    var shownTarget = currentPath != null && target.startsWith(currentPath.getPath().toDirectory()) ?
-                            "./" + target.relativize(currentPath.getPath()) : target;
+                    var shownTarget = currentPath != null && target.startsWith(currentPath.getPath().toDirectory())
+                            ? (target.equals(currentPath.getPath())
+                                    ? "."
+                                    : "./" + target.relativize(currentPath.getPath()))
+                            : target;
                     fileName = i.getFileName() + " -> " + shownTarget;
                 } else {
                     fileName = i.getFileName();
