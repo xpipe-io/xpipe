@@ -26,6 +26,21 @@ public abstract class TigerVncClient implements ExternalVncClient {
         return builder;
     }
 
+    protected void addCredentialsEnvironment(CommandBuilder builder, VncLaunchConfig configuration) throws Exception {
+        var username = configuration.retrieveUsername();
+        if (username.isPresent()) {
+            builder.fixedEnvironment("VNC_USERNAME", username.get());
+        }
+
+        if (configuration.hasFixedPassword()) {
+            var pw = configuration.retrievePassword();
+            if (pw.isPresent()) {
+                builder.fixedEnvironment("VNC_PASSWORD", pw.get().getSecretValue());
+                builder.sensitive();
+            }
+        }
+    }
+
     @Override
     public String getWebsite() {
         return "https://tigervnc.org/";
@@ -64,12 +79,13 @@ public abstract class TigerVncClient implements ExternalVncClient {
         @Override
         public void launch(VncLaunchConfig configuration) throws Exception {
             var builder = createBuilder(configuration);
+            addCredentialsEnvironment(builder, configuration);
             launch(builder);
         }
 
         @Override
         public boolean supportsPasswords() {
-            return false;
+            return true;
         }
     }
 
@@ -81,24 +97,13 @@ public abstract class TigerVncClient implements ExternalVncClient {
         @Override
         public void launch(VncLaunchConfig configuration) throws Exception {
             var builder = createBuilder(configuration);
-            if (configuration.hasFixedPassword()) {
-                var pw = configuration.retrievePassword();
-                if (pw.isPresent()) {
-                    builder.add(sc -> "<(echo "
-                            + sc.getShellDialect().literalArgument(pw.get().getSecretValue()) + " | vncpasswd -f)");
-                }
-            }
+            addCredentialsEnvironment(builder, configuration);
             launch(builder);
         }
 
         @Override
         public boolean supportsPasswords() {
-            try {
-                return LocalShell.getShell().view().findProgram("vncpasswd").isPresent();
-            } catch (Exception e) {
-                ErrorEventFactory.fromThrowable(e).handle();
-                return false;
-            }
+            return true;
         }
 
         @Override
@@ -126,7 +131,7 @@ public abstract class TigerVncClient implements ExternalVncClient {
         public void launch(VncLaunchConfig configuration) throws Exception {
             var loc = findExecutable();
             var builder = createBuilder(configuration);
-            // Open a new instance, otherwise the arguments are dropped if the viewer is already running
+            addCredentialsEnvironment(builder, configuration);
             var open = CommandBuilder.of().add("open", "-n", "-a").addFile(loc).add("--args");
             builder.add(0, open);
             LocalShell.getShell().command(builder).execute();
@@ -134,7 +139,7 @@ public abstract class TigerVncClient implements ExternalVncClient {
 
         @Override
         public boolean supportsPasswords() {
-            return false;
+            return true;
         }
 
         @Override
