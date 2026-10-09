@@ -133,12 +133,13 @@ public class BrowserFileListCompEntry {
                 tv.getSelectionModel().getSelectedIndices().stream()
                         .mapToInt(value -> value)
                         .max()
-                        .orElse(all.indexOf(item)));
+                        .orElse(index));
 
         var toSelect = new ArrayList<BrowserEntry>();
-        for (int i = min; i <= max; i++) {
-            if (!model.getSelection().contains(model.getShown().getValue().get(i))) {
-                toSelect.add(model.getShown().getValue().get(i));
+        for (int i = Math.max(min, 0); i <= Math.min(max, all.size() - 1); i++) {
+            var entry = all.get(i);
+            if (!model.getSelection().contains(entry)) {
+                toSelect.add(entry);
             }
         }
         model.getSelection().addAll(toSelect);
