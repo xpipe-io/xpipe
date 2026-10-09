@@ -57,7 +57,7 @@ public class TerminalProxyManager {
         return true;
     }
 
-    public static Optional<ShellControl> getProxy() {
+    public static synchronized Optional<ShellControl> getProxy() {
         var uuid = AppPrefs.get().terminalProxy().getValue();
         var hasCustomTerminalShell =
                 uuid != null && !DataStorage.get().local().getUuid().equals(uuid);

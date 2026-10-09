@@ -22,8 +22,10 @@ public class TerminalMultiplexerManager {
         var listener = new TerminalView.Listener() {
             @Override
             public void onSessionOpened(TerminalView.ShellSession session) {
-                if (session.getRequest().equals(pendingMultiplexerLaunch)) {
-                    pendingMultiplexerLaunch = null;
+                if (session.getRequest().equals(uuid)) {
+                    if (uuid.equals(pendingMultiplexerLaunch)) {
+                        pendingMultiplexerLaunch = null;
+                    }
                     runningMultiplexerContainer = uuid;
                 }
             }
@@ -32,9 +34,10 @@ public class TerminalMultiplexerManager {
             public void onSessionClosed(TerminalView.ShellSession session) {
                 // Technically, due to how multiplexers handle, this can only be 0 or 1
                 // as it only tracks the base shell session the multiplexer runs in
+                // Sessions launched without a multiplexer are also registered with a null value, so skip those
                 var left = TerminalView.get().getSessions().stream()
                         .filter(shellSession -> {
-                            return connectionHubRequests.containsKey(shellSession.getRequest())
+                            return connectionHubRequests.get(shellSession.getRequest()) != null
                                     && shellSession.getTerminal().isRunning();
                         })
                         .count();
