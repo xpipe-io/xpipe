@@ -1,5 +1,6 @@
 package io.xpipe.app.rdp;
 
+import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.comp.base.TextAreaComp;
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -203,6 +204,10 @@ public class FreeRdpClient implements ExternalRdpClient {
         b.fixedEnvironment(
                 "FREERDP_ASKPASS",
                 AppInstallation.ofCurrent().getCliExecutablePath().toString());
+        b.fixedEnvironment("ASKPASS_PREFIX", "[FreeRDP]");
+        if (AppBeaconServer.get() != null) {
+            b.fixedEnvironment("XPIPE_BEACON_PORT", "" + AppBeaconServer.get().getPort());
+        }
 
         try (var sc = LocalShell.getShell().start()) {
             var cmd = sc.getShellDialect().launchAsync(b, true);
