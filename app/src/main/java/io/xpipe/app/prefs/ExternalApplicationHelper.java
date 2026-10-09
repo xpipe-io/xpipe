@@ -95,10 +95,16 @@ public class ExternalApplicationHelper {
             }
 
             var cmd = sc.getShellDialect().launchAsync(b, true);
-            TrackEvent.withDebug("Executing local application")
-                    .tag("command", b.buildFull(sc))
-                    .tag("adjusted", cmd.buildFull(sc))
-                    .handle();
+            if (b.isSensitive()) {
+                TrackEvent.withDebug("Executing local application")
+                        .tag("executable", exec)
+                        .handle();
+            } else {
+                TrackEvent.withDebug("Executing local application")
+                        .tag("command", b.buildFull(sc))
+                        .tag("adjusted", cmd.buildFull(sc))
+                        .handle();
+            }
             try (var c = sc.command(cmd).start()) {
                 c.discardOrThrow();
             }

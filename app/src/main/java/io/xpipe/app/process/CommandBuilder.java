@@ -28,7 +28,25 @@ public class CommandBuilder {
     @Getter
     private UUID uuid;
 
+    @Getter
+    private boolean sensitive;
+
     private CommandBuilder() {}
+
+    public CommandBuilder sensitive() {
+        this.sensitive = true;
+        return this;
+    }
+
+    public static CommandBuilder ofDerived(CommandBuilder base) {
+        return new CommandBuilder().inherit(base);
+    }
+
+    public CommandBuilder inherit(CommandBuilder other) {
+        environmentVariables.putAll(other.environmentVariables);
+        sensitive |= other.sensitive;
+        return this;
+    }
 
     public static CommandBuilder of() {
         return new CommandBuilder();
@@ -178,12 +196,14 @@ public class CommandBuilder {
     public CommandBuilder add(CommandBuilder sub) {
         elements.addAll(sub.elements);
         environmentVariables.putAll(sub.environmentVariables);
+        sensitive |= sub.sensitive;
         return this;
     }
 
     public CommandBuilder add(int index, CommandBuilder sub) {
         elements.addAll(index, sub.elements);
         environmentVariables.putAll(sub.environmentVariables);
+        sensitive |= sub.sensitive;
         return this;
     }
 
