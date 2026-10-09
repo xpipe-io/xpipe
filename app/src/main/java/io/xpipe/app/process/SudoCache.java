@@ -6,9 +6,7 @@ import java.util.Optional;
 
 public interface SudoCache {
 
-    void setRequiresPassword();
-
-    boolean requiresPassword() throws Exception;
+    boolean requiresPassword(String user) throws Exception;
 
     Optional<FilePath> getSudoExecutable() throws Exception;
 }

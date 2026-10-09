@@ -79,7 +79,7 @@ public class SecretCustomCommandStrategy implements SecretRetrievalStrategy {
 
             @Override
             public Duration cacheDuration() {
-                return Duration.ZERO;
+                return Duration.ofSeconds(30);
             }
 
             @Override
