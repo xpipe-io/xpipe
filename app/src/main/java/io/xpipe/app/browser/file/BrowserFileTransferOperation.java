@@ -629,6 +629,10 @@ public class BrowserFileTransferOperation {
                     }
                 }
 
+                if (killStreams.get()) {
+                    return;
+                }
+
                 outputStream.flush();
                 inputStream.transferTo(OutputStream.nullOutputStream());
 

@@ -27,6 +27,7 @@ public class ErrorHandlerDialog {
         // thread on startup
         if (Platform.isFxApplicationThread() && AppOperationMode.isInStartup()) {
             ErrorAction.ignore().handle(event);
+            return;
         }
 
         try {
