@@ -172,6 +172,7 @@ public class FreeRdpClient implements ExternalRdpClient {
 
         if (configuration.getPassword() != null) {
             b.addLiteral(argument("/p", configuration.getPassword().getSecretValue()));
+            b.sensitive();
         }
 
         var gateway = configuration.getGateway();
@@ -188,6 +189,7 @@ public class FreeRdpClient implements ExternalRdpClient {
                 }
                 if (gateway.getPassword() != null) {
                     s += "," + gatewayArgument("p", gateway.getPassword().getSecretValue());
+                    b.sensitive();
                 }
                 b.addLiteral(argument("/gateway", s));
             } else {
@@ -197,6 +199,7 @@ public class FreeRdpClient implements ExternalRdpClient {
                 }
                 if (gateway.getPassword() != null) {
                     b.addLiteral(argument("/gp", gateway.getPassword().getSecretValue()));
+                    b.sensitive();
                 }
             }
         }
@@ -211,7 +214,7 @@ public class FreeRdpClient implements ExternalRdpClient {
 
         try (var sc = LocalShell.getShell().start()) {
             var cmd = sc.getShellDialect().launchAsync(b, true);
-            sc.command(cmd).sensitive().execute();
+            sc.command(cmd).execute();
         }
     }
 

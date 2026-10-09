@@ -39,11 +39,9 @@ public class TightVncClient implements ExternalApplicationType.InstallLocationTy
                 .addQuotedKeyValue("-host", configuration.getHost())
                 .addQuotedKeyValue("-port", "" + configuration.getPort());
         var pw = configuration.retrievePassword();
-        pw.ifPresent(secretValue -> builder.addQuotedKeyValue("-password", secretValue.getSecretValue()));
+        pw.ifPresent(secretValue -> builder.addQuotedKeyValue("-password", secretValue.getSecretValue())
+                .sensitive());
         var command = LocalShell.getShell().command(builder);
-        if (pw.isPresent()) {
-            command.sensitive();
-        }
         command.execute();
     }
 
