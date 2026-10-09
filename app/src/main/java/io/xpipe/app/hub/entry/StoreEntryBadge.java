@@ -34,13 +34,28 @@ public interface StoreEntryBadge {
     @FunctionalInterface
     interface Action {
 
+        private static boolean canRun(StoreEntryWrapper wrapper, ActionProvider p) {
+            if (!(p instanceof HubLeafProvider<?> l)) {
+                return false;
+            }
+
+            var entry = wrapper.getEntry();
+            if (entry.getStore() == null) {
+                return false;
+            }
+
+            if (!entry.getValidity().isUsable() && l.requiresValidStore()) {
+                return false;
+            }
+
+            return l.getApplicableClass().isAssignableFrom(entry.getStore().getClass())
+                    && l.isApplicable(entry.ref().asNeeded());
+        }
+
         static Action provider(String id) {
             var p = ActionProvider.byId(id);
             return (wrapper, button) -> {
-                if (p instanceof HubLeafProvider<?> l
-                        && l.getApplicableClass()
-                                .isAssignableFrom(wrapper.getEntry().getStore().getClass())
-                        && l.isApplicable(wrapper.getEntry().ref())) {
+                if (canRun(wrapper, p) && p instanceof HubLeafProvider<?> l) {
                     l.createAction(wrapper.getEntry().ref()).executeAsync();
                 }
             };
@@ -75,12 +90,7 @@ public interface StoreEntryBadge {
                 private List<ActionProvider> getProviders(StoreEntryWrapper wrapper) {
                     var provs = Arrays.stream(ids)
                             .map(s -> ActionProvider.byId(s))
-                            .filter(p -> p instanceof HubLeafProvider<?> l
-                                    && l.getApplicableClass()
-                                            .isAssignableFrom(wrapper.getEntry()
-                                                    .getStore()
-                                                    .getClass())
-                                    && l.isApplicable(wrapper.getEntry().ref().asNeeded()))
+                            .filter(p -> canRun(wrapper, p))
                             .toList();
                     return provs;
                 }
@@ -219,7 +229,8 @@ public interface StoreEntryBadge {
                                 },
                                 busy)));
 
-                if (wrapper.getEntry().getStore() instanceof HostAddressStore has) {
+                if (wrapper.getEntry().getStore() instanceof HostAddressStore has
+                        && wrapper.getEntry().getValidity().isUsable()) {
                     if (busy.get()) {
                         return;
                     }
