@@ -28,8 +28,10 @@ public class WorkspaceEntryComp extends SimpleRegionBuilder {
         });
         view.describe(d -> d.nameKey("browse"));
         var buttons = new HorizontalComp(List.of(view));
+        var available = workspace.isAvailable();
         var header = workspace.getName()
-                + (workspace.equals(WorkspaceManager.get().getCurrent()) ? " (" + AppI18n.get("active") + ")" : "");
+                + (workspace.equals(WorkspaceManager.get().getCurrent()) ? " (" + AppI18n.get("active") + ")" : "")
+                + (!available ? " (" + AppI18n.get("unavailable") + ")" : "");
         var tile = new TileButtonComp(
                 new ReadOnlyStringWrapper(header),
                 new ReadOnlyStringWrapper(workspace.getDir().toString()),
@@ -41,6 +43,7 @@ public class WorkspaceEntryComp extends SimpleRegionBuilder {
         tile.setRight(buttons);
         tile.setIconSize(1.0);
         tile.maxWidth(2000);
+        tile.apply(struc -> struc.setDisable(!available));
         return tile.build();
     }
 }

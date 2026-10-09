@@ -43,11 +43,11 @@ public class WorkspaceManager {
                         TypeFactory.createDefaultInstance().constructType(new TypeReference<List<WorkspaceEntry>>() {});
                 List<WorkspaceEntry> parsed = JacksonMapper.getDefault().readValue(file.toFile(), type);
                 for (WorkspaceEntry workspace : parsed) {
-                    if (workspace.getName() == null
-                            || workspace.getDir() == null
-                            || !Files.exists(workspace.getDir())) {
+                    // Keep workspaces with directories that are currently not available, e.g. on unmounted drives
+                    if (workspace.getName() == null || workspace.getDir() == null) {
                         continue;
                     }
+                    workspace.setAvailable(Files.exists(workspace.getDir()));
                     workspaces.add(workspace);
                 }
             } catch (Exception e) {
@@ -66,7 +66,7 @@ public class WorkspaceManager {
                     : d.getFileName().toString().equals(".xpipe-ptb")
                             ? "PTB"
                             : d.getFileName().toString();
-            current = new WorkspaceEntry(name, d);
+            current = new WorkspaceEntry(name, d, true);
             workspaces.addFirst(current);
         } else {
             current = existing.get();
@@ -90,7 +90,7 @@ public class WorkspaceManager {
     }
 
     public void addWorkspace(String name, Path dir) {
-        workspaces.add(new WorkspaceEntry(name, dir));
+        workspaces.add(new WorkspaceEntry(name, dir, true));
         save();
 
         try {
@@ -105,7 +105,7 @@ public class WorkspaceManager {
     }
 
     public void open(WorkspaceEntry workspace) {
-        if (current.equals(workspace)) {
+        if (current.equals(workspace) || !workspace.isAvailable()) {
             return;
         }
 
