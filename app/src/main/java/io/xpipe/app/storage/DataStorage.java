@@ -411,9 +411,6 @@ public abstract class DataStorage {
             synchronized (storeEntryMapCache) {
                 storeEntryMapCache.remove(entry.getStore());
             }
-            synchronized (storeDependencyCache) {
-                storeDependencyCache.remove(entry);
-            }
         }
 
         var categoryChanged = !entry.getCategoryUuid().equals(newEntry.getCategoryUuid());
@@ -424,6 +421,10 @@ public abstract class DataStorage {
             }
         }
         entry.applyChanges(newEntry);
+
+        synchronized (storeDependencyCache) {
+            storeDependencyCache.clear();
+        }
 
         if (!sameParent) {
             if (oldParent.isPresent()) {
