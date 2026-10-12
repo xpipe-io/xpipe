@@ -8,6 +8,7 @@ import io.xpipe.app.fs.FileSystem;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.GlobalTimer;
+import io.xpipe.app.util.HumanReadableFormat;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.property.BooleanProperty;
@@ -31,6 +32,7 @@ import java.util.function.Consumer;
 public class BrowserFileTransferOperation {
 
     private static final int DEFAULT_BUFFER_SIZE = 1024;
+    private static final int MAX_UNKNOWN_SIZE_TRANSFER = 64 * 1024 * 1024;
 
     @Getter
     private final FileEntry target;
@@ -515,6 +517,26 @@ public class BrowserFileTransferOperation {
                 inputStream = new ByteArrayInputStream(streamStart, 0, streamStartLength);
             } else {
                 inputStream.reset();
+            }
+
+            // Pseudo files like /proc/cpuinfo report a size of 0 but still have content
+            if (fileSize == 0 && streamStartLength > 0) {
+                if (streamStartLength < 1024) {
+                    // The input stream already contains the complete content
+                    fileSize = streamStartLength;
+                } else {
+                    var content = inputStream.readNBytes(MAX_UNKNOWN_SIZE_TRANSFER + 1);
+                    inputStream.close();
+                    if (content.length > MAX_UNKNOWN_SIZE_TRANSFER) {
+                        throw ErrorEventFactory.expected(new IOException("Source file " + sourceFile
+                                + " reports a size of 0 but contains more than " + HumanReadableFormat.byteCount(MAX_UNKNOWN_SIZE_TRANSFER)
+                                + " bytes"));
+                    }
+
+                    inputStream = new ByteArrayInputStream(content);
+                    fileSize = content.length;
+                }
+                totalSize.addAndGet(fileSize);
             }
 
             outputStream = targetFs.openOutput(targetFile, fileSize);
