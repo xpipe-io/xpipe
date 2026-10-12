@@ -72,6 +72,10 @@ public class StoreSectionDrag {
                     .getParentSectionForWrapper(target.getWrapper())
                     .orElseThrow();
             var index = parent.getShownChildren().getList().indexOf(target);
+            if (index == -1) {
+                return;
+            }
+
             var pin = parent.getDepth() == 0
                     && selection.stream()
                             .anyMatch(wrapper -> wrapper.getPinToTop().get());
@@ -96,6 +100,10 @@ public class StoreSectionDrag {
                     .getParentSectionForWrapper(target.getWrapper())
                     .orElseThrow();
             var index = parent.getShownChildren().getList().indexOf(target);
+            if (index == -1) {
+                return;
+            }
+
             parent.insertSections(selection, index, order == Order.AFTER, true);
         }
     }
