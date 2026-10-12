@@ -59,6 +59,10 @@ public class ActionJacksonMapper {
                 return null;
             }
 
+            // The parallel flag belongs to the batch, not to the individual actions
+            var parallelNode = object.remove("parallel");
+            var parallel = parallelNode != null && parallelNode.asBoolean();
+
             var batchActions = new ArrayList<StoreAction<DataStore>>();
             object.remove("ref");
             for (JsonNode batchRef : ref) {
@@ -67,7 +71,10 @@ public class ActionJacksonMapper {
                 var action = mapper.treeToValue(object, clazz.get());
                 batchActions.add((StoreAction<DataStore>) action);
             }
-            return (T) BatchStoreAction.builder().actions(batchActions).build();
+            return (T) BatchStoreAction.builder()
+                    .actions(batchActions)
+                    .parallel(parallel)
+                    .build();
         }
 
         var makeMulti = ref != null && ref.isArray() && MultiStoreAction.class.isAssignableFrom(clazz.get());
@@ -131,6 +138,9 @@ public class ActionJacksonMapper {
                     JacksonMapper.getDefault().valueToTree(b.getActions().getFirst());
             tree.set("ref", arrayNode);
             tree.put("id", b.getActions().getFirst().getId());
+            if (b.isParallel()) {
+                tree.put("parallel", true);
+            }
             return tree;
         }
 
