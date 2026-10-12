@@ -6,6 +6,7 @@ import io.xpipe.app.fs.FileKind;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.FilePath;
+import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -170,9 +171,12 @@ public final class BrowserFileListModel {
         if (AppPrefs.get().editFilesWithDoubleClick().get() && r.getKind() == FileKind.FILE) {
             var selection = new LinkedHashSet<>(getSelection());
             selection.add(entry);
-            for (BrowserEntry e : selection) {
-                BrowserFileOpener.openInTextEditor(getFileSystemModel(), e.getRawFileEntry());
-            }
+            // Opening transfers the file, so don't block the platform thread
+            ThreadHelper.runAsync(() -> {
+                for (BrowserEntry e : selection) {
+                    BrowserFileOpener.openInTextEditor(getFileSystemModel(), e.getRawFileEntry());
+                }
+            });
         }
     }
 }
