@@ -185,22 +185,22 @@ public class ShellView {
         return user;
     }
 
-    public OptionalInt uid() throws Exception {
+    public OptionalLong uid() throws Exception {
         if (shellControl.getOsType() == OsType.WINDOWS) {
-            return OptionalInt.empty();
+            return OptionalLong.empty();
         }
 
         var read = shellControl.command("id -u").readStdoutIfPossible();
-        return read.isPresent() ? OptionalInt.of(Integer.parseInt(read.get())) : OptionalInt.empty();
+        return read.isPresent() ? OptionalLong.of(Long.parseLong(read.get().strip())) : OptionalLong.empty();
     }
 
-    public OptionalInt gid() throws Exception {
+    public OptionalLong gid() throws Exception {
         if (shellControl.getOsType() == OsType.WINDOWS) {
-            return OptionalInt.empty();
+            return OptionalLong.empty();
         }
 
         var read = shellControl.command("id -g").readStdoutIfPossible();
-        return read.isPresent() ? OptionalInt.of(Integer.parseInt(read.get())) : OptionalInt.empty();
+        return read.isPresent() ? OptionalLong.of(Long.parseLong(read.get().strip())) : OptionalLong.empty();
     }
 
     public boolean isRoot() throws Exception {

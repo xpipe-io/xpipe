@@ -8,12 +8,11 @@ import lombok.Getter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 @Getter
 public class PasswdFile {
 
-    private final Map<Integer, String> users = new LinkedHashMap<>();
+    private final Map<Long, String> users = new LinkedHashMap<>();
 
     public static PasswdFile parse(ShellControl sc) throws Exception {
         var passwdFile = new PasswdFile();
@@ -21,7 +20,7 @@ public class PasswdFile {
         return passwdFile;
     }
 
-    public Optional<Integer> getUidForUserIfPresent(String name) {
+    public Optional<Long> getUidForUserIfPresent(String name) {
         var found = users.entrySet().stream()
                 .filter(e -> e.getValue().equals(name))
                 .findFirst()
@@ -42,13 +41,13 @@ public class PasswdFile {
         lines.lines().forEach(s -> {
             var split = s.split(":");
             try {
-                users.putIfAbsent(Integer.parseInt(split[2]), split[0]);
+                users.putIfAbsent(Long.parseLong(split[2]), split[0]);
             } catch (Exception ignored) {
             }
         });
 
         if (users.isEmpty()) {
-            users.put(0, "root");
+            users.put(0L, "root");
         }
     }
 }

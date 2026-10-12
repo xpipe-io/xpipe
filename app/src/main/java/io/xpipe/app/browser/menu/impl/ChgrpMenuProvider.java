@@ -35,7 +35,7 @@ public class ChgrpMenuProvider implements BrowserMenuBranchProvider {
                                 .filter(e -> !e.getValue().equals("nohome")
                                         && !e.getValue().equals("nogroup")
                                         && !e.getValue().equals("nobody")
-                                        && (e.getKey().equals(0) || e.getKey() >= 900))
+                                        && (e.getKey() == 0 || e.getKey() >= 900))
                                 .map(e -> e.getValue())
                                 .map(s -> (BrowserMenuLeafProvider) new FixedProvider(s, recursive)),
                         Stream.of(new CustomProvider(recursive)))

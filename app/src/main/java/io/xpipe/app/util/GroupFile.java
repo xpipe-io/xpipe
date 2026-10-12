@@ -8,12 +8,11 @@ import lombok.Getter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 @Getter
 public class GroupFile {
 
-    private final Map<Integer, String> groups = new LinkedHashMap<>();
+    private final Map<Long, String> groups = new LinkedHashMap<>();
 
     public static GroupFile parse(ShellControl sc) throws Exception {
         var f = new GroupFile();
@@ -21,7 +20,7 @@ public class GroupFile {
         return f;
     }
 
-    public Optional<Integer> getGidForGroupIfPresent(String name) {
+    public Optional<Long> getGidForGroupIfPresent(String name) {
         var found = groups.entrySet().stream()
                 .filter(e -> e.getValue().equals(name))
                 .findFirst()
@@ -42,13 +41,13 @@ public class GroupFile {
         lines.lines().forEach(s -> {
             var split = s.split(":");
             try {
-                groups.putIfAbsent(Integer.parseInt(split[2]), split[0]);
+                groups.putIfAbsent(Long.parseLong(split[2]), split[0]);
             } catch (Exception ignored) {
             }
         });
 
         if (groups.isEmpty()) {
-            groups.put(0, "root");
+            groups.put(0L, "root");
         }
     }
 }

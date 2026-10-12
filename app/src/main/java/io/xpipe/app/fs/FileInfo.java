@@ -28,9 +28,9 @@ public sealed interface FileInfo permits FileInfo.Windows, FileInfo.Unix {
     class Unix implements FileInfo {
 
         String permissions;
-        Integer uid;
+        Long uid;
         String user;
-        Integer gid;
+        Long gid;
         String group;
 
         @Override
