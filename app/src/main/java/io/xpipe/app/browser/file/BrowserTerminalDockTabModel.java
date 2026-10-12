@@ -134,11 +134,13 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
             }
 
             Platform.runLater(() -> {
-                if (active) {
-                    dockModel.activateView();
-                } else {
-                    dockModel.deactivateView();
-                }
+                ThreadHelper.runAsync(() -> {
+                    if (active) {
+                        dockModel.activateView();
+                    } else {
+                        dockModel.deactivateView();
+                    }
+                });
             });
         });
         AppDialog.getModalOverlaysRaw().addListener((ListChangeListener<? super ModalOverlay>) c -> {
@@ -147,15 +149,17 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
                 return;
             }
 
-            if (c.getList().size() > 0) {
-                dockModel.deactivateView();
-            } else {
-                if (viewActive.get()) {
-                    dockModel.activateView();
-                } else {
+            ThreadHelper.runAsync(() -> {
+                if (c.getList().size() > 0) {
                     dockModel.deactivateView();
+                } else {
+                    if (viewActive.get()) {
+                        dockModel.activateView();
+                    } else {
+                        dockModel.deactivateView();
+                    }
                 }
-            }
+            });
         });
 
         GlobalTimer.scheduleUntil(Duration.ofMillis(300), false, () -> {
@@ -171,7 +175,9 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
         if (listener != null) {
             TerminalView.get().removeListener(listener);
         }
-        dockModel.onClose();
+        ThreadHelper.runAsync(() -> {
+            dockModel.onClose();
+        });
         closed = true;
     }
 
