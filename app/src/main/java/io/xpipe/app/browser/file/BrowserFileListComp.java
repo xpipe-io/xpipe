@@ -249,10 +249,10 @@ public final class BrowserFileListComp extends SimpleRegionBuilder {
                 ? String.valueOf(unix.getGid())
                 : v != null ? v.getGroupFile().getGidForGroupIfPresent(group).map(String::valueOf).orElse(null) : null;
 
-        var userFormat = user + (uid != null ? " [" + uid + "]" : "");
-        var groupFormat = group + (gid != null ? " [" + gid + "]" : "");
+        var userFormat = formatOwnerPart(user, uid);
+        var groupFormat = formatOwnerPart(group, gid);
 
-        if (uid != null && uid.equals(gid) && user != null && user.equals(group)) {
+        if (uid != null && uid.equals(gid) && Objects.equals(user, group)) {
             return userFormat;
         }
 
@@ -261,6 +261,14 @@ public final class BrowserFileListComp extends SimpleRegionBuilder {
         }
 
         return userFormat + "  / " + groupFormat;
+    }
+
+    private static String formatOwnerPart(String name, String id) {
+        if (name == null) {
+            return id != null ? id : "?";
+        }
+
+        return name + (id != null ? " [" + id + "]" : "");
     }
 
     private void prepareTypedSelectionModel(TableView<BrowserEntry> table) {
@@ -581,11 +589,14 @@ public final class BrowserFileListComp extends SimpleRegionBuilder {
                         .map(browserEntry -> formatOwner(browserEntry))
                         .anyMatch(s -> s != null);
                 if (hasOwner) {
-                    ownerCol.setPrefWidth(fileList.getAll().getValue().stream()
-                            .map(browserEntry -> formatOwner(browserEntry))
-                            .map(s -> s != null ? s.length() * 9 : 0)
-                            .max(Comparator.naturalOrder())
-                            .orElse(150));
+                    // Short values like numeric ids would otherwise make the column narrower than its header
+                    ownerCol.setPrefWidth(Math.max(
+                            100,
+                            fileList.getAll().getValue().stream()
+                                    .map(browserEntry -> formatOwner(browserEntry))
+                                    .map(s -> s != null ? s.length() * 9 : 0)
+                                    .max(Comparator.naturalOrder())
+                                    .orElse(150)));
                 } else {
                     ownerCol.setPrefWidth(0);
                 }
