@@ -104,6 +104,45 @@ public class WorkspaceManager {
         }
     }
 
+    public void removeWorkspace(WorkspaceEntry workspace) {
+        if (current.equals(workspace)) {
+            return;
+        }
+
+        workspaces.remove(workspace);
+        save();
+
+        var dir = workspace.getDir();
+        if (!canDeleteDirectory(dir)) {
+            return;
+        }
+
+        ThreadHelper.runAsync(() -> {
+            try {
+                FileUtils.deleteDirectory(dir.toFile());
+            } catch (Exception e) {
+                ErrorEventFactory.fromThrowable(e).expected().handle();
+            }
+        });
+    }
+
+    private boolean canDeleteDirectory(Path dir) {
+        if (!Files.isDirectory(dir)) {
+            return false;
+        }
+
+        // Never delete the default data dir, which also contains the workspace list, or any parent of an active dir
+        var defaultDir = AppProperties.get().getDefaultReleaseDataDir();
+        if (defaultDir.startsWith(dir) || current.getDir().startsWith(dir)) {
+            return false;
+        }
+
+        // Only delete directories that actually look like a data directory
+        return Files.isDirectory(dir.resolve("storage"))
+                || Files.isDirectory(dir.resolve("settings"))
+                || Files.isDirectory(dir.resolve("logs"));
+    }
+
     public void open(WorkspaceEntry workspace) {
         if (current.equals(workspace) || !workspace.isAvailable()) {
             return;

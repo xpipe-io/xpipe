@@ -59,7 +59,7 @@ public class TileButtonComp extends RegionStructureBuilder<Button, TileButtonCom
     @Override
     public Structure createBase() {
         var bt = new Button();
-        RegionDescriptor.builder().name(name).description(description).build().apply(bt);
+        RegionDescriptor.builder().name(name).description(description).showTooltips(false).build().apply(bt);
         bt.getStyleClass().add("tile-button-comp");
         bt.setOnAction(e -> {
             if (action != null) {
