@@ -7,6 +7,7 @@ import io.xpipe.app.platform.ClipboardHelper;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.store.HostAddressStore;
 import io.xpipe.app.util.*;
 
@@ -229,8 +230,9 @@ public interface StoreEntryBadge {
                                 },
                                 busy)));
 
+                // Incomplete entries, e.g. listed but not yet configured instances, can still refresh their address
                 if (wrapper.getEntry().getStore() instanceof HostAddressStore has
-                        && wrapper.getEntry().getValidity().isUsable()) {
+                        && wrapper.getEntry().getValidity() != DataStoreEntry.Validity.LOAD_FAILED) {
                     if (busy.get()) {
                         return;
                     }
