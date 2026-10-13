@@ -730,10 +730,10 @@ public class DataStoreEntry extends DataStorageElement {
         if (!newNode.equals(storeNode)) {
             storeNode = newNode;
             dirty = newNode.requiresWrite();
-            notifyUpdate(false, false);
             var valid = storeNode.getValue() != null;
             validity = valid ? validity : Validity.LOAD_FAILED;
             provider = valid ? provider : null;
+            notifyUpdate(false, false);
             return true;
         } else {
             return false;
