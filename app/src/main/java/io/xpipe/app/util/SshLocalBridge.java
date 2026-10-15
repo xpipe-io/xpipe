@@ -55,9 +55,10 @@ public class SshLocalBridge {
             var bridgeDir = AppProperties.get().getDataDir().resolve("ssh_bridge");
             Files.createDirectories(bridgeDir);
             var user = sc.getShellDialect().printUsernameCommand(sc).readStdoutOrThrow();
-            INSTANCE = new SshLocalBridge(bridgeDir, port, user);
+            // Only set the instance once everything is started, so an incomplete INSTANCE is not set
+            var bridge = new SshLocalBridge(bridgeDir, port, user);
 
-            var hostKey = INSTANCE.getHostKey();
+            var hostKey = bridge.getHostKey();
             if (!sc.getShellDialect()
                     .createFileExistsCommand(sc, hostKey.toString())
                     .executeAndCheck()) {
@@ -79,7 +80,7 @@ public class SshLocalBridge {
                         .execute();
             }
 
-            var idKey = INSTANCE.getIdentityKey();
+            var idKey = bridge.getIdentityKey();
             if (!sc.getShellDialect()
                     .createFileExistsCommand(sc, idKey.toString())
                     .executeAndCheck()) {
@@ -101,8 +102,8 @@ public class SshLocalBridge {
                         .execute();
             }
 
-            var config = INSTANCE.getConfig();
-            var command = get().getRemoteCommand(sc);
+            var config = bridge.getConfig();
+            var command = bridge.getRemoteCommand(sc);
             var pidFile = bridgeDir.resolve("sshd.pid");
             var content = """
                           ListenAddress 127.0.0.1
@@ -120,23 +121,29 @@ public class SshLocalBridge {
                             command,
                             pidFile.toString(),
                             "" + port,
-                            INSTANCE.getHostKey().toString(),
-                            INSTANCE.getPubIdentityKey());
+                            bridge.getHostKey().toString(),
+                            bridge.getPubIdentityKey());
             Files.writeString(config, content);
 
             // Write to local SSH client config
-            INSTANCE.updateConfig();
+            bridge.updateConfig();
 
             var exec = getSshd(sc);
             var launchCommand = CommandBuilder.of()
                     .addFile(exec)
                     .add("-f")
-                    .addFile(INSTANCE.getConfig().toString())
+                    .addFile(bridge.getConfig().toString())
                     .add("-p", "" + port);
             var control =
                     ProcModuleProvider.get().createLocalProcessControl(true).start();
-            control.writeLine(launchCommand.buildFull(control));
-            INSTANCE.setRunningShell(control);
+            try {
+                control.writeLine(launchCommand.buildFull(control));
+            } catch (Exception e) {
+                control.kill();
+                throw e;
+            }
+            bridge.setRunningShell(control);
+            INSTANCE = bridge;
         }
     }
 
