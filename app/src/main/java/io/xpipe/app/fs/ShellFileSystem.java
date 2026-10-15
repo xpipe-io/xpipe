@@ -327,7 +327,7 @@ public class ShellFileSystem implements FileSystem {
     public void mkdirs(FilePath file) throws Exception {
         try (var pc = shellControl
                 .command(
-                        CommandBuilder.ofFunction(proc -> proc.getShellDialect().getMkdirsCommand(file.toString())))
+                        CommandBuilder.ofFunction(proc -> proc.getShellDialect().getMkdirsCommand(proc, file.toString())))
                 .start()) {
             pc.discardOrThrow();
         }

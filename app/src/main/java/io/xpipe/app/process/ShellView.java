@@ -1,5 +1,6 @@
 package io.xpipe.app.process;
 
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.FailableSupplier;
 import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.GroupFile;
@@ -7,6 +8,7 @@ import io.xpipe.app.util.OsType;
 import io.xpipe.app.util.PasswdFile;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -170,7 +172,7 @@ public class ShellView {
     }
 
     public void mkdir(FilePath path) throws Exception {
-        shellControl.command(getDialect().getMkdirsCommand(path.toString())).execute();
+        shellControl.command(getDialect().getMkdirsCommand(shellControl, path.toString())).execute();
     }
 
     public boolean directoryExists(FilePath path) throws Exception {
@@ -179,7 +181,12 @@ public class ShellView {
 
     public String user() throws Exception {
         if (user == null) {
-            user = getDialect().printUsernameCommand(shellControl).readStdoutOrThrow();
+            var out = getDialect().printUsernameCommand(shellControl).readStdoutOrThrow();
+            if (out.contains("\n") || out.contains("\r")) {
+                throw ErrorEventFactory.expected(
+                        new IOException("Unable to determine user name, command returned unexpected output:\n" + out));
+            }
+            user = out;
         }
 
         return user;

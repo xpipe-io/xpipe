@@ -153,7 +153,7 @@ public interface ShellDialect {
 
     String executeCommandWithShell(String cmd);
 
-    String getMkdirsCommand(String dirs);
+    String getMkdirsCommand(ShellControl sc, String dirs);
 
     CommandControl getFileReadCommand(ShellControl parent, String file);
 

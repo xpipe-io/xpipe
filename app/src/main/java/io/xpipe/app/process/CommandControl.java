@@ -91,7 +91,7 @@ public interface CommandControl extends ProcessControl {
         });
     }
 
-    default boolean discardAndCheckExit() throws ProcessOutputException {
+    default boolean discardAndCheckExit() throws Exception {
         try {
             discardOrThrow();
             return true;
@@ -100,8 +100,6 @@ public interface CommandControl extends ProcessControl {
                 throw ex;
             }
 
-            return false;
-        } catch (Exception ex) {
             return false;
         }
     }
