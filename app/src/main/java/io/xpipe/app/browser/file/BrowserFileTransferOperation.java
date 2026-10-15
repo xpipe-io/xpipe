@@ -218,10 +218,17 @@ public class BrowserFileTransferOperation {
     }
 
     private void handleSingleOnSameFileSystem(FileEntry source) throws Exception {
-        // Prevent dropping files into itself
-        if ((source.getKind() == FileKind.DIRECTORY && source.getPath().equals(target.getPath()))
-                || (source.getKind() != FileKind.DIRECTORY
-                        && source.getPath().getParent().equals(target.getPath()))) {
+        var doesMove = transferMode == BrowserFileTransferMode.MOVE || transferMode == BrowserFileTransferMode.NORMAL;
+
+        // Prevent dropping a directory into itself
+        if (source.getKind() == FileKind.DIRECTORY && source.getPath().equals(target.getPath())) {
+            return;
+        }
+
+        // Moving a file into its own directory does nothing, but copying it creates a duplicate below
+        if (doesMove
+                && source.getKind() != FileKind.DIRECTORY
+                && source.getPath().getParent().equals(target.getPath())) {
             return;
         }
 
@@ -252,7 +259,6 @@ public class BrowserFileTransferOperation {
             }
         }
 
-        var doesMove = transferMode == BrowserFileTransferMode.MOVE || transferMode == BrowserFileTransferMode.NORMAL;
         if (doesMove) {
             target.getFileSystem().move(sourceFile, targetFile);
         } else {
@@ -637,7 +643,8 @@ public class BrowserFileTransferOperation {
                     }
 
                     if (!checkTransferValidity()) {
-                        exception.set(new IOException("Connection was interrupted during the transfer of " + sourceFile));
+                        exception.set(ErrorEventFactory.expected(
+                                new IOException("Connection was interrupted during the transfer of " + sourceFile)));
                         killStreams.set(true);
                         break;
                     }

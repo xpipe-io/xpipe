@@ -74,9 +74,9 @@ public class ScanDialogBase {
                 var copy = new ArrayList<>(selected);
                 for (var a : copy) {
                     // If the user decided to remove the selected entry
-                    // while the scan is running, just return instantly
+                    // while the scan is running, skip it and continue with the other entries
                     if (!DataStorage.get().getStoreEntries().contains(entry.get())) {
-                        return;
+                        break;
                     }
 
                     // Previous scan operation could have exited the shell

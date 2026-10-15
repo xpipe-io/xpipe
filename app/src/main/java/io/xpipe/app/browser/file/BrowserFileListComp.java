@@ -264,11 +264,12 @@ public final class BrowserFileListComp extends SimpleRegionBuilder {
     }
 
     private static String formatOwnerPart(String name, String id) {
-        if (name == null) {
-            return id != null ? id : "?";
+        if (name == null && id == null) {
+            return "?";
         }
 
-        return name + (id != null ? " [" + id + "]" : "");
+        // Show an unknown name or id as ? if the other one is known
+        return (name != null ? name : "?") + " [" + (id != null ? id : "?") + "]";
     }
 
     private void prepareTypedSelectionModel(TableView<BrowserEntry> table) {

@@ -33,12 +33,12 @@ public class WorkspaceEntryComp extends SimpleRegionBuilder {
         view.disable(!available);
         var current = workspace.equals(WorkspaceManager.get().getCurrent());
         var delete = new IconButtonComp(new LabelGraphic.IconGraphic("mdi2t-trash-can-outline"), () -> {
-            if (AppDialog.confirm("workspaceDeletion")) {
+            // The data directory of an unavailable workspace can't be deleted, so it is only removed from the list
+            if (AppDialog.confirm(available ? "workspaceDeletion" : "workspaceRemoval")) {
                 WorkspaceManager.get().removeWorkspace(workspace);
             }
         });
         delete.describe(d -> d.nameKey("delete"));
-        delete.disable(!available);
         delete.hide(new SimpleBooleanProperty(current));
         var buttons = new HorizontalComp(List.of(view, delete));
         buttons.spacing(7);

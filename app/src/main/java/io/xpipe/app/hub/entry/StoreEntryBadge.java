@@ -7,6 +7,7 @@ import io.xpipe.app.platform.ClipboardHelper;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.store.HostAddressStore;
 import io.xpipe.app.util.*;
@@ -237,10 +238,22 @@ public interface StoreEntryBadge {
                         return;
                     }
 
+                    var complete = wrapper.getEntry().getValidity() == DataStoreEntry.Validity.COMPLETE;
                     ThreadHelper.runFailableAsync(() -> {
-                        BooleanScope.executeExclusive(busy, () -> {
-                            has.refreshHostAddressOrThrow();
-                        });
+                        try {
+                            BooleanScope.executeExclusive(busy, () -> {
+                                has.refreshHostAddressOrThrow();
+                            });
+                        } catch (Exception e) {
+                            // The refresh might require parts that are not configured yet for an incomplete entry
+                            // In that case, just copy the known address like before
+                            if (!complete) {
+                                ErrorEventFactory.fromThrowable(e).omit().expected().handle();
+                                ClipboardHelper.copyText(effective);
+                                return;
+                            }
+                            throw e;
+                        }
 
                         var refreshed = has.getHostAddress();
                         if (refreshed == null || refreshed.isEmpty()) {
