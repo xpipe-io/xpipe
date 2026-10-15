@@ -348,14 +348,7 @@ public abstract class DataStorage {
         return change;
     }
 
-    public void updateEntry(DataStoreEntry entry, DataStoreEntry newEntry) {
-        var state = entry.getStorePersistentState();
-        var nState = newEntry.getStorePersistentState();
-        if (state != null && nState != null) {
-            var updatedState = state.mergeCopy(nState);
-            newEntry.setStorePersistentState(updatedState);
-        }
-
+    public void carryOverEntryMetadata(DataStoreEntry entry, DataStoreEntry newEntry) {
         var icon = entry.getIcon();
         if (icon != null && newEntry.getIcon() == null) {
             newEntry.setIcon(icon, true);
@@ -384,6 +377,15 @@ public abstract class DataStorage {
 
         if (entry.getBreakOutCategory() != null && newEntry.getBreakOutCategory() == null && entry.getCategoryUuid().equals(newEntry.getCategoryUuid())) {
             getStoreCategoryIfPresent(entry.getBreakOutCategory()).ifPresent(newEntry::setBreakOutCategory);
+        }
+    }
+
+    public void updateEntry(DataStoreEntry entry, DataStoreEntry newEntry) {
+        var state = entry.getStorePersistentState();
+        var nState = newEntry.getStorePersistentState();
+        if (state != null && nState != null) {
+            var updatedState = state.mergeCopy(nState);
+            newEntry.setStorePersistentState(updatedState);
         }
 
         var syntheticParent = getSyntheticParent(newEntry);

@@ -46,6 +46,7 @@ public class StoreCreationDialog {
         StoreCreationConsumer consumer = (newE, validated) -> {
             ThreadHelper.runAsync(() -> {
                 if (!addToStorage) {
+                    DataStorage.get().carryOverEntryMetadata(e, newE);
                     DataStorage.get().updateEntry(e, newE);
                     c.accept(e);
                     return;
@@ -61,6 +62,7 @@ public class StoreCreationDialog {
 
                     // We might still have changed some auxiliary config value
                     // So, always force an update, regardless of wasChanged
+                    DataStorage.get().carryOverEntryMetadata(e, newE);
                     DataStorage.get().updateEntry(e, newE);
 
                     if (wasChanged
