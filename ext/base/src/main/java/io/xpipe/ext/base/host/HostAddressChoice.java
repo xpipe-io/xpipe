@@ -46,7 +46,8 @@ public class HostAddressChoice {
         var portField = new IntFieldComp(portProperty)
                 .maxWidth(63)
                 .apply(textField -> textField.setAlignment(Pos.BASELINE_CENTER));
-        if (!allowMutation && HostAddress.empty().equals(addressProperty.getValue())) {
+        var locked = !allowMutation && HostAddress.empty().equals(addressProperty.getValue());
+        if (locked) {
             addressField.disable(true);
             portField.disable(true);
         }
@@ -60,13 +61,23 @@ public class HostAddressChoice {
         });
         options.nameAndDescription(nameKey != null ? nameKey : "connectionInformation");
         options.addComp(box);
+        // Fields that can't be filled out are not required
         options.addProperty(portProperty);
-        options.nonNull();
+        if (!locked) {
+            options.nonNull();
+        }
         options.addProperty(val);
-        options.nonNull();
+        if (!locked) {
+            options.nonNull();
+        }
         options.addProperty(listHashProp);
         options.bind(
                 () -> {
+                    // Keep the unknown address instead of clearing it
+                    if (locked) {
+                        return addressProperty.getValue();
+                    }
+
                     var fullList = new ArrayList<>(list);
                     if (val.getValue() != null && !fullList.contains(val.getValue())) {
                         fullList.add(val.getValue());

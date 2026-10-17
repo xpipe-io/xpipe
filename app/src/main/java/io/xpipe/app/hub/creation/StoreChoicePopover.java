@@ -15,7 +15,6 @@ import io.xpipe.app.hub.section.StoreSectionSelector;
 import io.xpipe.app.hub.section.StoreSectionState;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.LabelGraphic;
-import io.xpipe.app.platform.Listeners;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -37,6 +36,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.WindowEvent;
 
 import atlantafx.base.controls.Popover;
 import lombok.RequiredArgsConstructor;
@@ -240,8 +240,13 @@ public class StoreChoicePopover<T extends DataStore> {
             });
 
             // Hide on connection creation dialog
-            Listeners.listenList(AppDialog.getModalOverlaysRaw(), () -> {
-                popover.hide();
+            // Only listen while shown, as the global overlay list would otherwise keep every popover alive
+            ListChangeListener<ModalOverlay> hideOnOverlay = c -> popover.hide();
+            popover.addEventHandler(WindowEvent.WINDOW_SHOWN, e -> {
+                AppDialog.getModalOverlaysRaw().addListener(hideOnOverlay);
+            });
+            popover.addEventHandler(WindowEvent.WINDOW_HIDDEN, e -> {
+                AppDialog.getModalOverlaysRaw().removeListener(hideOnOverlay);
             });
 
             if (consumer != null) {

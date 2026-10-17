@@ -195,7 +195,10 @@ public class StoreFilterState {
 
             try {
                 var action = provider.get().createAction(URI.create(rawText.get()));
-                action.executeAsync();
+                // No action is returned if the provider handled the URL itself or the confirmation was cancelled
+                if (action != null) {
+                    action.executeAsync();
+                }
                 return true;
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).handle();

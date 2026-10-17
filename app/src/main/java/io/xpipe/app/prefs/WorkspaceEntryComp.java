@@ -35,7 +35,7 @@ public class WorkspaceEntryComp extends SimpleRegionBuilder {
         var delete = new IconButtonComp(new LabelGraphic.IconGraphic("mdi2t-trash-can-outline"), () -> {
             // The data directory of an unavailable workspace can't be deleted, so it is only removed from the list
             if (AppDialog.confirm(available ? "workspaceDeletion" : "workspaceRemoval")) {
-                WorkspaceManager.get().removeWorkspace(workspace);
+                WorkspaceManager.get().removeWorkspace(workspace, available);
             }
         });
         delete.describe(d -> d.nameKey("delete"));

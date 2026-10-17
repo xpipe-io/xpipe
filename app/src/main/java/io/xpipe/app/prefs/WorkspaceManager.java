@@ -104,7 +104,7 @@ public class WorkspaceManager {
         }
     }
 
-    public void removeWorkspace(WorkspaceEntry workspace) {
+    public void removeWorkspace(WorkspaceEntry workspace, boolean deleteDirectory) {
         if (current.equals(workspace)) {
             return;
         }
@@ -112,8 +112,9 @@ public class WorkspaceManager {
         workspaces.remove(workspace);
         save();
 
+        // Only delete the data if the user confirmed that, the directory might have become available since then
         var dir = workspace.getDir();
-        if (!canDeleteDirectory(dir)) {
+        if (!deleteDirectory || !canDeleteDirectory(dir)) {
             return;
         }
 

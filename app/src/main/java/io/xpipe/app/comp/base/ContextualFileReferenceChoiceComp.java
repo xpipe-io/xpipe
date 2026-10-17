@@ -135,21 +135,26 @@ public class ContextualFileReferenceChoiceComp extends RegionBuilder<HBox> {
                                 source.toString().substring(0, source.toString().length() - 4))
                         : source;
 
+                // The key might have been renamed on a conflict,
+                // so place the related files next to it with a matching name
+                var targetBase = syncedTarget.toString().endsWith(".pem")
+                        ? Path.of(syncedTarget
+                                .toString()
+                                .substring(0, syncedTarget.toString().length() - 4))
+                        : syncedTarget;
+
                 var pubSource = SshIdentityStrategy.getPublicKeyPath(FilePath.of(source))
                         .asLocalPath();
                 if (Files.exists(pubSource)) {
-                    var pubTarget = sync.getTargetLocation().apply(pubSource);
-                    if (pubTarget != null) {
-                        handler.addDataFile(pubSource, pubTarget, sync.getScope().get());
-                    }
+                    var pubTarget = SshIdentityStrategy.getPublicKeyPath(FilePath.of(syncedTarget))
+                            .asLocalPath();
+                    handler.addDataFile(pubSource, pubTarget, sync.getScope().get());
                 }
 
                 var ppkSource = Path.of(sourceBase + ".ppk");
                 if (Files.exists(ppkSource)) {
-                    var ppkTarget = sync.getTargetLocation().apply(ppkSource);
-                    if (ppkTarget != null) {
-                        handler.addDataFile(ppkSource, ppkTarget, sync.getScope().get());
-                    }
+                    var ppkTarget = Path.of(targetBase + ".ppk");
+                    handler.addDataFile(ppkSource, ppkTarget, sync.getScope().get());
                 }
 
                 Platform.runLater(() -> {

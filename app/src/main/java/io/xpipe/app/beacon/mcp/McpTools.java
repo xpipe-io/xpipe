@@ -12,6 +12,7 @@ import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageQuery;
 import io.xpipe.app.store.SingletonSessionStore;
@@ -448,10 +449,14 @@ public final class McpTools {
                                     .findModule(AppNames.extModuleName("base"))
                                     .orElseThrow(),
                             AppNames.extModuleName("base") + ".script.ScriptStore");
+                    if (!clazz.isInstance(script.getStore())) {
+                        throw new BeaconClientException(
+                                "Connection " + req.getStringArgument("script") + " is not a script");
+                    }
                     var method = clazz.getDeclaredMethod("assembleScriptChain", ShellControl.class, boolean.class);
                     var command =
-                            (String) method.invoke(script.getStore(), shellSession.getControl(), arguments != null);
-                    var scriptFile = ScriptHelper.createExecScript(shellSession.getControl(), command);
+                            (ShellScript) method.invoke(script.getStore(), shellSession.getControl(), arguments != null);
+                    var scriptFile = ScriptHelper.createExecScript(shellSession.getControl(), command.getValue());
                     var out = shellSession
                             .getControl()
                             .command(shellSession

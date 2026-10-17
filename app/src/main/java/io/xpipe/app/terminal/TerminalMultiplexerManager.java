@@ -20,6 +20,9 @@ public class TerminalMultiplexerManager {
     public static void registerMultiplexerContainerLaunch(UUID uuid) {
         pendingMultiplexerLaunch = uuid;
         var listener = new TerminalView.Listener() {
+
+            private boolean opened;
+
             @Override
             public void onSessionOpened(TerminalView.ShellSession session) {
                 if (session.getRequest().equals(uuid)) {
@@ -27,11 +30,17 @@ public class TerminalMultiplexerManager {
                         pendingMultiplexerLaunch = null;
                     }
                     runningMultiplexerContainer = uuid;
+                    opened = true;
                 }
             }
 
             @Override
             public void onSessionClosed(TerminalView.ShellSession session) {
+                // Unrelated sessions might close while the multiplexer container is still starting up
+                if (!opened) {
+                    return;
+                }
+
                 // Technically, due to how multiplexers handle, this can only be 0 or 1
                 // as it only tracks the base shell session the multiplexer runs in
                 // Sessions launched without a multiplexer are also registered with a null value, so skip those
