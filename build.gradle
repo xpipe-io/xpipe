@@ -17,6 +17,14 @@ allprojects { subproject ->
     }
     apply from: "$rootDir/gradle/gradle_scripts/modules.gradle"
 
+    // Always download dependency sources when the project is imported into an IDE
+    apply plugin: 'idea'
+    idea {
+        module {
+            downloadSources = true
+        }
+    }
+
     // https://docs.gradle.org/9.0.0/userguide/upgrading_major_version_9.html#reproducible_archives_by_default
     tasks.withType(AbstractArchiveTask).configureEach {
         reproducibleFileOrder = false
