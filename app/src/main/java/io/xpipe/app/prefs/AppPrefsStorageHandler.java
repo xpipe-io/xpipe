@@ -14,6 +14,7 @@ import tools.jackson.databind.node.ObjectNode;
 import tools.jackson.databind.node.StringNode;
 
 import java.io.IOException;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -65,7 +66,11 @@ public class AppPrefsStorageHandler {
             FileUtils.forceMkdir(file.getParent().toFile());
             var temp = file.resolveSibling(file.getFileName() + ".tmp");
             JacksonMapper.getDefault().writeValue(temp.toFile(), content);
-            Files.move(temp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            try {
+                Files.move(temp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(temp, file, StandardCopyOption.REPLACE_EXISTING);
+            }
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).expected().handle();
         }

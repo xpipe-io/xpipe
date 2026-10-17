@@ -121,10 +121,18 @@ public class AppTrayIcon {
         }
     }
 
+    private static String escapeAppleScriptString(String s) {
+        if (s == null) {
+            return "";
+        }
+
+        return s.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
     private void showMacAlert(String subTitle, String message, String title) {
         String execute = String.format(
                 "display notification \"%s\"" + " with title \"%s\"" + " subtitle \"%s\"",
-                message != null ? message : "", title != null ? title : "", subTitle != null ? subTitle : "");
+                escapeAppleScriptString(message), escapeAppleScriptString(title), escapeAppleScriptString(subTitle));
         LocalExec.executeAsync("osascript", "-e", execute);
     }
 }

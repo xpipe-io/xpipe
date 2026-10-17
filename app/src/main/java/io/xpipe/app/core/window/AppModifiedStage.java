@@ -53,6 +53,12 @@ public class AppModifiedStage extends Stage {
     private static void hookUpStage(Stage stage) {
         applyModes(stage);
 
+        // A stage is added to the window list again every time it is shown
+        // The listeners only have to be added once though
+        if (stage.getProperties().putIfAbsent("appModifiedStageHookedUp", true) != null) {
+            return;
+        }
+
         // Fix GC not working when the stage is no longer needed
         var ref = new WeakReference<>(stage);
 

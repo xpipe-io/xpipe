@@ -27,6 +27,7 @@ import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 @AllArgsConstructor
@@ -156,10 +157,14 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
             AppFontSizes.lg(struc);
             struc.setAlignment(Pos.CENTER);
 
-            struc.pseudoClassStateChanged(selected, value.getValue().equals(e));
+            struc.pseudoClassStateChanged(selected, Objects.equals(value.getValue(), e));
+            if (e == null) {
+                return;
+            }
+
             value.addListener((c, o, n) -> {
                 PlatformThread.runLaterIfNeeded(() -> {
-                    struc.pseudoClassStateChanged(selected, n.equals(e));
+                    struc.pseudoClassStateChanged(selected, Objects.equals(n, e));
                 });
             });
         });
@@ -171,6 +176,11 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
             var buttonRegion = (Region) struc.getChildren().get(1);
             indicatorRegion.setMaxWidth(7);
             indicatorRegion.prefHeightProperty().bind(buttonRegion.heightProperty());
+            if (e == null) {
+                struc.pseudoClassStateChanged(selected, value.getValue() == null || highlight);
+                return;
+            }
+
             value.subscribe(entry -> {
                 var s = entry == e || highlight;
                 struc.pseudoClassStateChanged(selected, s);

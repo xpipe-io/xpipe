@@ -11,14 +11,20 @@ import io.xpipe.app.util.BooleanScope;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 
 import net.synedra.validatorfx.GraphicDecorationStackPane;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AppPrefsComp extends SimpleRegionBuilder {
+
+    private final Map<AppPrefsCategory, Node> categoryNodes = new HashMap<>();
 
     @Override
     protected Region createSimple() {
@@ -102,8 +108,24 @@ public class AppPrefsComp extends SimpleRegionBuilder {
         return split.build();
     }
 
+    private Node findCategoryNode(Parent box, AppPrefsCategory val) {
+        // This is called for every category on every scroll change, so avoid a full lookup each time
+        var cached = categoryNodes.get(val);
+        if (cached != null && cached.getScene() != null) {
+            return cached;
+        }
+
+        var found = box.lookup("." + val.getId());
+        if (found != null) {
+            categoryNodes.put(val, found);
+        } else {
+            categoryNodes.remove(val);
+        }
+        return found;
+    }
+
     private double computeCategoryOffset(Region box, ScrollPane scrollPane, AppPrefsCategory val) {
-        var node = val != null ? box.lookup("." + val.getId()) : null;
+        var node = val != null ? findCategoryNode(box, val) : null;
         if (node != null && scrollPane.getHeight() > 0.0) {
             var minY = node.getBoundsInParent().getMinY();
             if (minY <= 40.0) {

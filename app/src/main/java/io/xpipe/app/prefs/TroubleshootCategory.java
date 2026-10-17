@@ -158,7 +158,8 @@ public class TroubleshootCategory extends AppPrefsCategory {
                         null)
                 .addComp(
                         new TileButtonComp("createHeapDump", "createHeapDumpDescription", "mdi2m-memory", e -> {
-                                    heapDump();
+                                    // This can take a while, so don't block the platform thread
+                                    ThreadHelper.runFailableAsync(() -> heapDump());
                                     e.consume();
                                 })
                                 .maxWidth(2000),

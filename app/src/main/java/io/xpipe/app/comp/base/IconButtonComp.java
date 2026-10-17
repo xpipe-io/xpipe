@@ -48,7 +48,7 @@ public class IconButtonComp extends RegionBuilder<Button> {
         button.setUnderline(false);
         icon.subscribe(labelGraphic -> {
             PlatformThread.runLaterIfNeeded(() -> {
-                button.setGraphic(labelGraphic.createGraphicNode());
+                button.setGraphic(labelGraphic != null ? labelGraphic.createGraphicNode() : null);
                 if (button.getGraphic() instanceof FontIcon fi) {
                     fi.setIconSize((int) new Size(button.getFont().getSize(), SizeUnits.PT).pixels());
                 }

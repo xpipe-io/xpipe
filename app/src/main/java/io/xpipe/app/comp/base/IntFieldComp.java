@@ -83,13 +83,28 @@ public class IntFieldComp extends RegionBuilder<TextField> {
 
             try {
                 int intValue = Integer.parseInt(newValue);
-                if (minValue > intValue || intValue > maxValue) {
+                if (intValue > maxValue || (intValue < minValue && intValue < 0)) {
                     field.textProperty().setValue(oldValue);
+                } else if (intValue < minValue) {
+                    // This might be a partial input
                 } else {
                     value.setValue(intValue);
                 }
             } catch (NumberFormatException ignored) {
                 // If you really try to break it, you can still insert non-integer text into this
+            }
+        });
+
+        field.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue || field.getText() == null || !field.getText().matches("-?\\d+")) {
+                return;
+            }
+
+            try {
+                if (Integer.parseInt(field.getText()) < minValue) {
+                    field.setText(String.valueOf(minValue));
+                }
+            } catch (NumberFormatException ignored) {
             }
         });
 

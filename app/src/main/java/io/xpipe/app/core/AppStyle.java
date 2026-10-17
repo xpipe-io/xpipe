@@ -27,6 +27,7 @@ public class AppStyle {
     private static final Map<AppTheme.Theme, String> THEME_PREFERENCES_STYLESHEET_CONTENTS = new LinkedHashMap<>();
     private static final WeakHashMap<Scene, Object> scenes = new WeakHashMap<>();
     private static String FONT_CONTENTS = null;
+    private static boolean LISTENERS_ADDED = false;
 
     public static void init() {
         if (STYLESHEET_CONTENTS.size() > 0) {
@@ -35,6 +36,12 @@ public class AppStyle {
 
         TrackEvent.info("Loading stylesheets ...");
         loadStylesheets();
+
+        // This is called again when reloading stylesheets, so don't add the listeners multiple times
+        if (LISTENERS_ADDED) {
+            return;
+        }
+        LISTENERS_ADDED = true;
 
         if (AppPrefs.get() != null) {
             AppPrefs.get().useSystemFont().addListener((c, o, n) -> {

@@ -60,7 +60,8 @@ public class AppResources {
             try {
                 var env = new HashMap<String, Object>();
                 env.put("layer", layer);
-                if (AppExtensionManager.getInstance().getExternalModules().contains(module)) {
+                if (AppExtensionManager.getInstance() != null
+                        && AppExtensionManager.getInstance().getExternalModules().contains(module)) {
                     env.put("jrtFileSystem", AppExtensionManager.getInstance().getExternalModuleFileSystem());
                 }
                 var fs = (ModuleFileSystem) FileSystems.newFileSystem(URI.create("module:/" + module), env);
@@ -112,6 +113,7 @@ public class AppResources {
     }
 
     private static boolean withLocalDevResource(String module, String file, FailableConsumer<Path, IOException> con) {
+        Path f;
         try {
             var fs = openFileSystemIfNeeded(module);
             var url = fs.getPath("").getWrappedPath().toUri().toURL();
@@ -128,11 +130,17 @@ public class AppResources {
                     .resolve("src")
                     .resolve("main")
                     .resolve("resources");
-            var f = resDir.resolve(module.replace('.', '/') + "/resources/" + file);
+            f = resDir.resolve(module.replace('.', '/') + "/resources/" + file);
             if (!Files.exists(f)) {
                 return false;
             }
+        } catch (Exception e) {
+            // Fall back to the regular resource if the local dev resource can't be located
+            ErrorEventFactory.fromThrowable(e).omitted(true).build().handle();
+            return false;
+        }
 
+        try {
             con.accept(f);
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).omitted(true).build().handle();

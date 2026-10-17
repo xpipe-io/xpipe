@@ -1,9 +1,8 @@
 package io.xpipe.app.core.check;
 
 import io.xpipe.app.core.AppInstallation;
+import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.OsType;
-
-import java.util.concurrent.TimeUnit;
 
 public class AppSystemFontCheck {
 
@@ -26,14 +25,7 @@ public class AppSystemFontCheck {
     }
 
     private static boolean hasFonts() {
-        var fc = new ProcessBuilder("fc-match").redirectError(ProcessBuilder.Redirect.DISCARD);
-        try {
-            var proc = fc.start();
-            var out = new String(proc.getInputStream().readAllBytes());
-            proc.waitFor(1, TimeUnit.SECONDS);
-            return proc.exitValue() == 0 && !out.isBlank();
-        } catch (Exception e) {
-            return false;
-        }
+        var out = LocalExec.readStdoutIfPossible("fc-match");
+        return out.isPresent() && !out.get().isBlank();
     }
 }

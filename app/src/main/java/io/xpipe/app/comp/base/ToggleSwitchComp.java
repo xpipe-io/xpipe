@@ -67,7 +67,7 @@ public class ToggleSwitchComp extends RegionBuilder<ToggleSwitch> {
         if (graphic != null) {
             graphic.subscribe(value -> {
                 PlatformThread.runLaterIfNeeded(() -> {
-                    s.setGraphic(value.createGraphicNode());
+                    s.setGraphic(value != null ? value.createGraphicNode() : null);
                 });
             });
             s.setAlignment(Pos.CENTER);

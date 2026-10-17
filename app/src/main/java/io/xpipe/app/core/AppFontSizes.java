@@ -4,11 +4,12 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.OsType;
 
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.stage.Window;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
-import java.lang.ref.WeakReference;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
@@ -76,24 +77,22 @@ public class AppFontSizes {
             return;
         }
 
-        var ref = new WeakReference<>(node);
-        AppPrefs.get().theme().subscribe((newValue) -> {
-            var refNode = ref.get();
-            if (refNode != null) {
-                var effective = newValue != null ? newValue.getFontSizes().get() : getDefault();
-                setFont(refNode, function.apply(effective));
-            }
-        });
+        Runnable update = () -> {
+            var theme = AppPrefs.get().theme().getValue();
+            var effective = theme != null ? theme.getFontSizes().get() : getDefault();
+            setFont(node, function.apply(effective));
+        };
+        update.run();
 
-        AppPrefs.get().useSystemFont().addListener((ignored, ignored2, newValue) -> {
-            var refNode = ref.get();
-            if (refNode != null) {
-                var effective = AppPrefs.get().theme().getValue() != null
-                        ? AppPrefs.get().theme().getValue().getFontSizes().get()
-                        : getDefault();
-                setFont(refNode, function.apply(effective));
-            }
-        });
+        // Only observe the long-lived prefs while the node is actually shown
+        // Otherwise, the listeners would accumulate and keep discarded nodes and closed windows alive
+        // Changes while the node is not shown are applied once it is shown again
+        var showing = node.sceneProperty()
+                .flatMap(Scene::windowProperty)
+                .flatMap(Window::showingProperty)
+                .orElse(false);
+        AppPrefs.get().theme().when(showing).subscribe((oldValue, newValue) -> update.run());
+        AppPrefs.get().useSystemFont().when(showing).subscribe((oldValue, newValue) -> update.run());
     }
 
     private static void setFont(Node node, String fontSize) {
@@ -108,7 +107,7 @@ public class AppFontSizes {
             var l = Integer.parseInt(base.split("\\.")[0]);
             var r = "." + base.split("\\.")[1];
             return new AppFontSizes(
-                    (l - 1) + r, (l - 1) + "", base, (l + 1) + "", (l + 1) + r, (l + 2) + r, (l + 3) + r, (l + 7) + r);
+                    (l - 1) + r, l + "", base, (l + 1) + "", (l + 1) + r, (l + 2) + r, (l + 3) + r, (l + 7) + r);
         } else {
             var l = Integer.parseInt(base);
             return new AppFontSizes(

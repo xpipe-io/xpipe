@@ -10,10 +10,12 @@ import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.OsType;
+import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Worker;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -28,10 +30,14 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.util.HexFormat;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.UnaryOperator;
 
 public class MarkdownComp extends RegionBuilder<StackPane> {
@@ -64,19 +70,17 @@ public class MarkdownComp extends RegionBuilder<StackPane> {
             return null;
         }
 
-        int hash;
+        // Key the file by the final html so that the padding and transformation are taken into account
+        var html = MarkdownHelper.toHtml(markdown, s -> s, htmlTransformation, bodyPadding ? "padded" : null);
         // Rebuild files for updates in case the css have been changed
-        if (AppProperties.get().isImage()) {
-            hash = markdown.hashCode() + AppProperties.get().getVersion().hashCode();
-        } else {
-            hash = markdown.hashCode();
-        }
+        var hash = AppProperties.get().isImage()
+                ? sha256(html + AppProperties.get().getVersion())
+                : sha256(html);
         var file = DIR.resolve("md-" + hash + ".html");
         if (Files.exists(file)) {
             return file;
         }
 
-        var html = MarkdownHelper.toHtml(markdown, s -> s, htmlTransformation, bodyPadding ? "padded" : null);
         try {
             // Workaround for https://bugs.openjdk.org/browse/JDK-8199014
             FileUtils.forceMkdir(file.getParent().toFile());
@@ -87,6 +91,12 @@ public class MarkdownComp extends RegionBuilder<StackPane> {
             ErrorEventFactory.fromThrowable(e).expected().handle();
             return null;
         }
+    }
+
+    @SneakyThrows
+    private static String sha256(String s) {
+        var digest = MessageDigest.getInstance("SHA-256").digest(s.getBytes(StandardCharsets.UTF_8));
+        return HexFormat.of().formatHex(digest);
     }
 
     @SneakyThrows
@@ -113,13 +123,33 @@ public class MarkdownComp extends RegionBuilder<StackPane> {
             });
         }
 
+        // The content is loaded asynchronously, so hide the web view until then
+        // Otherwise, the empty initial page is briefly shown as a white rectangle
+        wv.setVisible(false);
+        wv.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == Worker.State.SUCCEEDED || newValue == Worker.State.FAILED) {
+                wv.setVisible(true);
+            }
+        });
+
+        var counter = new AtomicInteger();
         markdown.subscribe(val -> {
-            PlatformThread.runLaterIfNeeded(() -> {
+            // Rendering the markdown and writing the file can take a while, so do it in the background
+            var current = counter.incrementAndGet();
+            ThreadHelper.runAsync(() -> {
                 var file = getHtmlFile(val);
-                if (file != null) {
-                    var contentUrl = file.toUri();
-                    wv.getEngine().load(contentUrl.toString());
+                if (file == null) {
+                    return;
                 }
+
+                PlatformThread.runLaterIfNeeded(() -> {
+                    // Ignore outdated results if the markdown changed in the meantime
+                    if (current != counter.get()) {
+                        return;
+                    }
+
+                    wv.getEngine().load(file.toUri().toString());
+                });
             });
         });
 

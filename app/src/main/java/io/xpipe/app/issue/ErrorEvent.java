@@ -9,13 +9,15 @@ import lombok.Singular;
 
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 @Builder
 @Getter
 public class ErrorEvent {
 
-    private static final Set<Throwable> HANDLED = new CopyOnWriteArraySet<>();
+    // Throwable does not override equals, so this is an identity set
+    // Weak references ensure that handled throwables can still be garbage collected
+    private static final Set<Throwable> HANDLED =
+            Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
     @Builder.Default
     private final boolean omitted = false;
@@ -59,8 +61,16 @@ public class ErrorEvent {
     }
 
     private boolean shouldIgnore(Throwable throwable) {
-        return (throwable != null && HANDLED.stream().anyMatch(t -> t == throwable) && !terminal)
-                || (throwable != null && throwable.getCause() != throwable && shouldIgnore(throwable.getCause()));
+        // Guard against cause cycles
+        var visited = Collections.newSetFromMap(new IdentityHashMap<Throwable, Boolean>());
+        var current = throwable;
+        while (current != null && visited.add(current)) {
+            if (HANDLED.contains(current) && !terminal) {
+                return true;
+            }
+            current = current.getCause();
+        }
+        return false;
     }
 
     public void handle() {
@@ -71,7 +81,9 @@ public class ErrorEvent {
 
         EventHandler.get().modify(this);
         EventHandler.get().handle(this);
-        HANDLED.add(throwable);
+        if (throwable != null) {
+            HANDLED.add(throwable);
+        }
     }
 
     public void addAttachment(Path file) {

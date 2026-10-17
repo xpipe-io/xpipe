@@ -134,7 +134,7 @@ public abstract class AppSystemInfo {
                 return env;
             }
 
-            var def = Path.of("C:\\ProgramFiles");
+            var def = Path.of("C:\\Program Files");
             return def;
         }
 

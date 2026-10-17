@@ -103,7 +103,7 @@ public class AppWindowsShutdown {
                             .handle();
 
                     // Instant exit for critical shutdowns
-                    if (type == ENDSESSION_CRITICAL) {
+                    if ((type & ENDSESSION_CRITICAL) != 0) {
                         AppOperationMode.halt(0);
                     }
 

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class AppLayoutComp extends RegionStructureBuilder<BorderPane, AppLayoutComp.Structure> {
@@ -38,7 +39,7 @@ public class AppLayoutComp extends RegionStructureBuilder<BorderPane, AppLayoutC
                         entry -> entry.comp(),
                         entry -> Bindings.createBooleanBinding(
                                 () -> {
-                                    return model.getSelected().getValue().equals(entry);
+                                    return Objects.equals(model.getSelected().getValue(), entry);
                                 },
                                 model.getSelected()),
                         (v1, v2) -> v2,

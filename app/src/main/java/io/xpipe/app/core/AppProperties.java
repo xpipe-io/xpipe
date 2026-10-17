@@ -87,9 +87,9 @@ public class AppProperties {
         var appDir = Path.of(System.getProperty("user.dir")).resolve("app");
         Path propsFile = appDir.resolve(isCli ? "dev-cli.properties" : "dev.properties");
         if (Files.exists(propsFile)) {
-            try {
+            try (var in = Files.newInputStream(propsFile)) {
                 Properties props = new Properties();
-                props.load(Files.newInputStream(propsFile));
+                props.load(in);
                 props.forEach((key, value) -> {
                     // Don't overwrite existing properties
                     if (System.getProperty(key.toString()) == null) {
@@ -120,7 +120,12 @@ public class AppProperties {
                 .map(UUID::fromString)
                 .orElse(UUID.randomUUID());
         sentryUrl = System.getProperty(AppNames.propertyName("sentryUrl"));
-        arch = System.getProperty("os.arch").equals("amd64") || System.getProperty("os.arch").equals("x86_64") ? "x86_64" : "arm64";
+        var osArch = System.getProperty("os.arch");
+        arch = switch (osArch) {
+            case "amd64", "x86_64" -> "x86_64";
+            case "aarch64", "arm64" -> "arm64";
+            default -> osArch;
+        };
         staging = Optional.ofNullable(System.getProperty(AppNames.propertyName("staging")))
                 .map(Boolean::parseBoolean)
                 .orElse(false);

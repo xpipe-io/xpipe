@@ -9,6 +9,10 @@ import io.xpipe.app.issue.TrackEvent;
 public class UpdateAvailableDialog {
 
     public static boolean showIfNeeded(boolean wait) {
+        return showIfNeeded(wait, true);
+    }
+
+    public static boolean showIfNeeded(boolean wait, boolean refresh) {
         if (AppProperties.get().isAotTrainMode()) {
             return false;
         }
@@ -19,9 +23,11 @@ public class UpdateAvailableDialog {
         }
 
         // Check whether we still have the latest version prepared
-        uh.refreshUpdateCheckSilent(false, uh.getPreparedUpdate().getValue().isSecurityOnly());
-        if (uh.getPreparedUpdate().getValue() == null) {
-            return false;
+        if (refresh) {
+            uh.refreshUpdateCheckSilent(false, uh.getPreparedUpdate().getValue().isSecurityOnly());
+            if (uh.getPreparedUpdate().getValue() == null) {
+                return false;
+            }
         }
 
         TrackEvent.withInfo("Showing update alert ...")

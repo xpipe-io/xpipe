@@ -154,7 +154,9 @@ public class SentryErrorHandler implements ErrorHandler {
     }
 
     private static SentryId captureEvent(ErrorEvent ee) {
-        if (!hasUserReport(ee) && "User Report".equals(ee.getDescription())) {
+        var hasAttachments =
+                ee.isShouldSendDiagnostics() && !ee.getAttachments().isEmpty();
+        if (!hasUserReport(ee) && !hasAttachments && "User Report".equals(ee.getDescription())) {
             return null;
         }
 
@@ -205,7 +207,11 @@ public class SentryErrorHandler implements ErrorHandler {
                 Files.writeString(report, ee.getUserReport());
                 s.addAttachment(new Attachment(report.toString()));
             } catch (Exception ex) {
-                AppLogs.get().logException("Unable to create report file", ex);
+                if (AppLogs.get() != null) {
+                    AppLogs.get().logException("Unable to create report file", ex);
+                } else {
+                    ex.printStackTrace();
+                }
             }
         }
 
