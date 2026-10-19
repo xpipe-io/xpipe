@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.process.CommandControl;
 import io.xpipe.app.process.ProcessOutputException;
@@ -82,6 +83,7 @@ public class CommandDialog {
                             return sp;
                         })
                         .prefWidth(650));
+        modal.addButton(ModalButton.ok());
         modal.show();
     }
 

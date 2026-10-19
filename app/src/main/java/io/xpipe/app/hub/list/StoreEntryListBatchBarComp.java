@@ -206,14 +206,14 @@ public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
                 expanded,
                 s.getName());
         var button = new ButtonComp(name, s.getIcon(), null);
-        button.apply(struc -> {
-            struc.setOnAction(e -> {
-                if (batchActions.size() == 0) {
+        if (batchActions.size() == 0) {
+            button.apply(struc -> {
+                struc.setOnAction(e -> {
                     runActions(s);
                     e.consume();
-                }
+                });
             });
-        });
+        }
         button.describe(d -> d.name(s.getName()));
 
         button.disable(Bindings.createBooleanBinding(
