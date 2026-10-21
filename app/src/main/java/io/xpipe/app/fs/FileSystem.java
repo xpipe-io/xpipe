@@ -6,7 +6,10 @@ import io.xpipe.app.util.FilePath;
 import java.io.Closeable;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -111,34 +114,40 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     default void traverseFilesRecursively(FileSystem system, FilePath file, Predicate<FileEntry> visitor)
             throws Exception {
-        List<FileEntry> base;
-        try (var filesStream = listFiles(system, file)) {
-            base = filesStream.toList();
-        }
-
-        if (base.size() != 1) {
-            for (FileEntry fileEntry : base) {
-                // False will cancel the whole traversal
-                if (!visitor.test(fileEntry)) {
-                    return;
-                }
-
-                if (fileEntry.getKind() != FileKind.DIRECTORY) {
-                    continue;
-                }
-
-                traverseFilesRecursively(system, fileEntry.getPath(), visitor);
+        var visited = new HashSet<FilePath>();
+        visited.add(file);
+        var stack = new ArrayDeque<Iterator<FileEntry>>();
+        stack.push(listFilesForTraversal(system, file).iterator());
+        while (!stack.isEmpty()) {
+            var it = stack.peek();
+            if (!it.hasNext()) {
+                stack.pop();
+                continue;
             }
-            return;
+
+            var fileEntry = it.next();
+            // False will cancel the whole traversal
+            if (!visitor.test(fileEntry)) {
+                return;
+            }
+
+            if (fileEntry.getKind() != FileKind.DIRECTORY) {
+                continue;
+            }
+
+            // Some listings can include the directory itself or loop back
+            if (!visited.add(fileEntry.getPath())) {
+                continue;
+            }
+
+            stack.push(listFilesForTraversal(system, fileEntry.getPath()).iterator());
         }
+    }
 
-        // Optimize this call to use tail recursion if possible
-
-        if (!visitor.test(base.getFirst()) || base.getFirst().getKind() != FileKind.DIRECTORY) {
-            return;
+    private List<FileEntry> listFilesForTraversal(FileSystem system, FilePath dir) throws Exception {
+        try (var filesStream = listFiles(system, dir)) {
+            return filesStream.filter(e -> !e.getPath().equals(dir)).toList();
         }
-
-        traverseFilesRecursively(system, base.getFirst().getPath(), visitor);
     }
 
     List<FilePath> listRoots() throws Exception;
