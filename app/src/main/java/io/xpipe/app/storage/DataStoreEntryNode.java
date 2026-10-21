@@ -9,6 +9,8 @@ import tools.jackson.databind.type.TypeFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class DataStoreEntryNode<T> {
 
@@ -54,9 +56,17 @@ public class DataStoreEntryNode<T> {
 
         var shouldEncrypt = (encryptIfRestricted && targetScope.isAccessSubRestricted())
                 || AppPrefs.get().encryptAllVaultData().get();
-        if (shouldEncrypt) {
-            var supported = enc.supportsScopeEncryption(targetScope);
-            if (!supported) {
+        if (shouldEncrypt && !enc.supportsScopeEncryption(targetScope)) {
+            // Only encrypt for the principals that we can encrypt for instead of falling back to plaintext
+            var existing = enc.getSecret() != null ? enc.getSecret().getEncryptionPrincipals() : Set.of();
+            var available = targetScope.getPrincipals().stream()
+                    .filter(p -> p.isAccessible() || existing.contains(p))
+                    .collect(Collectors.toSet());
+            if (!available.isEmpty()) {
+                targetScope = DataStoreAccessScope.of(available);
+            } else if (targetScope.isAccessSubRestricted()) {
+                throw new IllegalStateException("Unable to encrypt data for any principal of scope " + targetScope);
+            } else {
                 shouldEncrypt = false;
             }
         }

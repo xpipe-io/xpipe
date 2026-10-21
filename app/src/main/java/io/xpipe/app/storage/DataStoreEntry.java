@@ -622,16 +622,22 @@ public class DataStoreEntry extends DataStorageElement {
             }
         }
 
-        this.storeNode = this.storeNode.prepareForWrite(this, true, getStore());
-        if (this.storeNode.requiresWrite()) {
-            Files.writeString(directory.resolve("store.json"), this.storeNode.getWriteString());
+        // If the store could not be loaded, keep the existing file
+        if (this.storeNode != null) {
+            this.storeNode = this.storeNode.prepareForWrite(this, true, getStore());
+            if (this.storeNode.requiresWrite()) {
+                Files.writeString(directory.resolve("store.json"), this.storeNode.getWriteString());
+            }
         }
     }
 
     public void setNotes(String newNotes) {
         var changed = !Objects.equals(getNotes(), newNotes);
         if (changed) {
-            this.notesNode = DataStoreEntryNode.of(newNotes);
+            // Keep the existing encryption if possible
+            this.notesNode = notesNode != null && notesNode.isAccessible()
+                    ? notesNode.with(newNotes)
+                    : DataStoreEntryNode.of(newNotes);
             notifyUpdate(false, true);
         }
     }
@@ -692,11 +698,12 @@ public class DataStoreEntry extends DataStorageElement {
             return;
         }
 
-        if (!storeNode.isAccessible()) {
+        if (storeNode != null && !storeNode.isAccessible()) {
             return;
         }
 
-        this.storeNode = DataStoreEntryNode.of(store);
+        // Keep the existing encryption, it might contain principals that are not accessible to us
+        this.storeNode = storeNode != null ? storeNode.with(store) : DataStoreEntryNode.of(store);
         this.provider = DataStoreProvider.byStore(store);
         this.validity =
                 store != null ? (store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE) : Validity.LOAD_FAILED;
