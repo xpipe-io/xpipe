@@ -261,7 +261,7 @@ public class PlatformThread {
         return obs;
     }
 
-    private static boolean canRunPlatform() {
+    public static boolean canRunPlatform() {
         if (PlatformState.getCurrent() != PlatformState.RUNNING) {
             return false;
         }

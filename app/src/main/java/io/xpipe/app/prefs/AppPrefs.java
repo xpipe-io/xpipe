@@ -38,6 +38,8 @@ import tools.jackson.databind.type.SimpleType;
 import tools.jackson.databind.type.TypeFactory;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.time.Duration;
 import java.util.*;
 
@@ -48,6 +50,8 @@ public final class AppPrefs {
     private boolean localInitialized;
     private boolean syncInitialized;
     private final List<Mapping> mapping = new ArrayList<>();
+    private FileTime syncedFileModifiedTime;
+    private FileTime notesFileModifiedTime;
 
     public static void initLocal() {
         INSTANCE = new AppPrefs();
@@ -58,7 +62,7 @@ public final class AppPrefs {
     }
 
     public static void initSynced() {
-        INSTANCE.loadSharedRemote();
+        INSTANCE.loadSynced();
         INSTANCE.syncInitialized = true;
     }
 
@@ -942,27 +946,77 @@ public final class AppPrefs {
         }
     }
 
-    private void loadSharedRemote() {
+    private Path getNotesFile() {
+        return AppProperties.get().getDataDir().resolve("storage").resolve("notes.md");
+    }
+
+    private FileTime readModifiedTime(Path file) {
+        try {
+            return Files.exists(file) ? Files.getLastModifiedTime(file) : null;
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable(e).omit().expected().handle();
+            return null;
+        }
+    }
+
+    public synchronized void loadSynced() {
+        loadSyncedValues();
+        loadNotes();
+    }
+
+    private void loadSyncedValues() {
+        var modified = readModifiedTime(DataStorage.getStorageDirectory().resolve("preferences.json"));
+        if (syncInitialized && Objects.equals(modified, syncedFileModifiedTime)) {
+            return;
+        }
+        syncedFileModifiedTime = modified;
+
         var handler =
                 new AppPrefsStorageHandler(DataStorage.getStorageDirectory().resolve("preferences.json"));
         handler.load();
 
-        for (Mapping value : mapping) {
-            if (!value.isSync()) {
-                continue;
-            }
+        applyLoadedValue(() -> {
+            for (Mapping m : mapping) {
+                if (!m.isSync()) {
+                    continue;
+                }
 
-            loadValue(handler, value);
+                loadValue(handler, m);
+            }
+        });
+    }
+
+    private void applyLoadedValue(Runnable apply) {
+        // The initial load has to be applied immediately
+        // Later on, values bound to the GUI have to be changed on the platform thread
+        if (syncInitialized && PlatformThread.canRunPlatform()) {
+            PlatformThread.runLaterIfNeeded(apply);
+        } else {
+            apply.run();
+        }
+    }
+
+    private void loadNotes() {
+        var file = getNotesFile();
+        var modified = readModifiedTime(file);
+        if (syncInitialized && Objects.equals(modified, notesFileModifiedTime)) {
+            return;
+        }
+        notesFileModifiedTime = modified;
+
+        if (modified == null) {
+            return;
         }
 
+        String content;
         try {
-            var file = AppProperties.get().getDataDir().resolve("storage").resolve("notes.md");
-            if (Files.exists(file)) {
-                notesTemplate.set(Files.readString(file));
-            }
+            content = Files.readString(file);
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
+            return;
         }
+
+        applyLoadedValue(() -> notesTemplate.set(content));
     }
 
     @SuppressWarnings("unchecked")
@@ -990,8 +1044,8 @@ public final class AppPrefs {
         }
 
         if (syncInitialized) {
-            var syncHandler =
-                    new AppPrefsStorageHandler(DataStorage.getStorageDirectory().resolve("preferences.json"));
+            var syncFile = DataStorage.getStorageDirectory().resolve("preferences.json");
+            var syncHandler = new AppPrefsStorageHandler(syncFile);
 
             for (Mapping m : mapping) {
                 if (!m.isSync()) {
@@ -1002,11 +1056,13 @@ public final class AppPrefs {
             }
 
             syncHandler.save();
+            syncedFileModifiedTime = readModifiedTime(syncFile);
 
-            if (notesTemplate.get() != null) {
+            var notes = notesTemplate.get();
+            if (notes != null) {
                 try {
-                    Files.writeString(
-                            AppProperties.get().getDataDir().resolve("storage", "notes.md"), notesTemplate.getValue());
+                    Files.writeString(getNotesFile(), notes);
+                    notesFileModifiedTime = readModifiedTime(getNotesFile());
                 } catch (Exception e) {
                     ErrorEventFactory.fromThrowable(e).handle();
                 }
