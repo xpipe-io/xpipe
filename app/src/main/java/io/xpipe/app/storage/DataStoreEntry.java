@@ -324,9 +324,6 @@ public class DataStoreEntry extends DataStorageElement {
                 && notesNode.getValue().isBlank()) {
             notesNode = null;
         }
-        if (notesNode != null && !notesNode.isAccessible()) {
-            notesNode = null;
-        }
 
         DataStoreEntryNode<DataStore> storeNode = DataStoreEntryNode.parse(storeFile, DataStore.class);
         return Optional.of(new DataStoreEntry(
@@ -552,10 +549,10 @@ public class DataStoreEntry extends DataStorageElement {
     }
 
     public boolean isAccessible() {
+        // Inaccessible notes are only hidden, the entry itself is still usable
         return (storeNode == null || storeNode.isAccessible())
                 && (entryNode == null || entryNode.isAccessible())
-                && (stateNode == null || stateNode.isAccessible())
-                && (notesNode == null || notesNode.isAccessible());
+                && (stateNode == null || stateNode.isAccessible());
     }
 
     public void writeDataToDisk() throws Exception {
@@ -611,15 +608,18 @@ public class DataStoreEntry extends DataStorageElement {
 
         var normalNotesFile = directory.resolve("notes.md");
         var encryptedNotesFile = directory.resolve("notes.json");
-        this.notesNode = this.notesNode != null ? this.notesNode.prepareForWrite(this, true, getNotes()) : null;
-        if (this.notesNode != null && this.notesNode.requiresWrite()) {
-            var file = this.notesNode.isEncrypted() ? encryptedNotesFile : normalNotesFile;
-            var fileToDelete = this.notesNode.isEncrypted() ? normalNotesFile : encryptedNotesFile;
-            Files.deleteIfExists(fileToDelete);
-            Files.writeString(file, this.notesNode.isEncrypted() ? this.notesNode.getWriteString() : this.notesNode.getValue());
-        } else if (this.notesNode == null) {
-            Files.deleteIfExists(normalNotesFile);
-            Files.deleteIfExists(encryptedNotesFile);
+        // We can't change inaccessible notes, so keep the existing files
+        if (this.notesNode == null || this.notesNode.isAccessible()) {
+            this.notesNode = this.notesNode != null ? this.notesNode.prepareForWrite(this, true, getNotes()) : null;
+            if (this.notesNode != null && this.notesNode.requiresWrite()) {
+                var file = this.notesNode.isEncrypted() ? encryptedNotesFile : normalNotesFile;
+                var fileToDelete = this.notesNode.isEncrypted() ? normalNotesFile : encryptedNotesFile;
+                Files.deleteIfExists(fileToDelete);
+                Files.writeString(file, this.notesNode.isEncrypted() ? this.notesNode.getWriteString() : this.notesNode.getValue());
+            } else if (this.notesNode == null) {
+                Files.deleteIfExists(normalNotesFile);
+                Files.deleteIfExists(encryptedNotesFile);
+            }
         }
 
         this.storeNode = this.storeNode.prepareForWrite(this, true, getStore());
