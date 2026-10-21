@@ -381,6 +381,10 @@ public abstract class DataStorage {
     }
 
     public void updateEntry(DataStoreEntry entry, DataStoreEntry newEntry) {
+        updateEntry(entry, newEntry, true);
+    }
+
+    public void updateEntry(DataStoreEntry entry, DataStoreEntry newEntry, boolean modified) {
         var state = entry.getStorePersistentState();
         var nState = newEntry.getStorePersistentState();
         if (state != null && nState != null) {
@@ -422,7 +426,7 @@ public abstract class DataStorage {
                 storeMoveCache.put(entry.getStore(), newEntry.getStore());
             }
         }
-        entry.applyChanges(newEntry);
+        entry.applyChanges(newEntry, modified);
 
         synchronized (storeDependencyCache) {
             storeDependencyCache.clear();

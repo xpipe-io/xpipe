@@ -109,6 +109,8 @@ public class StandardStorage extends DataStorage {
             }
 
             var laterAddedEntries = new HashSet<DataStoreEntry>();
+            // Apply updates only after all new entries are added so that references can be resolved
+            var pendingUpdates = new LinkedHashMap<DataStoreEntry, DataStoreEntry>();
             try {
                 var exception = new AtomicReference<Exception>();
                 try (var cats = Files.list(categoriesDir)) {
@@ -180,7 +182,7 @@ public class StandardStorage extends DataStorage {
                             var existing = getStoreEntryIfPresent(entry.get().getUuid());
                             if (existing.isPresent()) {
                                 if (existing.get().isChangedForReload(entry.get())) {
-                                    updateEntry(existing.get(), entry.get());
+                                    pendingUpdates.put(existing.get(), entry.get());
                                 }
                                 return;
                             }
@@ -191,6 +193,19 @@ public class StandardStorage extends DataStorage {
                         catch (Exception ex) {
                             // Data corruption and schema changes are expected
 
+                            ErrorEventFactory.fromThrowable(ex)
+                                    .expected()
+                                    .omit()
+                                    .build()
+                                    .handle();
+                        }
+                    });
+
+                    pendingUpdates.forEach((existing, entry) -> {
+                        try {
+                            // Don't count external changes as a local modification
+                            updateEntry(existing, entry, false);
+                        } catch (Exception ex) {
                             ErrorEventFactory.fromThrowable(ex)
                                     .expected()
                                     .omit()

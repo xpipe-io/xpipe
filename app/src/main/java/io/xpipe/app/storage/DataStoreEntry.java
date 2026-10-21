@@ -646,7 +646,7 @@ public class DataStoreEntry extends DataStorageElement {
         return validity == Validity.LOAD_FAILED;
     }
 
-    public void applyChanges(DataStoreEntry e) {
+    public void applyChanges(DataStoreEntry e, boolean modified) {
         name = e.getName();
         storeNode = e.storeNode;
         validity = e.validity;
@@ -671,7 +671,8 @@ public class DataStoreEntry extends DataStorageElement {
             tags.clear();
             tags.addAll(e.tags);
         }
-        notifyUpdate(false, true);
+        dirty = true;
+        notifyUpdate(false, modified);
     }
 
     public void setStoreInternal(DataStore store, boolean updateTime) {
@@ -729,7 +730,7 @@ public class DataStoreEntry extends DataStorageElement {
                 this, true, getStore() instanceof EncryptionStore s ? s.withUpdatedPrincipals() : getStore());
         if (!newNode.equals(storeNode)) {
             storeNode = newNode;
-            dirty = newNode.requiresWrite();
+            dirty |= newNode.requiresWrite();
             var valid = storeNode.getValue() != null;
             validity = valid ? validity : Validity.LOAD_FAILED;
             provider = valid ? provider : null;
@@ -777,10 +778,13 @@ public class DataStoreEntry extends DataStorageElement {
         try {
             var newComplete = newStore.isComplete();
             if (!newComplete) {
-                var changed = !Objects.equals(getStore(), newStore) || validity != Validity.INCOMPLETE;
+                var storeChanged = !Objects.equals(getStore(), newStore);
+                var changed = storeChanged || validity != Validity.INCOMPLETE;
                 validity = Validity.INCOMPLETE;
-                storeNode = storeNode.with(newStore);
-                dirty = storeNode.requiresWrite();
+                if (storeChanged) {
+                    storeNode = storeNode.with(newStore);
+                    dirty |= storeNode.requiresWrite();
+                }
                 provider = DataStoreProvider.byStore(getStore());
                 if (changed) {
                     notifyUpdate(false, false);
@@ -797,7 +801,7 @@ public class DataStoreEntry extends DataStorageElement {
         if (storeChanged) {
             storeNode = storeNode.with(newStore);
             provider = DataStoreProvider.byStore(getStore());
-            dirty = storeNode.requiresWrite();
+            dirty |= storeNode.requiresWrite();
         }
         var newAccessScope = getAccessScope();
         var changed =
