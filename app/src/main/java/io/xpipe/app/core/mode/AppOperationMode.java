@@ -213,6 +213,12 @@ public abstract class AppOperationMode {
 
     public static XPipeDaemonMode getStartupMode() {
         var event = TrackEvent.withInfo("Startup mode determined");
+
+        if (AppProperties.get().isAotTrainMode()) {
+            event.tag("mode", "background").tag("reason", "aot").handle();
+            return XPipeDaemonMode.BACKGROUND;
+        }
+
         if (AppMainWindow.get() != null && AppMainWindow.get().getStage().isShowing()) {
             event.tag("mode", "gui").tag("reason", "windowShowing").handle();
             return XPipeDaemonMode.GUI;
