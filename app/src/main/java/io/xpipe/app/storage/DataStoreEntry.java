@@ -398,7 +398,18 @@ public class DataStoreEntry extends DataStorageElement {
                 || !Objects.equals(getCategoryUuid(), other.getCategoryUuid())
                 || !Objects.equals(getOrderIndex(), other.getOrderIndex())
                 || !Objects.equals(isTemplate(), other.isTemplate())
-                || !Objects.equals(getEffectiveIconFile(), other.getEffectiveIconFile());
+                || !Objects.equals(getEffectiveIconFile(), other.getEffectiveIconFile())
+                || !Objects.equals(getStoredForm(storeNode), getStoredForm(other.storeNode))
+                || !Objects.equals(getStoredForm(notesNode), getStoredForm(other.notesNode));
+    }
+
+    private static Object getStoredForm(DataStoreEntryNode<?> node) {
+        if (node == null) {
+            return null;
+        }
+
+        var enc = node.getEncryptedValue();
+        return enc.isEncrypted() ? enc.getSecret() : enc.getValueJson();
     }
 
     public DataStoreAccessScope getAccessScope() {
