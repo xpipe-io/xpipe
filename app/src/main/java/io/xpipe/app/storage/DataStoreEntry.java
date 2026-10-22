@@ -478,7 +478,8 @@ public class DataStoreEntry extends DataStorageElement {
         this.storePersistentState = value;
         this.storePersistentStateNode = JacksonMapper.getDefault().valueToTree(value);
         if (changed) {
-            notifyUpdate(false, true);
+            dirty = true;
+            notifyUpdate(false, false);
         }
     }
 

@@ -18,6 +18,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -857,6 +858,7 @@ public abstract class DataStorage {
         if (!newChildren.isEmpty()) {
             e.setExpanded(true);
         }
+        var shouldTriggerSave = new AtomicBoolean(!toRemove.isEmpty() || !toAdd.isEmpty());
         toAdd.reversed().forEach(nc -> {
             ThreadHelper.sleep(1);
             // Update after parent entry
@@ -876,12 +878,14 @@ public abstract class DataStorage {
                 pair.getKey()
                         .setName(getNameableStoreName(pair.getValue().get())
                                 .orElse(pair.getKey().getName()));
+                shouldTriggerSave.set(true);
             }
 
             DataStore merged = ((FixedChildStore) pair.getKey().getStore())
                     .merge(pair.getValue().getStore().asNeeded());
             if (merged != null && !merged.equals(pair.getKey().getStore())) {
                 pair.getKey().setStoreInternal(merged, false);
+                shouldTriggerSave.set(true);
             }
 
             var s = pair.getKey().getStorePersistentState();
@@ -893,11 +897,14 @@ public abstract class DataStorage {
 
             if (pair.getKey().getOrderIndex() == 0 && pair.getValue().get().getOrderIndex() != 0) {
                 pair.getKey().setOrderIndex(pair.getValue().get().getOrderIndex());
+                shouldTriggerSave.set(true);
             }
         });
         e.getProvider().onChildrenRefresh(e);
         refreshStoreEntries();
-        saveAsync();
+        if (shouldTriggerSave.get()) {
+            saveAsync();
+        }
         toAdd.forEach(
                 dataStoreEntryRef -> dataStoreEntryRef.get().getProvider().onParentRefresh(dataStoreEntryRef.get()));
         toUpdate.forEach(dataStoreEntryRef ->

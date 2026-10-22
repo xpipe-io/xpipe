@@ -123,11 +123,6 @@ public abstract class DataStorageElement {
         synchronized (listeners) {
             listeners.forEach(l -> l.onUpdate());
         }
-
-        // Save changes instantly
-        if (isInStorage()) {
-            DataStorage.get().saveAsync();
-        }
     }
 
     public abstract boolean isInStorage();
