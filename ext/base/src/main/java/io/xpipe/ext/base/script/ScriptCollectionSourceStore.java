@@ -8,7 +8,10 @@ import io.xpipe.app.store.ValidatableStore;
 import io.xpipe.app.util.Validators;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Value;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;

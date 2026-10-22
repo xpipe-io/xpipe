@@ -2,7 +2,8 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.storage.DataStoreColor;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Value;
 
 import java.util.List;
 

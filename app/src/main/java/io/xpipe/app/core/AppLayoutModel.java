@@ -33,7 +33,11 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Value;
 import lombok.experimental.NonFinal;
 import lombok.extern.jackson.Jacksonized;
 import org.int4.fx.builders.FX;

@@ -12,7 +12,10 @@ import io.xpipe.app.webtop.WebtopApp;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 
 import java.time.Duration;

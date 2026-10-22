@@ -3,7 +3,9 @@ package io.xpipe.app.storage;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.util.JacksonMapper;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.apache.commons.io.FileUtils;

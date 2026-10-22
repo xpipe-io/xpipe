@@ -5,7 +5,7 @@ import io.xpipe.app.util.AesSecretValue;
 import io.xpipe.app.util.JacksonMapper;
 import io.xpipe.app.util.SecretValue;
 
-import lombok.*;
+import lombok.Value;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.JsonNodeFactory;
 import tools.jackson.databind.node.ObjectNode;

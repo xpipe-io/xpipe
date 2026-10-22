@@ -7,7 +7,11 @@ import io.xpipe.app.util.JacksonMapper;
 import io.xpipe.app.util.ThreadHelper;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.apache.commons.io.FileUtils;

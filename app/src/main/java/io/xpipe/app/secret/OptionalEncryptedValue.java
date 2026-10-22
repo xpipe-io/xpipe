@@ -3,7 +3,8 @@ package io.xpipe.app.secret;
 import io.xpipe.app.storage.DataStoreAccessScope;
 import io.xpipe.app.util.JacksonMapper;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.SneakyThrows;
 import tools.jackson.databind.JsonNode;
 
 import java.util.Objects;

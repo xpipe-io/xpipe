@@ -9,7 +9,13 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.SneakyThrows;
+import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.core.JsonParser;

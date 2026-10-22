@@ -8,7 +8,10 @@ import io.xpipe.app.platform.LabelGraphic;
 
 import javafx.beans.value.ObservableValue;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Setter;
+import lombok.Singular;
+import lombok.Value;
 import lombok.experimental.NonFinal;
 
 import java.util.ArrayList;

@@ -31,7 +31,10 @@ import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Value;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.JavaType;
 import tools.jackson.databind.type.SimpleType;

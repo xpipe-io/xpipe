@@ -19,7 +19,10 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import atlantafx.base.controls.Spacer;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.function.Consumer;

@@ -4,7 +4,8 @@ import io.xpipe.app.store.DataStore;
 import io.xpipe.app.util.Validators;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 

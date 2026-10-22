@@ -1,6 +1,9 @@
 package io.xpipe.app.storage;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Value;
+import lombok.With;
 import lombok.extern.jackson.Jacksonized;
 
 import java.util.List;
