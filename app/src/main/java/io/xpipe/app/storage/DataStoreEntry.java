@@ -328,9 +328,6 @@ public class DataStoreEntry extends DataStorageElement {
                 && notesNode.getValue().isBlank()) {
             notesNode = null;
         }
-        if (notesNode != null && !notesNode.isAccessible()) {
-            notesNode = null;
-        }
 
         DataStoreEntryNode<DataStore> storeNode = DataStoreEntryNode.parse(storeFile, DataStore.class);
         return Optional.of(new DataStoreEntry(
@@ -402,7 +399,18 @@ public class DataStoreEntry extends DataStorageElement {
                 || !Objects.equals(getCategoryUuid(), other.getCategoryUuid())
                 || !Objects.equals(getOrderIndex(), other.getOrderIndex())
                 || !Objects.equals(isTemplate(), other.isTemplate())
-                || !Objects.equals(getEffectiveIconFile(), other.getEffectiveIconFile());
+                || !Objects.equals(getEffectiveIconFile(), other.getEffectiveIconFile())
+                || !Objects.equals(getStoredForm(storeNode), getStoredForm(other.storeNode))
+                || !Objects.equals(getStoredForm(notesNode), getStoredForm(other.notesNode));
+    }
+
+    private static Object getStoredForm(DataStoreEntryNode<?> node) {
+        if (node == null) {
+            return null;
+        }
+
+        var enc = node.getEncryptedValue();
+        return enc.isEncrypted() ? enc.getSecret() : enc.getValueJson();
     }
 
     public DataStoreAccessScope getAccessScope() {
@@ -546,10 +554,10 @@ public class DataStoreEntry extends DataStorageElement {
     }
 
     public boolean isAccessible() {
+        // Inaccessible notes are only hidden, the entry itself is still usable
         return (storeNode == null || storeNode.isAccessible())
                 && (entryNode == null || entryNode.isAccessible())
-                && (stateNode == null || stateNode.isAccessible())
-                && (notesNode == null || notesNode.isAccessible());
+                && (stateNode == null || stateNode.isAccessible());
     }
 
     public void writeDataToDisk() throws Exception {
@@ -605,27 +613,36 @@ public class DataStoreEntry extends DataStorageElement {
 
         var normalNotesFile = directory.resolve("notes.md");
         var encryptedNotesFile = directory.resolve("notes.json");
-        this.notesNode = this.notesNode != null ? this.notesNode.prepareForWrite(this, true, getNotes()) : null;
-        if (this.notesNode != null && this.notesNode.requiresWrite()) {
-            var file = this.notesNode.isEncrypted() ? encryptedNotesFile : normalNotesFile;
-            var fileToDelete = this.notesNode.isEncrypted() ? normalNotesFile : encryptedNotesFile;
-            Files.deleteIfExists(fileToDelete);
-            Files.writeString(file, this.notesNode.isEncrypted() ? this.notesNode.getWriteString() : this.notesNode.getValue());
-        } else if (this.notesNode == null) {
-            Files.deleteIfExists(normalNotesFile);
-            Files.deleteIfExists(encryptedNotesFile);
+        // We can't change inaccessible notes, so keep the existing files
+        if (this.notesNode == null || this.notesNode.isAccessible()) {
+            this.notesNode = this.notesNode != null ? this.notesNode.prepareForWrite(this, true, getNotes()) : null;
+            if (this.notesNode != null && this.notesNode.requiresWrite()) {
+                var file = this.notesNode.isEncrypted() ? encryptedNotesFile : normalNotesFile;
+                var fileToDelete = this.notesNode.isEncrypted() ? normalNotesFile : encryptedNotesFile;
+                Files.deleteIfExists(fileToDelete);
+                Files.writeString(file, this.notesNode.isEncrypted() ? this.notesNode.getWriteString() : this.notesNode.getValue());
+            } else if (this.notesNode == null) {
+                Files.deleteIfExists(normalNotesFile);
+                Files.deleteIfExists(encryptedNotesFile);
+            }
         }
 
-        this.storeNode = this.storeNode.prepareForWrite(this, true, getStore());
-        if (this.storeNode.requiresWrite()) {
-            Files.writeString(directory.resolve("store.json"), this.storeNode.getWriteString());
+        // If the store could not be loaded, keep the existing file
+        if (this.storeNode != null) {
+            this.storeNode = this.storeNode.prepareForWrite(this, true, getStore());
+            if (this.storeNode.requiresWrite()) {
+                Files.writeString(directory.resolve("store.json"), this.storeNode.getWriteString());
+            }
         }
     }
 
     public void setNotes(String newNotes) {
         var changed = !Objects.equals(getNotes(), newNotes);
         if (changed) {
-            this.notesNode = DataStoreEntryNode.of(newNotes);
+            // Keep the existing encryption if possible
+            this.notesNode = notesNode != null && notesNode.isAccessible()
+                    ? notesNode.with(newNotes)
+                    : DataStoreEntryNode.of(newNotes);
             notifyUpdate(false, true);
         }
     }
@@ -651,7 +668,7 @@ public class DataStoreEntry extends DataStorageElement {
         return validity == Validity.LOAD_FAILED;
     }
 
-    public void applyChanges(DataStoreEntry e) {
+    public void applyChanges(DataStoreEntry e, boolean modified) {
         name = e.getName();
         storeNode = e.storeNode;
         validity = e.validity;
@@ -676,7 +693,8 @@ public class DataStoreEntry extends DataStorageElement {
             tags.clear();
             tags.addAll(e.tags);
         }
-        notifyUpdate(false, true);
+        dirty = true;
+        notifyUpdate(false, modified);
     }
 
     public void setStoreInternal(DataStore store, boolean updateTime) {
@@ -685,11 +703,12 @@ public class DataStoreEntry extends DataStorageElement {
             return;
         }
 
-        if (!storeNode.isAccessible()) {
+        if (storeNode != null && !storeNode.isAccessible()) {
             return;
         }
 
-        this.storeNode = DataStoreEntryNode.of(store);
+        // Keep the existing encryption, it might contain principals that are not accessible to us
+        this.storeNode = storeNode != null ? storeNode.with(store) : DataStoreEntryNode.of(store);
         this.provider = DataStoreProvider.byStore(store);
         this.validity =
                 store != null ? (store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE) : Validity.LOAD_FAILED;
@@ -734,7 +753,7 @@ public class DataStoreEntry extends DataStorageElement {
                 this, true, getStore() instanceof EncryptionStore s ? s.withUpdatedPrincipals() : getStore());
         if (!newNode.equals(storeNode)) {
             storeNode = newNode;
-            dirty = newNode.requiresWrite();
+            dirty |= newNode.requiresWrite();
             var valid = storeNode.getValue() != null;
             validity = valid ? validity : Validity.LOAD_FAILED;
             provider = valid ? provider : null;
@@ -782,10 +801,13 @@ public class DataStoreEntry extends DataStorageElement {
         try {
             var newComplete = newStore.isComplete();
             if (!newComplete) {
-                var changed = !Objects.equals(getStore(), newStore) || validity != Validity.INCOMPLETE;
+                var storeChanged = !Objects.equals(getStore(), newStore);
+                var changed = storeChanged || validity != Validity.INCOMPLETE;
                 validity = Validity.INCOMPLETE;
-                storeNode = storeNode.with(newStore);
-                dirty = storeNode.requiresWrite();
+                if (storeChanged) {
+                    storeNode = storeNode.with(newStore);
+                    dirty |= storeNode.requiresWrite();
+                }
                 provider = DataStoreProvider.byStore(getStore());
                 if (changed) {
                     notifyUpdate(false, false);
@@ -802,7 +824,7 @@ public class DataStoreEntry extends DataStorageElement {
         if (storeChanged) {
             storeNode = storeNode.with(newStore);
             provider = DataStoreProvider.byStore(getStore());
-            dirty = storeNode.requiresWrite();
+            dirty |= storeNode.requiresWrite();
         }
         var newAccessScope = getAccessScope();
         var changed =

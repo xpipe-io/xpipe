@@ -42,12 +42,12 @@ public class MultiPrincipalSecret {
         if (!(o instanceof MultiPrincipalSecret that)) {
             return false;
         }
-        return Objects.equals(secret, that.secret) && Objects.equals(entries, that.entries);
+        return Objects.equals(entries, that.entries);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(secret, entries);
+        return Objects.hash(entries);
     }
 
     @Override

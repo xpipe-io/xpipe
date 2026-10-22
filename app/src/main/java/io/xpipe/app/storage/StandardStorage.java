@@ -109,6 +109,8 @@ public class StandardStorage extends DataStorage {
             }
 
             var laterAddedEntries = new HashSet<DataStoreEntry>();
+            // Apply updates only after all new entries are added so that references can be resolved
+            var pendingUpdates = new LinkedHashMap<DataStoreEntry, DataStoreEntry>();
             try {
                 var exception = new AtomicReference<Exception>();
                 try (var cats = Files.list(categoriesDir)) {
@@ -180,7 +182,7 @@ public class StandardStorage extends DataStorage {
                             var existing = getStoreEntryIfPresent(entry.get().getUuid());
                             if (existing.isPresent()) {
                                 if (existing.get().isChangedForReload(entry.get())) {
-                                    updateEntry(existing.get(), entry.get());
+                                    pendingUpdates.put(existing.get(), entry.get());
                                 }
                                 return;
                             }
@@ -191,6 +193,19 @@ public class StandardStorage extends DataStorage {
                         catch (Exception ex) {
                             // Data corruption and schema changes are expected
 
+                            ErrorEventFactory.fromThrowable(ex)
+                                    .expected()
+                                    .omit()
+                                    .build()
+                                    .handle();
+                        }
+                    });
+
+                    pendingUpdates.forEach((existing, entry) -> {
+                        try {
+                            // Don't count external changes as a local modification
+                            updateEntry(existing, entry, false);
+                        } catch (Exception ex) {
                             ErrorEventFactory.fromThrowable(ex)
                                     .expected()
                                     .omit()
@@ -259,6 +274,9 @@ public class StandardStorage extends DataStorage {
             // Remove inaccessible entries early, as we don't depend on valid stores for the access scopes
             // This will remove all generally unavailable entries
             // However, specific ones that are inaccessible like role-based ones will stay and be removed later on
+            // All entries have been read again at this point, so the ones that are still inaccessible will be added again
+            var previouslyInaccessible = new HashSet<>(storeEntriesInaccessible.keySet());
+            storeEntriesInaccessible.clear();
             filterInaccessibleEntries();
 
             // Bring entries into completed validity if possible
@@ -310,9 +328,11 @@ public class StandardStorage extends DataStorage {
 
             // Remove inaccessible entries later on
             if (!initialLoad) {
-                storeEntriesInaccessible.keySet().forEach(e -> {
-                    getListeners().forEach(storageListener -> storageListener.onStoreRemove(e));
-                });
+                storeEntriesInaccessible.keySet().stream()
+                        .filter(e -> !previouslyInaccessible.contains(e))
+                        .forEach(e -> {
+                            getListeners().forEach(storageListener -> storageListener.onStoreRemove(e));
+                        });
             }
 
             // Refresh validities after entries have potentially been removed
