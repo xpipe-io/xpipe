@@ -113,6 +113,23 @@ jlink {
 tasks.named('jlink').get().dependsOn(rootProject.getTasksByName("jar", true))
 tasks.named('jlink').get().dependsOn(extLibrariesTasks)
 
+// Newer jlink versions fail if multiple modules contain the same resource directory
+// The OSGi metadata of some dependencies is not needed at runtime
+tasks.named('jlink').configure {
+    doFirst {
+        fileTree("${project.layout.buildDirectory.get()}/jlinkbase/jlinkjars").matching { include '*.jar' }.each { jar ->
+            java.nio.file.FileSystems.newFileSystem(jar.toPath()).withCloseable { fs ->
+                def dir = fs.getPath('OSGI-INF')
+                if (java.nio.file.Files.exists(dir)) {
+                    java.nio.file.Files.walk(dir).withCloseable { stream ->
+                        stream.sorted(Comparator.reverseOrder()).toList().each { java.nio.file.Files.delete(it) }
+                    }
+                }
+            }
+        }
+    }
+}
+
 def outputName = os.isMacOsX() ? "${jpackageExecutableName}.app/Contents/Resources" : jpackageExecutableName
 
 tasks.register('prepareMacOSResources', DefaultTask) {
