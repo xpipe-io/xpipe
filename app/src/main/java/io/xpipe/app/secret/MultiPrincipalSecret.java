@@ -47,7 +47,7 @@ public class MultiPrincipalSecret {
 
     @Override
     public int hashCode() {
-        return Objects.hash(entries, secret != null);
+        return Objects.hash(entries);
     }
 
     @Override
