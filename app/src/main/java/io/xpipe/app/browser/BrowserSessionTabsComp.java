@@ -16,6 +16,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
 
 import io.xpipe.app.util.ContextMenuWrapper;
+import io.xpipe.app.util.OsType;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
@@ -520,7 +521,10 @@ public class BrowserSessionTabsComp extends SimpleRegionBuilder {
 
                     c.addEventHandler(DragEvent.DRAG_ENTERED, de -> {
                         // Prevent switch when dragging local files into app
-                        if (tabModel.isCloseable() && !de.getDragboard().hasContent(DataFormat.FILES)) {
+                        // Note that JavaFX with GTK has an issue where retrieving the dragboard/clipboard in an event handler
+                        // might result in com.sun.glass.ui.View.notifyDragOver being called in a reentrant manner, which will
+                        // throw an exception.
+                        if (tabModel.isCloseable() && (OsType.ofLocal() == OsType.LINUX || !de.getDragboard().hasContent(DataFormat.FILES))) {
                             Platform.runLater(() -> tabs.getSelectionModel().select(tab));
                             de.consume();
                         }
