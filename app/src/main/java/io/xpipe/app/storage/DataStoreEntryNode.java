@@ -64,8 +64,8 @@ public class DataStoreEntryNode<T> {
                     .collect(Collectors.toSet());
             if (!available.isEmpty()) {
                 targetScope = DataStoreAccessScope.of(available);
-            } else if (targetScope.isAccessSubRestricted()) {
-                throw new IllegalStateException("Unable to encrypt data for any principal of scope " + targetScope);
+            } else if (DataStoreAccessScope.encryption().isAllAccessible()) {
+                targetScope = DataStoreAccessScope.encryption();
             } else {
                 shouldEncrypt = false;
             }
