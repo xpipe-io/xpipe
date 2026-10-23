@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.creation;
 
 import io.xpipe.app.hub.action.impl.OpenHubMenuLeafProvider;
+import io.xpipe.app.hub.entry.StoreChangeConfirmation;
 import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.SimpleValidator;
@@ -25,6 +26,7 @@ import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -261,6 +263,21 @@ public class StoreCreationModel {
         return false;
     }
 
+    boolean confirmChangesIfNeeded() {
+        if (existingEntry == null
+                || !DataStorage.get().getStoreEntries().contains(existingEntry)
+                || DataStorage.get().getEffectiveReadOnlyState(existingEntry)) {
+            return true;
+        }
+
+        var changed = wasChanged() || !Objects.equals(existingEntry.getName(), name.getValue());
+        if (!changed) {
+            return true;
+        }
+
+        return StoreChangeConfirmation.confirmEdit(existingEntry);
+    }
+
     void finish() {
         if (finished.get()) {
             return;
@@ -278,6 +295,10 @@ public class StoreCreationModel {
                     .getFirst()
                     .getText();
             ErrorEventFactory.fromMessage(msg).expected().handle();
+            return;
+        }
+
+        if (!confirmChangesIfNeeded()) {
             return;
         }
 

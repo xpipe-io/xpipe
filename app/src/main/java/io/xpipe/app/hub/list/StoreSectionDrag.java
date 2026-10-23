@@ -1,9 +1,12 @@
 package io.xpipe.app.hub.list;
 
 import io.xpipe.app.hub.category.StoreCategoryWrapper;
+import io.xpipe.app.hub.entry.StoreChangeConfirmation;
 import io.xpipe.app.hub.entry.StoreEntryWrapper;
 import io.xpipe.app.hub.section.StoreSection;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.ThreadHelper;
 
 import lombok.Value;
 import lombok.With;
@@ -125,9 +128,21 @@ public class StoreSectionDrag {
 
         @Override
         public void execute(List<StoreEntryWrapper> selection) {
-            for (StoreEntryWrapper w : selection) {
-                w.moveTo(target.getCategory());
-            }
+            ThreadHelper.runAsync(() -> {
+                var entries = selection.stream().map(StoreEntryWrapper::getEntry).toList();
+                if (!StoreChangeConfirmation.confirmMove(entries, target.getCategory())) {
+                    return;
+                }
+
+                for (StoreEntryWrapper w : selection) {
+                    w.moveTo(target.getCategory());
+                }
+
+                PlatformThread.runLaterIfNeeded(() -> {
+                    StoreViewState.get().getBatchModeSelection().getList().clear();
+                    StoreViewState.get().getActiveCategory().setValue(target);
+                });
+            });
         }
     }
 

@@ -16,6 +16,7 @@ import io.xpipe.app.hub.list.StoreViewState;
 import io.xpipe.app.hub.section.StoreSection;
 import io.xpipe.app.platform.*;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.store.DataStoreCreationCategory;
@@ -44,6 +45,8 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -207,11 +210,18 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
 
     protected BaseRegionBuilder<?, ?> createName() {
         var prop = new SimpleStringProperty();
+        var reverting = new AtomicBoolean();
         getWrapper().getShownName().subscribe(prop::setValue);
         prop.addListener((observable, oldValue, newValue) -> {
-            if (!AppPrefs.get().censorMode().get()) {
-                getWrapper().getName().setValue(newValue);
+            if (AppPrefs.get().censorMode().get() || reverting.get()) {
+                return;
             }
+
+            rename(newValue, () -> {
+                reverting.set(true);
+                prop.setValue(getWrapper().getShownName().getValue());
+                reverting.set(false);
+            });
         });
         var name = new LazyTextFieldComp(prop);
         name.style("name");
@@ -222,6 +232,28 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
             });
         });
         return name;
+    }
+
+    private void rename(String newName, Runnable revert) {
+        if (Objects.equals(newName, getWrapper().getName().getValue())) {
+            return;
+        }
+
+        if (!DataStorage.get().requiresChangeConfirmation(getWrapper().getEntry())) {
+            getWrapper().getName().setValue(newName);
+            return;
+        }
+
+        ThreadHelper.runAsync(() -> {
+            var confirmed = StoreChangeConfirmation.confirmRename(getWrapper().getEntry(), newName);
+            PlatformThread.runLaterIfNeeded(() -> {
+                if (confirmed) {
+                    getWrapper().getName().setValue(newName);
+                } else {
+                    revert.run();
+                }
+            });
+        });
     }
 
     private BaseRegionBuilder<?, ?> createTag(ObservableObjectValue<String> val) {
@@ -613,7 +645,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                                 },
                                 getWrapper().getDeletable()));
                 del.setOnAction(event -> {
-                    getWrapper().delete();
+                    getWrapper().delete(true);
                     event.consume();
                 });
                 del.setAccelerator(new KeyCodeCombination(KeyCode.DELETE));

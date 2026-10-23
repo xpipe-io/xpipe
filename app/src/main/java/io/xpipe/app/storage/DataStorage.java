@@ -1330,8 +1330,20 @@ public abstract class DataStorage {
             return false;
         }
 
-        var catConfig = getEffectiveCategoryConfig(cat.get());
-        return catConfig.getFreezeConfigurations() != null ? catConfig.getFreezeConfigurations() : entry.isTemplate();
+        if (entry.isTemplate()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean requiresChangeConfirmation(DataStoreEntry entry) {
+        var cat = getStoreCategoryIfPresent(entry.getCategoryUuid());
+        return cat.isPresent() && requiresChangeConfirmation(cat.get());
+    }
+
+    public boolean requiresChangeConfirmation(DataStoreCategory category) {
+        return Boolean.TRUE.equals(getEffectiveCategoryConfig(category).getConfirmAllConfigurationChanges());
     }
 
     public DataStoreColor getEffectiveColor(DataStoreEntry entry) {

@@ -109,8 +109,12 @@ public class StoreEntryWrapper {
         StoreCreationDialog.showEdit(entry);
     }
 
-    public void delete() {
+    public void delete(boolean confirm) {
         ThreadHelper.runAsync(() -> {
+            if (confirm && !StoreChangeConfirmation.confirmDelete(List.of(entry))) {
+                return;
+            }
+
             DataStorage.get().deleteWithChildren(this.entry);
         });
     }

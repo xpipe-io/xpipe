@@ -255,7 +255,7 @@ public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
 
                     var selection = StoreViewState.get().getBatchModeSelection().getList();
                     for (StoreEntryWrapper w : selection) {
-                        w.delete();
+                        w.delete(false);
                     }
                 });
         button.describe(d -> d.name(i18n));

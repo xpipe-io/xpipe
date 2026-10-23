@@ -1,5 +1,6 @@
 package io.xpipe.app.storage;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -24,7 +25,7 @@ public class DataStoreCategoryConfig {
     @With
     Boolean sync;
 
-    Boolean freezeConfigurations;
+    Boolean confirmAllConfigurationChanges;
     UUID defaultIdentityStore;
     UUID defaultGatewayStore;
 
@@ -37,7 +38,7 @@ public class DataStoreCategoryConfig {
         Boolean dontAllowScripts = null;
         Boolean warnOnAllModifications = null;
         Boolean sync = null;
-        Boolean readOnly = null;
+        Boolean confirmAllConfigurationChanges = null;
         UUID defaultIdentityStore = null;
         UUID defaultGatewayStore = null;
         for (int i = configs.size() - 1; i >= 0; i--) {
@@ -60,8 +61,8 @@ public class DataStoreCategoryConfig {
             if (sync == null) {
                 sync = config.sync;
             }
-            if (readOnly == null) {
-                readOnly = config.freezeConfigurations;
+            if (confirmAllConfigurationChanges == null) {
+                confirmAllConfigurationChanges = config.confirmAllConfigurationChanges;
             }
         }
         return new DataStoreCategoryConfig(
@@ -69,7 +70,7 @@ public class DataStoreCategoryConfig {
                 dontAllowScripts,
                 warnOnAllModifications,
                 sync,
-                readOnly,
+                confirmAllConfigurationChanges,
                 defaultIdentityStore,
                 defaultGatewayStore);
     }

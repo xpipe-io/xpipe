@@ -264,6 +264,10 @@ public class StoreCreationDialog {
             modal.addButton(new ModalButton(
                             "skip",
                             () -> {
+                                if (!model.confirmChangesIfNeeded()) {
+                                    return;
+                                }
+
                                 model.commit(false);
                                 modal.close();
                             },

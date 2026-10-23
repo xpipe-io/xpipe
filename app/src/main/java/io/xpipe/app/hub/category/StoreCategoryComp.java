@@ -381,8 +381,6 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
             if (sectionOp != null) {
                 sectionOp.getTarget().execute(sectionOp.getSelection());
                 StoreViewState.get().stopSectionDrag();
-                StoreViewState.get().getBatchModeSelection().getList().clear();
-                StoreViewState.get().getActiveCategory().setValue(category);
 
                 event.setDropCompleted(true);
                 event.consume();

@@ -66,7 +66,7 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
         var scripts = new SimpleObjectProperty<>(c.getDontAllowScripts());
         var confirm = new SimpleObjectProperty<>(c.getConfirmAllModifications());
         var sync = new SimpleObjectProperty<>(c.getSync());
-        var freeze = new SimpleObjectProperty<>(c.getFreezeConfigurations());
+        var confirmConfigurationChanges = new SimpleObjectProperty<>(c.getConfirmAllConfigurationChanges());
         var identityRef = new SimpleObjectProperty<>(
                 c.getDefaultIdentityStore() != null
                         ? DataStorage.get()
@@ -100,38 +100,44 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
                         .description("categorySyncDescription")
                         .addComp(createToggle(sync, parentConfig.getSync()), sync)
                         .disable(syncDisable));
+        var configuration = new OptionsBuilder();
         if (connectionsCategory) {
-            options.title("connectionConfiguration")
-                    .sub(new OptionsBuilder()
-                            .nameAndDescription("categoryDefaultIdentity")
-                            .addComp(
-                                    new StoreChoiceComp<>(
-                                            null,
-                                            identityRef,
-                                            DataStore.class,
-                                            null,
-                                            StoreViewState.get().getAllIdentitiesCategory(),
-                                            DataStoreCreationCategory.IDENTITY),
-                                    identityRef)
-                            .nameAndDescription("categoryDefaultGateway")
-                            .addComp(
-                                    new StoreChoiceComp<>(
-                                            null,
-                                            gatewayRef,
-                                            DataStore.class,
-                                            null,
-                                            StoreViewState.get().getAllConnectionsCategory(),
-                                            DataStoreCreationCategory.HOST),
-                                    gatewayRef));
+            configuration
+                    .nameAndDescription("categoryDefaultIdentity")
+                    .addComp(
+                            new StoreChoiceComp<>(
+                                    null,
+                                    identityRef,
+                                    DataStore.class,
+                                    null,
+                                    StoreViewState.get().getAllIdentitiesCategory(),
+                                    DataStoreCreationCategory.IDENTITY),
+                            identityRef)
+                    .nameAndDescription("categoryDefaultGateway")
+                    .addComp(
+                            new StoreChoiceComp<>(
+                                    null,
+                                    gatewayRef,
+                                    DataStore.class,
+                                    null,
+                                    StoreViewState.get().getAllConnectionsCategory(),
+                                    DataStoreCreationCategory.HOST),
+                            gatewayRef);
+        }
+        configuration
+                .nameAndDescription("categoryConfirmAllConfigurationChanges")
+                .addComp(
+                        createToggle(confirmConfigurationChanges, parentConfig.getConfirmAllConfigurationChanges()),
+                        confirmConfigurationChanges);
+        options.title("configuration").sub(configuration);
 
+        if (connectionsCategory) {
             options.title("connectionHandling")
                     .sub(new OptionsBuilder()
-                            .nameAndDescription("categoryDontAllowScripts")
-                            .addComp(createToggle(scripts, parentConfig.getDontAllowScripts()), scripts)
                             .nameAndDescription("categoryConfirmAllModifications")
                             .addComp(createToggle(confirm, parentConfig.getConfirmAllModifications()), confirm)
-                            .nameAndDescription("categoryFreeze")
-                            .addComp(createToggle(freeze, parentConfig.getFreezeConfigurations()), freeze));
+                            .nameAndDescription("categoryDisableScripts")
+                            .addComp(createToggle(scripts, parentConfig.getDontAllowScripts()), scripts));
         }
         options.bind(
                 () -> {
@@ -140,7 +146,7 @@ public class StoreCategoryConfigComp extends SimpleRegionBuilder {
                             scripts.get(),
                             confirm.get(),
                             sync.get(),
-                            freeze.get(),
+                            confirmConfigurationChanges.get(),
                             identityRef.get() != null ? identityRef.get().get().getUuid() : null,
                             gatewayRef.get() != null ? gatewayRef.get().get().getUuid() : null);
                 },
