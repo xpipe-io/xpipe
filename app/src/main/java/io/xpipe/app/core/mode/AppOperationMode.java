@@ -111,6 +111,17 @@ public abstract class AppOperationMode {
                         return;
                     }
 
+                    // GTK can send drag events in an unexpected order, nothing we can do about that
+                    // See https://bugs.openjdk.org/browse/JDK-8165749
+                    if (Platform.isFxApplicationThread()
+                            && ex.getClass() == RuntimeException.class
+                            && ex.getStackTrace() != null
+                            && ex.getStackTrace().length > 0
+                            && ex.getStackTrace()[0].getClassName().equals("javafx.scene.Scene$DropTargetListener")) {
+                        ErrorEventFactory.fromThrowable(ex).expected().omit().handle();
+                        return;
+                    }
+
                     // Handle any startup uncaught errors
                     if (AppOperationMode.isInStartup() && thread.threadId() == 1) {
                         ex.printStackTrace();
