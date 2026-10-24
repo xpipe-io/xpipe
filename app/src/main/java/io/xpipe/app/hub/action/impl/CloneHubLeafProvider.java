@@ -85,7 +85,8 @@ public class CloneHubLeafProvider implements HubLeafProvider<DataStore> {
             entry.setLastUsed(instant);
 
             DataStorage.get().addStoreEntryIfNotPresent(entry);
-            StoreCreationDialog.showEdit(entry);
+            // The entry was just created, editing it is not a change to an existing entry
+            StoreCreationDialog.showEdit(entry, false);
         }
     }
 }

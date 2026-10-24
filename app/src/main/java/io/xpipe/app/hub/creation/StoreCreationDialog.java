@@ -37,12 +37,26 @@ public class StoreCreationDialog {
         return showEdit(e, e.getStore(), true, true, c);
     }
 
+    public static StoreCreationModel showEdit(DataStoreEntry e, boolean confirmChanges) {
+        return showEdit(e, e.getStore(), true, true, dataStoreEntry -> {}, confirmChanges);
+    }
+
     public static StoreCreationModel showEdit(
             DataStoreEntry e,
             DataStore base,
             boolean addToStorage,
             boolean switchCategory,
             Consumer<DataStoreEntry> c) {
+        return showEdit(e, base, addToStorage, switchCategory, c, true);
+    }
+
+    public static StoreCreationModel showEdit(
+            DataStoreEntry e,
+            DataStore base,
+            boolean addToStorage,
+            boolean switchCategory,
+            Consumer<DataStoreEntry> c,
+            boolean confirmChanges) {
         StoreCreationConsumer consumer = (newE, validated) -> {
             ThreadHelper.runAsync(() -> {
                 if (!addToStorage) {
@@ -91,7 +105,7 @@ public class StoreCreationDialog {
                 c.accept(e);
             });
         };
-        return show(e.getName(), DataStoreProvider.byStore(base), base, v -> true, consumer, true, e);
+        return show(e.getName(), DataStoreProvider.byStore(base), base, v -> true, consumer, true, e, confirmChanges);
     }
 
     public static StoreCreationModel showCreation(DataStoreProvider selected, DataStoreCreationCategory category) {
@@ -147,7 +161,8 @@ public class StoreCreationDialog {
                         || dataStoreProvider.equals(prov),
                 consumer,
                 false,
-                null);
+                null,
+                true);
     }
 
     private static StoreCreationModel show(
@@ -157,7 +172,8 @@ public class StoreCreationDialog {
             Predicate<DataStoreProvider> filter,
             StoreCreationConsumer con,
             boolean staticDisplay,
-            DataStoreEntry existingEntry) {
+            DataStoreEntry existingEntry,
+            boolean confirmChanges) {
         if (!DataStorageAccessHandler.getInstance().isAccessible()) {
             throw ErrorEventFactory.expected(new IllegalStateException("Current vault encryption is not accessible. Vault data can't be modified in this state"));
         }
@@ -170,7 +186,8 @@ public class StoreCreationDialog {
 
         var prop = new SimpleObjectProperty<>(provider);
         var store = new SimpleObjectProperty<>(s);
-        var model = new StoreCreationModel(prop, store, filter, initialName, existingEntry, staticDisplay, con);
+        var model = new StoreCreationModel(
+                prop, store, filter, initialName, existingEntry, staticDisplay, con, confirmChanges);
         var modal = createModalOverlay(model);
         modal.show();
         return model;

@@ -54,6 +54,7 @@ public class StoreCreationModel {
     UUID newEntryUuid;
     UUID cacheTargetUuid;
     String defaultName;
+    boolean confirmChanges;
 
     public StoreCreationModel(
             Property<DataStoreProvider> provider,
@@ -62,11 +63,13 @@ public class StoreCreationModel {
             String initialName,
             DataStoreEntry existingEntry,
             boolean staticDisplay,
-            StoreCreationConsumer consumer) {
+            StoreCreationConsumer consumer,
+            boolean confirmChanges) {
         this.provider = provider;
         this.store = store;
         this.filter = filter;
         this.existingEntry = existingEntry;
+        this.confirmChanges = confirmChanges;
         this.name = new SimpleStringProperty(
                 !isTemplate() ? initialName != null && !initialName.isEmpty() ? initialName : null : null);
         this.defaultName = isTemplate() && initialName != null && !initialName.isEmpty() ? initialName : null;
@@ -264,7 +267,8 @@ public class StoreCreationModel {
     }
 
     boolean confirmChangesIfNeeded() {
-        if (existingEntry == null
+        if (!confirmChanges
+                || existingEntry == null
                 || !DataStorage.get().getStoreEntries().contains(existingEntry)
                 || DataStorage.get().getEffectiveReadOnlyState(existingEntry)) {
             return true;
