@@ -101,6 +101,9 @@ public class AppMcpServer {
             @Override
             public void handle(HttpExchange exchange) throws IOException {
                 try (exchange) {
+                    var userAgent = exchange.getRequestHeaders().getFirst("User-Agent");
+                    var clientInfo = userAgent != null ? " (User agent: " + userAgent + ")" : "";
+
                     if (AppPrefs.get() == null) {
                         transportProvider.sendError(exchange, 503, "Not initialized");
                         return;
@@ -114,7 +117,7 @@ public class AppMcpServer {
                                     try (var ignored = new BooleanScope(showingError).start()) {
                                         ErrorEventFactory.fromMessage(
                                                         "An external request was made to the XPipe MCP server, however the MCP server is not enabled in the"
-                                                                + " settings menu")
+                                                                + " settings menu" + clientInfo)
                                                 .expected()
                                                 .handle();
                                     }
@@ -124,27 +127,10 @@ public class AppMcpServer {
                         return;
                     }
 
-                    if (exchange.getRequestMethod().equals("GET")
-                            && exchange.getRequestHeaders().getFirst(HttpHeaders.MCP_SESSION_ID) == null) {
-                        var msg = "Session ID required in mcp-session-id header."
-                                + " Check whether you are using the streamable HTTP transport and not something else like SSE.";
-                        transportProvider.sendError(exchange, 400, msg);
-                        if (!showingError.get()) {
-                            ThreadHelper.runAsync(() -> {
-                                try (var ignored = new BooleanScope(showingError).start()) {
-                                    ErrorEventFactory.fromMessage(msg)
-                                            .expected()
-                                            .handle();
-                                }
-                            });
-                        }
-                        return;
-                    }
-
                     if (!AppPrefs.get().disableApiAuthentication().get()) {
                         var apiKey = exchange.getRequestHeaders().getFirst("Authorization");
                         if (apiKey == null) {
-                            transportProvider.sendError(exchange, 403, "Header Authorization is not set");
+                            transportProvider.sendError(exchange, 401, "Header Authorization is not set");
                             if (exchange.getRequestMethod().equals("POST")) {
                                 if (!showingError.get()) {
                                     ThreadHelper.runAsync(() -> {
@@ -152,7 +138,7 @@ public class AppMcpServer {
                                             ErrorEventFactory.fromMessage(
                                                             "An external request was made to the XPipe MCP server without the header Authorization set. "
                                                                     + "Please configure your MCP client with the Bearer API token you can find the API "
-                                                                    + "settings menu")
+                                                                    + "settings menu" + clientInfo)
                                                     .expected()
                                                     .handle();
                                         }
@@ -165,13 +151,13 @@ public class AppMcpServer {
                         var correct = AppBeaconServer.secretEquals(
                                 AppPrefs.get().apiKey().get(), apiKey.replace("Bearer ", ""));
                         if (!correct) {
-                            transportProvider.sendError(exchange, 403, "Invalid API key");
+                            transportProvider.sendError(exchange, 401, "Invalid API key");
                             if (exchange.getRequestMethod().equals("POST")) {
                                 if (!showingError.get()) {
                                     ThreadHelper.runAsync(() -> {
                                         try (var ignored = new BooleanScope(showingError).start()) {
                                             ErrorEventFactory.fromMessage(
-                                                            "The Authorization header sent by the MCP client is not correct")
+                                                            "The Authorization header sent by the MCP client is not correct" + clientInfo)
                                                     .expected()
                                                     .handle();
                                         }
@@ -180,6 +166,23 @@ public class AppMcpServer {
                             }
                             return;
                         }
+                    }
+
+                    if (exchange.getRequestMethod().equals("GET")
+                            && exchange.getRequestHeaders().getFirst(HttpHeaders.MCP_SESSION_ID) == null) {
+                        var msg = "Session ID required in mcp-session-id header."
+                                + " Check whether you are using the streamable HTTP transport and not something else like SSE.";
+                        transportProvider.sendError(exchange, 400, msg);
+                        if (!showingError.get()) {
+                            ThreadHelper.runAsync(() -> {
+                                try (var ignored = new BooleanScope(showingError).start()) {
+                                    ErrorEventFactory.fromMessage(msg + clientInfo)
+                                            .expected()
+                                            .handle();
+                                }
+                            });
+                        }
+                        return;
                     }
 
                     if (exchange.getRequestMethod().equals("GET")) {

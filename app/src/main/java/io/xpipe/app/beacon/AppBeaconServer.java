@@ -5,6 +5,7 @@ import io.xpipe.app.beacon.mcp.AppMcpServer;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppLocalTemp;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -190,15 +191,10 @@ public class AppBeaconServer {
     }
 
     private void start() throws IOException {
-        executor = Executors.newFixedThreadPool(3, r -> {
-            Thread t = Executors.defaultThreadFactory().newThread(r);
-            t.setDaemon(true);
-            t.setName("http handler");
-            t.setUncaughtExceptionHandler((t1, e) -> {
-                ErrorEventFactory.fromThrowable(e).handle();
-            });
-            return t;
-        });
+        var threads = Thread.ofPlatform().daemon(true)
+                .name("http handler ", 0)
+                .factory();
+        executor = Executors.newCachedThreadPool(threads);
         var external = AppPrefs.get().allowExternalApiRequests().get() || Boolean.getBoolean("XPIPE_API_SERVER");
         var addr = external
                 ? Inet4Address.getByAddress(new byte[] {0, 0, 0, 0})

@@ -29,8 +29,8 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 
     public static final String MESSAGE_EVENT_TYPE = "message";
 
-    public static final String UTF_8 = "UTF-8";
     public static final String APPLICATION_JSON = "application/json";
+    public static final String APPLICATION_JSON_UTF_8 = "application/json; charset=utf-8";
     public static final String TEXT_EVENT_STREAM = "text/event-stream";
     public static final String FAILED_TO_SEND_ERROR_RESPONSE = "Failed to send error response: {}";
     private static final Logger logger = LoggerFactory.getLogger(HttpStreamableServerTransportProvider.class);
@@ -172,7 +172,8 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
             this.sendMcpError(
                     exchange,
                     400,
-                    McpError.builder(McpSchema.ErrorCodes.METHOD_NOT_FOUND)
+                    null,
+                    McpError.builder(McpSchema.ErrorCodes.INVALID_REQUEST)
                             .message(combinedMessage)
                             .build());
             return;
@@ -187,12 +188,14 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 
         logger.debug("Handling GET request for session: {}", sessionId);
         // We don't support SSE
-        sendError(exchange, 404, null);
+        sendError(exchange, 405, null);
     }
 
     public void sendError(HttpExchange exchange, int code, String message) throws IOException {
         var b = message != null ? message.getBytes(StandardCharsets.UTF_8) : new byte[0];
-        exchange.getResponseHeaders().add("Content-Encoding", UTF_8);
+        if (b.length != 0) {
+            exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");
+        }
         exchange.sendResponseHeaders(code, b.length != 0 ? b.length : -1);
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(b);
@@ -201,10 +204,12 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
         TrackEvent.withError("MCP server error " + code).tag("message", message).handle();
     }
 
-    public void sendMcpError(HttpExchange exchange, int httpCode, McpError mcpError) throws IOException {
-        exchange.getResponseHeaders().add("Content-Encoding", UTF_8);
-        exchange.getResponseHeaders().add("Content-Type", APPLICATION_JSON);
-        var jsonError = jsonMapper.writeValueAsString(mcpError);
+    public void sendMcpError(HttpExchange exchange, int httpCode, Object requestId, McpError mcpError)
+            throws IOException {
+        exchange.getResponseHeaders().add("Content-Type", APPLICATION_JSON_UTF_8);
+        // Wrap in a proper JSON-RPC response, serializing the exception itself would include the stack trace
+        var jsonError = jsonMapper.writeValueAsString(new McpSchema.JSONRPCResponse(
+                McpSchema.JSONRPC_VERSION, requestId, null, mcpError.getJsonRpcError()));
         var b = jsonError.getBytes(StandardCharsets.UTF_8);
         exchange.sendResponseHeaders(httpCode, b.length);
         try (OutputStream os = exchange.getResponseBody()) {
@@ -240,6 +245,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 
         McpTransportContext transportContext = this.contextExtractor.extract(exchange);
 
+        Object requestId = null;
         try {
             var body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
             var log = AppProperties.get().isPrintBeaconMessages();
@@ -251,6 +257,9 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
             }
 
             McpSchema.JSONRPCMessage message = McpSchema.deserializeJsonRpcMessage(jsonMapper, body);
+            if (message instanceof McpSchema.JSONRPCRequest r) {
+                requestId = r.id();
+            }
 
             // Handle initialization request
             if (message instanceof McpSchema.JSONRPCRequest jsonrpcRequest
@@ -260,7 +269,8 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                     this.sendMcpError(
                             exchange,
                             400,
-                            McpError.builder(McpSchema.ErrorCodes.METHOD_NOT_FOUND)
+                            requestId,
+                            McpError.builder(McpSchema.ErrorCodes.INVALID_REQUEST)
                                     .message(combinedMessage)
                                     .build());
                     return;
@@ -290,8 +300,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                                 .handle();
                     }
 
-                    exchange.getResponseHeaders().add("Content-Type", APPLICATION_JSON);
-                    exchange.getResponseHeaders().add("Content-Encoding", UTF_8);
+                    exchange.getResponseHeaders().add("Content-Type", APPLICATION_JSON_UTF_8);
                     exchange.getResponseHeaders()
                             .add(HttpHeaders.MCP_SESSION_ID, init.session().getId());
                     exchange.sendResponseHeaders(200, jsonBytes.length);
@@ -302,6 +311,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                     this.sendMcpError(
                             exchange,
                             500,
+                            requestId,
                             McpError.builder(McpSchema.ErrorCodes.INTERNAL_ERROR)
                                     .message("Failed to initialize session: " + e.getMessage())
                                     .build());
@@ -320,7 +330,8 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                 this.sendMcpError(
                         exchange,
                         400,
-                        McpError.builder(McpSchema.ErrorCodes.METHOD_NOT_FOUND)
+                        requestId,
+                        McpError.builder(McpSchema.ErrorCodes.INVALID_REQUEST)
                                 .message(combinedMessage)
                                 .build());
                 return;
@@ -332,6 +343,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                 this.sendMcpError(
                         exchange,
                         404,
+                        requestId,
                         McpError.builder(McpSchema.ErrorCodes.INTERNAL_ERROR)
                                 .message("Session not found: " + sessionId + ". Was the session not refreshed?")
                                 .build());
@@ -342,7 +354,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                 session.accept(jsonrpcResponse)
                         .contextWrite(ctx -> ctx.put(McpTransportContext.KEY, transportContext))
                         .block();
-                exchange.sendResponseHeaders(200, -1);
+                exchange.sendResponseHeaders(202, -1);
                 if (log) {
                     TrackEvent.withTrace("Sending MCP response")
                             .tag("id", sessionId)
@@ -365,7 +377,6 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
             } else if (message instanceof McpSchema.JSONRPCRequest jsonrpcRequest) {
                 // For streaming responses, we need to return SSE
                 exchange.getResponseHeaders().add("Content-Type", TEXT_EVENT_STREAM);
-                exchange.getResponseHeaders().add("Content-Encoding", UTF_8);
                 exchange.getResponseHeaders().add("Cache-Control", "no-cache");
                 exchange.getResponseHeaders().add("Connection", "keep-alive");
                 exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
@@ -387,7 +398,8 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
             } else {
                 this.sendMcpError(
                         exchange,
-                        500,
+                        400,
+                        requestId,
                         McpError.builder(McpSchema.ErrorCodes.INVALID_REQUEST)
                                 .message("Unknown message type")
                                 .build());
@@ -397,6 +409,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
             this.sendMcpError(
                     exchange,
                     400,
+                    requestId,
                     McpError.builder(McpSchema.ErrorCodes.INVALID_REQUEST)
                             .message("Invalid message format: " + e.getMessage())
                             .build());
@@ -406,6 +419,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                 this.sendMcpError(
                         exchange,
                         500,
+                        requestId,
                         McpError.builder(McpSchema.ErrorCodes.INTERNAL_ERROR)
                                 .message("Error processing message: " + e.getMessage())
                                 .build());
@@ -451,7 +465,8 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
             this.sendMcpError(
                     exchange,
                     400,
-                    McpError.builder(McpSchema.ErrorCodes.METHOD_NOT_FOUND)
+                    null,
+                    McpError.builder(McpSchema.ErrorCodes.INVALID_REQUEST)
                             .message("Session ID required in mcp-session-id header")
                             .build());
             return;
@@ -484,10 +499,10 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                 this.sendMcpError(
                         exchange,
                         500,
+                        null,
                         McpError.builder(McpSchema.ErrorCodes.INTERNAL_ERROR)
                                 .message(e.getMessage())
                                 .build());
-                sendError(exchange, 500, e.getMessage());
             } catch (IOException ex) {
                 logger.error(FAILED_TO_SEND_ERROR_RESPONSE, ex.getMessage());
                 sendError(exchange, 500, "Error deleting session");
