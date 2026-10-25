@@ -55,7 +55,7 @@ dependencies {
 
     api "io.projectreactor:reactor-core:3.7.9"
     api "org.reactivestreams:reactive-streams:1.0.4"
-    api ("com.networknt:json-schema-validator:3.0.6") {
+    api ("com.networknt:json-schema-validator:3.0.7") {
         exclude group: "com.ethlo.time", module: "itu"
         exclude group: "tools.jackson.dataformat", module: "jackson-dataformat-yaml"
     }
