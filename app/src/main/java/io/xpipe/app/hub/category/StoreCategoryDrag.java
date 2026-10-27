@@ -83,10 +83,22 @@ public class StoreCategoryDrag {
     Target target;
 
     public boolean isValidTarget(StoreCategoryWrapper category) {
-        return category.getParent() != null && category.getParent().canMoveIntoThis(selection);
+        return !isSelectionOrDescendant(category)
+                && category.getParent() != null
+                && category.getParent().canMoveIntoThis(selection);
     }
 
     public boolean isValidSubTarget(StoreCategoryWrapper category) {
-        return category.canMoveIntoThis(selection);
+        return !isSelectionOrDescendant(category) && category.canMoveIntoThis(selection);
+    }
+
+    private boolean isSelectionOrDescendant(StoreCategoryWrapper category) {
+        // It removes the dragged category asynchronously, so it and its children can still receive drag events
+        for (var c = category; c != null; c = c.getParent()) {
+            if (c.equals(selection)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
