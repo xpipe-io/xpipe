@@ -39,6 +39,7 @@ public interface ScanDialogAction {
                                 all.removeIf(o -> o.getProvider().equals(operation.getProvider()) && o.isDisabled());
                             }
                             if (!operation.isDisabled()
+                                    && operation.isDefaultSelected()
                                     && selected.stream()
                                             .noneMatch(o -> o.getProvider().equals(operation.getProvider()))) {
                                 selected.add(operation);

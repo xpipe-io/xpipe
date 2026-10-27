@@ -55,23 +55,34 @@ public abstract class ScanProvider {
         ObservableValue<String> name;
         boolean disabled;
         String licenseFeatureId;
+        boolean defaultSelected;
 
         public ScanOpportunity(String nameKey, boolean disabled) {
             this.name = AppI18n.observable(nameKey);
             this.disabled = disabled;
             this.licenseFeatureId = null;
+            this.defaultSelected = true;
+        }
+
+        public ScanOpportunity(String nameKey, boolean disabled, boolean defaultSelected) {
+            this.name = AppI18n.observable(nameKey);
+            this.disabled = disabled;
+            this.licenseFeatureId = null;
+            this.defaultSelected = defaultSelected;
         }
 
         public ScanOpportunity(String nameKey, boolean disabled, String licenseFeatureId) {
             this.name = AppI18n.observable(nameKey);
             this.disabled = disabled;
             this.licenseFeatureId = licenseFeatureId;
+            this.defaultSelected = true;
         }
 
         public ScanOpportunity(ObservableValue<String> name, boolean disabled) {
             this.name = name;
             this.disabled = disabled;
             this.licenseFeatureId = null;
+            this.defaultSelected = true;
         }
 
         public String getLicensedFeatureId() {
