@@ -6,6 +6,7 @@ import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.terminal.TerminalExitBehavior;
 import io.xpipe.app.terminal.TerminalLaunch;
 
 import javafx.beans.value.ObservableValue;
@@ -49,7 +50,7 @@ public class PodmanContainerLogsActionProvider implements HubLeafProvider<Podman
             var d = ref.getStore();
             var view = d.commandView(d.getCmd().getStore().getHost().getStore().getOrStartSession());
             TerminalLaunch.builder()
-                    .pauseOnExit(true)
+                    .exitBehavior(TerminalExitBehavior.pause())
                     .entry(ref.get())
                     .title("Logs")
                     .command(view.logs(d.getContainerName()))

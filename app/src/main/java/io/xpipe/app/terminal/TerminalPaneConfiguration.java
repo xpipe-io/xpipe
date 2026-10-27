@@ -69,7 +69,7 @@ public class TerminalPaneConfiguration {
             String title,
             int paneIndex,
             boolean enableLogging,
-            boolean alwaysPromptRestart)
+            TerminalExitBehavior exitBehavior)
             throws Exception {
         var debugMode = !AppProperties.get().isDevelopmentEnvironment() &&
                 AppProperties.get().isDeveloperMode() &&
@@ -80,7 +80,7 @@ public class TerminalPaneConfiguration {
             var register = TerminalLauncher.getTerminalRegisterCommand(request, sc);
             var launcherScript = getEnvOptionsResetCommand(sc.getShellDialect()) + "\n" +
                     (debugMode ? sc.getShellDialect().getSetEnvironmentVariableCommand("XPIPE_DEBUG", "true") + "\n" : "") +
-                    register + "\n" + sc.getShellDialect().terminalLauncherScript(sc, request, title, alwaysPromptRestart);
+                    register + "\n" + sc.getShellDialect().terminalLauncherScript(sc, request, title, exitBehavior);
             var config = new TerminalPaneConfiguration(request, title, paneIndex, launcherScript, sc.getShellDialect());
             return config;
         }
@@ -98,7 +98,7 @@ public class TerminalPaneConfiguration {
             var launcherScript = ScriptHelper.createExecScript(
                     ShellDialects.POWERSHELL,
                     sc,
-                    ShellDialects.POWERSHELL.terminalLauncherScript(sc, request, title, alwaysPromptRestart));
+                    ShellDialects.POWERSHELL.terminalLauncherScript(sc, request, title, exitBehavior));
             var content = """
                           %s
                           %s
@@ -133,7 +133,7 @@ public class TerminalPaneConfiguration {
                     LocalShell.getShell(),
                     LocalShell.getShell()
                             .getShellDialect()
-                            .terminalLauncherScript(sc, request, title, alwaysPromptRestart));
+                            .terminalLauncherScript(sc, request, title, exitBehavior));
             var command = sc == LocalShell.getShell()
                     ? launcherScript
                     : LocalShell.getShell()

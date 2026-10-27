@@ -15,6 +15,7 @@ import io.xpipe.app.rdp.ExternalRdpClient;
 import io.xpipe.app.spice.ExternalSpiceClient;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
+import io.xpipe.app.terminal.TerminalExitAction;
 import io.xpipe.app.terminal.TerminalMultiplexer;
 import io.xpipe.app.terminal.TerminalPrompt;
 import io.xpipe.app.terminal.TerminalSplitStrategy;
@@ -304,10 +305,15 @@ public final class AppPrefs {
             .log(false)
             .documentationLink(DocumentationLink.TERMINAL_MULTIPLEXER)
             .build());
-    final Property<Boolean> terminalAlwaysPauseOnExit = map(Mapping.builder()
-            .property(new GlobalBooleanProperty(true))
-            .key("terminalAlwaysPauseOnExit")
-            .valueClass(Boolean.class)
+    final Property<TerminalExitAction> terminalNormalExitBehavior = map(Mapping.builder()
+            .property(new GlobalObjectProperty<>(TerminalExitAction.PAUSE))
+            .key("terminalNormalExitBehavior")
+            .valueClass(TerminalExitAction.class)
+            .build());
+    final Property<TerminalExitAction> terminalFailureExitBehavior = map(Mapping.builder()
+            .property(new GlobalObjectProperty<>(TerminalExitAction.PAUSE))
+            .key("terminalFailureExitBehavior")
+            .valueClass(TerminalExitAction.class)
             .build());
     final Property<TerminalSplitStrategy> terminalSplitStrategy = map(Mapping.builder()
             .property(new GlobalObjectProperty<>(TerminalSplitStrategy.BALANCED))
@@ -551,8 +557,12 @@ public final class AppPrefs {
         return terminalProxy;
     }
 
-    public ObservableValue<Boolean> terminalAlwaysPauseOnExit() {
-        return terminalAlwaysPauseOnExit;
+    public ObservableValue<TerminalExitAction> terminalNormalExitBehavior() {
+        return terminalNormalExitBehavior;
+    }
+
+    public ObservableValue<TerminalExitAction> terminalFailureExitBehavior() {
+        return terminalFailureExitBehavior;
     }
 
     public ObservableValue<FilePath> sshAgentSocket() {

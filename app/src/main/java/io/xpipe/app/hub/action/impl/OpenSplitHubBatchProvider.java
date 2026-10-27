@@ -75,8 +75,8 @@ public class OpenSplitHubBatchProvider implements BatchHubProvider<ShellStore> {
                 ProcModuleProvider.get().withDefaultScripts(control);
 
                 var title = DataStorage.get().getStoreEntryDisplayName(ref.get());
-                var config =
-                        new TerminalLauncher.Config(ref.get(), title, null, UUID.randomUUID(), true, true, control);
+                var config = new TerminalLauncher.Config(
+                        ref.get(), title, null, UUID.randomUUID(), true, TerminalExitBehavior.ofPrefs(), control);
                 panes.add(config);
             }
             TerminalLauncher.open(panes, true, type);

@@ -12,6 +12,7 @@ import io.xpipe.app.issue.UserReportComp;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.terminal.TerminalExitBehavior;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
@@ -72,7 +73,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                         var script = AppInstallation.ofCurrent().getDaemonDebugScriptPath();
                                         TerminalLaunch.builder()
                                                 .title(AppNames.ofCurrent().getName() + " Debug")
-                                                .pauseOnExit(true)
+                                                .exitBehavior(TerminalExitBehavior.pause())
                                                 .localScript(sc -> new ShellScript(
                                                         sc.getShellDialect().runScriptCommand(sc, script.toString())))
                                                 .launch();

@@ -128,7 +128,7 @@ public class TerminalLauncher {
         FilePath directory;
         UUID request;
         boolean enableLogging;
-        boolean alwaysKeepOpen;
+        TerminalExitBehavior exitBehavior;
         ProcessControl processControl;
     }
 
@@ -158,7 +158,7 @@ public class TerminalLauncher {
 
             var paneIndex = configs.indexOf(config);
             var paneConfig = TerminalPaneConfiguration.create(
-                    config.getRequest(), entry, config.getTitle(), paneIndex, log, config.isAlwaysKeepOpen());
+                    config.getRequest(), entry, config.getTitle(), paneIndex, log, config.getExitBehavior());
             paneList.add(paneConfig);
         }
 
