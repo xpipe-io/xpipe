@@ -59,7 +59,7 @@ public interface ShellStoreProvider extends DataStoreProvider {
             var base = StoreEntryInformation.ofSystemState(ss);
             return base.append(buildAdditionalInformation(section, ss));
         } else {
-            return null;
+            return StoreEntryInformation.of();
         }
     }
 
