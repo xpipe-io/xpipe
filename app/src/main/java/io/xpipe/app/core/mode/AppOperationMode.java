@@ -129,7 +129,7 @@ public abstract class AppOperationMode {
                     }
 
                     // There are weird NPEs on macOS shutdowns without a stack trace
-                    if (AppOperationMode.isInShutdown() && ex.getStackTrace().length == 0 && OsType.ofLocal() == OsType.MACOS) {
+                    if (AppOperationMode.isInShutdown() && (ex.getStackTrace() == null || ex.getStackTrace().length == 0) && OsType.ofLocal() == OsType.MACOS) {
                         return;
                     }
 

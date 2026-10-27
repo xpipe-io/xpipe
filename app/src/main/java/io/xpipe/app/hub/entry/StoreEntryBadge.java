@@ -407,6 +407,19 @@ public interface StoreEntryBadge {
         return new Simple(stack, s).withStyleClass("indeterminant-badge");
     }
 
+    static StoreEntryBadge ofHealth(String health) {
+        if (health == null) {
+            return null;
+        }
+
+        return switch (health.toLowerCase()) {
+            case "healthy" -> ofSuccess("Healthy");
+            case "unhealthy" -> ofFailure("Unhealthy");
+            case "starting" -> ofIndeterminant("Starting");
+            default -> ofIndeterminant(health);
+        };
+    }
+
     static StoreEntryBadge ofLicense(LicensedFeature... ls) {
         var effective = Arrays.stream(ls).filter(l -> l != null).toList();
         if (effective.isEmpty()) {

@@ -4,6 +4,7 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellStoreState;
+import io.xpipe.app.util.HumanReadableFormat;
 import io.xpipe.app.util.OsType;
 
 import lombok.AccessLevel;
@@ -12,6 +13,9 @@ import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+
+import java.time.Duration;
+import java.time.Instant;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Getter
@@ -52,6 +56,21 @@ public class ContainerStoreState extends ShellStoreState {
     String containerState;
     ShellDialect availableShellDialect;
     Boolean shellMissing;
+    Instant startedAt;
+    Instant finishedAt;
+    String health;
+
+    public String formatRunningState(String fallback, boolean running, boolean exited) {
+        if (running && startedAt != null) {
+            return "Up " + HumanReadableFormat.age(Duration.between(startedAt, Instant.now()));
+        }
+
+        if (exited && finishedAt != null) {
+            return "Exited " + HumanReadableFormat.age(Duration.between(finishedAt, Instant.now())) + " ago";
+        }
+
+        return fallback;
+    }
 
     public ShellDialect getEffectiveDialect() {
         if (availableShellDialect != null) {
@@ -75,5 +94,8 @@ public class ContainerStoreState extends ShellStoreState {
         b.imageName(useNewer(imageName, css.getImageName()));
         b.availableShellDialect(useNewer(availableShellDialect, css.getAvailableShellDialect()));
         b.shellMissing(useNewer(shellMissing, css.getShellMissing()));
+        b.startedAt(useNewer(startedAt, css.getStartedAt()));
+        b.finishedAt(useNewer(finishedAt, css.getFinishedAt()));
+        b.health(useNewer(health, css.getHealth()));
     }
 }

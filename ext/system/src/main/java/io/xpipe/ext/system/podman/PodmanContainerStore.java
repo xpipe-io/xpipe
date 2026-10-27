@@ -197,8 +197,14 @@ public class PodmanContainerStore
         }
 
         var running = displayState.startsWith("Up");
-        var newState =
-                state.toBuilder().containerState(displayState).running(running).build();
+        var inspection = view.inspectStates(List.of(containerName)).get(containerName);
+        var newState = state.toBuilder()
+                .containerState(displayState)
+                .running(running)
+                .startedAt(inspection != null ? inspection.getStartedAt() : null)
+                .finishedAt(inspection != null ? inspection.getFinishedAt() : null)
+                .health(inspection != null ? inspection.getHealth() : null)
+                .build();
         setState(newState);
         return true;
     }

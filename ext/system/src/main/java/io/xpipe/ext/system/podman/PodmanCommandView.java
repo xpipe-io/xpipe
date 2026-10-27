@@ -2,13 +2,20 @@ package io.xpipe.ext.system.podman;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
+import io.xpipe.app.util.JacksonMapper;
 import io.xpipe.app.util.OsType;
 
 import lombok.NonNull;
 import lombok.Value;
+import tools.jackson.databind.JsonNode;
 
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -87,10 +94,62 @@ public class PodmanCommandView extends CommandViewBase {
             return command.readStdoutIfPossible().filter(s -> !s.isBlank());
         }
 
+        private static Optional<Instant> parseTime(JsonNode node) {
+            if (!node.isString()) {
+                return Optional.empty();
+            }
+
+            try {
+                var instant = OffsetDateTime.parse(node.asString()).toInstant();
+                return Optional.of(instant).filter(i -> i.isAfter(Instant.EPOCH));
+            } catch (DateTimeParseException e) {
+                return Optional.empty();
+            }
+        }
+
         public String queryState(String container) throws Exception {
             return build(commandBuilder -> commandBuilder.add(
                             "ls", "-a", "-f").addQuotedKeyValue("name", "^" + container + "$").addQuotedKeyValue("--format", "{{.Status}}"))
                     .readStdoutOrThrow();
+        }
+
+        public Map<String, InspectEntry> inspectStates(List<String> containers) {
+            if (containers.isEmpty()) {
+                return Map.of();
+            }
+
+            try {
+                // The state is passed as JSON as the timestamps would otherwise not be formatted as ISO
+                // and the health field is named differently in older versions
+                var output = build(commandBuilder -> {
+                            commandBuilder.add("inspect").addQuotedKeyValue("--format", "{{.Name}};{{json .State}}");
+                            containers.forEach(commandBuilder::addQuoted);
+                        })
+                        .readStdoutOrThrow();
+                var map = new HashMap<String, InspectEntry>();
+                for (var line : output.lines().toList()) {
+                    var split = line.indexOf(';');
+                    if (split == -1) {
+                        continue;
+                    }
+
+                    var state = JacksonMapper.getDefault().readTree(line.substring(split + 1));
+                    var healthNode = state.has("Health") ? state.get("Health") : state.get("Healthcheck");
+                    var health = healthNode != null && healthNode.path("Status").isString()
+                            ? healthNode.path("Status").asString()
+                            : null;
+                    map.put(
+                            line.substring(0, split).strip(),
+                            new InspectEntry(
+                                    parseTime(state.path("StartedAt")).orElse(null),
+                                    parseTime(state.path("FinishedAt")).orElse(null),
+                                    health != null && !health.isBlank() ? health : null));
+                }
+                return map;
+            } catch (Exception ex) {
+                ErrorEventFactory.fromThrowable(ex).omit().expected().handle();
+                return Map.of();
+            }
         }
 
         @Override
@@ -219,6 +278,13 @@ public class PodmanCommandView extends CommandViewBase {
 
         public CommandControl logs(String container) {
             return build(commandBuilder -> commandBuilder.add("logs").add("-f").addQuoted(container));
+        }
+
+        @Value
+        public static class InspectEntry {
+            Instant startedAt;
+            Instant finishedAt;
+            String health;
         }
 
         @Value

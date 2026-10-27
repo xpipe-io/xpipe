@@ -50,6 +50,10 @@ public class PodmanCmdStore
     private List<DataStoreEntryRef<PodmanContainerStore>> listContainers(ShellControl sc) throws Exception {
         var view = new PodmanCommandView(sc);
         var l = view.container().listContainersAndStates();
+        var inspections = view.container()
+                .inspectStates(l.stream()
+                        .map(PodmanCommandView.Container.ContainerEntry::getName)
+                        .toList());
         return l.stream()
                 .map(s -> {
                     boolean running = s.getStatus().startsWith("running")
@@ -60,11 +64,15 @@ public class PodmanCmdStore
                             .containerName(s.getName())
                             .build();
                     var entry = DataStoreEntry.createNew(s.getName(), c);
+                    var inspection = inspections.get(s.getName());
                     entry.setStorePersistentState(PodmanContainerStoreState.builder()
                             .containerState(s.getStatus())
                             .imageName(s.getImage())
                             .running(running)
                             .systemdUnit(s.getSystemdUnit())
+                            .startedAt(inspection != null ? inspection.getStartedAt() : null)
+                            .finishedAt(inspection != null ? inspection.getFinishedAt() : null)
+                            .health(inspection != null ? inspection.getHealth() : null)
                             .build());
                     return entry.<PodmanContainerStore>ref();
                 })

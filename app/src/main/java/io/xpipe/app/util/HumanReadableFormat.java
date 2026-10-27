@@ -75,6 +75,46 @@ public final class HumanReadableFormat {
         return s + "/s";
     }
 
+    // Same format as docker uses for container states
+    public static String age(Duration duration) {
+        var seconds = duration.toSeconds();
+        if (seconds < 1) {
+            return "Less than a second";
+        }
+        if (seconds == 1) {
+            return "1 second";
+        }
+        if (seconds < 60) {
+            return seconds + " seconds";
+        }
+
+        var minutes = duration.toMinutes();
+        if (minutes == 1) {
+            return "About a minute";
+        }
+        if (minutes < 60) {
+            return minutes + " minutes";
+        }
+
+        var hours = Math.round(duration.toSeconds() / 3600.0);
+        if (hours == 1) {
+            return "About an hour";
+        }
+        if (hours < 48) {
+            return hours + " hours";
+        }
+        if (hours < 24 * 7 * 2) {
+            return (hours / 24) + " days";
+        }
+        if (hours < 24 * 30 * 2) {
+            return (hours / 24 / 7) + " weeks";
+        }
+        if (hours < 24 * 365 * 2) {
+            return (hours / 24 / 30) + " months";
+        }
+        return (duration.toHours() / 24 / 365) + " years";
+    }
+
     public static String duration(Duration duration) {
         var s = duration.toString()
                 .substring(2)
