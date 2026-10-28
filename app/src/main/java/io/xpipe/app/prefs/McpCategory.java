@@ -87,7 +87,11 @@ public class McpCategory extends AppPrefsCategory {
                """);
 
         var claudeCodeTemplate = createMcpConfig("""
-               $ claude mcp add %s --transport http "http://localhost:%s/mcp" --header "Authorization: Bearer %s"
+               # This will add the MCP server for the current directory only
+               claude mcp add %s --transport http "http://localhost:%s/mcp" --header "Authorization: Bearer %s"
+               
+               # This will make the MCP server available in all directories
+               claude mcp add --scope user %s --transport http "http://localhost:%s/mcp" --header "Authorization: Bearer %s"
                """);
 
         var geminiTemplate = createMcpConfig("""
