@@ -49,6 +49,7 @@ public class BrowserFileOverviewComp extends SimpleRegionBuilder {
         };
 
         var c = new ListBoxViewComp<>(list, list, factory, true).style("overview-file-list");
+        c.disable(model.getBusy());
         if (!grow) {
             c.apply(struc -> struc.setFitToHeight(true));
         }
