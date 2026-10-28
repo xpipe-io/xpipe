@@ -2,6 +2,7 @@ package io.xpipe.app.util;
 
 import java.io.IOException;
 import java.net.Inet4Address;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.util.Optional;
 
@@ -16,7 +17,11 @@ public class HostHelper {
     }
 
     public static boolean isPortAvailable(int port) {
-        try (ServerSocket ignored = new ServerSocket(port)) {
+        // SO_REUSEADDR has to be disabled, otherwise BSD-based systems like macOS allow binding to the wildcard address
+        // while another server is bound to the same port on a specific address
+        try (ServerSocket socket = new ServerSocket()) {
+            socket.setReuseAddress(false);
+            socket.bind(new InetSocketAddress(port));
             return true;
         } catch (IOException e) {
             return false;

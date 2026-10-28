@@ -26,7 +26,11 @@ public class BeaconServer {
         // If there's some kind of networking tool interfering with sockets by for example proxying socket connections
         // The previous connect might succeed even though nothing is running.
         // To be sure, check that the socket is indeed occupied
-        try (var ignored = new ServerSocket(port, 0, local)) {
+        // SO_REUSEADDR has to be disabled, otherwise BSD-based systems like macOS allow binding to the loopback address
+        // while the server is bound to the wildcard address when external API requests are enabled
+        try (var serverSocket = new ServerSocket()) {
+            serverSocket.setReuseAddress(false);
+            serverSocket.bind(new InetSocketAddress(local, port));
             return false;
         } catch (Exception e) {
             return true;
