@@ -96,6 +96,6 @@ public class ContainerStoreState extends ShellStoreState {
         b.shellMissing(useNewer(shellMissing, css.getShellMissing()));
         b.startedAt(useNewer(startedAt, css.getStartedAt()));
         b.finishedAt(useNewer(finishedAt, css.getFinishedAt()));
-        b.health(useNewer(health, css.getHealth()));
+        b.health(css.getStartedAt() != null ? css.getHealth() : health);
     }
 }
