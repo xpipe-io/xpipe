@@ -181,7 +181,14 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
 
         var current = overlayContent.getValue();
         if (current != null) {
-            showModalBox(modal, current, buttonMap);
+            try {
+                showModalBox(modal, current, buttonMap);
+            } catch (Throwable t) {
+                AppLogs.get().logException(null, t);
+                Platform.runLater(() -> {
+                    overlayContent.setValue(null);
+                });
+            }
         }
 
         return pane;
