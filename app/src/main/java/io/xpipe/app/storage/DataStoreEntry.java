@@ -281,9 +281,6 @@ public class DataStoreEntry extends DataStorageElement {
         double orderIndex = Optional.ofNullable(entryJson.get("orderIndex"))
                 .map(jsonNode -> jsonNode.doubleValue())
                 .orElse(0.0);
-        if (orderIndex < 0.0) {
-            orderIndex = 0.0;
-        }
 
         DataStoreEntryNode<JsonNode> stateNode = DataStoreEntryNode.parse(stateFile, JsonNode.class);
         if (stateNode != null && !stateNode.isAccessible()) {

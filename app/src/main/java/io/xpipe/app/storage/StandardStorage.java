@@ -315,6 +315,17 @@ public class StandardStorage extends DataStorage {
             }
             orderCounter = (int) Math.ceil(maxOrderIndex + 1.0);
 
+            // Older entries and categories might not have an order index set
+            // As they would all share the same index, they could not be reordered relative to each other
+            storeCategories.stream()
+                    .filter(c -> c.getOrderIndex() == 0.0)
+                    .sorted(Comparator.comparing(DataStorageElement::getCreated))
+                    .forEach(c -> c.setOrderIndex(getNextOrderIndex()));
+            storeEntriesSet.stream()
+                    .filter(e -> e.getOrderIndex() == 0.0)
+                    .sorted(Comparator.comparing(DataStorageElement::getCreated))
+                    .forEach(e -> e.setOrderIndex(getNextOrderIndex()));
+
             // Remove inaccessible entries again when everything is valid, although normally this shouldn't change anything
             filterInaccessibleEntries();
 
