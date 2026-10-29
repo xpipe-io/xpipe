@@ -144,12 +144,13 @@ public class TerminalLauncher {
 
             var log = config.isEnableLogging()
                     && AppPrefs.get().enableTerminalLogging().get();
+            var clear = type.shouldClear()
+                    && AppPrefs.get().clearTerminalOnInit().get()
+                    && !AppPrefs.get().developerPrintInitFiles().get();
+            // When logging, the screen is cleared before the logging notice is printed instead
             var terminalConfig = new TerminalInitScriptConfig(
                     adjustedTitle,
-                    !log
-                            && type.shouldClear()
-                            && AppPrefs.get().clearTerminalOnInit().get()
-                            && !AppPrefs.get().developerPrintInitFiles().get(),
+                    !log && clear,
                     config.getProcessControl() instanceof ShellControl
                             ? type.additionalInitCommands()
                             : TerminalInitFunction.none());
@@ -158,7 +159,7 @@ public class TerminalLauncher {
 
             var paneIndex = configs.indexOf(config);
             var paneConfig = TerminalPaneConfiguration.create(
-                    config.getRequest(), entry, config.getTitle(), paneIndex, log, config.getExitBehavior());
+                    config.getRequest(), entry, config.getTitle(), paneIndex, log, clear, config.getExitBehavior());
             paneList.add(paneConfig);
         }
 

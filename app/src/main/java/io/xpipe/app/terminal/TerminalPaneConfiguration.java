@@ -69,6 +69,7 @@ public class TerminalPaneConfiguration {
             String title,
             int paneIndex,
             boolean enableLogging,
+            boolean clearScreen,
             TerminalExitBehavior exitBehavior)
             throws Exception {
         var debugMode = !AppProperties.get().isDevelopmentEnvironment() &&
@@ -103,6 +104,7 @@ public class TerminalPaneConfiguration {
                           %s
                           %s
                           %s
+                          %s
                           echo 'Session logging is active, output file is "sessions\\%s"'
                           Start-Transcript -Force -LiteralPath "%s" | Out-Null
                           & "%s"
@@ -113,6 +115,7 @@ public class TerminalPaneConfiguration {
                             debugMode ? ShellDialects.POWERSHELL.getSetEnvironmentVariableCommand("XPIPE_DEBUG", "true") : "",
                             TerminalLauncher.getTerminalRegisterCommand(
                                     request, LocalShell.getLocalPowershell().orElseThrow()),
+                            clearScreen ? ShellDialects.POWERSHELL.clearDisplayCommand() : "",
                             logFile.getFileName(),
                             logFile,
                             launcherScript,
@@ -152,6 +155,7 @@ public class TerminalPaneConfiguration {
                           %s
                           %s
                           %s
+                          %s
                           echo "Session logging is active, output file is sessions/%s"
                           %s
                           echo "Session logging is finished, output file is sessions/%s"
@@ -161,6 +165,7 @@ public class TerminalPaneConfiguration {
                             debugMode ? LocalShell.getShell()
                                         .getShellDialect().getSetEnvironmentVariableCommand("XPIPE_DEBUG", "true") : "",
                             TerminalLauncher.getTerminalRegisterCommand(request, sc),
+                            clearScreen ? sc.getShellDialect().clearDisplayCommand() : "",
                             logFile.getFileName(),
                             scriptCommand,
                             logFile.getFileName(),
