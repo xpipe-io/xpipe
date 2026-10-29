@@ -71,6 +71,10 @@ public class DataStoreCategory extends DataStorageElement {
     }
 
     public static DataStoreCategory createNew(UUID parentCategory, @NonNull UUID uuid, @NonNull String name) {
+        if (name.isBlank()) {
+            throw new IllegalArgumentException("Name is empty");
+        }
+
         var now = Instant.now();
         return new DataStoreCategory(
                 null,
@@ -107,7 +111,10 @@ public class DataStoreCategory extends DataStorageElement {
                 .filter(jsonNode -> !jsonNode.isNull())
                 .map(jsonNode -> UUID.fromString(jsonNode.stringValue()))
                 .orElse(null);
-        var name = categoryJson.required("name").stringValue();
+        var name = categoryJson.required("name").stringValue().strip();
+        if (name.isBlank()) {
+            name = "Unnamed";
+        }
         var orderIndex = Optional.ofNullable(categoryJson.get("orderIndex"))
                 .map(jsonNode -> jsonNode.doubleValue())
                 .orElse(0.0);

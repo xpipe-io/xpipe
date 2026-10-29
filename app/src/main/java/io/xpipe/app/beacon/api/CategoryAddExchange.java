@@ -22,6 +22,10 @@ public class CategoryAddExchange extends BeaconInterface<CategoryAddExchange.Req
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws Throwable {
+        if (msg.getName().isBlank()) {
+            throw new BeaconClientException("Category name must not be empty");
+        }
+
         if (DataStorage.get().getStoreCategoryIfPresent(msg.getParent()).isEmpty()) {
             throw new BeaconClientException("Parent category with id " + msg.getParent() + " does not exist");
         }
