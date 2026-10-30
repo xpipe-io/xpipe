@@ -132,7 +132,7 @@ public class ShellTemp {
     private static void clearFiles(ShellControl sc, FilePath dir) throws Exception {
         var d = sc.getShellDialect();
         if (d == ShellDialects.CMD) {
-            sc.command(CommandBuilder.of().add("DEL", "/Q", "/F").addFile(dir)).executeAndCheck();
+            d.deleteFileOrDirectory(sc, dir.toString()).executeAndCheck();
         } else if (ShellDialects.isPowershell(d)) {
             sc.command(CommandBuilder.of()
                             .add("Remove-Item",
