@@ -77,6 +77,11 @@ public class AppDialog {
     }
 
     public static void hide(ModalOverlay o) {
+        // indexOf(null) would match an empty slot
+        if (o == null) {
+            return;
+        }
+
         PlatformThread.runLaterIfNeeded(() -> {
             synchronized (modalOverlays) {
                 var index = modalOverlays.indexOf(o);
@@ -105,7 +110,9 @@ public class AppDialog {
         if (!Platform.isFxApplicationThread()) {
             PlatformThread.runLaterIfNeededBlocking(() -> {
                 synchronized (modalOverlays) {
-                    modalOverlays.add(o);
+                    if (!modalOverlays.contains(o)) {
+                        modalOverlays.add(o);
+                    }
                 }
             });
             if (wait) {
@@ -116,7 +123,9 @@ public class AppDialog {
             var key = new Object();
             PlatformThread.runLaterIfNeededBlocking(() -> {
                 synchronized (modalOverlays) {
-                    modalOverlays.add(o);
+                    if (!modalOverlays.contains(o)) {
+                        modalOverlays.add(o);
+                    }
                     modalOverlays.addListener(new ListChangeListener<>() {
                         @Override
                         public void onChanged(Change<? extends ModalOverlay> c) {

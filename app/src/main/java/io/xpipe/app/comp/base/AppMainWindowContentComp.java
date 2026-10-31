@@ -179,7 +179,8 @@ public class AppMainWindowContentComp extends SimpleRegionBuilder {
             });
 
             AppDialog.getModalOverlaysRaw().addListener((ListChangeListener<? super ModalOverlay>) c -> {
-                if (c.next() && c.wasAdded() && c.getAddedSubList().stream().anyMatch(o -> o != null)) {
+                // Hiding replaces with null. Don't use getAddedSubList, other listeners can modify the list during this change
+                if (c.next() && c.wasAdded() && !c.wasReplaced()) {
                     AppMainWindow.get().focus();
 
                     // Close blocking modal windows
