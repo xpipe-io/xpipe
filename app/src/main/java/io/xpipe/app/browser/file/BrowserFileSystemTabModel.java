@@ -90,7 +90,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         }, name, fileSystemNameSuffix);
     }
 
-    public void updateProgress(BrowserTransferProgress n) {
+    public synchronized void updateProgress(BrowserTransferProgress n) {
         if (n == null) {
             progress.setValue(null);
             progressesIntervalHistory.clear();

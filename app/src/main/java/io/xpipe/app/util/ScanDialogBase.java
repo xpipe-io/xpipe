@@ -161,7 +161,14 @@ public class ScanDialogBase {
                         so -> null,
                         selected,
                         scanOperation -> scanOperation.isDisabled(),
-                        () -> available.stream().filter(sa -> !sa.isDisabled()).count() >= 2)
+                        () -> {
+                            synchronized (available) {
+                                return available.stream()
+                                                .filter(sa -> !sa.isDisabled())
+                                                .count()
+                                        >= 2;
+                            }
+                        })
                 .build();
         stackPane.getChildren().add(r);
 
