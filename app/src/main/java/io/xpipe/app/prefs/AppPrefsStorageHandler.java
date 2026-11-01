@@ -108,43 +108,43 @@ public class AppPrefsStorageHandler {
             return null;
         }
 
-        if (PrefsChoiceValue.class.isAssignableFrom(type.getRawClass())) {
-            List<T> all = (List<T>) getAll(type.getRawClass());
-            if (all != null) {
-                Class<PrefsChoiceValue> cast = (Class<PrefsChoiceValue>) type.getRawClass();
-                var in = tree.asString();
-                var found = all.stream()
-                        .filter(t -> ((PrefsChoiceValue) t).getId().equalsIgnoreCase(in))
-                        .findAny();
-                if (found.isEmpty()) {
-                    if (log) {
-                        TrackEvent.withWarn("Invalid prefs value found")
-                                .tag("key", id)
-                                .tag("value", in)
-                                .handle();
-                    }
-                    return defaultObject;
-                }
-
-                var supported = getSupported(cast);
-                if (!supported.contains(found.get())) {
-                    if (log) {
-                        TrackEvent.withWarn("Unsupported prefs value found")
-                                .tag("key", id)
-                                .tag("value", in)
-                                .handle();
-                    }
-                    return defaultObject;
-                }
-
-                if (log) {
-                    TrackEvent.debug("Loading preferences value for key " + id + " from value " + found.get());
-                }
-                return found.get();
-            }
-        }
-
         try {
+            if (PrefsChoiceValue.class.isAssignableFrom(type.getRawClass())) {
+                List<T> all = (List<T>) getAll(type.getRawClass());
+                if (all != null) {
+                    Class<PrefsChoiceValue> cast = (Class<PrefsChoiceValue>) type.getRawClass();
+                    var in = tree.asString();
+                    var found = all.stream()
+                            .filter(t -> ((PrefsChoiceValue) t).getId().equalsIgnoreCase(in))
+                            .findAny();
+                    if (found.isEmpty()) {
+                        if (log) {
+                            TrackEvent.withWarn("Invalid prefs value found")
+                                    .tag("key", id)
+                                    .tag("value", in)
+                                    .handle();
+                        }
+                        return defaultObject;
+                    }
+
+                    var supported = getSupported(cast);
+                    if (!supported.contains(found.get())) {
+                        if (log) {
+                            TrackEvent.withWarn("Unsupported prefs value found")
+                                    .tag("key", id)
+                                    .tag("value", in)
+                                    .handle();
+                        }
+                        return defaultObject;
+                    }
+
+                    if (log) {
+                        TrackEvent.debug("Loading preferences value for key " + id + " from value " + found.get());
+                    }
+                    return found.get();
+                }
+            }
+
             if (log) {
                 TrackEvent.debug("Loading preferences value for key " + id + " from value " + tree);
             }
