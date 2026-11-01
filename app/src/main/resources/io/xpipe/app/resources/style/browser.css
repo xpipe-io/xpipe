@@ -232,6 +232,10 @@
     -fx-effect: none;
 }
 
+.browser .overview-file-list:disabled .button {
+    -fx-opacity: 1.0;
+}
+
 .browser .tab-pane {
     -fx-border-width: 0 0 0 0px;
     -fx-border-color: -color-border-default;
