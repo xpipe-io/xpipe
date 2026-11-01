@@ -375,6 +375,7 @@ public class AppMainWindow {
         if (AppDistributionType.get() == AppDistributionType.WEBTOP) {
             stage.setWidth(1000);
             stage.setHeight(600);
+            return;
         }
 
         var screens = Screen.getScreens();
@@ -384,9 +385,16 @@ public class AppMainWindow {
             return;
         }
 
-        var screen = screens.getFirst();
-        var w = Math.min(1280, screen.getBounds().getWidth() - 10);
-        var h = Math.min(780, screen.getBounds().getHeight() - 10);
+        // Check for empty screen bounds if no proper monitor information is available
+        var bounds = screens.getFirst().getBounds();
+        if (bounds.getWidth() < 300 || bounds.getHeight() < 300) {
+            stage.setWidth(1280);
+            stage.setHeight(780);
+            return;
+        }
+
+        var w = Math.min(1280, bounds.getWidth() - 10);
+        var h = Math.min(780, bounds.getHeight() - 10);
         stage.setWidth(w);
         stage.setHeight(h);
     }
