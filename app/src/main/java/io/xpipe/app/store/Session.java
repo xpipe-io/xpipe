@@ -5,10 +5,13 @@ import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
 
 import java.time.Duration;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class Session implements AutoCloseable {
 
     protected SessionListener listener = running -> {};
+
+    private final AtomicInteger aliveListenerGeneration = new AtomicInteger();
 
     public synchronized void addListener(SessionListener n) {
         var current = this.listener;
@@ -19,21 +22,29 @@ public abstract class Session implements AutoCloseable {
     }
 
     protected void startAliveListener() {
+        // Each start registers a new listener, older ones must not act on the newer control
+        var generation = aliveListenerGeneration.incrementAndGet();
         GlobalTimer.scheduleUntil(Duration.ofMillis(10000), false, () -> {
-            if (!isRunning()) {
+            if (generation != aliveListenerGeneration.get() || !isRunning()) {
                 return true;
             }
 
             ThreadHelper.runAsync(() -> {
-                if (!isRunning()) {
+                if (generation != aliveListenerGeneration.get() || !isRunning()) {
                     return;
                 }
 
-                if (!checkAliveQuiet()) {
-                    handleSessionDeath();
+                var dead = !checkAliveQuiet() || checkInactive();
+                if (!dead) {
+                    return;
                 }
 
-                if (checkInactive()) {
+                synchronized (this) {
+                    // The session might have been restarted while we were checking
+                    if (generation != aliveListenerGeneration.get()) {
+                        return;
+                    }
+
                     handleSessionDeath();
                 }
             });

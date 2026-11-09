@@ -52,7 +52,7 @@ public class ShellSession extends Session {
         return shellControl.isRunning(true);
     }
 
-    public void start() throws Exception {
+    public synchronized void start() throws Exception {
         if (shellControl != null && shellControl.isRunning(true)) {
             return;
         } else {
@@ -79,7 +79,7 @@ public class ShellSession extends Session {
         }
     }
 
-    public void stop() throws Exception {
+    public synchronized void stop() throws Exception {
         if (shellControl == null) {
             return;
         }

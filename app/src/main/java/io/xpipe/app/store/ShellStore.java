@@ -15,24 +15,33 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
             return standaloneControl().start();
         }
 
-        var existingSession = getSession();
-        if (existingSession != null) {
-            existingSession.getShellControl().refreshRunningState();
-            if (!existingSession.checkAliveQuiet()) {
-                stopSessionIfNeeded();
-            } else {
-                existingSession.getShellControl().waitForSubShellExit();
-                return existingSession.getShellControl();
+        ShellControl control;
+        boolean existing = false;
+        synchronized (this) {
+            var existingSession = getSession();
+            if (existingSession != null) {
+                existingSession.getShellControl().refreshRunningState();
+                if (!existingSession.checkAliveQuiet()) {
+                    stopSessionIfNeeded();
+                } else {
+                    existing = true;
+                }
             }
+
+            var session = existing ? existingSession : startSessionIfNeeded();
+
+            // This might be null if this store has been removed from this storage since the session was started
+            // Then, the cache returns null
+            // getSession()
+
+            control = session.getShellControl();
         }
 
-        var session = startSessionIfNeeded();
-
-        // This might be null if this store has been removed from this storage since the session was started
-        // Then, the cache returns null
-        // getSession()
-
-        return session.getShellControl();
+        // Waiting can take long, so don't block other session operations on this store
+        if (existing) {
+            control.waitForSubShellExit();
+        }
+        return control;
     }
 
     @Override
