@@ -197,8 +197,17 @@ public class StoreCreationModel {
             targetCategory = DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID;
         }
 
-        // Custom category stuff
-        targetCategory = provider.getValue().getTargetCategory(store.getValue(), targetCategory);
+        // Keep an existing store in its current category when editing it. Some providers
+        // derive a category from the store contents, which can otherwise move an entry as
+        // a side effect of changing its configuration. Provider changes are different:
+        // conversions such as local identity -> synced identity still need to select the
+        // target category required by the new provider.
+        var editingSameProvider = existingEntry != null
+                && existingEntry.getProvider() != null
+                && existingEntry.getProvider().getId().equals(provider.getValue().getId());
+        if (!editingSameProvider) {
+            targetCategory = provider.getValue().getTargetCategory(store.getValue(), targetCategory);
+        }
         return DataStorage.get().getStoreCategoryIfPresent(targetCategory).orElseThrow();
     }
 
