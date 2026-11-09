@@ -39,7 +39,7 @@ public class MultiIdentityStoreProvider extends IdentityStoreProvider {
     @Override
     public UUID getTargetCategory(DataStore store, UUID target) {
         var st = (MultiIdentityStore) store;
-        if (st == null) {
+        if (st == null || st.getIdentities() == null || !st.areAllIdentitiesAccessible()) {
             return target;
         }
 
