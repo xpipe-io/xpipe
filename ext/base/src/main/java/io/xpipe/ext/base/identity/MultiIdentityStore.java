@@ -37,11 +37,15 @@ public class MultiIdentityStore extends IdentityStore implements StatefulDataSto
 
     public static Optional<DataStoreEntryRef<MultiIdentityStore>> getExclusiveHolder(
             DataStoreEntryRef<IdentityStore> ref) {
+        var uuid = ref.get().getUuid();
+        // Check the raw uuid list first, getAvailableIdentities() does a storage lookup per identity
         var exclusiveHolder = DataStorage.get().getStoreEntries().stream()
                 .filter(entry -> entry.getValidity().isUsable()
                         && entry.getStore() instanceof MultiIdentityStore m
                         && m.getExclusive() != null
                         && m.getExclusive()
+                        && m.getIdentities() != null
+                        && m.getIdentities().contains(uuid)
                         && m.getAvailableIdentities().contains(ref))
                 .findFirst();
         return exclusiveHolder.map(entry -> entry.ref());

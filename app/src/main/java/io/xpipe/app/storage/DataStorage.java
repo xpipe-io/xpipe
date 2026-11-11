@@ -101,8 +101,26 @@ public abstract class DataStorage {
     }
 
     public void generateCaches() {
-        for (DataStoreEntry storeEntry : getStoreEntries()) {
-            getStoreChildren(storeEntry);
+        // Compute all display parents in one pass instead of one full scan per entry
+        var entries = getStoreEntries();
+        var childrenByParent = new HashMap<DataStoreEntry, Set<DataStoreEntry>>();
+        for (DataStoreEntry other : entries) {
+            if (other.getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
+                continue;
+            }
+
+            getDefaultDisplayParent(other).ifPresent(parent -> childrenByParent
+                    .computeIfAbsent(parent, k -> new HashSet<>())
+                    .add(other));
+        }
+
+        for (DataStoreEntry entry : entries) {
+            if (entry.getValidity() == DataStoreEntry.Validity.LOAD_FAILED || entry.getChildrenCache() != null) {
+                continue;
+            }
+
+            var children = childrenByParent.get(entry);
+            entry.setChildrenCache(children != null ? children : new HashSet<>());
         }
     }
 
@@ -1022,11 +1040,6 @@ public abstract class DataStorage {
         var found = storeEntries.get(e);
         if (found != null) {
             return found;
-        }
-
-        var byId = getStoreEntryIfPresent(e.getUuid()).orElse(null);
-        if (byId != null) {
-            return byId;
         }
 
         if (getStoreCategoryIfPresent(e.getCategoryUuid()).isEmpty()) {

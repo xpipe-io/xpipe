@@ -15,7 +15,6 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviour;
 import io.xpipe.app.prefs.CloseBehaviourDialog;
 import io.xpipe.app.process.LocalShell;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 
@@ -274,9 +273,6 @@ public abstract class AppOperationMode {
             System.gc();
             inStartup = false;
             AppOpenArguments.init();
-            ThreadHelper.runAsync(() -> {
-                DataStorage.get().generateCaches();
-            });
             AppMainWindow.postInit();
             ProcModuleProvider.get().postInitWebtopSetup();
         } catch (Throwable ex) {

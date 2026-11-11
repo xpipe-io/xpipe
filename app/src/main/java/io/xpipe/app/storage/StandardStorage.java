@@ -349,6 +349,8 @@ public class StandardStorage extends DataStorage {
             // Refresh validities after entries have potentially been removed
             refreshStoreEntries();
 
+            generateCaches();
+
             getListeners().forEach(storageListener -> storageListener.onStoreListUpdate());
             getListeners().forEach(storageListener -> storageListener.onCategoryListUpdate());
 
