@@ -69,8 +69,7 @@ public class TerminalPaneConfiguration {
             String title,
             int paneIndex,
             boolean enableLogging,
-            boolean clearScreen,
-            TerminalExitBehavior exitBehavior)
+            boolean alwaysPromptRestart)
             throws Exception {
         var debugMode = !AppProperties.get().isDevelopmentEnvironment() &&
                 AppProperties.get().isDeveloperMode() &&
@@ -81,7 +80,7 @@ public class TerminalPaneConfiguration {
             var register = TerminalLauncher.getTerminalRegisterCommand(request, sc);
             var launcherScript = getEnvOptionsResetCommand(sc.getShellDialect()) + "\n" +
                     (debugMode ? sc.getShellDialect().getSetEnvironmentVariableCommand("XPIPE_DEBUG", "true") + "\n" : "") +
-                    register + "\n" + sc.getShellDialect().terminalLauncherScript(sc, request, title, exitBehavior);
+                    register + "\n" + sc.getShellDialect().terminalLauncherScript(sc, request, title, alwaysPromptRestart);
             var config = new TerminalPaneConfiguration(request, title, paneIndex, launcherScript, sc.getShellDialect());
             return config;
         }
@@ -99,9 +98,8 @@ public class TerminalPaneConfiguration {
             var launcherScript = ScriptHelper.createExecScript(
                     ShellDialects.POWERSHELL,
                     sc,
-                    ShellDialects.POWERSHELL.terminalLauncherScript(sc, request, title, exitBehavior));
+                    ShellDialects.POWERSHELL.terminalLauncherScript(sc, request, title, alwaysPromptRestart));
             var content = """
-                          %s
                           %s
                           %s
                           %s
@@ -115,7 +113,6 @@ public class TerminalPaneConfiguration {
                             debugMode ? ShellDialects.POWERSHELL.getSetEnvironmentVariableCommand("XPIPE_DEBUG", "true") : "",
                             TerminalLauncher.getTerminalRegisterCommand(
                                     request, LocalShell.getLocalPowershell().orElseThrow()),
-                            clearScreen ? ShellDialects.POWERSHELL.clearDisplayCommand() : "",
                             logFile.getFileName(),
                             logFile,
                             launcherScript,
@@ -136,7 +133,7 @@ public class TerminalPaneConfiguration {
                     LocalShell.getShell(),
                     LocalShell.getShell()
                             .getShellDialect()
-                            .terminalLauncherScript(sc, request, title, exitBehavior));
+                            .terminalLauncherScript(sc, request, title, alwaysPromptRestart));
             var command = sc == LocalShell.getShell()
                     ? launcherScript
                     : LocalShell.getShell()
@@ -155,7 +152,6 @@ public class TerminalPaneConfiguration {
                           %s
                           %s
                           %s
-                          %s
                           echo "Session logging is active, output file is sessions/%s"
                           %s
                           echo "Session logging is finished, output file is sessions/%s"
@@ -165,7 +161,6 @@ public class TerminalPaneConfiguration {
                             debugMode ? LocalShell.getShell()
                                         .getShellDialect().getSetEnvironmentVariableCommand("XPIPE_DEBUG", "true") : "",
                             TerminalLauncher.getTerminalRegisterCommand(request, sc),
-                            clearScreen ? sc.getShellDialect().clearDisplayCommand() : "",
                             logFile.getFileName(),
                             scriptCommand,
                             logFile.getFileName(),

@@ -3,8 +3,6 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
-import io.xpipe.app.terminal.TerminalExitAction;
-import io.xpipe.app.terminal.TerminalExitBehavior;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.FlatpakCache;
 import io.xpipe.app.util.OsType;
@@ -338,7 +336,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                             .buildFull(sc)))
                     .logIfEnabled(false)
                     .preferTabs(false)
-                    .exitBehavior(TerminalExitBehavior.pauseOnFailure())
+                    .pauseOnExit(false)
                     .launch();
         }
     };
@@ -386,7 +384,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                             .buildFull(sc)))
                     .logIfEnabled(false)
                     .preferTabs(false)
-                    .exitBehavior(TerminalExitBehavior.pauseOnFailure())
+                    .pauseOnExit(false)
                     .launch();
         }
     };
@@ -484,7 +482,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                             .buildFull(sc)))
                     .logIfEnabled(false)
                     .preferTabs(false)
-                    .exitBehavior(TerminalExitBehavior.pauseOnFailure())
+                    .pauseOnExit(false)
                     .launch();
         }
     };
@@ -511,7 +509,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                         .localScript(sc -> new ShellScript(command))
                         .logIfEnabled(false)
                         .preferTabs(false)
-                        .exitBehavior(TerminalExitBehavior.pauseOnFailure())
+                        .pauseOnExit(false)
                         .launch();
             } else {
                 ExternalApplicationHelper.startAsync(command);

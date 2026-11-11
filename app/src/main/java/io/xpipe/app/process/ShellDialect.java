@@ -2,7 +2,6 @@ package io.xpipe.app.process;
 
 import io.xpipe.app.fs.FileEntry;
 import io.xpipe.app.fs.FileSystem;
-import io.xpipe.app.terminal.TerminalExitBehavior;
 import io.xpipe.app.util.FilePath;
 import io.xpipe.app.util.StreamCharset;
 
@@ -29,7 +28,7 @@ public interface ShellDialect {
         return null;
     }
 
-    String terminalLauncherScript(ShellControl sc, UUID request, String name, TerminalExitBehavior exitBehavior);
+    String terminalLauncherScript(ShellControl sc, UUID request, String name, boolean alwaysPromptRestart);
 
     String getExecutableName();
 

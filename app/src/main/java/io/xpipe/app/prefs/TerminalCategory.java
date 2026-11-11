@@ -117,7 +117,7 @@ public class TerminalCategory extends AppPrefsCategory {
                                                     "If you can read this, the terminal integration works", false)))
                                     .preferTabs(false)
                                     .logIfEnabled(false)
-                                    .exitBehavior(TerminalExitBehavior.pause())
+                                    .pauseOnExit(true)
                                     .launch();
                         }
                     });
@@ -192,22 +192,6 @@ public class TerminalCategory extends AppPrefsCategory {
                         .pref(prefs.enableFileBrowserTerminalDocking)
                         .addToggle(prefs.enableFileBrowserTerminalDocking)
                         .hide(OsType.ofLocal() != OsType.WINDOWS)
-                        .pref(prefs.terminalNormalExitBehavior)
-                        .addComp(
-                                ChoiceComp.ofTranslatable(
-                                                prefs.terminalNormalExitBehavior,
-                                                Arrays.asList(TerminalExitAction.values()),
-                                                false)
-                                        .maxWidth(getCompWidth()),
-                                prefs.terminalNormalExitBehavior)
-                        .pref(prefs.terminalFailureExitBehavior)
-                        .addComp(
-                                ChoiceComp.ofTranslatable(
-                                                prefs.terminalFailureExitBehavior,
-                                                Arrays.asList(TerminalExitAction.values()),
-                                                false)
-                                        .maxWidth(getCompWidth()),
-                                prefs.terminalFailureExitBehavior)
                         .name("terminalSplitStrategy")
                         .description(Bindings.createStringBinding(
                                 () -> {
@@ -227,6 +211,8 @@ public class TerminalCategory extends AppPrefsCategory {
                                         .maxWidth(getCompWidth()),
                                 prefs.terminalSplitStrategy)
                         .disable(splitViewSupported.not())
+                        .pref(prefs.terminalAlwaysPauseOnExit)
+                        .addToggle(prefs.terminalAlwaysPauseOnExit)
                         .pref(prefs.clearTerminalOnInit)
                         .addToggle(prefs.clearTerminalOnInit)
                         .pref(prefs.preferTerminalTabs)
@@ -364,7 +350,7 @@ public class TerminalCategory extends AppPrefsCategory {
                                                         false)))
                                         .preferTabs(true)
                                         .logIfEnabled(false)
-                                        .exitBehavior(TerminalExitBehavior.pause())
+                                        .pauseOnExit(true)
                                         .launch();
 
                                 ThreadHelper.sleep(1000);
@@ -378,7 +364,7 @@ public class TerminalCategory extends AppPrefsCategory {
                                                         false)))
                                         .preferTabs(true)
                                         .logIfEnabled(false)
-                                        .exitBehavior(TerminalExitBehavior.pause())
+                                        .pauseOnExit(true)
                                         .launch();
                             }
                         } finally {

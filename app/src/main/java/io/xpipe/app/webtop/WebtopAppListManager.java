@@ -7,7 +7,6 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
-import io.xpipe.app.terminal.TerminalExitBehavior;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.GlobalTimer;
@@ -230,7 +229,7 @@ public class WebtopAppListManager {
         TerminalLaunch.builder()
                 .title("Install packages")
                 .localScript(ShellScript.lines(command + endCommand))
-                .exitBehavior(TerminalExitBehavior.pause())
+                .pauseOnExit(true)
                 .terminal(term)
                 .launch();
     }

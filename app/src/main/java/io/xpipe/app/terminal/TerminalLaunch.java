@@ -36,7 +36,8 @@ public class TerminalLaunch {
     @Builder.Default
     boolean logIfEnabled = true;
 
-    TerminalExitBehavior exitBehavior;
+    @Builder.Default
+    boolean pauseOnExit = AppPrefs.get().terminalAlwaysPauseOnExit().getValue();
 
     ExternalTerminalType terminal;
 
@@ -68,7 +69,7 @@ public class TerminalLaunch {
                 directory,
                 request != null ? request : UUID.randomUUID(),
                 logIfEnabled,
-                exitBehavior != null ? exitBehavior : TerminalExitBehavior.ofPrefs(),
+                pauseOnExit,
                 command);
         TerminalLauncher.open(List.of(pane), preferTabs, type);
     }

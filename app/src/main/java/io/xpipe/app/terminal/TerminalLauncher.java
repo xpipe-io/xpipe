@@ -128,7 +128,7 @@ public class TerminalLauncher {
         FilePath directory;
         UUID request;
         boolean enableLogging;
-        TerminalExitBehavior exitBehavior;
+        boolean alwaysKeepOpen;
         ProcessControl processControl;
     }
 
@@ -144,13 +144,12 @@ public class TerminalLauncher {
 
             var log = config.isEnableLogging()
                     && AppPrefs.get().enableTerminalLogging().get();
-            var clear = type.shouldClear()
-                    && AppPrefs.get().clearTerminalOnInit().get()
-                    && !AppPrefs.get().developerPrintInitFiles().get();
-            // When logging, the screen is cleared before the logging notice is printed instead
             var terminalConfig = new TerminalInitScriptConfig(
                     adjustedTitle,
-                    !log && clear,
+                    !log
+                            && type.shouldClear()
+                            && AppPrefs.get().clearTerminalOnInit().get()
+                            && !AppPrefs.get().developerPrintInitFiles().get(),
                     config.getProcessControl() instanceof ShellControl
                             ? type.additionalInitCommands()
                             : TerminalInitFunction.none());
@@ -159,7 +158,7 @@ public class TerminalLauncher {
 
             var paneIndex = configs.indexOf(config);
             var paneConfig = TerminalPaneConfiguration.create(
-                    config.getRequest(), entry, config.getTitle(), paneIndex, log, clear, config.getExitBehavior());
+                    config.getRequest(), entry, config.getTitle(), paneIndex, log, config.isAlwaysKeepOpen());
             paneList.add(paneConfig);
         }
 

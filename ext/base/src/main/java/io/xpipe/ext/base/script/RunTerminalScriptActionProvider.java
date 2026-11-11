@@ -4,7 +4,6 @@ import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.store.ShellStore;
-import io.xpipe.app.terminal.TerminalExitBehavior;
 import io.xpipe.app.terminal.TerminalLaunch;
 
 import lombok.experimental.SuperBuilder;
@@ -35,7 +34,7 @@ public class RunTerminalScriptActionProvider implements ActionProvider {
                     .entry(ref.get())
                     .title(scriptStore.get().getName())
                     .command(sc.command(script))
-                    .exitBehavior(TerminalExitBehavior.pause())
+                    .pauseOnExit(true)
                     .launch();
         }
 
