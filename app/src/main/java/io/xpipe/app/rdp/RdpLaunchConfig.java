@@ -22,13 +22,13 @@ public class RdpLaunchConfig {
     RdpLaunchConfigGateway gateway;
 
     public Optional<String> getDomain() {
-        var domain = username.contains("\\") ? username.split("\\\\")[0] : null;
+        var domain = username.contains("\\") ? username.split("\\\\", 2)[0] : null;
         return Optional.ofNullable(domain);
     }
 
     public String getUsernameWithoutDomain() {
         if (username.contains("\\")) {
-            return username.split("\\\\")[1];
+            return username.split("\\\\", 2)[1];
         } else {
             return username;
         }
