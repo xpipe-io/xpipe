@@ -24,6 +24,15 @@ extraJavaModuleInfo {
     }
 }
 
+// We don't use the JCA provider. Otherwise, the JDK instantiates it when searching for security providers,
+// e.g. when opening the first NIO selector on Windows, which takes more than 100ms
+extraJavaModuleInfo {
+    module("org.bouncycastle:bcprov-jdk18on", "org.bouncycastle.provider") {
+        preserveExisting()
+        ignoreServiceProvider("java.security.Provider")
+    }
+}
+
 extraJavaModuleInfo {
     module("io.sentry:sentry", "io.sentry") {
         exportAllPackages()

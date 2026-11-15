@@ -16,10 +16,73 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.Optional;
+import javax.net.ssl.*;
 
 public class BeaconClient {
+
+    // The http client always queries its SSL context, even though we only use plain http
+    // Any JDK SSL context computes its supported cipher suites, which takes a significant part of the CLI execution time
+    private static final class NoTlsSslContext extends SSLContext {
+
+        private static final NoTlsSslContext INSTANCE = new NoTlsSslContext();
+
+        private NoTlsSslContext() {
+            super(new Spi(), null, "TLS");
+        }
+
+        private static final class Spi extends SSLContextSpi {
+
+            private static SSLParameters parameters() {
+                return new SSLParameters(new String[0], new String[] {"TLSv1.2"});
+            }
+
+            @Override
+            protected void engineInit(KeyManager[] km, TrustManager[] tm, SecureRandom sr) {}
+
+            @Override
+            protected SSLSocketFactory engineGetSocketFactory() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            protected SSLServerSocketFactory engineGetServerSocketFactory() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            protected SSLEngine engineCreateSSLEngine() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            protected SSLEngine engineCreateSSLEngine(String host, int port) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            protected SSLSessionContext engineGetServerSessionContext() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            protected SSLSessionContext engineGetClientSessionContext() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            protected SSLParameters engineGetDefaultSSLParameters() {
+                return parameters();
+            }
+
+            @Override
+            protected SSLParameters engineGetSupportedSSLParameters() {
+                return parameters();
+            }
+        }
+    }
 
     private final String address;
     private final int port;
@@ -51,14 +114,16 @@ public class BeaconClient {
             System.out.println(content);
         }
 
-        var client = HttpClient.newBuilder()
+        HttpResponse<String> response;
+        // An open client keeps a selector thread blocked in native code
+        // If it is still alive on exit, the JVM waits up to UserThreadWaitAttemptsAtExit, 300ms by default
+        try (var client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(5))
                 .version(HttpClient.Version.HTTP_1_1)
                 .proxy(HttpClient.Builder.NO_PROXY)
                 .followRedirects(HttpClient.Redirect.NORMAL)
-                .build();
-        HttpResponse<String> response;
-        try {
+                .sslContext(NoTlsSslContext.INSTANCE)
+                .build()) {
             // Use direct IP to prevent DNS lookups and potential blocks (e.g. portmaster)
             var uri = URI.create("http://" + address + ":" + port + prov.getPath());
             var builder = HttpRequest.newBuilder();
