@@ -261,7 +261,9 @@ public abstract class MicrosoftRdpClient implements ExternalApplicationType.Inst
 
     private RdpConfig getRemoteDesktopWindowConfig(RdpConfig input) {
         if (useSystemDisplayScale) {
-            input = input.overlay(Map.of("desktopscalefactor", new RdpConfig.TypedValue("i", "200")));
+            input = input.overlay(Map.of(
+                    "desktopscalefactor",
+                    new RdpConfig.TypedValue("i", "" + AppDisplayScale.getEffectiveIntegerDisplayScale())));
         }
 
         var window = RemoteDesktopWindow.get();

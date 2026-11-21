@@ -279,9 +279,8 @@ public final class McpTools {
                         var list = stream.toList();
                         var builder = McpSchema.CallToolResult.builder();
                         list.stream()
-                                .filter(fileEntry -> regex.matcher(
-                                                fileEntry.getPath().toString())
-                                        .find())
+                                .filter(fileEntry ->
+                                        regex.matcher(fileEntry.getName()).matches())
                                 .forEach(fileEntry -> {
                                     builder.addTextContent(fileEntry.getPath().toString());
                                 });

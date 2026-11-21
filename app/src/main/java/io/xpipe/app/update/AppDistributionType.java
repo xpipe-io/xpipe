@@ -226,15 +226,18 @@ public enum AppDistributionType implements Translatable {
         }
 
         if (OsType.ofLocal() == OsType.MACOS) {
-            var out = LocalExec.readStdoutIfPossible("/opt/homebrew/bin/brew", "list", "--casks", "--versions");
-            if (out.isPresent()) {
-                if (out.get().lines().anyMatch(s -> {
-                    var split = s.split(" ");
-                    return split.length == 2
-                            && split[0].equals(AppNames.ofCurrent().getKebapName())
-                            && split[1].equals(AppProperties.get().getVersion());
-                })) {
-                    return HOMEBREW;
+            // Apple Silicon and Intel prefixes
+            for (var brew : new String[] {"/opt/homebrew/bin/brew", "/usr/local/bin/brew"}) {
+                var out = LocalExec.readStdoutIfPossible(brew, "list", "--casks", "--versions");
+                if (out.isPresent()) {
+                    if (out.get().lines().anyMatch(s -> {
+                        var split = s.split(" ");
+                        return split.length == 2
+                                && split[0].equals(AppNames.ofCurrent().getKebapName())
+                                && split[1].equals(AppProperties.get().getVersion());
+                    })) {
+                        return HOMEBREW;
+                    }
                 }
             }
         }

@@ -5,6 +5,9 @@ import io.xpipe.app.prefs.AppPrefs;
 
 import javafx.stage.Screen;
 
+import java.util.Comparator;
+import java.util.stream.IntStream;
+
 public class AppDisplayScale {
 
     private static Double screenOutputScale;
@@ -64,5 +67,14 @@ public class AppDisplayScale {
         }
 
         return screenOutputScale != null ? screenOutputScale : 1.0;
+    }
+
+    public static int getEffectiveIntegerDisplayScale() {
+        var scale = (int) Math.round(getEffectiveDisplayScale() * 100);
+        // mstsc only accepts these values
+        return IntStream.of(100, 125, 150, 175, 200, 250, 300, 400, 500)
+                .boxed()
+                .min(Comparator.comparingInt(v -> Math.abs(v - scale)))
+                .orElseThrow();
     }
 }

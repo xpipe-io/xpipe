@@ -191,13 +191,16 @@ public class TerminalLauncher {
             TerminalMultiplexerManager.waitForMultiplexerStartup();
 
             // Synchronize between multiple existing tab launches as some terminals and multiplexers might break there
-            long elapsed;
+            Instant launchTime;
             synchronized (TerminalLauncher.class) {
-                elapsed = Duration.between(lastLaunch, Instant.now()).toMillis();
-                lastLaunch = Instant.now();
+                var now = Instant.now();
+                var earliest = lastLaunch.plusMillis(1000);
+                launchTime = now.isAfter(earliest) ? now : earliest;
+                lastLaunch = launchTime;
             }
-            if (elapsed < 1000) {
-                ThreadHelper.sleep(1000 - elapsed);
+            var wait = Duration.between(Instant.now(), launchTime).toMillis();
+            if (wait > 0) {
+                ThreadHelper.sleep(wait);
             }
 
             // Track sessions that are used for the multiplexer
