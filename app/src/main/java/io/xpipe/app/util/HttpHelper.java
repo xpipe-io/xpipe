@@ -37,12 +37,25 @@ public class HttpHelper {
 
         if (!checkTls) {
             var sslContext = SSLContext.getInstance("TLS");
-            var trustManager = new X509TrustManager() {
+            // A plain X509TrustManager would get wrapped by JSSE, which then still performs hostname verification
+            var trustManager = new X509ExtendedTrustManager() {
                 @Override
                 public void checkClientTrusted(X509Certificate[] certs, String authType) {}
 
                 @Override
                 public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+
+                @Override
+                public void checkClientTrusted(X509Certificate[] certs, String authType, Socket socket) {}
+
+                @Override
+                public void checkServerTrusted(X509Certificate[] certs, String authType, Socket socket) {}
+
+                @Override
+                public void checkClientTrusted(X509Certificate[] certs, String authType, SSLEngine engine) {}
+
+                @Override
+                public void checkServerTrusted(X509Certificate[] certs, String authType, SSLEngine engine) {}
 
                 @Override
                 public X509Certificate[] getAcceptedIssuers() {
@@ -78,7 +91,9 @@ public class HttpHelper {
 
                 @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
-                    if (proxy.getUser() != null && proxy.getPassword() != null) {
+                    if (getRequestorType() == RequestorType.PROXY
+                            && proxy.getUser() != null
+                            && proxy.getPassword() != null) {
                         return new PasswordAuthentication(
                                 proxy.getUser(), proxy.getPassword().getSecret());
                     } else {
