@@ -167,7 +167,7 @@ public class AppInstaller {
                         uninstallCommand = """
                                 echo '+ msiexec /x "%s"'
                                 Start-Process %s -FilePath msiexec -Wait -ArgumentList "/x", "`"%s`"", "/qb"
-                                """.formatted(runas, id.get(), id.get());
+                                """.formatted(id.get(), runas, id.get());
                     }
                 }
                 return String.format(

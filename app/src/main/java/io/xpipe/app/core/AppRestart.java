@@ -6,7 +6,6 @@ import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.OsType;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 public class AppRestart {
@@ -65,15 +64,17 @@ public class AppRestart {
         }
     }
 
+    // Each argument is quoted as a whole as PowerShell splits unquoted arguments like -Da.b=c at the dot
+    private static List<String> getRestartArguments(Path dataDir) {
+        return List.of(
+                "\"-Dio.xpipe.app.mode=gui\"",
+                "\"-Dio.xpipe.app.acceptEula=true\"",
+                "\"-Dio.xpipe.app.dataDir=" + dataDir + "\"",
+                "\"-Dio.xpipe.app.restarted=true\"");
+    }
+
     public static String getBackgroundRestartCommand(Path dataDir, ShellDialect dialect) {
-        var l = new ArrayList<String>();
-        l.addAll(List.of(
-                "-Dio.xpipe.app.mode=gui",
-                "-Dio.xpipe.app.acceptEula=true",
-                "-Dio.xpipe.app.dataDir=\"" + dataDir + "\"",
-                "-Dio.xpipe.app.restarted=true"));
-        var exec = createBackgroundLaunchCommand(l, dialect);
-        return exec;
+        return createBackgroundLaunchCommand(getRestartArguments(dataDir), dialect);
     }
 
     public static String getBackgroundRestartCommand() {
@@ -81,15 +82,7 @@ public class AppRestart {
     }
 
     public static String getTerminalRestartCommand(ShellDialect dialect) {
-        var dataDir = AppProperties.get().getDataDir();
-        var exec = createTerminalLaunchCommand(
-                List.of(
-                        "-Dio.xpipe.app.mode=gui",
-                        "-Dio.xpipe.app.acceptEula=true",
-                        "-Dio.xpipe.app.dataDir=\"" + dataDir + "\"",
-                        "-Dio.xpipe.app.restarted=true"),
-                dialect);
-        return exec;
+        return createTerminalLaunchCommand(getRestartArguments(AppProperties.get().getDataDir()), dialect);
     }
 
     public static String getTerminalRestartCommand() {
