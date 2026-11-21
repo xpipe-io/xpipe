@@ -195,7 +195,8 @@ public class AppBeaconServer {
                 .name("http handler ", 0)
                 .factory();
         executor = Executors.newCachedThreadPool(threads);
-        var external = AppPrefs.get().allowExternalApiRequests().get() || Boolean.getBoolean("XPIPE_API_SERVER");
+        var external = AppPrefs.get().allowExternalApiRequests().get()
+                || "true".equalsIgnoreCase(System.getenv("XPIPE_API_SERVER"));
         var addr = external
                 ? Inet4Address.getByAddress(new byte[] {0, 0, 0, 0})
                 : Inet4Address.getByAddress(new byte[] {0x7f, 0x00, 0x00, 0x01});

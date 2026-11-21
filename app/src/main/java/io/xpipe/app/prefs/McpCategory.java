@@ -171,7 +171,7 @@ public class McpCategory extends AppPrefsCategory {
                         .addToggle(prefs.enableMcpServer)
                         .pref(prefs.allowExternalApiRequests)
                         .addToggle(prefs.allowExternalApiRequests)
-                        .hide(Boolean.getBoolean("XPIPE_API_SERVER"))
+                        .hide("true".equalsIgnoreCase(System.getenv("XPIPE_API_SERVER")))
                         .nameAndDescription("mcpClientConfigurationDetails")
                         .addComp(tabComp.maxWidth(getCompWidth()))
                         .pref(prefs.mcpAdditionalContext)
