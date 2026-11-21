@@ -195,10 +195,10 @@ public final class McpTools {
                     var object = JsonNodeFactory.instance.objectNode();
                     object.set("found", json);
 
+                    var serialized = JacksonMapper.getDefault().writeValueAsString(object);
                     return McpSchema.CallToolResult.builder()
-                            .structuredContent(
-                                    new JacksonMcpJsonMapper(JacksonMapper.getDefault()),
-                                    JacksonMapper.getDefault().writeValueAsString(object))
+                            .addTextContent(serialized)
+                            .structuredContent(new JacksonMcpJsonMapper(JacksonMapper.getDefault()), serialized)
                             .build();
                 }))
                 .build();
@@ -327,6 +327,7 @@ public final class McpTools {
                     map.entrySet().removeIf(me -> me.getValue() == null);
 
                     return McpSchema.CallToolResult.builder()
+                            .addTextContent(JacksonMapper.getDefault().writeValueAsString(map))
                             .structuredContent(map)
                             .build();
                 }))

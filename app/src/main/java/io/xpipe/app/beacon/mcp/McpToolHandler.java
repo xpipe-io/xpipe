@@ -2,6 +2,7 @@ package io.xpipe.app.beacon.mcp;
 
 import io.xpipe.app.beacon.BeaconClientException;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageQuery;
@@ -30,7 +31,7 @@ public interface McpToolHandler
         var req = new ToolRequest(mcpSyncServerExchange, callToolRequest);
         try {
             return handle(req);
-        } catch (BeaconClientException e) {
+        } catch (BeaconClientException | ProcessOutputException e) {
             ErrorEventFactory.fromThrowable(e).expected().omit().handle();
             return McpSchema.CallToolResult.builder()
                     .addTextContent(
