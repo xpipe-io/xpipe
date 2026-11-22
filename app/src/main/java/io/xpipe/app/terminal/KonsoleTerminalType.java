@@ -44,6 +44,8 @@ public class KonsoleTerminalType
                 // Konsole splits profile properties on semicolons, so don't allow the title to add other ones
                 .addLiteralKeyValue("tabtitle", configuration.single().getTitle().replace(";", ""))
                 .addIf(configuration.isPreferTabs(), "--new-tab")
+                .add("--workdir")
+                .addFile(AppSystemInfo.ofCurrent().getUserHome())
                 .add("-e")
                 .addFile(configuration.single().getScriptFile());
         launch(toExecute);
