@@ -78,14 +78,10 @@ public class ScriptStoreSetup {
                 pc.withInitSnippet(
                         new ShellTerminalInitCommand() {
 
-                            FilePath dir;
-
                             @Override
                             public Optional<String> terminalContent(ShellControl shellControl) {
-                                if (dir == null) {
-                                    dir = initScriptsDirectory(shellControl, finalBringFlattened);
-                                }
-
+                                // Not cached as the temp directory might have been wiped since, e.g. by a reboot
+                                var dir = initScriptsDirectory(shellControl, finalBringFlattened);
                                 if (dir == null) {
                                     return Optional.empty();
                                 }
